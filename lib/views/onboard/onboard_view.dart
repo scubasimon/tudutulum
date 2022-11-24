@@ -1,86 +1,144 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
-import '../../consts/color/Colors.dart';
+import 'package:tudu/consts/font/Fonts.dart';
+import 'package:tudu/consts/images/ImagePath.dart';
+import 'package:tudu/consts/color/Colors.dart';
+import 'package:tudu/models/onboard.dart';
+import 'package:tudu/views/login/login_view.dart';
+import 'package:tudu/views/onboard/card_board_view.dart';
+import 'package:tudu/generated/l10n.dart';
 
-class OnboardView extends StatelessWidget {
+class OnboardView extends StatefulWidget {
   const OnboardView({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      child: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            CarouselSlider(
-              options: CarouselOptions(height: 400.0),
-              items: [1,2,3,4].map((i) {
-                return Builder(
-                  builder: (BuildContext context) {
-                    return Container(
-                        width: MediaQuery.of(context).size.width,
-                        decoration: const BoxDecoration(
-                            color: Color(0xff112233)
-                        ),
-                        child: Text('text $i', style:  const TextStyle(fontSize: 16.0),)
-                    );
-                  },
-                );
-              }).toList(),
-            ),
-            const Spacer(flex: 1),
-            TextButton(
-                onPressed: nextAction,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: ColorStyle.electricPink,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.5),
-                        spreadRadius: 2.0,
-                        blurRadius: 2.0,
-                        offset: const Offset(0, 4),
-                      )
-                    ]
-                  ),
-                  padding: const EdgeInsets.fromLTRB(48, 18, 48, 18),
-                  child: const Text(
-                    "Next",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 21,
-                      fontWeight: FontWeight.bold,
+  State<StatefulWidget> createState() {
+    return _OnboardState();
+  }
+}
 
-                    ),
-                  ),
-                )
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
+class _OnboardState extends State<OnboardView> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final CarouselController buttonCarouselController =  CarouselController();
+
+  double _currentPage = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      key: _scaffoldKey,
+      backgroundColor: ColorStyle.systemBackground,
+      body: SafeArea(
+        child: Container(
+            color: ColorStyle.systemBackground,
+            child:  Column(
               children: [
-                TextButton(
-                  onPressed: () {},
-                  child: const Text(
-                    "Skip",
-                    style: TextStyle(
-                        color: ColorStyle.electricPink,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w500
-                    ),
+                Image.asset(
+                  ImagePath.logoTuduTulum,
+                  height: 150,
+                ),
+                CarouselSlider(
+                  options: CarouselOptions(
+                    aspectRatio: 1,
+                    viewportFraction: 1.0,
+                    enableInfiniteScroll: false,
+                    initialPage: 0,
+                    onPageChanged: onPageChanged,
                   ),
-                )
+                  carouselController: buttonCarouselController,
+                  items: Onboard.data.map((element) {
+                    return Builder(
+                      builder: (BuildContext context) {
+                        return CardBoardView(element);
+                      },
+                    );
+                  }).toList(),
+                ),
+                DotsIndicator(
+                  dotsCount: Onboard.data.length,
+                  position: _currentPage,
+                  decorator: const DotsDecorator(
+                    color: ColorStyle.secondary25,
+                    activeColor: ColorStyle.secondary,
+                  ),
+                ),
+                const Spacer(flex: 1),
+                TextButton(
+                    onPressed: nextAction,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: ColorStyle.secondary80,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 2.0,
+                              blurRadius: 2.0,
+                              offset: const Offset(0, 4),
+                            )
+                          ]
+                      ),
+                      padding: const EdgeInsets.fromLTRB(48, 18, 48, 18),
+                      child: Text(
+                        _currentPage == Onboard.data.length - 1 ? S.current.get_started : S.current.next,
+                        style: const TextStyle(
+                            color: ColorStyle.systemBackground,
+                            fontFamily: FontStyles.roboto,
+                            fontSize: 21,
+                            fontWeight: FontWeight.w700
+                        ),
+                      ),
+                    )
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        routeLogin();
+                      },
+                      child: Text(
+                        S.current.skip,
+                        style: const TextStyle(
+                            color: ColorStyle.secondary,
+                            fontFamily: FontStyles.sfProText,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600
+                        ),
+                      ),
+                    )
+                  ],
+                ),
               ],
             )
-          ],
         ),
-      )
+      ),
     );
   }
 
   void nextAction() {
-
+    if (_currentPage == Onboard.data.length - 1) {
+      routeLogin();
+    } else {
+      buttonCarouselController.nextPage();
+    }
   }
+
+  void onPageChanged(int index, CarouselPageChangedReason reason) {
+    setState(() {
+      _currentPage = index.toDouble();
+    });
+  }
+
+  void routeLogin() {
+    Navigator.of(context).push(
+        PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) => LoginView(),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) { return child; }
+        )
+    );
+  }
+
 }
 
