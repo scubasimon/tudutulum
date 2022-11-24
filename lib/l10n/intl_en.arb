@@ -1,0 +1,22 @@
+{
+  "onboard_title_1": "What are you  ",
+  "onboard_title_2": "Your local directory",
+  "onboard_title_3": "Your local calendar",
+  "onboard_title_4": "Your local exclusive savings",
+  "onboard_description_1": "Your Tulum travel companion",
+  "onboard_description_2": "Plan your trip\n- what tudu while you're in Tulum -",
+  "onboard_description_3": "What's on in Tulum\n- where goto; events, big and small -",
+  "onboard_description_4": "Sign-in to view local deals & discounts",
+  "next": "Next",
+  "skip": "Skip",
+  "get_started": "Get Started",
+  "login": "Login",
+  "login_description": "Welcome back,\nSign in to view the deal",
+  "email": "Email",
+  "password": "Password",
+  "forgot_password": "Forgot password?",
+  "account_not_exist": "Don't have an account?",
+  "create_account": "Create account",
+  "sign_in_other": "Or sign up/in with",
+  "maybe_later": "Maybe later"
+}
