@@ -12,6 +12,7 @@ class ColorStyle {
   static const darkLabel = Colors.black;
   static const secondaryDarkLabel = Color(0xff262626);
   static const tertiaryDarkLabel = Color(0xff3c3c43);
+  static const tertiaryDarkLabel60 = Color(0x993c3c43);
   static const tertiaryDarkLabel30 = Color(0x443c3c43);
 
   static const lightLabel = Colors.white;

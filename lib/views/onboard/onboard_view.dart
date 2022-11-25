@@ -36,24 +36,27 @@ class _OnboardState extends State<OnboardView> {
               children: [
                 Image.asset(
                   ImagePath.logoTuduTulum,
-                  height: 150,
+                  height: MediaQuery.of(context).size.height * 0.15,
                 ),
-                CarouselSlider(
-                  options: CarouselOptions(
-                    aspectRatio: 1,
-                    viewportFraction: 1.0,
-                    enableInfiniteScroll: false,
-                    initialPage: 0,
-                    onPageChanged: onPageChanged,
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.5,
+                  child: CarouselSlider(
+                    options: CarouselOptions(
+                      aspectRatio: 1,
+                      viewportFraction: 1.0,
+                      enableInfiniteScroll: false,
+                      initialPage: 0,
+                      onPageChanged: onPageChanged,
+                    ),
+                    carouselController: buttonCarouselController,
+                    items: Onboard.data.map((element) {
+                      return Builder(
+                        builder: (BuildContext context) {
+                          return CardBoardView(element);
+                        },
+                      );
+                    }).toList(),
                   ),
-                  carouselController: buttonCarouselController,
-                  items: Onboard.data.map((element) {
-                    return Builder(
-                      builder: (BuildContext context) {
-                        return CardBoardView(element);
-                      },
-                    );
-                  }).toList(),
                 ),
                 DotsIndicator(
                   dotsCount: Onboard.data.length,
@@ -63,39 +66,43 @@ class _OnboardState extends State<OnboardView> {
                     activeColor: ColorStyle.secondary,
                   ),
                 ),
-                const Spacer(flex: 1),
-                TextButton(
-                    onPressed: nextAction,
-                    child: Container(
-                      decoration: BoxDecoration(
-                          color: ColorStyle.secondary80,
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.5),
-                              spreadRadius: 2.0,
-                              blurRadius: 2.0,
-                              offset: const Offset(0, 4),
-                            )
-                          ]
+                const Spacer(flex: 3),
+                InkWell(
+                  onTap: () {
+                    nextAction();
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: ColorStyle.secondary80,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 2.0,
+                            blurRadius: 2.0,
+                            offset: const Offset(0, 4),
+                          )
+                        ]
+                    ),
+                    padding: const EdgeInsets.fromLTRB(48, 18, 48, 18),
+                    child: Text(
+                      _currentPage == Onboard.data.length - 1 ? S.current.get_started : S.current.next,
+                      style: const TextStyle(
+                          color: ColorStyle.systemBackground,
+                          fontFamily: FontStyles.roboto,
+                          fontSize: 21,
+                          fontWeight: FontWeight.w700
                       ),
-                      padding: const EdgeInsets.fromLTRB(48, 18, 48, 18),
-                      child: Text(
-                        _currentPage == Onboard.data.length - 1 ? S.current.get_started : S.current.next,
-                        style: const TextStyle(
-                            color: ColorStyle.systemBackground,
-                            fontFamily: FontStyles.roboto,
-                            fontSize: 21,
-                            fontWeight: FontWeight.w700
-                        ),
-                      ),
-                    )
+                    ),
+                  ),
                 ),
+                const Padding(padding: EdgeInsets.all(16.0)),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    TextButton(
-                      onPressed: () {
+                    const Padding(padding: EdgeInsets.all(16.0)),
+                    InkWell(
+                      onTap: () {
                         routeLogin();
                       },
                       child: Text(
@@ -110,6 +117,7 @@ class _OnboardState extends State<OnboardView> {
                     )
                   ],
                 ),
+                const Padding(padding: EdgeInsets.all(8.0)),
               ],
             )
         ),

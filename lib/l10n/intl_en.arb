@@ -1,4 +1,6 @@
 {
+  "error": "Error",
+  "ok": "OK",
   "onboard_title_1": "What are you  ",
   "onboard_title_2": "Your local directory",
   "onboard_title_3": "Your local calendar",
@@ -18,5 +20,19 @@
   "account_not_exist": "Don't have an account?",
   "create_account": "Create account",
   "sign_in_other": "Or sign up/in with",
-  "maybe_later": "Maybe later"
+  "maybe_later": "Maybe later",
+  "register_message": "Please complete the short for below",
+  "name": "Name",
+  "mobile": "Mobile",
+  "required_message": "*Either mobile or email is required",
+  "term_and_conditions": "Term and Conditions",
+  "agree_message": "I agree with our",
+  "account_exist_message": "Already have an account?",
+  "sign_in": "Sign In",
+  "not_agree_term_and_conditions_error": "You have not agreed to the terms and conditions.",
+  "name_empty_error": "Name must be not empty",
+  "mobile_empty_error": "Phone must be not empty",
+  "email_empty_error": "Email must be not empty",
+  "email_invalid_error": "Invalid email",
+  "password_empty_error": "Password must be not empty"
 }

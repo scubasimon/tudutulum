@@ -50,6 +50,26 @@ class S {
     return Localizations.of<S>(context, S);
   }
 
+  /// `Error`
+  String get error {
+    return Intl.message(
+      'Error',
+      name: 'error',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `OK`
+  String get ok {
+    return Intl.message(
+      'OK',
+      name: 'ok',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `What are you  `
   String get onboard_title_1 {
     return Intl.message(
@@ -245,6 +265,146 @@ class S {
     return Intl.message(
       'Maybe later',
       name: 'maybe_later',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please complete the short for below`
+  String get register_message {
+    return Intl.message(
+      'Please complete the short for below',
+      name: 'register_message',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Name`
+  String get name {
+    return Intl.message(
+      'Name',
+      name: 'name',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Mobile`
+  String get mobile {
+    return Intl.message(
+      'Mobile',
+      name: 'mobile',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `*Either mobile or email is required`
+  String get required_message {
+    return Intl.message(
+      '*Either mobile or email is required',
+      name: 'required_message',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Term and Conditions`
+  String get term_and_conditions {
+    return Intl.message(
+      'Term and Conditions',
+      name: 'term_and_conditions',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `I agree with our`
+  String get agree_message {
+    return Intl.message(
+      'I agree with our',
+      name: 'agree_message',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Already have an account?`
+  String get account_exist_message {
+    return Intl.message(
+      'Already have an account?',
+      name: 'account_exist_message',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sign In`
+  String get sign_in {
+    return Intl.message(
+      'Sign In',
+      name: 'sign_in',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You have not agreed to the terms and conditions.`
+  String get not_agree_term_and_conditions_error {
+    return Intl.message(
+      'You have not agreed to the terms and conditions.',
+      name: 'not_agree_term_and_conditions_error',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Name must be not empty`
+  String get name_empty_error {
+    return Intl.message(
+      'Name must be not empty',
+      name: 'name_empty_error',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Phone must be not empty`
+  String get mobile_empty_error {
+    return Intl.message(
+      'Phone must be not empty',
+      name: 'mobile_empty_error',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Email must be not empty`
+  String get email_empty_error {
+    return Intl.message(
+      'Email must be not empty',
+      name: 'email_empty_error',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Invalid email`
+  String get email_invalid_error {
+    return Intl.message(
+      'Invalid email',
+      name: 'email_invalid_error',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Password must be not empty`
+  String get password_empty_error {
+    return Intl.message(
+      'Password must be not empty',
+      name: 'password_empty_error',
       desc: '',
       args: [],
     );
