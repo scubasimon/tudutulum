@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:tudu/consts/images/ImagePath.dart';
 import 'package:tudu/models/onboard.dart';
 import 'package:tudu/consts/font/Fonts.dart';
@@ -13,19 +14,15 @@ class CardBoardView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      margin: const EdgeInsets.symmetric(horizontal: 16.0),
-      decoration: const BoxDecoration(
-        // color: Colors.amber
-      ),
+    return SizedBox(
+      height: 250.0,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Image.asset(
             _onboard!.image,
-            height: 180.0,
+            height: MediaQuery.of(context).size.height * 0.2,
             alignment: Alignment.center,
             fit: BoxFit.fitHeight,
           ),
@@ -59,6 +56,7 @@ class CardBoardView extends StatelessWidget {
                 fontFamily: FontStyles.mouser,
                 fontSize: 24.0,
                 color: ColorStyle.secondaryDarkLabel,
+                fontWeight: FontWeight.w400,
               ),
             ),
             Image.asset(
@@ -73,6 +71,7 @@ class CardBoardView extends StatelessWidget {
                 fontFamily: FontStyles.mouser,
                 fontSize: 24.0,
                 color: ColorStyle.secondaryDarkLabel,
+                fontWeight: FontWeight.w400,
               ),
             ),
             const Text(
@@ -81,7 +80,7 @@ class CardBoardView extends StatelessWidget {
               style: TextStyle(
                 fontSize: 24.0,
                 color: ColorStyle.secondaryDarkLabel,
-                fontWeight: FontWeight.bold
+                fontWeight: FontWeight.bold,
               ),
             )
           ],
@@ -97,6 +96,7 @@ class CardBoardView extends StatelessWidget {
             fontFamily: FontStyles.mouser,
             fontSize: 24.0,
             color: ColorStyle.secondaryDarkLabel,
+            fontWeight: FontWeight.w400,
           ),
         ),
       );
