@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tudu/consts/color/Colors.dart';
@@ -29,6 +32,7 @@ class _RegisterStateView extends State<RegisterView> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
+
   bool _isAccepted = false;
 
   @override
@@ -38,10 +42,21 @@ class _RegisterStateView extends State<RegisterView> {
   }
 
   @override
+  void dispose() {
+    _nameController.dispose();
+    _mobileController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorStyle.systemBackground,
       body: InkWell(
+        hoverColor: Colors.transparent,
+        focusColor: Colors.transparent,
         splashColor: Colors.transparent,
         onTap: () {
           FocusManager.instance.primaryFocus?.unfocus();
@@ -299,7 +314,7 @@ class _RegisterStateView extends State<RegisterView> {
                       const SizedBox(height: 32.0,),
                       InkWell(
                         onTap: () {
-                          print("Maybe later");
+                          Navigator.of(context).pushReplacementNamed(URLConsts.home);
                         },
                         child: Text(
                           S.current.maybe_later,
@@ -346,20 +361,50 @@ class _RegisterStateView extends State<RegisterView> {
       return ErrorAlert.alert(context, message);
     });
   }
+
+  void _showLoading() {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return Container(
+              decoration: const BoxDecoration(),
+              child: const Center(
+                child: CupertinoActivityIndicator(
+                  radius: 20,
+                  color: ColorStyle.primary,
+                ),
+              )
+          );
+        }
+    );
+  }
   
   Future<void> _registerAction() async {
     if(!_isAccepted) { 
       _showAlert(S.current.not_agree_term_and_conditions_error);
       return;
     }
-    return _authenticationViewModel.register(
+    _showLoading();
+
+    _authenticationViewModel.register(
       _nameController.text,
       _emailController.text,
       _mobileController.text,
       _passwordController.text,
-    ).catchError((error, stackTrace) {
+    )
+    .then((value) {
+      Navigator.of(context).pop();
+      Navigator.of(context).pushReplacementNamed(URLConsts.home);
+    })
+    .catchError((error, stackTrace) {
+      Navigator.of(context).pop();
       CustomError err = error as CustomError;
-      _showAlert(err.message != null ? err.message! : "");
+      var message = err.message != null ? err.message! : "";
+      if (err.code == "E_AUTH_107") {
+        message = err.data["error"];
+      }
+      _showAlert(message);
     });
   }
 

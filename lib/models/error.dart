@@ -8,6 +8,13 @@ class CustomError extends Error {
   CustomError(this.code, {this.message, this.data = const {}});
 }
 
+class CommonError {
+  static CustomError serverError = CustomError(
+    "E_101",
+    message: S.current.server_error,
+  );
+}
+
 // start with E_AUTH_
 class AuthenticationError {
   static CustomError nameEmpty = CustomError(
@@ -34,4 +41,30 @@ class AuthenticationError {
     "E_AUTH_105",
     message: S.current.password_empty_error
   );
+
+  static CustomError passwordShort = CustomError(
+    "E_AUTH_106",
+    message: S.current.password_short_error
+  );
+
+  static CustomError badCredentials(Map<String, dynamic> data) {
+    return CustomError(
+      "E_AUTH_107",
+      message: "Bad Credentials",
+      data: data,
+    );
+  }
+
+  static CustomError userRejected = CustomError(
+    "E_AUTH_108",
+    message: S.current.user_not_approved_error,
+  );
+
+  static CustomError appleException(String message, Map<String, dynamic> data) {
+    return CustomError(
+      "E_AUTH_109",
+      message: message,
+      data: data
+    );
+  }
 }

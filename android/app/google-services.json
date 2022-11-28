@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:825683561671:android:9dbb872a3c4976574642e2",
+        "mobilesdk_app_id": "1:825683561671:android:f700089a408bea584642e2",
         "android_client_info": {
-          "package_name": "com.tudu.tudu"
+          "package_name": "com.tulum.tudu"
         }
       },
       "oauth_client": [
