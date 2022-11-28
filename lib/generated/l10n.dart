@@ -360,6 +360,16 @@ class S {
     );
   }
 
+  /// `Server error`
+  String get server_error {
+    return Intl.message(
+      'Server error',
+      name: 'server_error',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Name must be not empty`
   String get name_empty_error {
     return Intl.message(
@@ -405,6 +415,56 @@ class S {
     return Intl.message(
       'Password must be not empty',
       name: 'password_empty_error',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Password must be longer than 6 characters`
+  String get password_short_error {
+    return Intl.message(
+      'Password must be longer than 6 characters',
+      name: 'password_short_error',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The password provided is too weak`
+  String get password_too_weak_error {
+    return Intl.message(
+      'The password provided is too weak',
+      name: 'password_too_weak_error',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The account already exists for that email`
+  String get account_already_exists_error {
+    return Intl.message(
+      'The account already exists for that email',
+      name: 'account_already_exists_error',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `User rejected`
+  String get user_not_approved_error {
+    return Intl.message(
+      'User rejected',
+      name: 'user_not_approved_error',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Failed`
+  String get failed {
+    return Intl.message(
+      'Failed',
+      name: 'failed',
       desc: '',
       args: [],
     );

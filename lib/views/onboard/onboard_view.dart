@@ -1,6 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tudu/consts/font/Fonts.dart';
 import 'package:tudu/consts/images/ImagePath.dart';
 import 'package:tudu/consts/color/Colors.dart';
@@ -46,7 +47,7 @@ class _OnboardState extends State<OnboardView> {
                       viewportFraction: 1.0,
                       enableInfiniteScroll: false,
                       initialPage: 0,
-                      onPageChanged: onPageChanged,
+                      onPageChanged: _onPageChanged,
                     ),
                     carouselController: buttonCarouselController,
                     items: Onboard.data.map((element) {
@@ -69,7 +70,7 @@ class _OnboardState extends State<OnboardView> {
                 const Spacer(flex: 3),
                 InkWell(
                   onTap: () {
-                    nextAction();
+                    _nextAction();
                   },
                   child: Container(
                     decoration: BoxDecoration(
@@ -103,7 +104,7 @@ class _OnboardState extends State<OnboardView> {
                     const Padding(padding: EdgeInsets.all(16.0)),
                     InkWell(
                       onTap: () {
-                        routeLogin();
+                        _routeLogin();
                       },
                       child: Text(
                         S.current.skip,
@@ -125,24 +126,26 @@ class _OnboardState extends State<OnboardView> {
     );
   }
 
-  void nextAction() {
+  void _nextAction() {
     if (_currentPage == Onboard.data.length - 1) {
-      routeLogin();
+      _routeLogin();
     } else {
       buttonCarouselController.nextPage();
     }
   }
 
-  void onPageChanged(int index, CarouselPageChangedReason reason) {
+  void _onPageChanged(int index, CarouselPageChangedReason reason) {
     setState(() {
       _currentPage = index.toDouble();
     });
   }
 
-  void routeLogin() {
+  void _routeLogin() {
+    SharedPreferences.getInstance()
+    .then((prefs) => prefs.setBool("open_first", false));
     Navigator.of(context).push(
         PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) => LoginView(),
+            pageBuilder: (context, animation, secondaryAnimation) => const LoginView(),
             transitionsBuilder: (context, animation, secondaryAnimation, child) { return child; }
         )
     );

@@ -1,4 +1,4 @@
-package com.tudu.tudu
+package com.tulum.tudu
 
 import io.flutter.embedding.android.FlutterActivity
 

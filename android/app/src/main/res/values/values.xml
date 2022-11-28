@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="facebook_app_id">534381651815771</string>
+    <string name="fb_login_protocol_scheme">fb534381651815771</string>
+    <string name="facebook_client_token">0b56349de9ec47ed8cfedab33d7ca018</string>
+<!--    <string name="app_name">Tudu</string>-->
+</resources>

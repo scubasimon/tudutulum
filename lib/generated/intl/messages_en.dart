@@ -22,6 +22,8 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+        "account_already_exists_error": MessageLookupByLibrary.simpleMessage(
+            "The account already exists for that email"),
         "account_exist_message":
             MessageLookupByLibrary.simpleMessage("Already have an account?"),
         "account_not_exist":
@@ -36,6 +38,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "email_invalid_error":
             MessageLookupByLibrary.simpleMessage("Invalid email"),
         "error": MessageLookupByLibrary.simpleMessage("Error"),
+        "failed": MessageLookupByLibrary.simpleMessage("Failed"),
         "forgot_password":
             MessageLookupByLibrary.simpleMessage("Forgot password?"),
         "get_started": MessageLookupByLibrary.simpleMessage("Get Started"),
@@ -73,15 +76,22 @@ class MessageLookup extends MessageLookupByLibrary {
         "password": MessageLookupByLibrary.simpleMessage("Password"),
         "password_empty_error":
             MessageLookupByLibrary.simpleMessage("Password must be not empty"),
+        "password_short_error": MessageLookupByLibrary.simpleMessage(
+            "Password must be longer than 6 characters"),
+        "password_too_weak_error": MessageLookupByLibrary.simpleMessage(
+            "The password provided is too weak"),
         "register_message": MessageLookupByLibrary.simpleMessage(
             "Please complete the short for below"),
         "required_message": MessageLookupByLibrary.simpleMessage(
             "*Either mobile or email is required"),
+        "server_error": MessageLookupByLibrary.simpleMessage("Server error"),
         "sign_in": MessageLookupByLibrary.simpleMessage("Sign In"),
         "sign_in_other":
             MessageLookupByLibrary.simpleMessage("Or sign up/in with"),
         "skip": MessageLookupByLibrary.simpleMessage("Skip"),
         "term_and_conditions":
-            MessageLookupByLibrary.simpleMessage("Term and Conditions")
+            MessageLookupByLibrary.simpleMessage("Term and Conditions"),
+        "user_not_approved_error":
+            MessageLookupByLibrary.simpleMessage("User rejected")
       };
 }
