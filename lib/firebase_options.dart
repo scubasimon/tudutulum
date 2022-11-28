@@ -51,7 +51,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyCmfJC84REgeBAiY3IYn-wJeb8b0yc1bsg',
-    appId: '1:825683561671:android:9dbb872a3c4976574642e2',
+    appId: '1:825683561671:android:f700089a408bea584642e2',
     messagingSenderId: '825683561671',
     projectId: 'tudutulum',
     storageBucket: 'tudutulum.appspot.com',
