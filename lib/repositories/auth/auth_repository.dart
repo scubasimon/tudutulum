@@ -1,5 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:tudu/models/auth.dart';
 import 'package:tudu/models/error.dart';
 import 'package:tudu/services/apple/sign_in.dart';
@@ -18,7 +18,7 @@ class AuthRepositoryImpl extends AuthRepository {
 
   final FirebaseService _firebaseService = FirebaseServiceImpl();
   final SignInGoogleService _signInGoogleService = SignInGoogleServiceImpl();
-  // final SignInWithAppleService _signInWithAppleService = SignInWithAppleServiceImpl();
+  final SignInWithAppleService _signInWithAppleService = SignInWithAppleServiceImpl();
   final SignInWithFacebookService _signInWithFacebookService = SignInWithFacebookServiceImpl();
 
   @override
@@ -63,9 +63,9 @@ class AuthRepositoryImpl extends AuthRepository {
         userCredentials = await _firebaseService.signInWithGoogle(googleAuth);
         break;
       case AuthType.apple:
-        // var rawNonce = generateNonce();
-        // var appleAuth = await _signInWithAppleService.signInWithApple(rawNonce);
-        // userCredentials = await _firebaseService.signInWithApple(appleAuth, rawNonce);
+        var rawNonce = generateNonce();
+        var appleAuth = await _signInWithAppleService.signInWithApple(rawNonce);
+        userCredentials = await _firebaseService.signInWithApple(appleAuth, rawNonce);
         break;
       case AuthType.facebook:
         var loginResult = await _signInWithFacebookService.signIn();

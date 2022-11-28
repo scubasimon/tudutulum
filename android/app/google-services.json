@@ -7,12 +7,20 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:825683561671:android:f700089a408bea584642e2",
+        "mobilesdk_app_id": "1:825683561671:android:7f0bbbb7df2023364642e2",
         "android_client_info": {
           "package_name": "com.tulum.tudu"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "825683561671-hrapu3oj54mkndbieefdqnt5a7vrdq6h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tulum.tudu",
+            "certificate_hash": "57af8bb9ff1cbaf039194d4b674ed7f41846a901"
+          }
+        },
         {
           "client_id": "825683561671-5gob0rhm51cvpa12ushi3qhr9havs5ft.apps.googleusercontent.com",
           "client_type": 3

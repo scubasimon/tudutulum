@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-// import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:tudu/models/error.dart';
 import 'package:tudu/generated/l10n.dart';
 
@@ -14,7 +14,7 @@ abstract class FirebaseService {
 
   Future<UserCredential> signInWithGoogle(GoogleSignInAuthentication googleAuth);
 
-  // Future<UserCredential> signInWithApple(AuthorizationCredentialAppleID appleCredential, String rawNonce);
+  Future<UserCredential> signInWithApple(AuthorizationCredentialAppleID appleCredential, String rawNonce);
 
   Future<UserCredential> signInWithFacebook(LoginResult loginResult);
 
@@ -81,14 +81,14 @@ class FirebaseServiceImpl extends FirebaseService {
     return _signInWith(credential);
   }
 
-  // @override
-  // Future<UserCredential> signInWithApple(AuthorizationCredentialAppleID appleCredential, String rawNonce) async {
-  //   final oauthCredential = OAuthProvider("apple.com").credential(
-  //     idToken: appleCredential.identityToken,
-  //     rawNonce: rawNonce,
-  //   );
-  //   return _signInWith(oauthCredential);
-  // }
+  @override
+  Future<UserCredential> signInWithApple(AuthorizationCredentialAppleID appleCredential, String rawNonce) async {
+    final oauthCredential = OAuthProvider("apple.com").credential(
+      idToken: appleCredential.identityToken,
+      rawNonce: rawNonce,
+    );
+    return _signInWith(oauthCredential);
+  }
 
   @override
   Future<UserCredential> signInWithFacebook(LoginResult loginResult) {

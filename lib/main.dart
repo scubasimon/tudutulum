@@ -52,6 +52,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           highlightColor: Colors.transparent,
         ),
+        debugShowCheckedModeBanner: false,
         localizationsDelegates: const [
           S.delegate,
         ],
