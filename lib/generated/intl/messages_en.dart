@@ -62,17 +62,17 @@ class MessageLookup extends MessageLookupByLibrary {
         "onboard_description_2": MessageLookupByLibrary.simpleMessage(
             "Plan your trip\n- what tudu while you\'re in Tulum -"),
         "onboard_description_3": MessageLookupByLibrary.simpleMessage(
-            "What\'s on in Tulum\n- where goto; events, big and small -"),
+            "What\'s on in Tulum\n- where go; events, big and small -"),
         "onboard_description_4": MessageLookupByLibrary.simpleMessage(
-            "Sign-in to view local deals & discounts"),
+            "Sign-in to view\n local deals & discounts"),
         "onboard_title_1":
             MessageLookupByLibrary.simpleMessage("What are you  "),
         "onboard_title_2":
             MessageLookupByLibrary.simpleMessage("Your local directory"),
         "onboard_title_3":
             MessageLookupByLibrary.simpleMessage("Your local calendar"),
-        "onboard_title_4": MessageLookupByLibrary.simpleMessage(
-            "Your local exclusive savings"),
+        "onboard_title_4":
+            MessageLookupByLibrary.simpleMessage("Your exclusive savings"),
         "password": MessageLookupByLibrary.simpleMessage("Password"),
         "password_empty_error":
             MessageLookupByLibrary.simpleMessage("Password must be not empty"),
@@ -83,15 +83,18 @@ class MessageLookup extends MessageLookupByLibrary {
         "register_message": MessageLookupByLibrary.simpleMessage(
             "Please complete the short for below"),
         "required_message": MessageLookupByLibrary.simpleMessage(
-            "*Either mobile or email is required"),
-        "server_error": MessageLookupByLibrary.simpleMessage("Server error"),
+            "*Email and password is required"),
+        "reset_password_message": MessageLookupByLibrary.simpleMessage(
+            "Password reset link has been sent successfully"),
+        "server_error": MessageLookupByLibrary.simpleMessage(
+            "An error occurred, please try again"),
         "sign_in": MessageLookupByLibrary.simpleMessage("Sign In"),
         "sign_in_other":
             MessageLookupByLibrary.simpleMessage("Or sign up/in with"),
         "skip": MessageLookupByLibrary.simpleMessage("Skip"),
         "term_and_conditions":
             MessageLookupByLibrary.simpleMessage("Term and Conditions"),
-        "user_not_approved_error":
-            MessageLookupByLibrary.simpleMessage("User rejected")
+        "user_not_approved_error": MessageLookupByLibrary.simpleMessage(
+            "User not approve. Please try again")
       };
 }

@@ -100,10 +100,10 @@ class S {
     );
   }
 
-  /// `Your local exclusive savings`
+  /// `Your exclusive savings`
   String get onboard_title_4 {
     return Intl.message(
-      'Your local exclusive savings',
+      'Your exclusive savings',
       name: 'onboard_title_4',
       desc: '',
       args: [],
@@ -130,20 +130,20 @@ class S {
     );
   }
 
-  /// `What's on in Tulum\n- where goto; events, big and small -`
+  /// `What's on in Tulum\n- where go; events, big and small -`
   String get onboard_description_3 {
     return Intl.message(
-      'What\'s on in Tulum\n- where goto; events, big and small -',
+      'What\'s on in Tulum\n- where go; events, big and small -',
       name: 'onboard_description_3',
       desc: '',
       args: [],
     );
   }
 
-  /// `Sign-in to view local deals & discounts`
+  /// `Sign-in to view\n local deals & discounts`
   String get onboard_description_4 {
     return Intl.message(
-      'Sign-in to view local deals & discounts',
+      'Sign-in to view\n local deals & discounts',
       name: 'onboard_description_4',
       desc: '',
       args: [],
@@ -300,10 +300,10 @@ class S {
     );
   }
 
-  /// `*Either mobile or email is required`
+  /// `*Email and password is required`
   String get required_message {
     return Intl.message(
-      '*Either mobile or email is required',
+      '*Email and password is required',
       name: 'required_message',
       desc: '',
       args: [],
@@ -360,10 +360,10 @@ class S {
     );
   }
 
-  /// `Server error`
+  /// `An error occurred, please try again`
   String get server_error {
     return Intl.message(
-      'Server error',
+      'An error occurred, please try again',
       name: 'server_error',
       desc: '',
       args: [],
@@ -450,10 +450,10 @@ class S {
     );
   }
 
-  /// `User rejected`
+  /// `User not approve. Please try again`
   String get user_not_approved_error {
     return Intl.message(
-      'User rejected',
+      'User not approve. Please try again',
       name: 'user_not_approved_error',
       desc: '',
       args: [],
@@ -465,6 +465,16 @@ class S {
     return Intl.message(
       'Failed',
       name: 'failed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Password reset link has been sent successfully`
+  String get reset_password_message {
+    return Intl.message(
+      'Password reset link has been sent successfully',
+      name: 'reset_password_message',
       desc: '',
       args: [],
     );

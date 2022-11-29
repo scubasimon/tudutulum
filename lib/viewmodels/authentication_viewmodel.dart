@@ -10,17 +10,15 @@ class AuthenticationViewModel with ChangeNotifier {
   final AuthRepository _authRepository = AuthRepositoryImpl();
 
   Future<void> register(String name, String email, String mobile, String password) async {
-    _validateName(name);
-    _validatePhone(mobile);
     _validateEmail(email);
     _validatePassword(password, true);
 
     var auth = Authentication(
         AuthType.email,
-        name,
+        name: name.isEmpty ? null : name,
         email: email,
         password: password,
-        phone: mobile
+        phone: mobile.isEmpty ? null : mobile
     );
     return _authRepository.signUp(auth);
   }
@@ -33,16 +31,11 @@ class AuthenticationViewModel with ChangeNotifier {
     return _authRepository.signIn(authentication);
   }
 
-  void _validateName(String name) {
-    if (name.isEmpty) {
-      throw AuthenticationError.nameEmpty;
+  Future<void> sendPasswordResetEmail(String email) async {
+    if (email.isEmpty) {
+      throw AuthenticationError.emailEmpty;
     }
-  }
-
-  void _validatePhone(String phone) {
-    if (phone.isEmpty) {
-      throw AuthenticationError.mobileEmpty;
-    }
+    await _authRepository.sendPasswordResetEmail(email);
   }
 
   void _validateEmail(String? email) {

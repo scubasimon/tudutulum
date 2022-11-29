@@ -7,4 +7,6 @@ class ImagePath {
   static const googleIcon = "assets/icons/ic_google.png";
   static const facebookIcon = "assets/icons/ic_facebook.png";
   static const chevronLeftIcon = "assets/icons/ic_chevron_left.png";
+  static const eyeIcon = "assets/icons/ic_eye.png";
+  static const hideEyeIcon = "assets/icons/ic_hide_eye.png";
 }

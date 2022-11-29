@@ -47,10 +47,10 @@ class AuthenticationError {
     message: S.current.password_short_error
   );
 
-  static CustomError badCredentials(Map<String, dynamic> data) {
+  static CustomError badCredentials(Map<String, dynamic> data, {String message = "Bad Credentials"}) {
     return CustomError(
       "E_AUTH_107",
-      message: "Bad Credentials",
+      message: message,
       data: data,
     );
   }

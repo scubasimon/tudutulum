@@ -32,8 +32,8 @@ class _RegisterStateView extends State<RegisterView> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-
-  bool _isAccepted = false;
+  var _hidePassword = true;
+  var _isAccepted = false;
 
   @override
   void initState() {
@@ -108,7 +108,6 @@ class _RegisterStateView extends State<RegisterView> {
                         child: TextField(
                           cursorColor: ColorStyle.primary,
                           textInputAction: TextInputAction.done,
-                          keyboardType: TextInputType.none,
                           controller: _nameController,
                           style: const TextStyle(
                             color: ColorStyle.darkLabel,
@@ -143,7 +142,7 @@ class _RegisterStateView extends State<RegisterView> {
                             fontStyle: FontStyle.normal,
                           ),
                           decoration: InputDecoration(
-                              labelText: "${S.current.mobile}*",
+                              labelText: S.current.mobile,
                               border: InputBorder.none,
                               labelStyle: const TextStyle(
                                   color: ColorStyle.tertiaryDarkLabel30
@@ -181,27 +180,43 @@ class _RegisterStateView extends State<RegisterView> {
                         height: 0.5,
                         color: Colors.black,
                       ),
-                      SizedBox.fromSize(
-                        size: const Size.fromHeight(60.0),
-                        child: TextField(
-                          cursorColor: ColorStyle.primary,
-                          textInputAction: TextInputAction.done,
-                          obscureText: true,
-                          controller: _passwordController,
-                          style: const TextStyle(
-                            color: ColorStyle.darkLabel,
-                            fontSize: 17,
-                            fontFamily: FontStyles.sfProText,
-                            fontStyle: FontStyle.normal,
+                      Row(
+                        children: [
+                          SizedBox.fromSize(
+                            size: Size(MediaQuery.of(context).size.width - 56.0, 60.0),
+                            child: TextField(
+                              cursorColor: ColorStyle.primary,
+                              textInputAction: TextInputAction.done,
+                              obscureText: _hidePassword,
+                              controller: _passwordController,
+                              style: const TextStyle(
+                                color: ColorStyle.darkLabel,
+                                fontSize: 17,
+                                fontFamily: FontStyles.sfProText,
+                                fontStyle: FontStyle.normal,
+                              ),
+                              decoration: InputDecoration(
+                                  labelText: "${S.current.password}*",
+                                  border: InputBorder.none,
+                                  labelStyle: const TextStyle(
+                                      color: ColorStyle.tertiaryDarkLabel30
+                                  )
+                              ),
+                            ),
                           ),
-                          decoration: InputDecoration(
-                              labelText: S.current.password,
-                              border: InputBorder.none,
-                              labelStyle: const TextStyle(
-                                  color: ColorStyle.tertiaryDarkLabel30
-                              )
+                          InkWell(
+                            onTap: (){
+                              setState(() {
+                                _hidePassword = !_hidePassword;
+                              });
+                            },
+                            child: Image.asset(
+                              _hidePassword ? ImagePath.hideEyeIcon : ImagePath.eyeIcon,
+                              width: 24,
+                              height: 24,
+                            ),
                           ),
-                        ),
+                        ],
                       ),
                       const Divider(
                         height: 0.5,
@@ -380,7 +395,7 @@ class _RegisterStateView extends State<RegisterView> {
     );
   }
   
-  Future<void> _registerAction() async {
+  void _registerAction() {
     if(!_isAccepted) { 
       _showAlert(S.current.not_agree_term_and_conditions_error);
       return;
@@ -400,15 +415,12 @@ class _RegisterStateView extends State<RegisterView> {
     .catchError((error, stackTrace) {
       Navigator.of(context).pop();
       CustomError err = error as CustomError;
-      var message = err.message != null ? err.message! : "";
-      if (err.code == "E_AUTH_107") {
-        message = err.data["error"];
-      }
+      var message = err.message != null ? err.message! : S.current.failed;
       _showAlert(message);
     });
   }
 
-  Future<void> _openTermAndConditionsAction() async {
+  void _openTermAndConditionsAction() async {
     if (!await launchUrl(Uri.parse(URLConsts.termAndConditions))) {
       throw 'Could not launch ${URLConsts.termAndConditions}';
     }

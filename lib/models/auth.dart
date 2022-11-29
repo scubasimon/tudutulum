@@ -8,9 +8,9 @@ enum AuthType {
 class Authentication {
   String? email;
   String? password;
-  String name;
+  String? name;
   AuthType type;
   String? phone;
 
-  Authentication(this.type, this.name, {this.email, this.password, this.phone});
+  Authentication(this.type, {this.name, this.email, this.password, this.phone});
 }
