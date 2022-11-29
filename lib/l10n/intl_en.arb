@@ -41,5 +41,9 @@
   "account_already_exists_error": "The account already exists for that email",
   "user_not_approved_error": "User not approve. Please try again",
   "failed": "Failed",
-  "reset_password_message": "Password reset link has been sent successfully"
+  "reset_password_message": "Password reset link has been sent successfully",
+  "warning": "Warning",
+  "exit_app_message": "Do you really want to exit?",
+  "yes": "Yes",
+  "no": "No"
 }

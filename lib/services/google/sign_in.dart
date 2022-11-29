@@ -17,7 +17,13 @@ class SignInGoogleServiceImpl extends SignInGoogleService {
 
   @override
   Future<GoogleSignInAuthentication> signIn() async {
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    GoogleSignInAccount? googleUser;
+    try {
+      googleUser = await GoogleSignIn().signIn();
+    } catch (e) {
+      print("google error ${e}");
+      throw CommonError.serverError;
+    }
     if (googleUser == null) {
       throw AuthenticationError.userRejected;
     }
