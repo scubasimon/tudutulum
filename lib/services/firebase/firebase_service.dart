@@ -156,6 +156,7 @@ class FirebaseServiceImpl extends FirebaseService {
     try {
       return await FirebaseAuth.instance.signInWithCredential(authCredential);
     }  on FirebaseAuthException catch (e) {
+      print(e);
       throw AuthenticationError.badCredentials({
         "error": e
       }, message: e.message ?? "");

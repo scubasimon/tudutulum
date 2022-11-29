@@ -38,6 +38,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "email_invalid_error":
             MessageLookupByLibrary.simpleMessage("Invalid email"),
         "error": MessageLookupByLibrary.simpleMessage("Error"),
+        "exit_app_message":
+            MessageLookupByLibrary.simpleMessage("Do you really want to exit?"),
         "failed": MessageLookupByLibrary.simpleMessage("Failed"),
         "forgot_password":
             MessageLookupByLibrary.simpleMessage("Forgot password?"),
@@ -53,6 +55,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "name_empty_error":
             MessageLookupByLibrary.simpleMessage("Name must be not empty"),
         "next": MessageLookupByLibrary.simpleMessage("Next"),
+        "no": MessageLookupByLibrary.simpleMessage("No"),
         "not_agree_term_and_conditions_error":
             MessageLookupByLibrary.simpleMessage(
                 "You have not agreed to the terms and conditions."),
@@ -95,6 +98,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "term_and_conditions":
             MessageLookupByLibrary.simpleMessage("Term and Conditions"),
         "user_not_approved_error": MessageLookupByLibrary.simpleMessage(
-            "User not approve. Please try again")
+            "User not approve. Please try again"),
+        "warning": MessageLookupByLibrary.simpleMessage("Warning"),
+        "yes": MessageLookupByLibrary.simpleMessage("Yes")
       };
 }
