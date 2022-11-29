@@ -33,6 +33,7 @@ class CardBoardView extends StatelessWidget {
               fontSize: 17,
               fontFamily: FontStyles.raleway,
               color: ColorStyle.tertiaryDarkLabel,
+              fontWeight: FontWeight.w700,
             ),
             textAlign: TextAlign.center,
           ),

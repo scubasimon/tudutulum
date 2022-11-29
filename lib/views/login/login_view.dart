@@ -29,6 +29,7 @@ class _LoginStateView extends State<LoginView> {
   late final AuthenticationViewModel _authenticationViewModel;
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  var _hidePassword = true;
 
   @override
   void initState() {
@@ -167,49 +168,64 @@ class _LoginStateView extends State<LoginView> {
                   Row(
                     children: [
                       SizedBox.fromSize(
-                        size: Size(
-                            MediaQuery.of(context).size.width - 150,
-                            60
-                        ),
-                        child: TextField(
-                          cursorColor: ColorStyle.primary,
-                          textInputAction: TextInputAction.done,
-                          obscureText: true,
-                          controller: _passwordController,
-                          style: const TextStyle(
-                            color: ColorStyle.darkLabel,
-                            fontSize: 17,
-                            fontFamily: FontStyles.sfProText,
-                            fontStyle: FontStyle.normal,
-                          ),
-                          decoration: InputDecoration(
-                              labelText: S.current.password,
-                              border: InputBorder.none,
-                              labelStyle: const TextStyle(
-                                  color: ColorStyle.tertiaryDarkLabel30
-                              )
-                          ),
-                        ),
+                          size: Size(MediaQuery.of(context).size.width - 56.0, 60.0),
+                          child: TextField(
+                            cursorColor: ColorStyle.primary,
+                            textInputAction: TextInputAction.done,
+                            obscureText: _hidePassword,
+                            controller: _passwordController,
+                            style: const TextStyle(
+                              color: ColorStyle.darkLabel,
+                              fontSize: 17,
+                              fontFamily: FontStyles.sfProText,
+                              fontStyle: FontStyle.normal,
+                            ),
+                            decoration: InputDecoration(
+                                labelText: S.current.password,
+                                border: InputBorder.none,
+                                labelStyle: const TextStyle(
+                                    color: ColorStyle.tertiaryDarkLabel30
+                                )
+                            ),
+                          )
                       ),
                       InkWell(
-                        child: Text(
-                          S.current.forgot_password,
-                          style: const TextStyle(
-                            color: ColorStyle.primary,
-                            fontFamily: FontStyles.sfProText,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        onTap: () {
-                          print("Hello");
+                        onTap: (){
+                          setState(() {
+                            _hidePassword = !_hidePassword;
+                          });
                         },
-                      )
+                        child: Image.asset(
+                          _hidePassword ? ImagePath.hideEyeIcon : ImagePath.eyeIcon,
+                          width: 24,
+                          height: 24,
+                        ),
+                      ),
                     ],
                   ),
                   const Divider(
                     height: 0.5,
                     color: Colors.black,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        InkWell(
+                          onTap: _forgotPasswordAction,
+                          child: Text(
+                            S.current.forgot_password,
+                            style: const TextStyle(
+                              color: ColorStyle.primary,
+                              fontFamily: FontStyles.sfProText,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                   InkWell(
                     onTap: () { _signInAction(AuthType.email); },
@@ -282,7 +298,7 @@ class _LoginStateView extends State<LoginView> {
                       children: methods,
                     ),
                   ),
-                  const SizedBox(height: 100.0,),
+                  const SizedBox(height: 70.0,),
                   InkWell(
                     onTap: () {
                       Navigator.of(context).pushReplacementNamed(URLConsts.home);
@@ -330,9 +346,9 @@ class _LoginStateView extends State<LoginView> {
     });
   }
 
-  Future<void> _signInAction(AuthType authType) async {
+  void _signInAction(AuthType authType) {
     _showLoading();
-    var auth = Authentication(authType, "");
+    var auth = Authentication(authType);
     if (authType == AuthType.email) {
       auth.email = _emailController.text;
       auth.password = _passwordController.text;
@@ -345,11 +361,28 @@ class _LoginStateView extends State<LoginView> {
         .catchError((error, stackTrace) {
       Navigator.of(context).pop();
       CustomError err = error as CustomError;
-      var message = err.message != null ? err.message! : "";
-      if (err.code == "E_AUTH_107") {
-        message = err.data["error"];
-      }
+      var message = err.message != null ? err.message! : S.current.failed;
       _showAlert(message);
+    });
+  }
+
+  void _forgotPasswordAction() {
+    _showLoading();
+    _authenticationViewModel
+        .sendPasswordResetEmail(_emailController.text)
+    .then((value){
+      Navigator.of(context).pop();
+      _showAlert(S.current.reset_password_message);
+    })
+    .catchError((error, stackTrace) {
+      Navigator.of(context).pop();
+      CustomError err = error as CustomError;
+      if (err.code ==  AuthenticationError.emailEmpty.code) {
+        var message = err.message != null ? err.message! : S.current.failed;
+        _showAlert(message);
+      } else {
+        _showAlert(S.current.reset_password_message);
+      }
     });
   }
 

@@ -12,6 +12,8 @@ abstract class AuthRepository {
   Future<void> signUp(Authentication authentication);
 
   Future<void> signIn(Authentication authentication);
+
+  Future<void> sendPasswordResetEmail(String email);
 }
 
 class AuthRepositoryImpl extends AuthRepository {
@@ -92,6 +94,11 @@ class AuthRepositoryImpl extends AuthRepository {
       return _firebaseService
           .addUser(userCredentials.user!.uid, user.toJson());
     }
+  }
+
+  @override
+  Future<void> sendPasswordResetEmail(String email) async {
+    await _firebaseService.sendPasswordResetEmail(email);
   }
 
   Future<bool> userChangedState() {

@@ -18,6 +18,8 @@ abstract class FirebaseService {
 
   Future<UserCredential> signInWithFacebook(LoginResult loginResult);
 
+  Future<void> sendPasswordResetEmail(String email);
+
   Future<void> addUser(String userId, Map<String, dynamic> data);
 
   Future<bool> userExists(String userId);
@@ -41,7 +43,6 @@ class FirebaseServiceImpl extends FirebaseService {
           .instance
           .createUserWithEmailAndPassword(email: email, password: password);
     } on FirebaseAuthException catch (e) {
-      print(e);
       var error = "Bad credentials";
       if (e.code == "weak-password") {
         error = S.current.password_too_weak_error;
@@ -49,8 +50,8 @@ class FirebaseServiceImpl extends FirebaseService {
         error = S.current.account_already_exists_error;
       }
       throw AuthenticationError.badCredentials({
-        "error": error
-      });
+        "error": e
+      }, message: error);
     } catch (e) {
       print(e);
       throw CommonError.serverError;
@@ -63,11 +64,14 @@ class FirebaseServiceImpl extends FirebaseService {
       return await FirebaseAuth
           .instance
           .signInWithEmailAndPassword(email: email, password: password);
-    } catch (e) {
+    } on FirebaseAuthException catch (e) {
       throw AuthenticationError
           .badCredentials({
-        "error": e.toString(),
-      });
+        "error": e,
+      }, message: e.message ?? "");
+    } catch (e) {
+      print(e);
+      throw CommonError.serverError;
     }
   }
 
@@ -95,6 +99,16 @@ class FirebaseServiceImpl extends FirebaseService {
     var facebookAuthCredential = FacebookAuthProvider
         .credential(loginResult.accessToken!.token);
     return _signInWith(facebookAuthCredential);
+  }
+
+  @override
+  Future<void> sendPasswordResetEmail(String email) async {
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+    } catch (e) {
+      print(e);
+      throw CommonError.serverError;
+    }
   }
 
   @override
@@ -142,10 +156,9 @@ class FirebaseServiceImpl extends FirebaseService {
     try {
       return await FirebaseAuth.instance.signInWithCredential(authCredential);
     }  on FirebaseAuthException catch (e) {
-      print(e);
       throw AuthenticationError.badCredentials({
-        "error": e.message
-      });
+        "error": e
+      }, message: e.message ?? "");
     } catch (e) {
       print(e);
       throw CommonError.serverError;
