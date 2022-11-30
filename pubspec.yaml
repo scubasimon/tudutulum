@@ -49,6 +49,7 @@ dependencies:
   sign_in_with_apple: ^4.2.0
   crypto: ^3.0.1
   flutter_facebook_auth: ^5.0.6
+  purchases_flutter: ^4.4.1
 
 dev_dependencies:
   flutter_test:

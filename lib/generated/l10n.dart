@@ -519,6 +519,26 @@ class S {
       args: [],
     );
   }
+
+  /// `User not found`
+  String get user_not_existed_error {
+    return Intl.message(
+      'User not found',
+      name: 'user_not_existed_error',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `UnAuthorized`
+  String get un_authorized_error {
+    return Intl.message(
+      'UnAuthorized',
+      name: 'un_authorized_error',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

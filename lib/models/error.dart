@@ -67,4 +67,14 @@ class AuthenticationError {
       data: data
     );
   }
+
+  static CustomError userNotExisted = CustomError(
+    "E_AUTH_110",
+    message: S.current.user_not_existed_error
+  );
+
+  static CustomError unAuthorized = CustomError(
+    "E_AUTH_111",
+    message: S.current.un_authorized_error,
+  );
 }

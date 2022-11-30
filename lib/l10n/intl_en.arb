@@ -45,5 +45,7 @@
   "warning": "Warning",
   "exit_app_message": "Do you really want to exit?",
   "yes": "Yes",
-  "no": "No"
+  "no": "No",
+  "user_not_existed_error": "User not found",
+  "un_authorized_error": "UnAuthorized"
 }

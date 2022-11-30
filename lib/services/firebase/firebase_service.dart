@@ -20,6 +20,8 @@ abstract class FirebaseService {
 
   Future<void> sendPasswordResetEmail(String email);
 
+  Future<Map<String, dynamic>> getUser(String id);
+
   Future<void> addUser(String userId, Map<String, dynamic> data);
 
   Future<bool> userExists(String userId);
@@ -108,6 +110,20 @@ class FirebaseServiceImpl extends FirebaseService {
     } catch (e) {
       print(e);
       throw CommonError.serverError;
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> getUser(String id) async {
+    var result = await FirebaseFirestore
+        .instance
+        .collection("users")
+        .doc(id)
+        .get();
+    if (result.exists) {
+      return result.data()!;
+    } else {
+      throw AuthenticationError.userNotExisted;
     }
   }
 

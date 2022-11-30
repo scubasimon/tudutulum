@@ -21,7 +21,7 @@ class SignInGoogleServiceImpl extends SignInGoogleService {
     try {
       googleUser = await GoogleSignIn().signIn();
     } catch (e) {
-      print("google error ${e}");
+      print("google error $e");
       throw CommonError.serverError;
     }
     if (googleUser == null) {

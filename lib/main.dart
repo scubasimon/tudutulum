@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tudu/consts/urls/URLConst.dart';
 import 'package:tudu/firebase_options.dart';
@@ -17,13 +18,29 @@ import 'generated/l10n.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await _configFirebase();
+  // await _configPurchase();
+  runApp(const MyApp());
+}
+
+Future<void> _configFirebase() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
   if (kDebugMode) {
     await _connectToFirebaseEmulator();
   }
-  runApp(const MyApp());
+}
+
+Future<void> _configPurchase() async {
+  await Purchases.setDebugLogsEnabled(true);
+  PurchasesConfiguration? configuration;
+  if (Platform.isAndroid) {
+    configuration = PurchasesConfiguration("");
+  } else if (Platform.isIOS) {
+    configuration = PurchasesConfiguration("");
+  }
+  await Purchases.configure(configuration!);
 }
 
 Future _connectToFirebaseEmulator() async {

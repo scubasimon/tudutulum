@@ -97,8 +97,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "skip": MessageLookupByLibrary.simpleMessage("Skip"),
         "term_and_conditions":
             MessageLookupByLibrary.simpleMessage("Term and Conditions"),
+        "un_authorized_error":
+            MessageLookupByLibrary.simpleMessage("UnAuthorized"),
         "user_not_approved_error": MessageLookupByLibrary.simpleMessage(
             "User not approve. Please try again"),
+        "user_not_existed_error":
+            MessageLookupByLibrary.simpleMessage("User not found"),
         "warning": MessageLookupByLibrary.simpleMessage("Warning"),
         "yes": MessageLookupByLibrary.simpleMessage("Yes")
       };
