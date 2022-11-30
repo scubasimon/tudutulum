@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "825683561671",
+    "project_id": "tudutulum",
+    "storage_bucket": "tudutulum.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:825683561671:android:7f0bbbb7df2023364642e2",
+        "android_client_info": {
+          "package_name": "com.tulum.tudu"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "825683561671-hrapu3oj54mkndbieefdqnt5a7vrdq6h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tulum.tudu",
+            "certificate_hash": "57af8bb9ff1cbaf039194d4b674ed7f41846a901"
+          }
+        },
+        {
+          "client_id": "825683561671-5gob0rhm51cvpa12ushi3qhr9havs5ft.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCmfJC84REgeBAiY3IYn-wJeb8b0yc1bsg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "825683561671-5gob0rhm51cvpa12ushi3qhr9havs5ft.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "825683561671-4s3sti0budam0rcc1hrg9b4lpcioa2k3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "i-love-apps.I-Love-Tulum-Cenotes"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
