@@ -11,7 +11,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tudu/consts/urls/URLConst.dart';
 import 'package:tudu/firebase_options.dart';
 import 'package:tudu/viewmodels/authentication_viewmodel.dart';
-import 'package:tudu/views/home/home_view.dart';
 import 'package:tudu/views/login/login_view.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -21,7 +20,7 @@ import 'package:tudu/utils/str_const.dart';
 import 'package:tudu/viewmodels/home_viewmodel.dart';
 import 'package:tudu/viewmodels/what_tudu_site_content_detail_viewmodel.dart';
 import 'package:tudu/viewmodels/what_tudu_viewmodel.dart';
-import 'package:tudu/views/home/home_screen.dart';
+import 'package:tudu/views/home/home_view.dart';
 import 'package:tudu/views/onboard/onboard_view.dart';
 
 import 'package:flutter/foundation.dart';
@@ -30,12 +29,20 @@ import 'localization/app_localization.dart';
 import 'localization/language_constants.dart';
 import 'generated/l10n.dart';
 
+Future<void> main() async {
+  await S.load(Locale.fromSubtags(languageCode: 'en')); // mimic localization delegate init
 
-void main() {
   runZonedGuarded<Future<void>>(() async {
     WidgetsFlutterBinding.ensureInitialized();
 
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
     PrefUtil.init();
+
+    // if (kDebugMode) {
+    //   await _connectToFirebaseEmulator();
+    // }
 
     SystemChrome.setPreferredOrientations(
         [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown])
@@ -44,46 +51,36 @@ void main() {
           .copyWith(statusBarColor: Colors.transparent));
       runApp(
           MultiProvider(
-        providers: [
-          ChangeNotifierProvider(
-            create: (_) => HomeViewModel(),
-          ),
-          ChangeNotifierProvider(
-            create: (_) => WhatTuduViewModel(),
-          ),
-          ChangeNotifierProvider(
-            create: (_) => WhatTuduSiteContentDetailViewModel(),
-          )
-        ],
-        child: Builder(builder: (context) {
-          return MyApp();
-        }),
-      ));
+            providers: [
+              ChangeNotifierProvider(
+                create: (_) => HomeViewModel(),
+              ),
+              ChangeNotifierProvider(
+                create: (_) => WhatTuduViewModel(),
+              ),
+              ChangeNotifierProvider(
+                create: (_) => WhatTuduSiteContentDetailViewModel(),
+              )
+            ],
+            child: Builder(builder: (context) {
+              return MyApp();
+            }),
+          ));
     });
   }, (error, stackTrace) => print(error.toString() + stackTrace.toString()));
+}
 
-/*Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
+Future _connectToFirebaseEmulator() async {
+  final localHostString = Platform.isAndroid ? '10.0.2.2' : 'localhost';
+
+  FirebaseFirestore.instance.settings = Settings(
+    host: '$localHostString:8080',
+    sslEnabled: false,
+    persistenceEnabled: false,
   );
-  if (kDebugMode) {
-    await _connectToFirebaseEmulator();
-  }
-  runApp(const MyApp());
-}*/
 
-  /*Future _connectToFirebaseEmulator() async {
-    final localHostString = Platform.isAndroid ? '10.0.2.2' : 'localhost';
-
-    FirebaseFirestore.instance.settings = Settings(
-      host: '$localHostString:8080',
-      sslEnabled: false,
-      persistenceEnabled: false,
-    );
-
-    await FirebaseAuth.instance.useAuthEmulator(localHostString, 9099);
-  }*/
+  await FirebaseAuth.instance.useAuthEmulator(localHostString, 9099);
+}
 
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -93,13 +90,10 @@ class MyApp extends StatefulWidget {
     state?.setLocale(newLocale);
   }
 
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
   @override
   _MyAppState createState() => _MyAppState();
 }
+
 
 class _MyAppState extends State<MyApp> {
   Locale _locale = const Locale(StrConst.englishLanguageCode);
@@ -138,7 +132,14 @@ class _MyAppState extends State<MyApp> {
     if (this._locale == null) {
       return Center(child: CircularProgressIndicator());
     } else {
-      return MaterialApp(
+      return MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (context) => AuthenticationViewModel())
+        ],
+        child: MaterialApp(
+          theme: ThemeData(
+            highlightColor: Colors.transparent,
+          ),
           debugShowCheckedModeBanner: false,
           locale: _locale,
           supportedLocales: const [
@@ -159,31 +160,16 @@ class _MyAppState extends State<MyApp> {
             }
             return supportedLocales.first;
           },
-          home: const HomeScreen(pageIndex: 0));
-    }
-    /*build: return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (context) => AuthenticationViewModel())
-      ],
-      child: MaterialApp(
-        theme: ThemeData(
-          highlightColor: Colors.transparent,
+          routes: {
+            URLConsts.onboard: (context) => const OnboardView(),
+            URLConsts.home: (context) => const HomeView(pageIndex: 0),
+            URLConsts.login: (context) => const LoginView(),
+          },
+          home: _endpoint(),
         ),
-        debugShowCheckedModeBanner: false,
-        localizationsDelegates: const [
-          S.delegate,
-        ],
-        supportedLocales: S.delegate.supportedLocales,
-        routes: {
-          URLConsts.onboard: (context) => const OnboardView(),
-          URLConsts.home: (context) => const HomeView(),
-          URLConsts.login: (context) => const LoginView(),
-        },
-        home: _endpoint(),
-      ),
-    );*/
+      );
+    }
   }
-}
 
   Widget _endpoint() {
     return FutureBuilder(
@@ -197,7 +183,7 @@ class _MyAppState extends State<MyApp> {
             return const LoginView();
           }
         } else {
-          return const HomeView();
+          return const HomeView(pageIndex: 0);
         }
       },
     );

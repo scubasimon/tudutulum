@@ -7,7 +7,8 @@ import 'package:tudu/viewmodels/events_viewmodel.dart';
 import 'package:tudu/viewmodels/home_viewmodel.dart';
 import 'package:tudu/viewmodels/what_tudu_site_content_detail_viewmodel.dart';
 import 'package:tudu/viewmodels/what_tudu_viewmodel.dart';
-import 'package:tudu/views/tab_1st_what_tudu/what_tudu_site_content_detail.dart';
+import 'package:tudu/views/common/exit_app_scope.dart';
+import 'package:tudu/views/tab_1st_what_tudu/what_tudu_site_content_detail_view.dart';
 import '../../localization/language_constants.dart';
 import '../../utils/audio_path.dart';
 import '../../utils/colors_const.dart';
@@ -18,12 +19,12 @@ import '../../utils/str_const.dart';
 import '../../utils/str_language_key.dart';
 import '../../viewmodels/deals_viewmodel.dart';
 
-class BookmarksScreen extends StatefulWidget {
+class BookmarksView extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => _BookmarksScreen();
+  State<StatefulWidget> createState() => _BookmarksView();
 }
 
-class _BookmarksScreen extends State<BookmarksScreen> {
+class _BookmarksView extends State<BookmarksView> {
   BookmarksViewModel bookmarksViewModel = BookmarksViewModel();
 
   final ScrollController _scrollController = ScrollController();
@@ -38,138 +39,140 @@ class _BookmarksScreen extends State<BookmarksScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: 88,
-        automaticallyImplyLeading: false,
-        flexibleSpace: Container(
-          padding: EdgeInsets.only(
-              top: MediaQuery.of(context).padding.top+8,
-              left: 16,
-              right: 16,
-              bottom: 8,),
-          color: ColorsConst.defaulGreen2,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                height: 36.0,
-                alignment: Alignment.center,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Container(
-                      child: InkWell(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Expanded(
-                                child: Image.asset(
-                                    IconPath.iconSort,
-                                    fit: BoxFit.contain,
-                                    width: 16.0)
-                            ),
-                            Text(
-                                getTranslated(context, StrLanguageKey.sort),
-                                style: const TextStyle(
-                                    color: ColorsConst.defaulOrange,
-                                    fontSize: FontSizeConst.font10,
-                                    fontWeight: FontWeight.w500)),
-                          ],
+    return ExitAppScope(
+      child: Scaffold(
+        appBar: AppBar(
+          toolbarHeight: 88,
+          automaticallyImplyLeading: false,
+          flexibleSpace: Container(
+            padding: EdgeInsets.only(
+                top: MediaQuery.of(context).padding.top+8,
+                left: 16,
+                right: 16,
+                bottom: 8,),
+            color: ColorsConst.defaulGreen2,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  height: 36.0,
+                  alignment: Alignment.center,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Container(
+                        child: InkWell(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                  child: Image.asset(
+                                      IconPath.iconSort,
+                                      fit: BoxFit.contain,
+                                      width: 16.0)
+                              ),
+                              Text(
+                                  getTranslated(context, StrLanguageKey.sort),
+                                  style: const TextStyle(
+                                      color: ColorsConst.defaulOrange,
+                                      fontSize: FontSizeConst.font10,
+                                      fontWeight: FontWeight.w500)),
+                            ],
+                          ),
+                          onTap: () {
+                            //TODO: IMPLEMENT SORT FEATURE
+                            showToast(
+                                "SORT NOT IMPL YET",
+                                context: context,
+                                duration: Duration(seconds: 3),
+                                axis: Axis.horizontal,
+                                alignment: Alignment.center,
+                                position: StyledToastPosition.bottom,
+                                textStyle: const TextStyle(
+                                    fontWeight: FontWeight.w400,
+                                    color: ColorsConst.white,
+                                    fontSize: FontSizeConst.font12));                        },
                         ),
-                        onTap: () {
-                          //TODO: IMPLEMENT SORT FEATURE
-                          showToast(
-                              "SORT NOT IMPL YET",
-                              context: context,
-                              duration: Duration(seconds: 3),
-                              axis: Axis.horizontal,
-                              alignment: Alignment.center,
-                              position: StyledToastPosition.bottom,
-                              textStyle: const TextStyle(
-                                  fontWeight: FontWeight.w400,
-                                  color: ColorsConst.white,
-                                  fontSize: FontSizeConst.font12));                        },
                       ),
-                    ),
-                    Container(
-                      padding: EdgeInsets.only(left: 8, right: 8),
-                      child: InkWell(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Expanded(
-                                child: Image.asset(
-                                    IconPath.iconFilter,
-                                    fit: BoxFit.contain,
-                                    width: 16.0)
-                            ),
-                            Text(
-                                getTranslated(context, StrLanguageKey.filter),
-                                style: const TextStyle(
-                                    color: ColorsConst.defaulOrange,
-                                    fontSize: FontSizeConst.font10,
-                                    fontWeight: FontWeight.w500)),
-                          ],
+                      Container(
+                        padding: EdgeInsets.only(left: 8, right: 8),
+                        child: InkWell(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                  child: Image.asset(
+                                      IconPath.iconFilter,
+                                      fit: BoxFit.contain,
+                                      width: 16.0)
+                              ),
+                              Text(
+                                  getTranslated(context, StrLanguageKey.filter),
+                                  style: const TextStyle(
+                                      color: ColorsConst.defaulOrange,
+                                      fontSize: FontSizeConst.font10,
+                                      fontWeight: FontWeight.w500)),
+                            ],
+                          ),
+                          onTap: () {
+                            //TODO: IMPLEMENT FILTER FEATURE
+                            showToast(
+                                "FILTER NOT IMPL YET",
+                                context: context,
+                                duration: Duration(seconds: 3),
+                                axis: Axis.horizontal,
+                                alignment: Alignment.center,
+                                position: StyledToastPosition.bottom,
+                                textStyle: const TextStyle(
+                                    fontWeight: FontWeight.w400,
+                                    color: ColorsConst.white,
+                                    fontSize: FontSizeConst.font12));
+                          },
                         ),
-                        onTap: () {
-                          //TODO: IMPLEMENT FILTER FEATURE
-                          showToast(
-                              "FILTER NOT IMPL YET",
-                              context: context,
-                              duration: Duration(seconds: 3),
-                              axis: Axis.horizontal,
-                              alignment: Alignment.center,
-                              position: StyledToastPosition.bottom,
-                              textStyle: const TextStyle(
-                                  fontWeight: FontWeight.w400,
-                                  color: ColorsConst.white,
-                                  fontSize: FontSizeConst.font12));
-                        },
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                height: 36.0,
-                padding: EdgeInsets.only(left: 8, right: 8),
-                decoration: const BoxDecoration(
-                  color: ColorsConst.defaulGray3,
-                  borderRadius: BorderRadius.all(
-                      Radius.circular(10.0)
+                    ],
                   ),
                 ),
-                child: Row(
-                  children: [
-                    Image.asset(
-                        IconPath.iconSearch,
-                        fit: BoxFit.contain,
-                        width: 16.0),
-                    Container(
-                      padding: EdgeInsets.only(left: 8, right: 8),
-                      child: Text(
-                        "Search here or use the filter above",
-                        style: const TextStyle(
-                            color: ColorsConst.defaulGray4,
-                            fontSize: FontSizeConst.font17,
-                            fontWeight: FontWeight.w400),
-                    ))
-                  ],
-                ),
-              )
-            ],
+                Container(
+                  height: 36.0,
+                  padding: EdgeInsets.only(left: 8, right: 8),
+                  decoration: const BoxDecoration(
+                    color: ColorsConst.defaulGray3,
+                    borderRadius: BorderRadius.all(
+                        Radius.circular(10.0)
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Image.asset(
+                          IconPath.iconSearch,
+                          fit: BoxFit.contain,
+                          width: 16.0),
+                      Container(
+                        padding: EdgeInsets.only(left: 8, right: 8),
+                        child: Text(
+                          "Search here or use the filter above",
+                          style: const TextStyle(
+                              color: ColorsConst.defaulGray4,
+                              fontSize: FontSizeConst.font17,
+                              fontWeight: FontWeight.w400),
+                      ))
+                    ],
+                  ),
+                )
+              ],
+            ),
           ),
         ),
-      ),
-      body: Container(
-        child: ListView(
-          controller: _scrollController,
-          children: <Widget>[
-            createBookmarksView()
-          ],
+        body: Container(
+          child: ListView(
+            controller: _scrollController,
+            children: <Widget>[
+              createBookmarksView()
+            ],
+          ),
         ),
       ),
     );

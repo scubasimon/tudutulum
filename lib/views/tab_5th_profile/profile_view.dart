@@ -7,7 +7,8 @@ import 'package:tudu/viewmodels/home_viewmodel.dart';
 import 'package:tudu/viewmodels/profile_viewmodel.dart';
 import 'package:tudu/viewmodels/what_tudu_site_content_detail_viewmodel.dart';
 import 'package:tudu/viewmodels/what_tudu_viewmodel.dart';
-import 'package:tudu/views/tab_1st_what_tudu/what_tudu_site_content_detail.dart';
+import 'package:tudu/views/common/exit_app_scope.dart';
+import 'package:tudu/views/tab_1st_what_tudu/what_tudu_site_content_detail_view.dart';
 import '../../localization/language_constants.dart';
 import '../../utils/audio_path.dart';
 import '../../utils/colors_const.dart';
@@ -18,12 +19,12 @@ import '../../utils/str_const.dart';
 import '../../utils/str_language_key.dart';
 import '../../viewmodels/deals_viewmodel.dart';
 
-class ProfileScreen extends StatefulWidget {
+class ProfileView extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => _ProfileScreen();
+  State<StatefulWidget> createState() => _ProfileView();
 }
 
-class _ProfileScreen extends State<ProfileScreen> {
+class _ProfileView extends State<ProfileView> {
   ProfileViewModel profileViewModel = ProfileViewModel();
 
   final ScrollController _scrollController = ScrollController();
@@ -35,18 +36,20 @@ class _ProfileScreen extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        child: ListView(
-          controller: _scrollController,
-          children: <Widget>[
-            createBackView(),
-            createIconView(),
-            createProfileView(),
-            createPasswordView(),
-            createTermView(),
-            getButton(),
-          ],
+    return ExitAppScope(
+      child: Scaffold(
+        body: Container(
+          child: ListView(
+            controller: _scrollController,
+            children: <Widget>[
+              createBackView(),
+              createIconView(),
+              createProfileView(),
+              createPasswordView(),
+              createTermView(),
+              getButton(),
+            ],
+          ),
         ),
       ),
     );

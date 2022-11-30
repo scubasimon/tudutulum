@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:tudu/viewmodels/home_viewmodel.dart';
 import 'package:tudu/viewmodels/what_tudu_site_content_detail_viewmodel.dart';
+import 'package:tudu/views/common/exit_app_scope.dart';
 import '../../localization/language_constants.dart';
 import '../../utils/audio_path.dart';
 import '../../utils/colors_const.dart';
@@ -12,12 +13,12 @@ import '../../utils/icon_path.dart';
 import '../../utils/str_const.dart';
 import '../../utils/str_language_key.dart';
 
-class WhatTuduSiteContentDetail extends StatefulWidget {
+class WhatTuduSiteContentDetailView extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => _WhatTuduSiteContentDetail();
+  State<StatefulWidget> createState() => _WhatTuduSiteContentDetailView();
 }
 
-class _WhatTuduSiteContentDetail extends State<WhatTuduSiteContentDetail> {
+class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView> {
   WhatTuduSiteContentDetailViewModel whatTuduSiteContentDetailViewModel = WhatTuduSiteContentDetailViewModel();
 
   @override
@@ -30,82 +31,84 @@ class _WhatTuduSiteContentDetail extends State<WhatTuduSiteContentDetail> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: 48,
-        automaticallyImplyLeading: false,
-        flexibleSpace: Container(
-          padding: EdgeInsets.only(
-              top: MediaQuery.of(context).padding.top+8,
-              left: 16,
-              right: 16,
-              bottom: 8,),
-          color: ColorsConst.defaulGreen2,
-          child: Container(
-            height: 36.0,
-            alignment: Alignment.center,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                InkWell(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Image.asset(
-                          IconPath.iconLeftArrow,
-                          fit: BoxFit.contain,
-                          height: 20.0),
-                      Container(
-                          margin: EdgeInsets.only(left: 8),
-                          child: Text(
-                            "Back",
-                            style: const TextStyle(
-                                color: ColorsConst.defaulOrange,
-                                fontSize: FontSizeConst.font16,
-                                fontWeight: FontWeight.w400),
-                          )
-                      )
-                    ],
-                  ),
-                  onTap: () {
-                    Navigator.of(context).popUntil((route){
-                      return (route.settings.name == StrConst.whatTuduScene || route.isFirst);
-                    });
-                  },
-                ),
-                Container(
-                  padding: EdgeInsets.only(left: 8, right: 8),
-                  child: InkWell(
-                    child: Image.asset(
-                        IconPath.iconMarkDeactive,
-                        fit: BoxFit.contain,
-                        width: 16.0),
+    return ExitAppScope(
+      child: Scaffold(
+        appBar: AppBar(
+          toolbarHeight: 48,
+          automaticallyImplyLeading: false,
+          flexibleSpace: Container(
+            padding: EdgeInsets.only(
+                top: MediaQuery.of(context).padding.top+8,
+                left: 16,
+                right: 16,
+                bottom: 8,),
+            color: ColorsConst.defaulGreen2,
+            child: Container(
+              height: 36.0,
+              alignment: Alignment.center,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  InkWell(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Image.asset(
+                            IconPath.iconLeftArrow,
+                            fit: BoxFit.contain,
+                            height: 20.0),
+                        Container(
+                            margin: EdgeInsets.only(left: 8),
+                            child: Text(
+                              "Back",
+                              style: const TextStyle(
+                                  color: ColorsConst.defaulOrange,
+                                  fontSize: FontSizeConst.font16,
+                                  fontWeight: FontWeight.w400),
+                            )
+                        )
+                      ],
+                    ),
                     onTap: () {
-                      //TODO: IMPLEMENT MARK AS FAVORITE FEATURE
-                      showToast(
-                          "MARK AS FAVORITE NOT IMPL YET",
-                          context: context,
-                          duration: Duration(seconds: 3),
-                          axis: Axis.horizontal,
-                          alignment: Alignment.center,
-                          position: StyledToastPosition.bottom,
-                          textStyle: const TextStyle(
-                              fontWeight: FontWeight.w400,
-                              color: ColorsConst.white,
-                              fontSize: FontSizeConst.font12));
+                      Navigator.of(context).popUntil((route){
+                        return (route.settings.name == StrConst.whatTuduScene || route.isFirst);
+                      });
                     },
                   ),
-                ),
-              ],
+                  Container(
+                    padding: EdgeInsets.only(left: 8, right: 8),
+                    child: InkWell(
+                      child: Image.asset(
+                          IconPath.iconMarkDeactive,
+                          fit: BoxFit.contain,
+                          width: 16.0),
+                      onTap: () {
+                        //TODO: IMPLEMENT MARK AS FAVORITE FEATURE
+                        showToast(
+                            "MARK AS FAVORITE NOT IMPL YET",
+                            context: context,
+                            duration: Duration(seconds: 3),
+                            axis: Axis.horizontal,
+                            alignment: Alignment.center,
+                            position: StyledToastPosition.bottom,
+                            textStyle: const TextStyle(
+                                fontWeight: FontWeight.w400,
+                                color: ColorsConst.white,
+                                fontSize: FontSizeConst.font12));
+                      },
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
-      ),
-      body: Container(
-        child: ListView(
-          children: <Widget>[
-            getExploreAllLocationView(),
-          ],
+        body: Container(
+          child: ListView(
+            children: <Widget>[
+              getExploreAllLocationView(),
+            ],
+          ),
         ),
       ),
     );
