@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/cupertino.dart';
 import 'package:tudu/models/auth.dart';
 import 'package:tudu/models/error.dart';
