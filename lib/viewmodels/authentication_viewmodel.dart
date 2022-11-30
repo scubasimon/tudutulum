@@ -9,7 +9,7 @@ class AuthenticationViewModel with ChangeNotifier {
 
   final AuthRepository _authRepository = AuthRepositoryImpl();
 
-  Future<void> register(String name, String email, String mobile, String password) async {
+  Future<void> register(String name, String email, String password) async {
     _validateEmail(email);
     _validatePassword(password, true);
 
@@ -18,7 +18,6 @@ class AuthenticationViewModel with ChangeNotifier {
         name: name.isEmpty ? null : name,
         email: email,
         password: password,
-        phone: mobile.isEmpty ? null : mobile
     );
     return _authRepository.signUp(auth);
   }

@@ -29,7 +29,6 @@ class _RegisterStateView extends State<RegisterView> {
   late final AuthenticationViewModel _authenticationViewModel;
 
   final _nameController = TextEditingController();
-  final _mobileController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
@@ -45,7 +44,6 @@ class _RegisterStateView extends State<RegisterView> {
   @override
   void dispose() {
     _nameController.dispose();
-    _mobileController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -119,32 +117,6 @@ class _RegisterStateView extends State<RegisterView> {
                               ),
                               decoration: InputDecoration(
                                   labelText: S.current.name,
-                                  border: InputBorder.none,
-                                  labelStyle: const TextStyle(
-                                      color: ColorStyle.tertiaryDarkLabel30
-                                  )
-                              ),
-                            ),
-                          ),
-                          const Divider(
-                            height: 0.5,
-                            color: Colors.black,
-                          ),
-                          SizedBox.fromSize(
-                            size: const Size.fromHeight(60),
-                            child: TextField(
-                              cursorColor: ColorStyle.primary,
-                              textInputAction: TextInputAction.done,
-                              keyboardType: TextInputType.phone,
-                              controller: _mobileController,
-                              style: const TextStyle(
-                                color: ColorStyle.darkLabel,
-                                fontSize: 17,
-                                fontFamily: FontStyles.sfProText,
-                                fontStyle: FontStyle.normal,
-                              ),
-                              decoration: InputDecoration(
-                                  labelText: S.current.mobile,
                                   border: InputBorder.none,
                                   labelStyle: const TextStyle(
                                       color: ColorStyle.tertiaryDarkLabel30
@@ -328,7 +300,7 @@ class _RegisterStateView extends State<RegisterView> {
                               )
                             ],
                           ),
-                          const SizedBox(height: 32.0,),
+                          const SizedBox(height: 72.0,),
                           InkWell(
                             onTap: () {
                               Navigator.of(context).pushReplacementNamed(URLConsts.home);
@@ -408,7 +380,6 @@ class _RegisterStateView extends State<RegisterView> {
     _authenticationViewModel.register(
       _nameController.text,
       _emailController.text,
-      _mobileController.text,
       _passwordController.text,
     )
     .then((value) {

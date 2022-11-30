@@ -46,7 +46,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "get_started": MessageLookupByLibrary.simpleMessage("Get Started"),
         "login": MessageLookupByLibrary.simpleMessage("Login"),
         "login_description": MessageLookupByLibrary.simpleMessage(
-            "Welcome back,\nSign in to view the deal"),
+            "Welcome back,\nPlease sign in"),
         "maybe_later": MessageLookupByLibrary.simpleMessage("Maybe later"),
         "mobile": MessageLookupByLibrary.simpleMessage("Mobile"),
         "mobile_empty_error":
@@ -65,7 +65,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "onboard_description_2": MessageLookupByLibrary.simpleMessage(
             "Plan your trip\n- what tudu while you\'re in Tulum -"),
         "onboard_description_3": MessageLookupByLibrary.simpleMessage(
-            "What\'s on in Tulum\n- where go; events, big and small -"),
+            "What\'s on in Tulum\n- where to go; events, big and small -"),
         "onboard_description_4": MessageLookupByLibrary.simpleMessage(
             "Sign-in to view\n local deals & discounts"),
         "onboard_title_1":
@@ -84,9 +84,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "password_too_weak_error": MessageLookupByLibrary.simpleMessage(
             "The password provided is too weak"),
         "register_message": MessageLookupByLibrary.simpleMessage(
-            "Please complete the short for below"),
+            "Please complete the short form below"),
         "required_message": MessageLookupByLibrary.simpleMessage(
-            "*Email and password is required"),
+            "*Email and password are required"),
         "reset_password_message": MessageLookupByLibrary.simpleMessage(
             "Password reset link has been sent successfully"),
         "server_error": MessageLookupByLibrary.simpleMessage(

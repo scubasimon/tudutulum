@@ -21,7 +21,7 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   if (kDebugMode) {
-    await _connectToFirebaseEmulator();
+    // await _connectToFirebaseEmulator();
   }
   runApp(const MyApp());
 }

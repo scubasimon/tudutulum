@@ -130,10 +130,10 @@ class S {
     );
   }
 
-  /// `What's on in Tulum\n- where go; events, big and small -`
+  /// `What's on in Tulum\n- where to go; events, big and small -`
   String get onboard_description_3 {
     return Intl.message(
-      'What\'s on in Tulum\n- where go; events, big and small -',
+      'What\'s on in Tulum\n- where to go; events, big and small -',
       name: 'onboard_description_3',
       desc: '',
       args: [],
@@ -190,10 +190,10 @@ class S {
     );
   }
 
-  /// `Welcome back,\nSign in to view the deal`
+  /// `Welcome back,\nPlease sign in`
   String get login_description {
     return Intl.message(
-      'Welcome back,\nSign in to view the deal',
+      'Welcome back,\nPlease sign in',
       name: 'login_description',
       desc: '',
       args: [],
@@ -270,10 +270,10 @@ class S {
     );
   }
 
-  /// `Please complete the short for below`
+  /// `Please complete the short form below`
   String get register_message {
     return Intl.message(
-      'Please complete the short for below',
+      'Please complete the short form below',
       name: 'register_message',
       desc: '',
       args: [],
@@ -300,10 +300,10 @@ class S {
     );
   }
 
-  /// `*Email and password is required`
+  /// `*Email and password are required`
   String get required_message {
     return Intl.message(
-      '*Email and password is required',
+      '*Email and password are required',
       name: 'required_message',
       desc: '',
       args: [],
