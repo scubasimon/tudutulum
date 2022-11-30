@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,23 +13,19 @@ import 'package:tudu/viewmodels/authentication_viewmodel.dart';
 import 'package:tudu/views/login/login_view.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:provider/provider.dart';
 import 'package:tudu/utils/pref_util.dart';
-import 'package:tudu/utils/str_const.dart';
+import 'package:tudu/consts/strings/str_const.dart';
 import 'package:tudu/viewmodels/home_viewmodel.dart';
 import 'package:tudu/viewmodels/what_tudu_site_content_detail_viewmodel.dart';
 import 'package:tudu/viewmodels/what_tudu_viewmodel.dart';
 import 'package:tudu/views/home/home_view.dart';
 import 'package:tudu/views/onboard/onboard_view.dart';
-
-import 'package:flutter/foundation.dart';
-
 import 'localization/app_localization.dart';
 import 'localization/language_constants.dart';
 import 'generated/l10n.dart';
 
 Future<void> main() async {
-  await S.load(Locale.fromSubtags(languageCode: 'en')); // mimic localization delegate init
+  await S.load(const Locale.fromSubtags(languageCode: 'en')); // mimic localization delegate init
 
   runZonedGuarded<Future<void>>(() async {
     WidgetsFlutterBinding.ensureInitialized();
@@ -40,9 +35,9 @@ Future<void> main() async {
     );
     PrefUtil.init();
 
-    // if (kDebugMode) {
-    //   await _connectToFirebaseEmulator();
-    // }
+    if (kDebugMode) {
+      await _connectToFirebaseEmulator();
+    }
 
     SystemChrome.setPreferredOrientations(
         [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown])
@@ -63,7 +58,7 @@ Future<void> main() async {
               )
             ],
             child: Builder(builder: (context) {
-              return MyApp();
+              return const MyApp();
             }),
           ));
     });
@@ -118,7 +113,7 @@ class _MyAppState extends State<MyApp> {
   void didChangeDependencies() {
     getLocale().then((locale) {
       setState(() {
-        this._locale = locale;
+        _locale = locale;
       });
     });
     super.didChangeDependencies();
@@ -129,8 +124,8 @@ class _MyAppState extends State<MyApp> {
     Provider.of<HomeViewModel>(context, listen: true);
     Provider.of<WhatTuduViewModel>(context, listen: true);
     Provider.of<WhatTuduSiteContentDetailViewModel>(context, listen: true);
-    if (this._locale == null) {
-      return Center(child: CircularProgressIndicator());
+    if (_locale == null) {
+      return const Center(child: CircularProgressIndicator());
     } else {
       return MultiProvider(
         providers: [

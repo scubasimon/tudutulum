@@ -1,23 +1,18 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
-import 'package:rounded_background_text/rounded_background_text.dart';
 import 'package:tudu/viewmodels/events_viewmodel.dart';
-import 'package:tudu/viewmodels/home_viewmodel.dart';
-import 'package:tudu/viewmodels/what_tudu_site_content_detail_viewmodel.dart';
-import 'package:tudu/viewmodels/what_tudu_viewmodel.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
-import 'package:tudu/views/tab_1st_what_tudu/what_tudu_site_content_detail_view.dart';
-import '../../localization/language_constants.dart';
-import '../../utils/audio_path.dart';
-import '../../utils/colors_const.dart';
-import '../../utils/dimens_const.dart';
-import '../../utils/font_size_const.dart';
-import '../../utils/icon_path.dart';
-import '../../utils/str_const.dart';
-import '../../utils/str_language_key.dart';
+import 'package:tudu/localization/language_constants.dart';
+import 'package:tudu/utils/colors_const.dart';
+import 'package:tudu/consts/font/font_size_const.dart';
+import 'package:tudu/consts/strings/str_language_key.dart';
+
+import 'package:tudu/consts/images/ImagePath.dart';
 
 class EventsView extends StatefulWidget {
+  const EventsView({super.key});
+
   @override
   State<StatefulWidget> createState() => _EventsView();
 }
@@ -58,43 +53,41 @@ class _EventsView extends State<EventsView> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Container(
-                        child: InkWell(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Expanded(
-                                  child: Image.asset(
-                                      IconPath.iconSort,
-                                      fit: BoxFit.contain,
-                                      width: 16.0)
-                              ),
-                              Text(
-                                  getTranslated(context, StrLanguageKey.sort),
-                                  style: const TextStyle(
-                                      color: ColorsConst.defaulOrange,
-                                      fontSize: FontSizeConst.font10,
-                                      fontWeight: FontWeight.w500)),
-                            ],
-                          ),
-                          onTap: () {
-                            //TODO: IMPLEMENT SORT FEATURE
-                            showToast(
-                                "SORT NOT IMPL YET",
-                                context: context,
-                                duration: Duration(seconds: 3),
-                                axis: Axis.horizontal,
-                                alignment: Alignment.center,
-                                position: StyledToastPosition.bottom,
-                                textStyle: const TextStyle(
-                                    fontWeight: FontWeight.w400,
-                                    color: ColorsConst.white,
-                                    fontSize: FontSizeConst.font12));                        },
+                      InkWell(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                                child: Image.asset(
+                                    ImagePath.sortIcon,
+                                    fit: BoxFit.contain,
+                                    width: 16.0)
+                            ),
+                            Text(
+                                getTranslated(context, StrLanguageKey.sort),
+                                style: const TextStyle(
+                                    color: ColorsConst.defaulOrange,
+                                    fontSize: FontSizeConst.font10,
+                                    fontWeight: FontWeight.w500)),
+                          ],
                         ),
+                        onTap: () {
+                          //TODO: IMPLEMENT SORT FEATURE
+                          showToast(
+                              "SORT NOT IMPL YET",
+                              context: context,
+                              duration: const Duration(seconds: 3),
+                              axis: Axis.horizontal,
+                              alignment: Alignment.center,
+                              position: StyledToastPosition.bottom,
+                              textStyle: const TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  color: ColorsConst.white,
+                                  fontSize: FontSizeConst.font12));                        },
                       ),
                       Container(
-                        padding: EdgeInsets.only(left: 8, right: 8),
+                        padding: const EdgeInsets.only(left: 8, right: 8),
                         child: InkWell(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -102,7 +95,7 @@ class _EventsView extends State<EventsView> {
                             children: [
                               Expanded(
                                   child: Image.asset(
-                                      IconPath.iconFilter,
+                                      ImagePath.filterIcon,
                                       fit: BoxFit.contain,
                                       width: 16.0)
                               ),
@@ -135,7 +128,7 @@ class _EventsView extends State<EventsView> {
                 ),
                 Container(
                   height: 36.0,
-                  padding: EdgeInsets.only(left: 8, right: 8),
+                  padding:const EdgeInsets.only(left: 8, right: 8),
                   decoration: const BoxDecoration(
                     color: ColorsConst.defaulGray3,
                     borderRadius: BorderRadius.all(
@@ -145,11 +138,11 @@ class _EventsView extends State<EventsView> {
                   child: Row(
                     children: [
                       Image.asset(
-                          IconPath.iconSearch,
+                          ImagePath.searchIcon,
                           fit: BoxFit.contain,
                           width: 16.0),
                       Container(
-                        padding: EdgeInsets.only(left: 8, right: 8),
+                        padding: const EdgeInsets.only(left: 8, right: 8),
                         child: Text(
                           "Search here or use the filter above",
                           style: const TextStyle(
@@ -242,11 +235,11 @@ class _EventsView extends State<EventsView> {
                             fontSize: FontSizeConst.font12));
                   },
                   child: Container(
-                    padding: EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(8.0),
                     child: Row(
                       children: [
                         Image.asset(
-                          IconPath.iconInternet,
+                          ImagePath.internetIcon,
                           width: 22,
                           fit: BoxFit.contain,
                         ),
@@ -280,7 +273,7 @@ class _EventsView extends State<EventsView> {
                           ),
                         ),
                         Image.asset(
-                          IconPath.iconInternet,
+                          ImagePath.internetIcon,
                           width: 22,
                           fit: BoxFit.contain,
                         ),

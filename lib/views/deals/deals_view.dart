@@ -1,38 +1,30 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
-import 'package:rounded_background_text/rounded_background_text.dart';
-import 'package:tudu/viewmodels/bookmarks_viewmodel.dart';
-import 'package:tudu/viewmodels/events_viewmodel.dart';
-import 'package:tudu/viewmodels/home_viewmodel.dart';
-import 'package:tudu/viewmodels/what_tudu_site_content_detail_viewmodel.dart';
-import 'package:tudu/viewmodels/what_tudu_viewmodel.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
-import 'package:tudu/views/tab_1st_what_tudu/what_tudu_site_content_detail_view.dart';
-import '../../localization/language_constants.dart';
-import '../../utils/audio_path.dart';
-import '../../utils/colors_const.dart';
-import '../../utils/dimens_const.dart';
-import '../../utils/font_size_const.dart';
-import '../../utils/icon_path.dart';
-import '../../utils/str_const.dart';
-import '../../utils/str_language_key.dart';
-import '../../viewmodels/deals_viewmodel.dart';
+import 'package:tudu/localization/language_constants.dart';
+import 'package:tudu/utils/colors_const.dart';
+import 'package:tudu/consts/font/font_size_const.dart';
+import 'package:tudu/consts/strings/str_language_key.dart';
+import 'package:tudu/viewmodels/deals_viewmodel.dart';
+import 'package:tudu/consts/images/ImagePath.dart';
 
-class BookmarksView extends StatefulWidget {
+class DealsView extends StatefulWidget {
+  const DealsView({super.key});
+
   @override
-  State<StatefulWidget> createState() => _BookmarksView();
+  State<StatefulWidget> createState() => _DealsView();
 }
 
-class _BookmarksView extends State<BookmarksView> {
-  BookmarksViewModel bookmarksViewModel = BookmarksViewModel();
+class _DealsView extends State<DealsView> {
+  DealsViewModel dealsViewModel = DealsViewModel();
 
   final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     Future.delayed(const Duration(seconds: 2), () {
-      bookmarksViewModel.showData();
+      dealsViewModel.showData();
     });
     super.initState();
   }
@@ -60,43 +52,41 @@ class _BookmarksView extends State<BookmarksView> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Container(
-                        child: InkWell(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Expanded(
-                                  child: Image.asset(
-                                      IconPath.iconSort,
-                                      fit: BoxFit.contain,
-                                      width: 16.0)
-                              ),
-                              Text(
-                                  getTranslated(context, StrLanguageKey.sort),
-                                  style: const TextStyle(
-                                      color: ColorsConst.defaulOrange,
-                                      fontSize: FontSizeConst.font10,
-                                      fontWeight: FontWeight.w500)),
-                            ],
-                          ),
-                          onTap: () {
-                            //TODO: IMPLEMENT SORT FEATURE
-                            showToast(
-                                "SORT NOT IMPL YET",
-                                context: context,
-                                duration: Duration(seconds: 3),
-                                axis: Axis.horizontal,
-                                alignment: Alignment.center,
-                                position: StyledToastPosition.bottom,
-                                textStyle: const TextStyle(
-                                    fontWeight: FontWeight.w400,
-                                    color: ColorsConst.white,
-                                    fontSize: FontSizeConst.font12));                        },
+                      InkWell(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                                child: Image.asset(
+                                    ImagePath.sortIcon,
+                                    fit: BoxFit.contain,
+                                    width: 16.0)
+                            ),
+                            Text(
+                                getTranslated(context, StrLanguageKey.sort),
+                                style: const TextStyle(
+                                    color: ColorsConst.defaulOrange,
+                                    fontSize: FontSizeConst.font10,
+                                    fontWeight: FontWeight.w500)),
+                          ],
                         ),
+                        onTap: () {
+                          //TODO: IMPLEMENT SORT FEATURE
+                          showToast(
+                              "SORT NOT IMPL YET",
+                              context: context,
+                              duration: Duration(seconds: 3),
+                              axis: Axis.horizontal,
+                              alignment: Alignment.center,
+                              position: StyledToastPosition.bottom,
+                              textStyle: const TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  color: ColorsConst.white,
+                                  fontSize: FontSizeConst.font12));                        },
                       ),
                       Container(
-                        padding: EdgeInsets.only(left: 8, right: 8),
+                        padding: const EdgeInsets.only(left: 8, right: 8),
                         child: InkWell(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -104,7 +94,7 @@ class _BookmarksView extends State<BookmarksView> {
                             children: [
                               Expanded(
                                   child: Image.asset(
-                                      IconPath.iconFilter,
+                                      ImagePath.filterIcon,
                                       fit: BoxFit.contain,
                                       width: 16.0)
                               ),
@@ -137,7 +127,7 @@ class _BookmarksView extends State<BookmarksView> {
                 ),
                 Container(
                   height: 36.0,
-                  padding: EdgeInsets.only(left: 8, right: 8),
+                  padding: const EdgeInsets.only(left: 8, right: 8),
                   decoration: const BoxDecoration(
                     color: ColorsConst.defaulGray3,
                     borderRadius: BorderRadius.all(
@@ -147,7 +137,7 @@ class _BookmarksView extends State<BookmarksView> {
                   child: Row(
                     children: [
                       Image.asset(
-                          IconPath.iconSearch,
+                          ImagePath.searchIcon,
                           fit: BoxFit.contain,
                           width: 16.0),
                       Container(
@@ -170,7 +160,7 @@ class _BookmarksView extends State<BookmarksView> {
           child: ListView(
             controller: _scrollController,
             children: <Widget>[
-              createBookmarksView()
+              createDealsView()
             ],
           ),
         ),
@@ -178,7 +168,7 @@ class _BookmarksView extends State<BookmarksView> {
     );
   }
 
-  Widget createBookmarksView() {
+  Widget createDealsView() {
     return Container(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -191,7 +181,7 @@ class _BookmarksView extends State<BookmarksView> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "Your Bookmarks",
+                  "Explore Deals",
                   style: const TextStyle(
                       color: ColorsConst.black,
                       fontSize: FontSizeConst.font16,
@@ -215,7 +205,7 @@ class _BookmarksView extends State<BookmarksView> {
                   child: Column(
                     children: [
                       Image.asset(
-                        IconPath.iconMapController,
+                        ImagePath.mapControllerIcon,
                         width: 19,
                         fit: BoxFit.contain,
                       ),
@@ -232,15 +222,15 @@ class _BookmarksView extends State<BookmarksView> {
               ],
             )
           ),
-          getBookmarksView(),
+          getExploreDealsView(),
         ],
       ),
     );
   }
 
-  Widget getBookmarksView() {
+  Widget getExploreDealsView() {
     return StreamBuilder<List<String>?>(
-      stream: bookmarksViewModel.listBookmarksStream,
+      stream: dealsViewModel.listDealsStream,
       builder: (_, snapshot) {
         if (!snapshot.hasData) {
           return const Center(
@@ -258,9 +248,9 @@ class _BookmarksView extends State<BookmarksView> {
                   children: [
                     InkWell(
                       onTap: () {
-                        //TODO: IMPLEMENT BOOKMARK ITEM CLICK FEATURE
+                        // TODO IMPL ON CLICK A DEAL
                         showToast(
-                            "BOOKMARK ITEM CLICK NOT IMPL YET",
+                            "DEAL NOT IMPL YET",
                             context: context,
                             duration: Duration(seconds: 3),
                             axis: Axis.horizontal,
@@ -270,7 +260,7 @@ class _BookmarksView extends State<BookmarksView> {
                                 fontWeight: FontWeight.w400,
                                 color: ColorsConst.white,
                                 fontSize: FontSizeConst.font12));
-                        },
+                      },
                       child: Container(
                           margin: EdgeInsets.only(left: 8, right: 8, bottom: 8),
                           decoration: const BoxDecoration(
@@ -291,50 +281,21 @@ class _BookmarksView extends State<BookmarksView> {
                           )
                       ),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          height: 40,
-                          width: 40,
-                          margin: EdgeInsets.only(top: 16, left: 16),
-                          decoration: const BoxDecoration(
-                            color: ColorsConst.defaulGray4,
-                            borderRadius: BorderRadius.all(
-                                Radius.circular(10.0)
-                            ),
-                          ),
-                          child: Image.asset(
-                            IconPath.iconTab1stActive,
-                            width: 30,
-                            fit: BoxFit.contain,
-                          ),
+                    Container(
+                      height: 40,
+                      width: 40,
+                      margin: const EdgeInsets.only(top: 16, left: 16),
+                      decoration: const BoxDecoration(
+                        color: ColorsConst.defaulGray4,
+                        borderRadius: BorderRadius.all(
+                            Radius.circular(10.0)
                         ),
-                        InkWell(
-                          onTap: () {
-                            //TODO: IMPLEMENT BOOKMARKS FEATURE
-                            showToast(
-                                "BOOKMARKS NOT IMPL YET",
-                                context: context,
-                                duration: Duration(seconds: 3),
-                                axis: Axis.horizontal,
-                                alignment: Alignment.center,
-                                position: StyledToastPosition.bottom,
-                                textStyle: const TextStyle(
-                                    fontWeight: FontWeight.w400,
-                                    color: ColorsConst.white,
-                                    fontSize: FontSizeConst.font12));
-                          },
-                          child: Container(
-                            margin: EdgeInsets.only(right: 24),
-                            child: Image.asset(
-                              IconPath.iconTab4thActive,
-                              width: 16,
-                              fit: BoxFit.contain,
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
+                      child: Image.asset(
+                        ImagePath.tab1stActiveIcon,
+                        width: 30,
+                        fit: BoxFit.contain,
+                      ),
                     ),
                     Positioned(
                       bottom: 0,
@@ -360,8 +321,8 @@ class _BookmarksView extends State<BookmarksView> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("Title"),
-                              Text("Subtitle")
+                              Text("Offset.title"),
+                              Text("Site.Title")
                             ],
                           ),
                         ),

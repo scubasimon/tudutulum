@@ -1,25 +1,15 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
-import 'package:rounded_background_text/rounded_background_text.dart';
-import 'package:tudu/viewmodels/events_viewmodel.dart';
-import 'package:tudu/viewmodels/home_viewmodel.dart';
 import 'package:tudu/viewmodels/profile_viewmodel.dart';
-import 'package:tudu/viewmodels/what_tudu_site_content_detail_viewmodel.dart';
-import 'package:tudu/viewmodels/what_tudu_viewmodel.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
-import 'package:tudu/views/tab_1st_what_tudu/what_tudu_site_content_detail_view.dart';
-import '../../localization/language_constants.dart';
-import '../../utils/audio_path.dart';
-import '../../utils/colors_const.dart';
-import '../../utils/dimens_const.dart';
-import '../../utils/font_size_const.dart';
-import '../../utils/icon_path.dart';
-import '../../utils/str_const.dart';
-import '../../utils/str_language_key.dart';
-import '../../viewmodels/deals_viewmodel.dart';
+import 'package:tudu/utils/colors_const.dart';
+import 'package:tudu/consts/font/font_size_const.dart';
+import 'package:tudu/consts/strings/str_const.dart';
+import 'package:tudu/consts/images/ImagePath.dart';
 
 class ProfileView extends StatefulWidget {
+  const ProfileView({super.key});
+
   @override
   State<StatefulWidget> createState() => _ProfileView();
 }
@@ -38,18 +28,16 @@ class _ProfileView extends State<ProfileView> {
   Widget build(BuildContext context) {
     return ExitAppScope(
       child: Scaffold(
-        body: Container(
-          child: ListView(
-            controller: _scrollController,
-            children: <Widget>[
-              createBackView(),
-              createIconView(),
-              createProfileView(),
-              createPasswordView(),
-              createTermView(),
-              getButton(),
-            ],
-          ),
+        body: ListView(
+          controller: _scrollController,
+          children: <Widget>[
+            createBackView(),
+            createIconView(),
+            createProfileView(),
+            createPasswordView(),
+            createTermView(),
+            getButton(),
+          ],
         ),
       ),
     );
@@ -72,7 +60,7 @@ class _ProfileView extends State<ProfileView> {
               });
             },
             child: Image.asset(
-                IconPath.iconLeftArrow,
+                ImagePath.leftArrowIcon,
                 fit: BoxFit.contain,
                 height: 20.0),
           ),
@@ -83,7 +71,7 @@ class _ProfileView extends State<ProfileView> {
               });
             },
             child: Container(
-                margin: EdgeInsets.only(left: 8),
+                margin: const EdgeInsets.only(left: 8),
                 child: Text(
                   "Back",
                   style: const TextStyle(
@@ -100,15 +88,13 @@ class _ProfileView extends State<ProfileView> {
 
   Widget createIconView() {
     return Container(
-      margin: EdgeInsets.only(bottom: 52),
+      margin: const EdgeInsets.only(bottom: 52),
       child: Column(
         children: [
-          Container(
-            child: Image.asset(
-              IconPath.iconTab1stActive,
-              height: 92,
-              fit: BoxFit.contain,
-            ),
+          Image.asset(
+            ImagePath.tab1stActiveIcon,
+            height: 92,
+            fit: BoxFit.contain,
           ),
           Text(
               "Your Account",
@@ -130,7 +116,7 @@ class _ProfileView extends State<ProfileView> {
 
   Widget createProfileView() {
     return Container(
-      padding: EdgeInsets.only(left: 8, right: 8),
+      padding: const EdgeInsets.only(left: 8, right: 8),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -287,7 +273,7 @@ class _ProfileView extends State<ProfileView> {
             child: Row(
               children: [
                 Image.asset(
-                  IconPath.iconChooseActive,
+                  ImagePath.chooseActiveIcon,
                   width: 24,
                   fit: BoxFit.contain,
                 ),
@@ -318,7 +304,7 @@ class _ProfileView extends State<ProfileView> {
             child: Row(
               children: [
                 Image.asset(
-                  IconPath.iconChooseActive,
+                  ImagePath.chooseActiveIcon,
                   width: 24,
                   fit: BoxFit.contain,
                 ),

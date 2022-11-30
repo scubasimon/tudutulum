@@ -130,10 +130,10 @@ class S {
     );
   }
 
-  /// `What's on in Tulum\n- where go; events, big and small -`
+  /// `What's on in Tulum\n- where to go; events, big and small -`
   String get onboard_description_3 {
     return Intl.message(
-      'What\'s on in Tulum\n- where go; events, big and small -',
+      'What\'s on in Tulum\n- where to go; events, big and small -',
       name: 'onboard_description_3',
       desc: '',
       args: [],
@@ -190,10 +190,10 @@ class S {
     );
   }
 
-  /// `Welcome back,\nSign in to view the deal`
+  /// `Welcome back,\nPlease sign in`
   String get login_description {
     return Intl.message(
-      'Welcome back,\nSign in to view the deal',
+      'Welcome back,\nPlease sign in',
       name: 'login_description',
       desc: '',
       args: [],
@@ -270,10 +270,10 @@ class S {
     );
   }
 
-  /// `Please complete the short for below`
+  /// `Please complete the short form below`
   String get register_message {
     return Intl.message(
-      'Please complete the short for below',
+      'Please complete the short form below',
       name: 'register_message',
       desc: '',
       args: [],
@@ -300,10 +300,10 @@ class S {
     );
   }
 
-  /// `*Email and password is required`
+  /// `*Email and password are required`
   String get required_message {
     return Intl.message(
-      '*Email and password is required',
+      '*Email and password are required',
       name: 'required_message',
       desc: '',
       args: [],
@@ -515,6 +515,246 @@ class S {
     return Intl.message(
       'No',
       name: 'no',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `What tudu?`
+  String get what_tudu {
+    return Intl.message(
+      'What tudu?',
+      name: 'what_tudu',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Events`
+  String get events {
+    return Intl.message(
+      'Events',
+      name: 'events',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Deals`
+  String get deals {
+    return Intl.message(
+      'Deals',
+      name: 'deals',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Bookmarks`
+  String get bookmarks {
+    return Intl.message(
+      'Bookmarks',
+      name: 'bookmarks',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Profile`
+  String get profile {
+    return Intl.message(
+      'Profile',
+      name: 'profile',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sort`
+  String get sort {
+    return Intl.message(
+      'Sort',
+      name: 'sort',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Filter`
+  String get filter {
+    return Intl.message(
+      'Filter',
+      name: 'filter',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `'Business Type'`
+  String get business_type {
+    return Intl.message(
+      '\'Business Type\'',
+      name: 'business_type',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Beach Clubs`
+  String get beach_clubs {
+    return Intl.message(
+      'Beach Clubs',
+      name: 'beach_clubs',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Workspots`
+  String get work_spots {
+    return Intl.message(
+      'Workspots',
+      name: 'work_spots',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `All 'Location`
+  String get all_location {
+    return Intl.message(
+      'All \'Location',
+      name: 'all_location',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Search here or use the filter above`
+  String get search_placeholder {
+    return Intl.message(
+      'Search here or use the filter above',
+      name: 'search_placeholder',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `All Location Articles`
+  String get all_location_articles {
+    return Intl.message(
+      'All Location Articles',
+      name: 'all_location_articles',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Explore All Location`
+  String get explore_all_location {
+    return Intl.message(
+      'Explore All Location',
+      name: 'explore_all_location',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Map`
+  String get map {
+    return Intl.message(
+      'Map',
+      name: 'map',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `•  Navigate the App`
+  String get navigate_the_app {
+    return Intl.message(
+      '•  Navigate the App',
+      name: 'navigate_the_app',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `•  Travel to Tulum`
+  String get travel_to_tulum {
+    return Intl.message(
+      '•  Travel to Tulum',
+      name: 'travel_to_tulum',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `•  Transport Locally`
+  String get transport_locally {
+    return Intl.message(
+      '•  Transport Locally',
+      name: 'transport_locally',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `•  About Tudu Tulum`
+  String get about {
+    return Intl.message(
+      '•  About Tudu Tulum',
+      name: 'about',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `•  Coming soon`
+  String get coming_soon {
+    return Intl.message(
+      '•  Coming soon',
+      name: 'coming_soon',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `•  Follow us to see our latest deals`
+  String get follow_us {
+    return Intl.message(
+      '•  Follow us to see our latest deals',
+      name: 'follow_us',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `•  Please rate Us`
+  String get rate_us {
+    return Intl.message(
+      '•  Please rate Us',
+      name: 'rate_us',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Settings`
+  String get setting {
+    return Intl.message(
+      'Settings',
+      name: 'setting',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `•  The Legal stuff`
+  String get the_legal_stuff {
+    return Intl.message(
+      '•  The Legal stuff',
+      name: 'the_legal_stuff',
       desc: '',
       args: [],
     );

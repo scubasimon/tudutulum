@@ -1,19 +1,16 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
-import 'package:tudu/viewmodels/home_viewmodel.dart';
+import 'package:tudu/consts/images/ImagePath.dart';
 import 'package:tudu/viewmodels/what_tudu_site_content_detail_viewmodel.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
-import '../../localization/language_constants.dart';
-import '../../utils/audio_path.dart';
-import '../../utils/colors_const.dart';
-import '../../utils/dimens_const.dart';
-import '../../utils/font_size_const.dart';
-import '../../utils/icon_path.dart';
-import '../../utils/str_const.dart';
-import '../../utils/str_language_key.dart';
+import 'package:tudu/utils/colors_const.dart';
+import 'package:tudu/consts/font/font_size_const.dart';
+import 'package:tudu/consts/strings/str_const.dart';
 
 class WhatTuduSiteContentDetailView extends StatefulWidget {
+  const WhatTuduSiteContentDetailView({super.key});
+
   @override
   State<StatefulWidget> createState() => _WhatTuduSiteContentDetailView();
 }
@@ -54,7 +51,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Image.asset(
-                            IconPath.iconLeftArrow,
+                            ImagePath.leftArrowIcon,
                             fit: BoxFit.contain,
                             height: 20.0),
                         Container(
@@ -79,7 +76,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                     padding: EdgeInsets.only(left: 8, right: 8),
                     child: InkWell(
                       child: Image.asset(
-                          IconPath.iconMarkDeactive,
+                          ImagePath.markDeactiveIcon,
                           fit: BoxFit.contain,
                           width: 16.0),
                       onTap: () {
@@ -137,14 +134,14 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
               Container(
                 height: 0.5,
                 width: MediaQuery.of(context).size.width,
-                margin: EdgeInsets.only(left: 18, right: 18),
+                margin: const EdgeInsets.only(left: 18, right: 18),
                 color: ColorsConst.blackOpacity20,
               ),
               getIntouch(),
               Container(
                 height: 0.5,
                 width: MediaQuery.of(context).size.width,
-                margin: EdgeInsets.only(left: 18, right: 18),
+                margin: const EdgeInsets.only(left: 18, right: 18),
                 color: ColorsConst.blackOpacity20,
               ),
               getFooter(),
@@ -172,7 +169,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
         Container(
           height: 40,
           width: 40,
-          margin: EdgeInsets.only(top: 16, left: 16),
+          margin: const EdgeInsets.only(top: 16, left: 16),
           decoration: const BoxDecoration(
             color: ColorsConst.defaulGray4,
             borderRadius: BorderRadius.all(
@@ -180,7 +177,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
             ),
           ),
           child: Image.asset(
-            IconPath.iconTab1stActive,
+            ImagePath.tab1stActiveIcon,
             width: 30,
             fit: BoxFit.contain,
           ),
@@ -191,10 +188,10 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
 
   Widget getTitle() {
     return Container(
-      padding: EdgeInsets.only(top: 8.0, left: 18, right: 18, bottom: 8),
+      padding: const EdgeInsets.only(top: 8.0, left: 18, right: 18, bottom: 8),
       child: Column(
         children: [
-          Container(
+          SizedBox(
             height: 20,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -208,7 +205,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                 Padding(
                   padding: const EdgeInsets.only(right: 8.0),
                   child: Image.asset(
-                      IconPath.iconMap,
+                      ImagePath.mapIcon,
                       fit: BoxFit.contain,
                       height: 20.0),
                 ),
@@ -369,14 +366,14 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                 Container(
                   padding: EdgeInsets.all(4.0),
                   child: Image.asset(
-                      IconPath.iconCalendar,
+                      ImagePath.calendarIcon,
                       fit: BoxFit.contain,
                       height: 25.0),
                 ),
                 Container(
                   padding: EdgeInsets.all(4.0),
                   child: Image.asset(
-                      IconPath.iconYoga,
+                      ImagePath.yogaIcon,
                       fit: BoxFit.contain,
                       height: 25.0),
                 )
@@ -403,7 +400,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                       fontSize: FontSizeConst.font12,
                       fontWeight: FontWeight.w400)),
             ),
-            Container(
+            SizedBox(
               height: 20,
               child: Text(
                   "Title",
@@ -415,36 +412,36 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
             Row(
               children: [
                 Container(
-                  padding: EdgeInsets.all(4.0),
+                  padding: const EdgeInsets.all(4.0),
                   child: Image.asset(
-                      IconPath.iconPhone,
+                      ImagePath.phoneIcon,
                       fit: BoxFit.contain,
                       height: 25.0),
                 ),
                 Container(
-                  padding: EdgeInsets.all(4.0),
+                  padding: const EdgeInsets.all(4.0),
                   child: Image.asset(
-                      IconPath.iconEmail,
+                      ImagePath.emailIcon,
                       fit: BoxFit.contain,
                       height: 25.0),
                 ),
                 Container(
-                  padding: EdgeInsets.all(4.0),
+                  padding: const EdgeInsets.all(4.0),
                   child: Image.asset(
-                      IconPath.iconWhatsApp,
+                      ImagePath.whatsAppIcon,
                       fit: BoxFit.contain,
                       height: 25.0),
                 ),
                 Container(
-                  padding: EdgeInsets.all(4.0),
+                  padding: const EdgeInsets.all(4.0),
                   child: Image.asset(
-                      IconPath.iconInternet,
+                      ImagePath.internetIcon,
                       fit: BoxFit.contain,
                       height: 25.0),
                 )
               ],
             ),
-            Container(
+            SizedBox(
               height: 20,
               child: Text(
                   "You can also follow Title on:",
@@ -456,30 +453,30 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
             Row(
               children: [
                 Container(
-                  padding: EdgeInsets.all(4.0),
+                  padding: const EdgeInsets.all(4.0),
                   child: Image.asset(
-                      IconPath.iconInstagram,
+                      ImagePath.instagramIcon,
                       fit: BoxFit.contain,
                       height: 25.0),
                 ),
                 Container(
                   padding: EdgeInsets.all(4.0),
                   child: Image.asset(
-                      IconPath.iconFacebook,
+                      ImagePath.facebookIcon,
                       fit: BoxFit.contain,
                       height: 25.0),
                 ),
                 Container(
-                  padding: EdgeInsets.all(4.0),
+                  padding: const EdgeInsets.all(4.0),
                   child: Image.asset(
-                      IconPath.iconOwl,
+                      ImagePath.owlIcon,
                       fit: BoxFit.contain,
                       height: 25.0),
                 ),
                 Container(
-                  padding: EdgeInsets.all(4.0),
+                  padding: const EdgeInsets.all(4.0),
                   child: Image.asset(
-                      IconPath.iconTwitter,
+                      ImagePath.twitterIcon,
                       fit: BoxFit.contain,
                       height: 25.0),
                 )
@@ -492,7 +489,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
 
   Widget getFooter() {
     return Container(
-        padding: EdgeInsets.only(top: 8.0, left: 18, right: 18, bottom: 8),
+        padding: const EdgeInsets.only(top: 8.0, left: 18, right: 18, bottom: 8),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,

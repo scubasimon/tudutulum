@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../utils/str_const.dart';
-import '../utils/str_language_key.dart';
+import 'package:tudu/consts/strings/str_const.dart';
+import '../consts/strings/str_language_key.dart';
 import 'app_localization.dart';
 
 Future<Locale> setLocale(String languageCode) async {

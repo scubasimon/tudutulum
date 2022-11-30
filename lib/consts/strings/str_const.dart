@@ -8,4 +8,5 @@ class StrConst {
 
   static const englishCountryCode = "EN";
   static const String englishLanguageCode = 'en';
+  static const openMenu = "open_menu";
 }
