@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_styled_toast/flutter_styled_toast.dart';
+import 'package:tudu/consts/color/Colors.dart';
+import 'package:tudu/consts/font/Fonts.dart';
 import 'package:tudu/consts/images/ImagePath.dart';
 import 'package:tudu/viewmodels/what_tudu_site_content_detail_viewmodel.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
 import 'package:tudu/utils/colors_const.dart';
 import 'package:tudu/consts/font/font_size_const.dart';
 import 'package:tudu/consts/strings/str_const.dart';
+import 'package:tudu/generated/l10n.dart';
 
 class WhatTuduSiteContentDetailView extends StatefulWidget {
   const WhatTuduSiteContentDetailView({super.key});
@@ -39,7 +41,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                 left: 16,
                 right: 16,
                 bottom: 8,),
-            color: ColorsConst.defaulGreen2,
+            color: ColorStyle.navigation,
             child: Container(
               height: 36.0,
               alignment: Alignment.center,
@@ -55,13 +57,15 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                             fit: BoxFit.contain,
                             height: 20.0),
                         Container(
-                            margin: EdgeInsets.only(left: 8),
+                            margin: const EdgeInsets.only(left: 8),
                             child: Text(
-                              "Back",
+                              S.current.back,
                               style: const TextStyle(
-                                  color: ColorsConst.defaulOrange,
-                                  fontSize: FontSizeConst.font16,
-                                  fontWeight: FontWeight.w400),
+                                color: ColorStyle.primary,
+                                fontWeight: FontWeight.w400,
+                                fontSize: FontSizeConst.font16,
+                                fontFamily: FontStyles.mouser,
+                              ),
                             )
                         )
                       ],
@@ -73,26 +77,14 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                     },
                   ),
                   Container(
-                    padding: EdgeInsets.only(left: 8, right: 8),
+                    padding: const EdgeInsets.only(left: 8, right: 8),
                     child: InkWell(
                       child: Image.asset(
                           ImagePath.markDeactiveIcon,
                           fit: BoxFit.contain,
-                          width: 16.0),
-                      onTap: () {
-                        //TODO: IMPLEMENT MARK AS FAVORITE FEATURE
-                        showToast(
-                            "MARK AS FAVORITE NOT IMPL YET",
-                            context: context,
-                            duration: Duration(seconds: 3),
-                            axis: Axis.horizontal,
-                            alignment: Alignment.center,
-                            position: StyledToastPosition.bottom,
-                            textStyle: const TextStyle(
-                                fontWeight: FontWeight.w400,
-                                color: ColorsConst.white,
-                                fontSize: FontSizeConst.font12));
-                      },
+                          width: 16.0
+                      ),
+                      onTap: () {},
                     ),
                   ),
                 ],
@@ -100,12 +92,10 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
             ),
           ),
         ),
-        body: Container(
-          child: ListView(
-            children: <Widget>[
-              getExploreAllLocationView(),
-            ],
-          ),
+        body: ListView(
+          children: <Widget>[
+            getExploreAllLocationView(),
+          ],
         ),
       ),
     );
@@ -120,7 +110,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
             child: CircularProgressIndicator(),
           );
         } else if (snapshot.hasError) {
-          return Center(child: Text("snapshot.hasError"));
+          return const Center(child: Text("snapshot.hasError"));
         } else {
           return Column(
             children: [
@@ -130,7 +120,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
               getOpenTimes(whatTuduSiteContentDetailViewModel.listOpenTimes),
               getFees(whatTuduSiteContentDetailViewModel.listFees),
               getCapacity(),
-              getEventsAndExpriences(),
+              getEventsAndExperiences(),
               Container(
                 height: 0.5,
                 width: MediaQuery.of(context).size.width,
@@ -162,7 +152,8 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
               child: Image.network(
                 urlImage,
                 width: MediaQuery.of(context).size.width,
-                fit: BoxFit.contain,
+                height: 300,
+                fit: BoxFit.cover,
               )
           ),
         ),
@@ -171,7 +162,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
           width: 40,
           margin: const EdgeInsets.only(top: 16, left: 16),
           decoration: const BoxDecoration(
-            color: ColorsConst.defaulGray4,
+            color: ColorStyle.tertiaryBackground,
             borderRadius: BorderRadius.all(
                 Radius.circular(10.0)
             ),
@@ -196,28 +187,39 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                    "Title",
-                    style: const TextStyle(
-                        color: ColorsConst.black,
-                        fontSize: FontSizeConst.font12,
-                        fontWeight: FontWeight.w400)),
+                const Text(
+                  "Title",
+                  style: TextStyle(
+                    fontFamily: FontStyles.mouser,
+                    fontSize: FontSizeConst.font12,
+                    fontWeight: FontWeight.w400,
+                    color: ColorStyle.darkLabel,
+                  ),
+                ),
                 Padding(
                   padding: const EdgeInsets.only(right: 8.0),
                   child: Image.asset(
                       ImagePath.mapIcon,
                       fit: BoxFit.contain,
-                      height: 20.0),
+                      height: 20.0
+                  ),
                 ),
               ],
             ),
           ),
-          Text(
+          const SizedBox(height: 8,),
+          const Text(
               "Description Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-              style: const TextStyle(
-                  color: ColorsConst.black,
-                  fontSize: FontSizeConst.font12,
-                  fontWeight: FontWeight.w400)),
+            style: TextStyle(
+              color: ColorStyle.darkLabel,
+              fontWeight: FontWeight.w400,
+              fontSize: FontSizeConst.font12,
+              fontFamily: FontStyles.raleway,
+              height: 2,
+
+            ),
+
+          ),
         ],
       ),
     );
@@ -225,26 +227,33 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
 
   Widget getMoreInformation() {
     return Container(
-      padding: EdgeInsets.only(top: 8.0, left: 18, right: 18, bottom: 8),
+      padding: const EdgeInsets.only(top: 20.0, left: 18, right: 18, bottom: 8),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
+          SizedBox(
             height: 20,
             child: Text(
-                "More information",
-                style: const TextStyle(
-                    color: ColorsConst.black,
-                    fontSize: FontSizeConst.font12,
-                    fontWeight: FontWeight.w400)),
-          ),
-          Text(
-              "More Information Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+              S.current.more_information,
               style: const TextStyle(
-                  color: ColorsConst.black,
-                  fontSize: FontSizeConst.font12,
-                  fontWeight: FontWeight.w400)),
+                color: ColorStyle.darkLabel,
+                fontFamily: FontStyles.mouser,
+                fontSize: FontSizeConst.font12,
+                fontWeight: FontWeight.w400,
+              ),
+            )
+          ),
+          const Text(
+            "More Information Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+            style: TextStyle(
+              color: ColorStyle.darkLabel,
+              fontWeight: FontWeight.w400,
+              fontSize: FontSizeConst.font12,
+              fontFamily: FontStyles.raleway,
+              height: 2,
+            ),
+          ),
         ],
       ),
     );
@@ -252,31 +261,41 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
 
   Widget getOpenTimes(List<String> listOpenTimes) {
     return Container(
-        padding: EdgeInsets.only(top: 8.0, left: 18, right: 18, bottom: 8),
+        padding: const EdgeInsets.only(top: 8.0, left: 18, right: 18, bottom: 8),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
+          SizedBox(
             height: 20,
             child: Text(
-                "Opening times",
-                style: const TextStyle(
-                    color: ColorsConst.black,
-                    fontSize: FontSizeConst.font12,
-                    fontWeight: FontWeight.w400)),
+              S.current.open_times,
+              style: const TextStyle(
+                fontFamily: FontStyles.mouser,
+                fontSize: FontSizeConst.font12,
+                fontWeight: FontWeight.w400,
+                color: ColorStyle.darkLabel,
+              ),
+            ),
           ),
+          const SizedBox(height: 8,),
           ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: listOpenTimes.length,
             itemBuilder: (BuildContext context, int index) {
-              return Text(
-                  "${listOpenTimes[index]}",
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Text(
+                  listOpenTimes[index],
                   style: const TextStyle(
-                      color: ColorsConst.black,
-                      fontSize: FontSizeConst.font12,
-                      fontWeight: FontWeight.w400));
+                    color: ColorStyle.darkLabel,
+                    fontWeight: FontWeight.w400,
+                    fontSize: FontSizeConst.font12,
+                    fontFamily: FontStyles.raleway,
+                  ),
+                ),
+              );
             },
           )
         ],
@@ -286,31 +305,41 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
 
   Widget getFees(List<String> listOpenTimes) {
     return Container(
-        padding: EdgeInsets.only(top: 8.0, left: 18, right: 18, bottom: 8),
+        padding: const EdgeInsets.only(top: 8.0, left: 18, right: 18, bottom: 8),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
+            SizedBox(
               height: 20,
               child: Text(
-                  "Fees",
-                  style: const TextStyle(
-                      color: ColorsConst.black,
-                      fontSize: FontSizeConst.font12,
-                      fontWeight: FontWeight.w400)),
+                S.current.fees,
+                style: const TextStyle(
+                  fontFamily: FontStyles.mouser,
+                  fontSize: FontSizeConst.font12,
+                  fontWeight: FontWeight.w400,
+                  color: ColorStyle.darkLabel,
+                ),
+              ),
             ),
+            const SizedBox(height: 8,),
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: listOpenTimes.length,
               itemBuilder: (BuildContext context, int index) {
-                return Text(
-                    "${listOpenTimes[index]}",
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Text(
+                    listOpenTimes[index],
                     style: const TextStyle(
-                        color: ColorsConst.black,
-                        fontSize: FontSizeConst.font12,
-                        fontWeight: FontWeight.w400));
+                      color: ColorStyle.darkLabel,
+                      fontWeight: FontWeight.w400,
+                      fontSize: FontSizeConst.font12,
+                      fontFamily: FontStyles.raleway,
+                    ),
+                  ),
+                );
               },
             )
           ],
@@ -320,58 +349,69 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
 
   Widget getCapacity() {
     return Container(
-        padding: EdgeInsets.only(top: 8.0, left: 18, right: 18, bottom: 8),
+        padding: const EdgeInsets.only(top: 8.0, left: 18, right: 18, bottom: 8),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          textBaseline: TextBaseline.alphabetic,
           children: [
-            Container(
+            SizedBox(
               height: 20,
               child: Text(
-                  "Capacity",
-                  style: const TextStyle(
-                      color: ColorsConst.black,
-                      fontSize: FontSizeConst.font12,
-                      fontWeight: FontWeight.w400)),
-            ),
-            Text(
-                "Total: 40 (In:6 / Out:34)",
+                S.current.capacity,
                 style: const TextStyle(
-                    color: ColorsConst.black,
-                    fontSize: FontSizeConst.font12,
-                    fontWeight: FontWeight.w400)),
+                  fontFamily: FontStyles.mouser,
+                  fontSize: FontSizeConst.font12,
+                  fontWeight: FontWeight.w400,
+                  color: ColorStyle.darkLabel,
+                ),
+              ),
+            ),
+            const SizedBox(width: 12,),
+            const Text(
+              "Total: 40 (In:6 / Out:34)",
+              style: TextStyle(
+                color: ColorStyle.darkLabel,
+                fontWeight: FontWeight.w400,
+                fontSize: FontSizeConst.font12,
+                fontFamily: FontStyles.raleway,
+              ),
+            ),
           ],
         )
     );
   }
 
-  Widget getEventsAndExpriences() {
+  Widget getEventsAndExperiences() {
     return Container(
-        padding: EdgeInsets.only(top: 8.0, left: 18, right: 18, bottom: 8),
+        padding: const EdgeInsets.only(top: 8.0, left: 18, right: 18, bottom: 8),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
+            SizedBox(
               height: 20,
               child: Text(
-                  "Events and Expriences",
-                  style: const TextStyle(
-                      color: ColorsConst.black,
-                      fontSize: FontSizeConst.font12,
-                      fontWeight: FontWeight.w400)),
+                S.current.events_and_experiences,
+                style: const TextStyle(
+                  fontFamily: FontStyles.mouser,
+                  fontSize: FontSizeConst.font12,
+                  fontWeight: FontWeight.w400,
+                  color: ColorStyle.darkLabel,
+                ),
+              )
             ),
             Row(
               children: [
                 Container(
-                  padding: EdgeInsets.all(4.0),
+                  padding: const EdgeInsets.all(4.0),
                   child: Image.asset(
                       ImagePath.calendarIcon,
                       fit: BoxFit.contain,
                       height: 25.0),
                 ),
                 Container(
-                  padding: EdgeInsets.all(4.0),
+                  padding: const EdgeInsets.all(4.0),
                   child: Image.asset(
                       ImagePath.yogaIcon,
                       fit: BoxFit.contain,
@@ -386,28 +426,33 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
 
   Widget getIntouch() {
     return Container(
-        padding: EdgeInsets.only(top: 8.0, left: 18, right: 18, bottom: 8),
+        padding: const EdgeInsets.only(top: 8.0, left: 18, right: 18, bottom: 8),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
+            const SizedBox(
               height: 20,
               child: Text(
                   "Get in touch directly with:",
-                  style: const TextStyle(
-                      color: ColorsConst.black,
+                  style: TextStyle(
+                      color: ColorStyle.darkLabel,
                       fontSize: FontSizeConst.font12,
-                      fontWeight: FontWeight.w400)),
+                      fontWeight: FontWeight.w400,
+                    fontFamily: FontStyles.raleway,
+                  )),
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
               child: Text(
                   "Title",
-                  style: const TextStyle(
-                      color: ColorsConst.black,
-                      fontSize: FontSizeConst.font12,
-                      fontWeight: FontWeight.w400)),
+                  style: TextStyle(
+                    fontFamily: FontStyles.mouser,
+                    fontSize: FontSizeConst.font12,
+                    fontWeight: FontWeight.w400,
+                    color: ColorStyle.darkLabel,
+                  ),
+              ),
             ),
             Row(
               children: [
@@ -441,14 +486,18 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                 )
               ],
             ),
+            const SizedBox(height: 8,),
             SizedBox(
               height: 20,
               child: Text(
-                  "You can also follow Title on:",
+                  S.current.follow_title,
                   style: const TextStyle(
-                      color: ColorsConst.black,
-                      fontSize: FontSizeConst.font12,
-                      fontWeight: FontWeight.w400)),
+                    color: ColorStyle.darkLabel,
+                    fontSize: FontSizeConst.font12,
+                    fontWeight: FontWeight.w400,
+                    fontFamily: FontStyles.raleway,
+                  )
+              ),
             ),
             Row(
               children: [
@@ -460,7 +509,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                       height: 25.0),
                 ),
                 Container(
-                  padding: EdgeInsets.all(4.0),
+                  padding: const EdgeInsets.all(4.0),
                   child: Image.asset(
                       ImagePath.facebookIcon,
                       fit: BoxFit.contain,
@@ -498,32 +547,40 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
               height: 20,
               alignment: Alignment.centerLeft,
               child: Text(
-                  "With thanks to our trusted partner:",
+                  S.current.thanks_to_our_trusted_partner,
                   style: const TextStyle(
-                      color: ColorsConst.black,
-                      fontSize: FontSizeConst.font12,
-                      fontWeight: FontWeight.w400)),
+                    color: ColorStyle.darkLabel,
+                    fontSize: FontSizeConst.font12,
+                    fontWeight: FontWeight.w400,
+                    fontFamily: FontStyles.raleway,
+                  )
+              ),
             ),
             Container(
               height: 20,
               alignment: Alignment.centerLeft,
-              child: Text(
+              child: const Text(
                   "Infinity2Diving",
-                  style: const TextStyle(
-                      color: ColorsConst.black,
-                      fontSize: FontSizeConst.font12,
-                      fontWeight: FontWeight.w400)),
+                  style: TextStyle(
+                    fontFamily: FontStyles.mouser,
+                    fontSize: FontSizeConst.font12,
+                    fontWeight: FontWeight.w400,
+                    color: ColorStyle.darkLabel,
+                  )
+              ),
             ),
             Container(
               height: 20,
               margin: EdgeInsets.only(top: 18, bottom: 80),
               alignment: Alignment.center,
-              child: Text(
+              child: const Text(
                   "Please report anything missing/inaccurate here",
-                  style: const TextStyle(
-                      color: ColorsConst.black,
-                      fontSize: FontSizeConst.font12,
-                      fontWeight: FontWeight.w400)),
+                  style: TextStyle(
+                    color: ColorStyle.darkLabel,
+                    fontSize: FontSizeConst.font12,
+                    fontWeight: FontWeight.w400,
+                    fontFamily: FontStyles.raleway,
+                  )),
             ),
           ],
         )

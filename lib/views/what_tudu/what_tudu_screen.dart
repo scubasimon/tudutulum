@@ -419,6 +419,7 @@ class _WhatTuduView extends State<WhatTuduView> {
                       },
                       child: Container(
                         margin: const EdgeInsets.only(bottom: 8, left: 16, right: 16),
+                        height: 236,
                         decoration: BoxDecoration(
                           borderRadius: const BorderRadius.all(
                               Radius.circular(10.0)
@@ -427,7 +428,7 @@ class _WhatTuduView extends State<WhatTuduView> {
                             BoxShadow(
                                 color: Colors.black.withOpacity(0.25),
                                 blurRadius: 7,
-                                offset: const Offset(0, 4),
+                                offset: const Offset(0, 2),
                             )
                           ],
                         ),
@@ -438,7 +439,8 @@ class _WhatTuduView extends State<WhatTuduView> {
                           child: Image.network(
                             snapshot.data![index],
                             width: MediaQuery.of(context).size.width,
-                            fit: BoxFit.contain,
+                            height: 236,
+                            fit: BoxFit.cover,
                           ),
                         )
                       ),
@@ -465,7 +467,7 @@ class _WhatTuduView extends State<WhatTuduView> {
                         height: 50.0,
                         width: 128.0,
                         alignment: Alignment.centerLeft,
-                        margin: const EdgeInsets.only(bottom: 24, left: 8),
+                        margin: const EdgeInsets.only(bottom: 24, left: 16),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                               begin: FractionalOffset.centerLeft,

@@ -759,6 +759,86 @@ class S {
       args: [],
     );
   }
+
+  /// `Back`
+  String get back {
+    return Intl.message(
+      'Back',
+      name: 'back',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `More Information`
+  String get more_information {
+    return Intl.message(
+      'More Information',
+      name: 'more_information',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Opening times`
+  String get open_times {
+    return Intl.message(
+      'Opening times',
+      name: 'open_times',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Fees`
+  String get fees {
+    return Intl.message(
+      'Fees',
+      name: 'fees',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Capacity`
+  String get capacity {
+    return Intl.message(
+      'Capacity',
+      name: 'capacity',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Events and Experiences`
+  String get events_and_experiences {
+    return Intl.message(
+      'Events and Experiences',
+      name: 'events_and_experiences',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You can also follow Title on:`
+  String get follow_title {
+    return Intl.message(
+      'You can also follow Title on:',
+      name: 'follow_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `With thanks to our trusted partner:`
+  String get thanks_to_our_trusted_partner {
+    return Intl.message(
+      'With thanks to our trusted partner:',
+      name: 'thanks_to_our_trusted_partner',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
