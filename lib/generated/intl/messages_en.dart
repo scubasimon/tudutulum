@@ -34,10 +34,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "all_location": MessageLookupByLibrary.simpleMessage("All \'Location"),
         "all_location_articles":
             MessageLookupByLibrary.simpleMessage("All Location Articles"),
+        "back": MessageLookupByLibrary.simpleMessage("Back"),
         "beach_clubs": MessageLookupByLibrary.simpleMessage("Beach Clubs"),
         "bookmarks": MessageLookupByLibrary.simpleMessage("Bookmarks"),
         "business_type":
             MessageLookupByLibrary.simpleMessage("\'Business Type\'"),
+        "capacity": MessageLookupByLibrary.simpleMessage("Capacity"),
         "coming_soon": MessageLookupByLibrary.simpleMessage("•  Coming soon"),
         "create_account":
             MessageLookupByLibrary.simpleMessage("Create account"),
@@ -49,12 +51,17 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Invalid email"),
         "error": MessageLookupByLibrary.simpleMessage("Error"),
         "events": MessageLookupByLibrary.simpleMessage("Events"),
+        "events_and_experiences":
+            MessageLookupByLibrary.simpleMessage("Events and Experiences"),
         "exit_app_message":
             MessageLookupByLibrary.simpleMessage("Do you really want to exit?"),
         "explore_all_location":
             MessageLookupByLibrary.simpleMessage("Explore All Location"),
         "failed": MessageLookupByLibrary.simpleMessage("Failed"),
+        "fees": MessageLookupByLibrary.simpleMessage("Fees"),
         "filter": MessageLookupByLibrary.simpleMessage("Filter"),
+        "follow_title": MessageLookupByLibrary.simpleMessage(
+            "You can also follow Title on:"),
         "follow_us": MessageLookupByLibrary.simpleMessage(
             "•  Follow us to see our latest deals"),
         "forgot_password":
@@ -68,6 +75,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "mobile": MessageLookupByLibrary.simpleMessage("Mobile"),
         "mobile_empty_error":
             MessageLookupByLibrary.simpleMessage("Phone must be not empty"),
+        "more_information":
+            MessageLookupByLibrary.simpleMessage("More Information"),
         "name": MessageLookupByLibrary.simpleMessage("Name"),
         "name_empty_error":
             MessageLookupByLibrary.simpleMessage("Name must be not empty"),
@@ -95,6 +104,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Your local calendar"),
         "onboard_title_4":
             MessageLookupByLibrary.simpleMessage("Your exclusive savings"),
+        "open_times": MessageLookupByLibrary.simpleMessage("Opening times"),
         "password": MessageLookupByLibrary.simpleMessage("Password"),
         "password_empty_error":
             MessageLookupByLibrary.simpleMessage("Password must be not empty"),
@@ -122,6 +132,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "sort": MessageLookupByLibrary.simpleMessage("Sort"),
         "term_and_conditions":
             MessageLookupByLibrary.simpleMessage("Term and Conditions"),
+        "thanks_to_our_trusted_partner": MessageLookupByLibrary.simpleMessage(
+            "With thanks to our trusted partner:"),
         "the_legal_stuff":
             MessageLookupByLibrary.simpleMessage("•  The Legal stuff"),
         "transport_locally":
