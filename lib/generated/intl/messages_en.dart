@@ -20,6 +20,8 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'en';
 
+  static String m0(name) => "Hello \'${name}\'";
+
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "about": MessageLookupByLibrary.simpleMessage("•  About Tudu Tulum"),
@@ -40,10 +42,18 @@ class MessageLookup extends MessageLookupByLibrary {
         "business_type":
             MessageLookupByLibrary.simpleMessage("\'Business Type\'"),
         "capacity": MessageLookupByLibrary.simpleMessage("Capacity"),
+        "change_password":
+            MessageLookupByLibrary.simpleMessage("Change Password"),
         "coming_soon": MessageLookupByLibrary.simpleMessage("•  Coming soon"),
         "create_account":
             MessageLookupByLibrary.simpleMessage("Create account"),
+        "current_password":
+            MessageLookupByLibrary.simpleMessage("Current Password"),
+        "current_password_empty_error": MessageLookupByLibrary.simpleMessage(
+            "Current password must be not empty"),
         "deals": MessageLookupByLibrary.simpleMessage("Deals"),
+        "delete_account":
+            MessageLookupByLibrary.simpleMessage("Or deactivate your account"),
         "email": MessageLookupByLibrary.simpleMessage("Email"),
         "email_empty_error":
             MessageLookupByLibrary.simpleMessage("Email must be not empty"),
@@ -58,8 +68,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "explore_all_location":
             MessageLookupByLibrary.simpleMessage("Explore All Location"),
         "failed": MessageLookupByLibrary.simpleMessage("Failed"),
+        "family_name": MessageLookupByLibrary.simpleMessage("Family Name"),
         "fees": MessageLookupByLibrary.simpleMessage("Fees"),
         "filter": MessageLookupByLibrary.simpleMessage("Filter"),
+        "first_name": MessageLookupByLibrary.simpleMessage("First Name"),
         "follow_title": MessageLookupByLibrary.simpleMessage(
             "You can also follow Title on:"),
         "follow_us": MessageLookupByLibrary.simpleMessage(
@@ -67,6 +79,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "forgot_password":
             MessageLookupByLibrary.simpleMessage("Forgot password?"),
         "get_started": MessageLookupByLibrary.simpleMessage("Get Started"),
+        "hello_name": m0,
+        "here": MessageLookupByLibrary.simpleMessage("here"),
         "login": MessageLookupByLibrary.simpleMessage("Login"),
         "login_description": MessageLookupByLibrary.simpleMessage(
             "Welcome back,\nPlease sign in"),
@@ -82,6 +96,9 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Name must be not empty"),
         "navigate_the_app":
             MessageLookupByLibrary.simpleMessage("•  Navigate the App"),
+        "new_password": MessageLookupByLibrary.simpleMessage("New Password"),
+        "new_password_empty_error": MessageLookupByLibrary.simpleMessage(
+            "New password must be not empty"),
         "next": MessageLookupByLibrary.simpleMessage("Next"),
         "no": MessageLookupByLibrary.simpleMessage("No"),
         "not_agree_term_and_conditions_error":
@@ -108,18 +125,31 @@ class MessageLookup extends MessageLookupByLibrary {
         "password": MessageLookupByLibrary.simpleMessage("Password"),
         "password_empty_error":
             MessageLookupByLibrary.simpleMessage("Password must be not empty"),
+        "password_not_match_error": MessageLookupByLibrary.simpleMessage(
+            "New password and Repeat password do not match"),
         "password_short_error": MessageLookupByLibrary.simpleMessage(
             "Password must be longer than 6 characters"),
         "password_too_weak_error": MessageLookupByLibrary.simpleMessage(
             "The password provided is too weak"),
         "profile": MessageLookupByLibrary.simpleMessage("Profile"),
         "rate_us": MessageLookupByLibrary.simpleMessage("•  Please rate Us"),
+        "receive_monthly_newsletter_email":
+            MessageLookupByLibrary.simpleMessage(
+                "Receive monthly newsletter email"),
+        "receive_new_offer_notification_email":
+            MessageLookupByLibrary.simpleMessage(
+                "Receive new offer notification emails"),
         "register_message": MessageLookupByLibrary.simpleMessage(
             "Please complete the short form below"),
+        "repeat_new_password":
+            MessageLookupByLibrary.simpleMessage("Repeat New Password"),
+        "repeat_password_empty_error": MessageLookupByLibrary.simpleMessage(
+            "Repeat password must be not empty"),
         "required_message": MessageLookupByLibrary.simpleMessage(
             "*Email and password are required"),
         "reset_password_message": MessageLookupByLibrary.simpleMessage(
             "Password reset link has been sent successfully"),
+        "save_changes": MessageLookupByLibrary.simpleMessage("Save Changes"),
         "search_placeholder": MessageLookupByLibrary.simpleMessage(
             "Search here or use the filter above"),
         "server_error": MessageLookupByLibrary.simpleMessage(
@@ -128,6 +158,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "sign_in": MessageLookupByLibrary.simpleMessage("Sign In"),
         "sign_in_other":
             MessageLookupByLibrary.simpleMessage("Or sign up/in with"),
+        "sign_out": MessageLookupByLibrary.simpleMessage("Sign out"),
         "skip": MessageLookupByLibrary.simpleMessage("Skip"),
         "sort": MessageLookupByLibrary.simpleMessage("Sort"),
         "term_and_conditions":
@@ -142,6 +173,10 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("•  Travel to Tulum"),
         "un_authorized_error":
             MessageLookupByLibrary.simpleMessage("UnAuthorized"),
+        "update_details":
+            MessageLookupByLibrary.simpleMessage("Update Details"),
+        "update_successful":
+            MessageLookupByLibrary.simpleMessage("Update successful"),
         "user_not_approved_error": MessageLookupByLibrary.simpleMessage(
             "User not approve. Please try again"),
         "user_not_existed_error":
@@ -149,6 +184,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "warning": MessageLookupByLibrary.simpleMessage("Warning"),
         "what_tudu": MessageLookupByLibrary.simpleMessage("What tudu?"),
         "work_spots": MessageLookupByLibrary.simpleMessage("Workspots"),
-        "yes": MessageLookupByLibrary.simpleMessage("Yes")
+        "yes": MessageLookupByLibrary.simpleMessage("Yes"),
+        "your_account": MessageLookupByLibrary.simpleMessage("Your Account")
       };
 }

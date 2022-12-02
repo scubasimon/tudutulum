@@ -16,6 +16,14 @@ abstract class AuthRepository {
   Future<void> sendPasswordResetEmail(String email);
 
   Future<Profile> getCurrentUser();
+
+  Future<void> changeEmail(String email);
+
+  Future<void> updateProfile(Profile profile);
+
+  Future<void> signOut();
+
+  Future<void> changePassword(String newPassword);
 }
 
 class AuthRepositoryImpl extends AuthRepository {
@@ -115,5 +123,25 @@ class AuthRepositoryImpl extends AuthRepository {
 
   Future<bool> userChangedState() {
     return _firebaseService.authChanged().then((value) => value != null);
+  }
+
+  @override
+  Future<void> changeEmail(String email) {
+    return _firebaseService.changeEmail(email);
+  }
+
+  @override
+  Future<void> updateProfile(Profile profile) {
+    return _firebaseService.updateUser(profile.id, profile.toJson());
+  }
+
+  @override
+  Future<void> signOut() {
+    return _firebaseService.signOut();
+  }
+
+  @override
+  Future<void> changePassword(String newPassword) {
+    return _firebaseService.changePassword(newPassword);
   }
 }

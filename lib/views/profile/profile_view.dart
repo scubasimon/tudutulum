@@ -1,11 +1,16 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_styled_toast/flutter_styled_toast.dart';
+import 'package:tudu/consts/font/Fonts.dart';
+import 'package:tudu/consts/urls/URLConst.dart';
 import 'package:tudu/viewmodels/profile_viewmodel.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
-import 'package:tudu/utils/colors_const.dart';
 import 'package:tudu/consts/font/font_size_const.dart';
-import 'package:tudu/consts/strings/str_const.dart';
 import 'package:tudu/consts/images/ImagePath.dart';
+import 'package:tudu/consts/color/Colors.dart';
+import 'package:tudu/generated/l10n.dart';
+import 'package:tudu/views/common/alert.dart';
 
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
@@ -15,73 +20,77 @@ class ProfileView extends StatefulWidget {
 }
 
 class _ProfileView extends State<ProfileView> {
-  ProfileViewModel profileViewModel = ProfileViewModel();
+  final ProfileViewModel _profileViewModel = ProfileViewModel();
 
   final ScrollController _scrollController = ScrollController();
 
+  final _firstNameController = TextEditingController();
+  final _familyNameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _mobileController = TextEditingController();
+  final _newPasswordController = TextEditingController();
+  final _repeatNewPasswordController = TextEditingController();
+
+  var _hideNewPassword = true;
+  var _hideRepeatNewPassword = true;
+  var _isReceiveNewOffer = false;
+  var _isReceiveMonthlyNewsLetter = false;
+
   @override
   void initState() {
+    _profileViewModel.loading.listen((event) {
+      if (event) {
+        _showLoading();
+      } else {
+        Navigator.of(context).pop();
+      }
+    });
+    _profileViewModel.error.listen((event) {
+      var message = event.message != null ? event.message! : S.current.failed;
+      _showAlert(message);
+    });
+    _profileViewModel.profile.listen((event) {
+      setState(() {
+        _isReceiveNewOffer = event.newsOffer;
+        _isReceiveMonthlyNewsLetter = event.newsMonthly;
+        _firstNameController.text = event.firstName ?? "";
+        _familyNameController.text = event.familyName ?? "";
+        _emailController.text = event.email ?? "";
+        _mobileController.text = event.telephone ?? "";
+      });
+    });
+    _profileViewModel.updateSuccessful.listen((event) {
+      _showAlertSuccess();
+    });
     super.initState();
+
   }
 
   @override
   Widget build(BuildContext context) {
     return ExitAppScope(
       child: Scaffold(
-        body: ListView(
-          controller: _scrollController,
-          children: <Widget>[
-            createBackView(),
-            createIconView(),
-            createProfileView(),
-            createPasswordView(),
-            createTermView(),
-            getButton(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget createBackView() {
-    return Container(
-      padding: EdgeInsets.only(
-        top: MediaQuery.of(context).padding.top,
-        left: 16,
-        right: 16,
-        bottom: 8,),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          InkWell(
-            onTap: () {
-              Navigator.of(context).popUntil((route){
-                return (route.settings.name == StrConst.whatTuduScene || route.isFirst);
-              });
-            },
-            child: Image.asset(
-                ImagePath.leftArrowIcon,
-                fit: BoxFit.contain,
-                height: 20.0),
-          ),
-          InkWell(
-            onTap: () {
-              Navigator.of(context).popUntil((route){
-                return (route.settings.name == StrConst.whatTuduScene || route.isFirst);
-              });
-            },
-            child: Container(
-                margin: const EdgeInsets.only(left: 8),
-                child: Text(
-                  "Back",
-                  style: const TextStyle(
-                      color: ColorsConst.defaulOrange,
-                      fontSize: FontSizeConst.font16,
-                      fontWeight: FontWeight.w400),
-                )
+        body: InkWell(
+          hoverColor: Colors.transparent,
+          focusColor: Colors.transparent,
+          splashColor: Colors.transparent,
+          onTap: () {
+            FocusManager.instance.primaryFocus?.unfocus();
+          },
+          child: Container(
+            margin: const EdgeInsets.only(left: 16, right: 16),
+            child: ListView(
+              controller: _scrollController,
+              children: <Widget>[
+                createIconView(),
+                createProfileView(),
+                createPasswordView(),
+                createTermView(),
+                getButton(),
+              ],
             ),
-          )
-        ],
+          ),
+        ),
       ),
     );
   }
@@ -97,154 +106,336 @@ class _ProfileView extends State<ProfileView> {
             fit: BoxFit.contain,
           ),
           Text(
-              "Your Account",
-              style: const TextStyle(
-                  color: ColorsConst.defaulOrange,
-                  fontSize: FontSizeConst.font34,
-                  fontWeight: FontWeight.w700)),
-          Text(
-              "Hello 'FirstName'",
-              style: const TextStyle(
-                  fontStyle: FontStyle.italic,
-                  color: ColorsConst.defaulGray6,
+            S.current.your_account,
+            style: const TextStyle(
+              color: ColorStyle.primary,
+              fontSize: 34,
+              fontFamily: FontStyles.sfProText,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          StreamBuilder(
+            stream: _profileViewModel.profile,
+            builder: (_, snapshot) {
+              var message = "Hello";
+              if (snapshot.data?.firstName != null) {
+                message = S.current.hello_name(snapshot.data?.firstName ?? "");
+              }
+              return Text(
+                message,
+                style: const TextStyle(
+                  color: ColorStyle.tertiaryDarkLabel60,
+                  fontWeight: FontWeight.w400,
                   fontSize: FontSizeConst.font17,
-                  fontWeight: FontWeight.w400)),
+                  fontStyle: FontStyle.italic,
+                  fontFamily: FontStyles.sfProText,
+                ),
+              );
+            },
+          )
         ],
       ),
     );
   }
 
   Widget createProfileView() {
-    return Container(
-      padding: const EdgeInsets.only(left: 8, right: 8),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-              "Update Details",
-              style: const TextStyle(
-                  color: ColorsConst.defaulGray6,
-                  fontSize: FontSizeConst.font17,
-                  fontWeight: FontWeight.w400)),
-          Row(
-            children: [
-              Expanded(
-                flex: 1,
-                child: TextField(
-                    onSubmitted: null,
-                    decoration: InputDecoration(
-                      hintText: "firstName",
-                      hintStyle: TextStyle(
-                          fontStyle: FontStyle.italic,
-                          color: ColorsConst.defaulGray3,
-                          fontSize: FontSizeConst.font17,
-                          fontWeight: FontWeight.w400),
-                    )),
-              ),
-              Container(width: 10,),
-              Expanded(
-                flex: 1,
-                child: TextField(
-                    onSubmitted: null,
-                    decoration: InputDecoration(
-                      hintText: "familyName",
-                      hintStyle: TextStyle(
-                          fontStyle: FontStyle.italic,
-                          color: ColorsConst.defaulGray3,
-                          fontSize: FontSizeConst.font17,
-                          fontWeight: FontWeight.w400),
-                    )),
-              ),
-            ],
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: Text(
+            S.current.update_details,
+            style: const TextStyle(
+              color: ColorStyle.tertiaryDarkLabel60,
+              fontFamily: FontStyles.sfProText,
+              fontSize: FontSizeConst.font17,
+              fontWeight: FontWeight.w400,
+            ),
           ),
-          TextField(
-              onSubmitted: null,
-              decoration: InputDecoration(
-                hintText: "email",
-                hintStyle: TextStyle(
-                    fontStyle: FontStyle.italic,
-                    color: ColorsConst.defaulGray3,
-                    fontSize: FontSizeConst.font17,
-                    fontWeight: FontWeight.w400),
-              )),
-          TextField(
-              onSubmitted: null,
-              decoration: InputDecoration(
-                hintText: "mobileNumber",
-                hintStyle: TextStyle(
-                    fontStyle: FontStyle.italic,
-                    color: ColorsConst.defaulGray3,
-                    fontSize: FontSizeConst.font17,
-                    fontWeight: FontWeight.w400),
-              )),
-        ],
-      ),
+        ),
+        Row(
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox.fromSize(
+                  size: Size((MediaQuery.of(context).size.width - 32.0 - 10.0) / 2.0, 36.0),
+                  child: TextField(
+                    cursorColor: ColorStyle.primary,
+                    controller: _firstNameController,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w100,
+                      fontSize: FontSizeConst.font17,
+                      fontFamily: FontStyles.sfProText,
+                      color: ColorStyle.tertiaryDarkLabel,
+                    ),
+                    decoration: InputDecoration(
+                        hintText: S.current.first_name,
+                        border: InputBorder.none,
+                        hintStyle: const TextStyle(
+                          fontWeight: FontWeight.w100,
+                          fontSize: FontSizeConst.font17,
+                          fontFamily: FontStyles.sfProText,
+                          color: ColorStyle.tertiaryDarkLabel30,
+                        )
+                    ),
+                  ),
+                ),
+
+                Container(
+                  width: (MediaQuery.of(context).size.width - 32.0 - 10.0) / 2.0,
+                  height: 1,
+                  color: ColorStyle.tertiaryBackground,
+                )
+              ],
+            ),
+
+            Container(width: 10,),
+
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox.fromSize(
+                  size: Size((MediaQuery.of(context).size.width - 32.0 - 10.0) / 2.0, 36.0),
+                  child: TextField(
+                    cursorColor: ColorStyle.primary,
+                    controller: _familyNameController,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w100,
+                      fontSize: FontSizeConst.font17,
+                      fontFamily: FontStyles.sfProText,
+                      color: ColorStyle.tertiaryDarkLabel,
+                    ),
+                    decoration: InputDecoration(
+                        hintText: S.current.family_name,
+                        border: InputBorder.none,
+                        hintStyle: const TextStyle(
+                          fontWeight: FontWeight.w100,
+                          fontSize: FontSizeConst.font17,
+                          fontFamily: FontStyles.sfProText,
+                          color: ColorStyle.tertiaryDarkLabel30,
+                        )
+                    ),
+                  ),
+                ),
+
+                Container(
+                  width: (MediaQuery.of(context).size.width - 32.0 - 10.0) / 2.0,
+                  height: 1,
+                  color: ColorStyle.tertiaryBackground,
+                )
+              ],
+            ),
+          ],
+        ),
+        const SizedBox(height: 12,),
+        SizedBox.fromSize(
+          size: const Size.fromHeight(36),
+          child: TextField(
+            cursorColor: ColorStyle.primary,
+            keyboardType: TextInputType.emailAddress,
+            controller: _emailController,
+            style: const TextStyle(
+              fontWeight: FontWeight.w100,
+              fontSize: FontSizeConst.font17,
+              fontFamily: FontStyles.sfProText,
+              color: ColorStyle.tertiaryDarkLabel,
+            ),
+            decoration: InputDecoration(
+                hintText: S.current.email,
+                border: InputBorder.none,
+                hintStyle: const TextStyle(
+                  fontWeight: FontWeight.w100,
+                  fontSize: FontSizeConst.font17,
+                  fontFamily: FontStyles.sfProText,
+                  color: ColorStyle.tertiaryDarkLabel30,
+                )
+            ),
+          ),
+        ),
+        Container(
+          width: MediaQuery.of(context).size.width - 32.0,
+          height: 1,
+          color: ColorStyle.tertiaryBackground,
+        ),
+        const SizedBox(height: 12,),
+        SizedBox.fromSize(
+          size: const Size.fromHeight(36),
+          child: TextField(
+            cursorColor: ColorStyle.primary,
+            keyboardType: TextInputType.phone,
+            controller: _mobileController,
+            style: const TextStyle(
+              fontWeight: FontWeight.w100,
+              fontSize: FontSizeConst.font17,
+              fontFamily: FontStyles.sfProText,
+              color: ColorStyle.tertiaryDarkLabel,
+            ),
+            decoration: InputDecoration(
+                hintText: S.current.mobile,
+                border: InputBorder.none,
+                hintStyle: const TextStyle(
+                  fontWeight: FontWeight.w100,
+                  fontSize: FontSizeConst.font17,
+                  fontFamily: FontStyles.sfProText,
+                  color: ColorStyle.tertiaryDarkLabel30,
+                )
+            ),
+          ),
+        ),
+        Container(
+          width: MediaQuery.of(context).size.width - 32.0,
+          height: 1,
+          color: ColorStyle.tertiaryBackground,
+        ),
+      ],
     );
   }
 
   Widget createPasswordView() {
     return Container(
-      padding: EdgeInsets.only(top: 30, left: 8, right: 8),
+      padding: const EdgeInsets.only(top: 30),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-              "Change Password",
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Text(
+              S.current.change_password,
               style: const TextStyle(
-                  color: ColorsConst.defaulGray6,
-                  fontSize: FontSizeConst.font17,
-                  fontWeight: FontWeight.w400)),
-          Stack(
+                color: ColorStyle.tertiaryDarkLabel60,
+                fontFamily: FontStyles.sfProText,
+                fontSize: FontSizeConst.font17,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ),
+          Row(
             children: [
-              TextField(
-                  onSubmitted: null,
+              SizedBox.fromSize(
+                size: Size(MediaQuery.of(context).size.width - 56.0, 36),
+                child: TextField(
+                  cursorColor: ColorStyle.primary,
+                  obscureText: _hideNewPassword,
+                  controller: _newPasswordController,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w100,
+                    fontSize: FontSizeConst.font17,
+                    fontFamily: FontStyles.sfProText,
+                    color: ColorStyle.tertiaryDarkLabel,
+                  ),
                   decoration: InputDecoration(
-                    hintText: "New Password",
-                    hintStyle: TextStyle(
-                        fontStyle: FontStyle.italic,
-                        color: ColorsConst.defaulGray3,
+                      hintText: S.current.new_password,
+                      border: InputBorder.none,
+                      hintStyle: const TextStyle(
+                        fontWeight: FontWeight.w100,
                         fontSize: FontSizeConst.font17,
-                        fontWeight: FontWeight.w400),
-                  )),
-              Positioned(
-                right: 0,
-                bottom: 15,
-                child: InkWell(
-                  onTap: () {
-                    //TODO: IMPLEMENT FORGOT FEATURE
-                    showToast(
-                        "FORGOT NOT IMPL YET",
-                        context: context,
-                        duration: Duration(seconds: 3),
-                        axis: Axis.horizontal,
-                        alignment: Alignment.center,
-                        position: StyledToastPosition.bottom,
-                        textStyle: const TextStyle(
-                            fontWeight: FontWeight.w400,
-                            color: ColorsConst.white,
-                            fontSize: FontSizeConst.font12));
-                  },
-                  child: Text(
-                    "Forgot password?",
-                    style: const TextStyle(
-                        color: ColorsConst.defaulOrange,
-                        fontSize: FontSizeConst.font13,
-                        fontWeight: FontWeight.w600)),
-                ))
+                        fontFamily: FontStyles.sfProText,
+                        color: ColorStyle.tertiaryDarkLabel30,
+                      )
+                  ),
+                ),
+              ),
+              InkWell(
+                hoverColor: Colors.transparent,
+                focusColor: Colors.transparent,
+                splashColor: Colors.transparent,
+                onTap: (){
+                  setState(() {
+                    _hideNewPassword = !_hideNewPassword;
+                  });
+                },
+                child: Image.asset(
+                  _hideNewPassword ? ImagePath.hideEyeIcon : ImagePath.eyeIcon,
+                  width: 24,
+                  height: 24,
+                ),
+              ),
             ],
           ),
-          TextField(
-              onSubmitted: null,
-              decoration: InputDecoration(
-                hintText: "Repeat New Password",
-                hintStyle: TextStyle(
-                    fontStyle: FontStyle.italic,
-                    color: ColorsConst.defaulGray3,
+          Container(
+            width: MediaQuery.of(context).size.width - 32.0,
+            height: 1,
+            color: ColorStyle.tertiaryBackground,
+          ),
+          const SizedBox(height: 10,),
+          Row(
+            children: [
+              SizedBox.fromSize(
+                size: Size(MediaQuery.of(context).size.width - 56.0, 36),
+                child: TextField(
+                  cursorColor: ColorStyle.primary,
+                  obscureText: _hideRepeatNewPassword,
+                  controller: _repeatNewPasswordController,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w100,
                     fontSize: FontSizeConst.font17,
-                    fontWeight: FontWeight.w400),
-              )),
+                    fontFamily: FontStyles.sfProText,
+                    color: ColorStyle.tertiaryDarkLabel,
+                  ),
+                  decoration: InputDecoration(
+                      hintText: S.current.repeat_new_password,
+                      border: InputBorder.none,
+                      hintStyle: const TextStyle(
+                        fontWeight: FontWeight.w100,
+                        fontSize: FontSizeConst.font17,
+                        fontFamily: FontStyles.sfProText,
+                        color: ColorStyle.tertiaryDarkLabel30,
+                      )
+                  ),
+                ),
+              ),
+              InkWell(
+                hoverColor: Colors.transparent,
+                focusColor: Colors.transparent,
+                splashColor: Colors.transparent,
+                onTap: (){
+                  setState(() {
+                    _hideRepeatNewPassword = !_hideRepeatNewPassword;
+                  });
+                },
+                child: Image.asset(
+                  _hideRepeatNewPassword ? ImagePath.hideEyeIcon : ImagePath.eyeIcon,
+                  width: 24,
+                  height: 24,
+                ),
+              ),
+            ],
+          ),
+          Container(
+            width: MediaQuery.of(context).size.width - 32.0,
+            height: 1,
+            color: ColorStyle.tertiaryBackground,
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 12.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                InkWell(
+                  hoverColor: Colors.transparent,
+                  focusColor: Colors.transparent,
+                  splashColor: Colors.transparent,
+                  onTap: () {},
+                  child: Text(
+                    S.current.forgot_password,
+                    style: const TextStyle(
+                      color: ColorStyle.primary,
+                      fontFamily: FontStyles.sfProText,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -252,71 +443,57 @@ class _ProfileView extends State<ProfileView> {
 
   Widget createTermView() {
     return Container(
-      margin: EdgeInsets.only(top: 30, left: 4, right: 4),
+      margin: const EdgeInsets.only(top: 30),
       child: Column(
         children: [
-          InkWell(
-            onTap: () {
-              //TODO: IMPLEMENT CHECK/UNCHECK TERM FEATURE
-              showToast(
-                  "CHECK/UNCHECK TERM NOT IMPL YET",
-                  context: context,
-                  duration: Duration(seconds: 3),
-                  axis: Axis.horizontal,
-                  alignment: Alignment.center,
-                  position: StyledToastPosition.bottom,
-                  textStyle: const TextStyle(
-                      fontWeight: FontWeight.w400,
-                      color: ColorsConst.white,
-                      fontSize: FontSizeConst.font12));
-            },
-            child: Row(
-              children: [
-                Image.asset(
-                  ImagePath.chooseActiveIcon,
-                  width: 24,
-                  fit: BoxFit.contain,
+          Row(
+            children: [
+              Checkbox(
+                value: _isReceiveNewOffer,
+                activeColor: ColorStyle.primary,
+                onChanged: (value) {
+                  setState(() {
+                    if (value != null) {
+                      _isReceiveNewOffer = value;
+                    }
+                  });
+                },
+              ),
+              Text(
+                S.current.receive_new_offer_notification_email,
+                style: const TextStyle(
+                  color: ColorStyle.tertiaryDarkLabel60,
+                  fontWeight: FontWeight.w400,
+                  fontSize: FontSizeConst.font13,
+                  fontFamily: FontStyles.sfProText,
                 ),
-                Text(
-                    " Receive new offer notification emails",
-                    style: const TextStyle(
-                        color: ColorsConst.defaulGray6,
-                        fontSize: FontSizeConst.font13,
-                        fontWeight: FontWeight.w400)),
-              ],
-            ),
+              ),
+            ],
           ),
-          InkWell(
-            onTap: () {
-              //TODO: IMPLEMENT CHECK/UNCHECK TERM FEATURE
-              showToast(
-                  "CHECK/UNCHECK TERM NOT IMPL YET",
-                  context: context,
-                  duration: Duration(seconds: 3),
-                  axis: Axis.horizontal,
-                  alignment: Alignment.center,
-                  position: StyledToastPosition.bottom,
-                  textStyle: const TextStyle(
-                      fontWeight: FontWeight.w400,
-                      color: ColorsConst.white,
-                      fontSize: FontSizeConst.font12));
-            },
-            child: Row(
-              children: [
-                Image.asset(
-                  ImagePath.chooseActiveIcon,
-                  width: 24,
-                  fit: BoxFit.contain,
+          Row(
+            children: [
+              Checkbox(
+                value: _isReceiveMonthlyNewsLetter,
+                activeColor: ColorStyle.primary,
+                onChanged: (value) {
+                  setState(() {
+                    if (value != null) {
+                      _isReceiveMonthlyNewsLetter = value;
+                    }
+                  });
+                },
+              ),
+              Text(
+                S.current.receive_monthly_newsletter_email,
+                style: const TextStyle(
+                  color: ColorStyle.tertiaryDarkLabel60,
+                  fontWeight: FontWeight.w400,
+                  fontSize: FontSizeConst.font13,
+                  fontFamily: FontStyles.sfProText,
                 ),
-                Text(
-                    " Receive monthly newsletter email",
-                    style: const TextStyle(
-                        color: ColorsConst.defaulGray6,
-                        fontSize: FontSizeConst.font13,
-                        fontWeight: FontWeight.w400)),
-              ],
-            ),
-          )
+              ),
+            ],
+          ),
         ],
       ),
     );
@@ -324,52 +501,162 @@ class _ProfileView extends State<ProfileView> {
 
   Widget getButton() {
     return Container(
-      margin: EdgeInsets.only(top: 30),
+      margin: const EdgeInsets.only(top: 30),
       child: Column(
         children: [
           Align(
             alignment: Alignment.center,
             child: OutlinedButton(
               style: OutlinedButton.styleFrom(
-                backgroundColor: ColorsConst.defaulOrange,
-                fixedSize: Size(MediaQuery.of(context).size.width-16, 56),
+                backgroundColor: ColorStyle.primary,
+                fixedSize: Size(MediaQuery.of(context).size.width - 16, 56),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20.0),
                 ),
               ),
-              onPressed: () {
-                //TODO: IMPLEMENT CHANGE ACCOUNT INFO FEATURE
-                showToast(
-                    "CHANGE ACCOUNT INFO NOT IMPL YET",
-                    context: context,
-                    duration: Duration(seconds: 3),
-                    axis: Axis.horizontal,
-                    alignment: Alignment.center,
-                    position: StyledToastPosition.bottom,
-                    textStyle: const TextStyle(
-                        fontWeight: FontWeight.w400,
-                        color: ColorsConst.white,
-                        fontSize: FontSizeConst.font12));
-              },
+              onPressed: _updateAction,
               child: Text(
-                "Save Changes",
-                style: TextStyle(
-                    color: ColorsConst.white,
-                    fontWeight: FontWeight.w900),
+                S.current.save_changes,
+                style: const TextStyle(
+                  color: ColorStyle.lightLabel,
+                  fontFamily: FontStyles.sfProText,
+                  fontSize: FontSizeConst.font17,
+                  fontWeight: FontWeight.w600
+                )
               ),
             ),
           ),
-          Container(
-            margin: EdgeInsets.only(top: 4, bottom: 30),
-            child: Text(
-                " Receive new offer notification emails",
+
+          Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: InkWell(
+              onTap: _signOutAction,
+              hoverColor: Colors.transparent,
+              focusColor: Colors.transparent,
+              splashColor: Colors.transparent,
+              child: Text(
+                S.current.sign_out,
                 style: const TextStyle(
-                    color: ColorsConst.defaulGray6,
-                    fontSize: FontSizeConst.font13,
-                    fontWeight: FontWeight.w400)),
+                  color: ColorStyle.primary,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: FontStyles.sfProText,
+                  fontSize: FontSizeConst.font17,
+                ),
+              ),
+            ),
+          ),
+
+          Container(
+            margin: const EdgeInsets.only(top: 12, bottom: 30),
+            child: InkWell(
+              hoverColor: Colors.transparent,
+              focusColor: Colors.transparent,
+              splashColor: Colors.transparent,
+              onTap: () {},
+              child: RichText(
+                text: TextSpan(
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontFamily: FontStyles.sfProText,
+                  ),
+                  children: [
+                    TextSpan(
+                      text: "${S.current.delete_account} ",
+                      style: const TextStyle(
+                        color: ColorStyle.tertiaryDarkLabel60,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    TextSpan(
+                      text: S.current.here,
+                      style: const TextStyle(
+                        color: ColorStyle.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ]
+                ),
+              ),
+            ),
           )
         ],
       ),
+    );
+  }
+
+  void _showAlert(String message) {
+    showDialog(context: context, builder: (BuildContext context) {
+      return ErrorAlert.alert(context, message);
+    });
+  }
+  void _showLoading() {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return Container(
+              decoration: const BoxDecoration(),
+              child: const Center(
+                child: CupertinoActivityIndicator(
+                  radius: 20,
+                  color: ColorStyle.primary,
+                ),
+              )
+          );
+        }
+    );
+  }
+
+  void _showAlertSuccess() {
+    showDialog(context: context, builder: (context) {
+      if (Platform.isAndroid) {
+        var okAction = TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Text(S.current.ok),
+        );
+        return AlertDialog(
+          content: Text(S.current.update_successful),
+          actions: [
+            okAction,
+          ],
+        );
+      } else {
+        return CupertinoAlertDialog(
+          content: Text(S.current.update_successful),
+          actions: [
+            CupertinoDialogAction(
+              isDefaultAction: true,
+              child: Text(S.current.ok),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            )
+          ],
+        );
+      }
+    });
+  }
+
+  void _signOutAction() {
+    print("sign out");
+    _profileViewModel.signOut()
+        .then((value) {
+          Navigator.of(context).pushReplacementNamed(URLConsts.login);
+    });
+  }
+
+  void _updateAction() {
+    _profileViewModel.update(
+        _firstNameController.text,
+        _familyNameController.text,
+        _emailController.text,
+        _mobileController.text,
+        _newPasswordController.text,
+        _repeatNewPasswordController.text,
+        _isReceiveNewOffer,
+        _isReceiveMonthlyNewsLetter
     );
   }
 }
