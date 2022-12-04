@@ -2,10 +2,12 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:notification_center/notification_center.dart';
+import 'package:photo_view/photo_view.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:rounded_background_text/rounded_background_text.dart';
 import 'package:tudu/consts/color/Colors.dart';
 import 'package:tudu/consts/font/Fonts.dart';
+import 'package:tudu/models/article.dart';
 import 'package:tudu/viewmodels/what_tudu_site_content_detail_viewmodel.dart';
 import 'package:tudu/viewmodels/what_tudu_viewmodel.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
@@ -15,6 +17,9 @@ import 'package:tudu/consts/strings/str_const.dart';
 import 'package:tudu/consts/images/ImagePath.dart';
 import 'package:tudu/generated/l10n.dart';
 
+import '../../models/site.dart';
+import '../../utils/photo_view.dart';
+
 class WhatTuduView extends StatefulWidget {
   const WhatTuduView({super.key});
 
@@ -23,19 +28,47 @@ class WhatTuduView extends StatefulWidget {
 }
 
 class _WhatTuduView extends State<WhatTuduView> {
-  WhatTuduViewModel whatTuduViewModel = WhatTuduViewModel();
-  WhatTuduSiteContentDetailViewModel whatTuduSiteContentDetailViewModel = WhatTuduSiteContentDetailViewModel();
+  WhatTuduViewModel _whatTuduViewModel = WhatTuduViewModel();
+  WhatTuduSiteContentDetailViewModel _whatTuduSiteContentDetailViewModel = WhatTuduSiteContentDetailViewModel();
 
   final ScrollController _scrollController = ScrollController();
+  final TextEditingController _searchController = TextEditingController();
 
-  var _enableAllLocation = false;
+  bool isAtTop = true;
+
+  int _filterType = 3;
+  int _sortType = 0;
 
   @override
   void initState() {
     Future.delayed(const Duration(seconds: 2), () {
-      whatTuduViewModel.showData();
+      _whatTuduViewModel.getListWhatTudu();
     });
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels == 0.0) {
+        isAtTop = true;
+        setState(() {});
+      } else {
+        isAtTop = false;
+        setState(() {});
+      }
+    });
+
+    _searchController.addListener(() {
+      _whatTuduViewModel.filterByTitle(_searchController.text);
+      if (_searchController.text != "") {
+        isAtTop = true;
+      }
+    });
+
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _whatTuduViewModel.dispose();
+    super.dispose();
   }
 
   @override
@@ -43,7 +76,7 @@ class _WhatTuduView extends State<WhatTuduView> {
     return ExitAppScope(
       child: Scaffold(
         appBar: AppBar(
-          toolbarHeight: 94,
+          toolbarHeight: (isAtTop) ? 94 : 56,
           automaticallyImplyLeading: false,
           flexibleSpace: Container(
             padding: EdgeInsets.only(
@@ -72,28 +105,78 @@ class _WhatTuduView extends State<WhatTuduView> {
                         },
                       ),
                       const Spacer(),
-                      InkWell(
-                        onTap: () {},
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Expanded(
-                                child: Image.asset(
-                                    ImagePath.sortIcon,
-                                    fit: BoxFit.contain,
-                                    width: 16.0)
-                            ),
-                            Text(
-                              S.current.sort,
-                              style: const TextStyle(
-                                color: ColorStyle.primary,
-                                fontSize: 10,
-                                fontWeight: FontWeight.w500,
-                                fontFamily: FontStyles.raleway,
+                      PullDownButton(
+                        itemBuilder: (context) => [
+                          PullDownMenuItem(
+                            title: "Alphabet",
+                            itemTheme: const PullDownMenuItemTheme(
+                              textStyle: TextStyle(
+                                  fontFamily: FontStyles.sfProText,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 17,
+                                  color: ColorStyle.menuLabel
                               ),
                             ),
-                          ],
+                            iconWidget: Image.asset(
+                              ImagePath.cenoteIcon,
+                              width: 28, height: 28,
+                            ),
+                            enabled: _sortType != 0,
+                            onTap: () {
+                              _whatTuduViewModel.sortWithAlphabet();
+                              _sortType = 0;
+                            },
+                          ),
+                          const PullDownMenuDivider(),
+                          PullDownMenuItem(
+                            title: "Location",
+                            itemTheme: const PullDownMenuItemTheme(
+                              textStyle: TextStyle(
+                                  fontFamily: FontStyles.sfProText,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 17,
+                                  color: ColorStyle.menuLabel
+                              ),
+
+                            ),
+                            iconWidget: Image.asset(
+                              ImagePath.sunAndHorizonCircleIcon,
+                              width: 28, height: 28,
+                            ),
+                            enabled: _sortType != 1,
+                            onTap: () {
+                              _whatTuduViewModel.sortWithLocation();
+                              _sortType = 1;
+                            },
+                          ),
+                        ],
+                        position: PullDownMenuPosition.automatic,
+                        buttonBuilder: (context, showMenu) => Container(
+                          padding: const EdgeInsets.only(left: 8, right: 8),
+                          child: InkWell(
+                            onTap: showMenu,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                    child: Image.asset(
+                                        ImagePath.sortIcon,
+                                        fit: BoxFit.contain,
+                                        width: 16.0)
+                                ),
+                                Text(
+                                  S.current.sort,
+                                  style: const TextStyle(
+                                    color: ColorStyle.primary,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w500,
+                                    fontFamily: FontStyles.raleway,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
                       const SizedBox(width: 12.0,),
@@ -101,10 +184,6 @@ class _WhatTuduView extends State<WhatTuduView> {
                         itemBuilder: (context) => [
                           PullDownMenuItem(
                             title: S.current.business_type,
-                            iconWidget: Image.asset(
-                              ImagePath.cenoteIcon,
-                              width: 28, height: 28,
-                            ),
                             itemTheme: const PullDownMenuItemTheme(
                               textStyle: TextStyle(
                                 fontFamily: FontStyles.sfProText,
@@ -112,9 +191,16 @@ class _WhatTuduView extends State<WhatTuduView> {
                                 fontSize: 17,
                                 color: ColorStyle.menuLabel
                               ),
-
                             ),
-                            onTap: () {},
+                            iconWidget: Image.asset(
+                              ImagePath.cenoteIcon,
+                              width: 28, height: 28,
+                            ),
+                            enabled: _filterType != 0,
+                            onTap: () {
+                              _whatTuduViewModel.filterByBusinessType(0);
+                              _filterType = 0;
+                            },
                           ),
                           const PullDownMenuDivider(),
                           PullDownMenuItem(
@@ -132,7 +218,11 @@ class _WhatTuduView extends State<WhatTuduView> {
                               ImagePath.sunAndHorizonCircleIcon,
                               width: 28, height: 28,
                             ),
-                            onTap: () {},
+                            enabled: _filterType != 1,
+                            onTap: () {
+                              _whatTuduViewModel.filterByBusinessType(1);
+                              _filterType = 1;
+                            },
                           ),
                           const PullDownMenuDivider(),
                           PullDownMenuItem(
@@ -150,7 +240,11 @@ class _WhatTuduView extends State<WhatTuduView> {
                               ImagePath.desktopComputerIcon,
                               width: 28, height: 28,
                             ),
-                            onTap: () {},
+                            enabled: _filterType != 2,
+                            onTap: () {
+                              _whatTuduViewModel.filterByBusinessType(2);
+                              _filterType = 2;
+                            },
                           ),
                           const PullDownMenuDivider.large(),
                           PullDownMenuItem(
@@ -165,13 +259,16 @@ class _WhatTuduView extends State<WhatTuduView> {
 
                             ),
                             iconWidget: Image.asset(
-                              _enableAllLocation
+                              _filterType != 3
                               ? ImagePath.mappinIcon
                               : ImagePath.mappinDisableIcon,
                               width: 28, height: 28,
                             ),
-                            enabled: _enableAllLocation,
-                            onTap: () {},
+                            enabled: _filterType != 3,
+                            onTap: () {
+                              _whatTuduViewModel.filterByBusinessType(3);
+                              _filterType = 3;
+                            },
                           ),
                         ],
                         position: PullDownMenuPosition.automatic,
@@ -207,12 +304,13 @@ class _WhatTuduView extends State<WhatTuduView> {
                     ],
                   ),
                 ),
-                CupertinoSearchTextField(
+                (isAtTop) ? CupertinoSearchTextField(
+                  controller: _searchController,
                   style: const TextStyle(
-                    color: ColorStyle.darkLabel,
-                    fontFamily: FontStyles.sfProText,
-                    fontSize: FontSizeConst.font17,
-                    fontWeight: FontWeight.w400
+                      color: ColorStyle.darkLabel,
+                      fontFamily: FontStyles.sfProText,
+                      fontSize: FontSizeConst.font17,
+                      fontWeight: FontWeight.w400
                   ),
                   placeholder: S.current.search_placeholder,
                   placeholderStyle: const TextStyle(
@@ -221,7 +319,7 @@ class _WhatTuduView extends State<WhatTuduView> {
                     fontSize: FontSizeConst.font17,
                     fontFamily: FontStyles.sfProText,
                   ),
-                ),
+                ) : Container(),
               ],
             ),
           ),
@@ -264,8 +362,8 @@ class _WhatTuduView extends State<WhatTuduView> {
     return Container(
       margin: const EdgeInsets.only(left: 16, right: 16),
         height: 108.0,
-        child: StreamBuilder<List<String>?>(
-          stream: whatTuduViewModel.listBusinessStream,
+        child: StreamBuilder<List<Article>?>(
+          stream: _whatTuduViewModel.listArticlesStream,
           builder: (_, snapshot) {
             if (!snapshot.hasData) {
               return const Center(
@@ -281,12 +379,12 @@ class _WhatTuduView extends State<WhatTuduView> {
                 itemBuilder: (BuildContext context, int index) {
                   return InkWell(
                     onTap: () {
-                      whatTuduSiteContentDetailViewModel.setSiteContentDetailCover(snapshot.data![index]);
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const WhatTuduSiteContentDetailView(),
-                              settings: const RouteSettings(name: StrConst.whatTuduSiteContentDetailScene)));
+                      // _whatTuduSiteContentDetailViewModel.setSiteContentDetailCover(snapshot.data![index]);
+                      // Navigator.push(
+                      //     context,
+                      //     MaterialPageRoute(
+                      //         builder: (context) => const WhatTuduSiteContentDetailView(),
+                      //         settings: const RouteSettings(name: StrConst.whatTuduSiteContentDetailScene)));
                     },
                     child: Stack(
                       children: [
@@ -304,7 +402,7 @@ class _WhatTuduView extends State<WhatTuduView> {
                               children: [
                                 ClipRRect(
                                   child: Image.network(
-                                    snapshot.data![index],
+                                    snapshot.data![index].banner,
                                     width: MediaQuery.of(context).size.width,
                                     fit: BoxFit.fill,
                                   ),
@@ -313,7 +411,7 @@ class _WhatTuduView extends State<WhatTuduView> {
                                   top: 40,
                                   child: Center(
                                     child: RoundedBackgroundText(
-                                      'Article name',
+                                      snapshot.data![index].title,
                                       style: const TextStyle(
                                         fontFamily: FontStyles.raleway,
                                         fontSize: FontSizeConst.font12,
@@ -391,8 +489,8 @@ class _WhatTuduView extends State<WhatTuduView> {
   }
 
   Widget getExploreAllLocationView() {
-    return StreamBuilder<List<String>?>(
-      stream: whatTuduViewModel.listBusinessStream,
+    return StreamBuilder<List<Site>?>(
+      stream: _whatTuduViewModel.listSitesStream,
       builder: (_, snapshot) {
         if (!snapshot.hasData) {
           return const Center(
@@ -410,7 +508,7 @@ class _WhatTuduView extends State<WhatTuduView> {
                   children: [
                     InkWell(
                       onTap: () {
-                        whatTuduSiteContentDetailViewModel.setSiteContentDetailCover(snapshot.data![index]);
+                        _whatTuduSiteContentDetailViewModel.setSiteContentDetailCover(snapshot.data![index]);
                         Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -437,7 +535,7 @@ class _WhatTuduView extends State<WhatTuduView> {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(8.0),
                           child: Image.network(
-                            snapshot.data![index],
+                            snapshot.data![index].banner,
                             width: MediaQuery.of(context).size.width,
                             height: 236,
                             fit: BoxFit.cover,
@@ -445,22 +543,7 @@ class _WhatTuduView extends State<WhatTuduView> {
                         )
                       ),
                     ),
-                    Container(
-                      height: 40,
-                      width: 40,
-                      margin: const EdgeInsets.only(top: 16, left: 24),
-                      decoration: const BoxDecoration(
-                        color: ColorStyle.secondaryBackground,
-                        borderRadius: BorderRadius.all(
-                            Radius.circular(10.0)
-                        ),
-                      ),
-                      child: Image.asset(
-                        ImagePath.tab1stActiveIcon,
-                        width: 30,
-                        fit: BoxFit.contain,
-                      ),
-                    ),
+                    getDealItemIfExist(snapshot.data![index].haveDeals),
                     Positioned(
                       bottom: 0,
                       child: Container(
@@ -484,10 +567,10 @@ class _WhatTuduView extends State<WhatTuduView> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
+                            children: [
                               Text(
-                                "Title",
-                                style: TextStyle(
+                                snapshot.data![index].title,
+                                style: const TextStyle(
                                   color: ColorStyle.darkLabel,
                                   fontFamily: FontStyles.mouser,
                                   fontWeight: FontWeight.w400,
@@ -495,8 +578,8 @@ class _WhatTuduView extends State<WhatTuduView> {
                                 ),
                               ),
                               Text(
-                                "Subtitle",
-                                style: TextStyle(
+                                snapshot.data![index].subTitle,
+                                style: const TextStyle(
                                   fontFamily: FontStyles.raleway,
                                   fontSize: FontSizeConst.font12,
                                   fontWeight: FontWeight.w400,
@@ -514,5 +597,31 @@ class _WhatTuduView extends State<WhatTuduView> {
         }
       },
     );
+  }
+
+  Widget getDealItemIfExist(bool isDealExist) {
+    if (isDealExist) {
+      return Container(
+        height: 40,
+        width: 40,
+        margin: const EdgeInsets.only(top: 16, left: 24),
+        decoration: const BoxDecoration(
+          color: ColorStyle.tertiaryBackground75,
+          borderRadius: BorderRadius.all(
+              Radius.circular(10.0)
+          ),
+        ),
+        child: Image.asset(
+          ImagePath.tab1stActiveIcon,
+          width: 30,
+          fit: BoxFit.contain,
+        ),
+      );
+    } else {
+      return SizedBox(
+        height: 40,
+        width: 40
+      );
+    }
   }
 }

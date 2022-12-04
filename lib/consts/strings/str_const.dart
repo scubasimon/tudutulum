@@ -1,6 +1,7 @@
 class StrConst {
   static const whatTuduScene = "WhatTuduScreen";
   static const whatTuduSiteContentDetailScene = "WhatTuduSiteContentDetail";
+  static const viewPhoto = "ViewPhoto";
 
   static const emptyString = "";
 

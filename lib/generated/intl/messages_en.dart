@@ -29,6 +29,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Already have an account?"),
         "account_not_exist":
             MessageLookupByLibrary.simpleMessage("Don\'t have an account?"),
+        "advisory": MessageLookupByLibrary.simpleMessage("Advisory"),
         "agree_message":
             MessageLookupByLibrary.simpleMessage("I agree with our"),
         "all_location": MessageLookupByLibrary.simpleMessage("All \'Location"),
@@ -66,6 +67,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "•  Follow us to see our latest deals"),
         "forgot_password":
             MessageLookupByLibrary.simpleMessage("Forgot password?"),
+        "get_in_touch_with":
+            MessageLookupByLibrary.simpleMessage("Get in touch directly with:"),
         "get_started": MessageLookupByLibrary.simpleMessage("Get Started"),
         "login": MessageLookupByLibrary.simpleMessage("Login"),
         "login_description": MessageLookupByLibrary.simpleMessage(
@@ -112,6 +115,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Password must be longer than 6 characters"),
         "password_too_weak_error": MessageLookupByLibrary.simpleMessage(
             "The password provided is too weak"),
+        "please_report": MessageLookupByLibrary.simpleMessage(
+            "Please report anything missing/inaccurate here"),
         "profile": MessageLookupByLibrary.simpleMessage("Profile"),
         "rate_us": MessageLookupByLibrary.simpleMessage("•  Please rate Us"),
         "register_message": MessageLookupByLibrary.simpleMessage(

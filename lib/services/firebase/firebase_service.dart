@@ -25,6 +25,14 @@ abstract class FirebaseService {
   Future<bool> userExists(String userId);
 
   Future<User?> authChanged();
+
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getArticles();
+
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getSites();
+
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getPartners();
+
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getAmenities();
 }
 
 class FirebaseServiceImpl extends FirebaseService {
@@ -166,4 +174,60 @@ class FirebaseServiceImpl extends FirebaseService {
     }
   }
 
+
+  @override
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getArticles() async {
+    try {
+      final listSite = await FirebaseFirestore
+          .instance
+          .collection("articles")
+          .get();
+
+      return listSite.docs;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  @override
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getSites() async {
+    try {
+      final listSite = await FirebaseFirestore
+          .instance
+          .collection("sites")
+          .get();
+
+      return listSite.docs;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  @override
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getPartners() async {
+    try {
+      final listSite = await FirebaseFirestore
+          .instance
+          .collection("partners")
+          .get();
+
+      return listSite.docs;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  @override
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getAmenities() async {
+    try {
+      final listSite = await FirebaseFirestore
+          .instance
+          .collection("amenities")
+          .get();
+
+      return listSite.docs;
+    } catch (e) {
+      return null;
+    }
+  }
 }

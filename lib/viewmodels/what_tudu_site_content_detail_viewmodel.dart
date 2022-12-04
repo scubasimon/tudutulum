@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:tudu/base/base_viewmodel.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../models/site.dart';
+
 class WhatTuduSiteContentDetailViewModel extends BaseViewModel {
   static final WhatTuduSiteContentDetailViewModel _instance =
   WhatTuduSiteContentDetailViewModel._internal();
@@ -12,20 +14,20 @@ class WhatTuduSiteContentDetailViewModel extends BaseViewModel {
 
   WhatTuduSiteContentDetailViewModel._internal();
 
-  final StreamController<String?> _siteContentDetailCoverController = BehaviorSubject<String?>();
-  Stream<String?> get siteContentDetailCoverStream => _siteContentDetailCoverController.stream;
+  final StreamController<Site> _siteContentDetailController = BehaviorSubject<Site>();
+  Stream<Site> get siteContentDetailStream => _siteContentDetailController.stream;
 
-  String? siteContentDetailCover = "";
+  late Site siteContentDetail;
 
-  List<String> listOpenTimes = [
-    "9:30 - 17:30 Monday",
-    "9:30 - 17:30 Tuesday",
-    "9:30 - 17:30 Wednesday",
-    "9:30 - 17:30 Thursday",
-    "9:30 - 17:30 Friday",
-    "9:30 - 17:30 Saturday",
-    "9:30 - 17:30 Sunday",
-  ];
+  // List<String> listOpenTimes = [
+  //   "9:30 - 17:30 Monday",
+  //   "9:30 - 17:30 Tuesday",
+  //   "9:30 - 17:30 Wednesday",
+  //   "9:30 - 17:30 Thursday",
+  //   "9:30 - 17:30 Friday",
+  //   "9:30 - 17:30 Saturday",
+  //   "9:30 - 17:30 Sunday",
+  // ];
 
   List<String> listFees = [
     "'FeesTitle1': 'FeesDetail'1'",
@@ -38,13 +40,13 @@ class WhatTuduSiteContentDetailViewModel extends BaseViewModel {
 
   }
 
-  void setSiteContentDetailCover(String input) {
-    siteContentDetailCover = input;
+  void setSiteContentDetailCover(Site input) {
+    siteContentDetail = input;
     notifyListeners();
   }
 
   void showData() {
-    _siteContentDetailCoverController.sink.add(siteContentDetailCover);
+    _siteContentDetailController.sink.add(siteContentDetail);
     notifyListeners();
   }
 }

@@ -780,6 +780,16 @@ class S {
     );
   }
 
+  /// `Advisory`
+  String get advisory {
+    return Intl.message(
+      'Advisory',
+      name: 'advisory',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Opening times`
   String get open_times {
     return Intl.message(
@@ -820,6 +830,16 @@ class S {
     );
   }
 
+  /// `Get in touch directly with:`
+  String get get_in_touch_with {
+    return Intl.message(
+      'Get in touch directly with:',
+      name: 'get_in_touch_with',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `You can also follow Title on:`
   String get follow_title {
     return Intl.message(
@@ -835,6 +855,16 @@ class S {
     return Intl.message(
       'With thanks to our trusted partner:',
       name: 'thanks_to_our_trusted_partner',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please report anything missing/inaccurate here`
+  String get please_report {
+    return Intl.message(
+      'Please report anything missing/inaccurate here',
+      name: 'please_report',
       desc: '',
       args: [],
     );

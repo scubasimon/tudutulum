@@ -6,6 +6,7 @@ import 'package:notification_center/notification_center.dart';
 import 'package:tudu/consts/color/Colors.dart';
 import 'package:tudu/consts/font/Fonts.dart';
 import 'package:tudu/consts/strings/str_const.dart';
+import 'package:tudu/viewmodels/home_viewmodel.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
 import 'package:tudu/consts/font/font_size_const.dart';
 import 'package:tudu/views/what_tudu/what_tudu_screen.dart';
@@ -29,6 +30,7 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeView extends State<HomeView> with WidgetsBindingObserver {
+  HomeViewModel _homeViewModel = HomeViewModel();
   int pageIndex = 0;
 
   final pages = [
@@ -50,6 +52,10 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
     pageIndex = widget.pageIndex;
     SystemChrome.setPreferredOrientations(
         [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+
+    _homeViewModel.getListPartners();
+    _homeViewModel.getListAmenities();
+
     super.initState();
     WidgetsBinding.instance.addObserver(this);
 
