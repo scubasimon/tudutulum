@@ -37,29 +37,28 @@ class ProfileViewModel extends BaseViewModel {
   }
 
   Future<void> signOut() async {
-    // _loading.sink.add(true);
     try {
       await _authRepository.signOut();
     } catch (e) {
       print(e);
 
     }
-    // _loading.sink.add(false);
   }
 
-  void forgotPassword(String email) {
+  Future<void> forgotPassword(String email) async {
     if (email.isEmpty) {
       throw AuthenticationError.emailEmpty;
     }
-    _loading.sink.add(true);
-    _authRepository.sendPasswordResetEmail(email)
-    .then((_){
-      _loading.sink.add(false);
-    })
-    .catchError((e, stackTrace) {
-      _error.add(e as CustomError);
-    });
+    try {
+      await _authRepository.sendPasswordResetEmail(email);
+    } catch (e) {
+      print(e);
+    }
+  }
 
+  Future<void> deleteAccount() {
+    return _authRepository
+        .deleteAccount();
   }
 
   Future<void> update(

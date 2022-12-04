@@ -1059,6 +1059,76 @@ class S {
       args: [],
     );
   }
+
+  /// `Notification`
+  String get notification {
+    return Intl.message(
+      'Notification',
+      name: 'notification',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Requires login`
+  String get not_login_error {
+    return Intl.message(
+      'Requires login',
+      name: 'not_login_error',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Incorrect email or password`
+  String get account_incorrect_error {
+    return Intl.message(
+      'Incorrect email or password',
+      name: 'account_incorrect_error',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Explore Deals`
+  String get explore_deals {
+    return Intl.message(
+      'Explore Deals',
+      name: 'explore_deals',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Cancel`
+  String get cancel {
+    return Intl.message(
+      'Cancel',
+      name: 'cancel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Do you want to delete your account?`
+  String get confirm_delete_account_message {
+    return Intl.message(
+      'Do you want to delete your account?',
+      name: 'confirm_delete_account_message',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You are not logged in. please log in`
+  String get login_message {
+    return Intl.message(
+      'You are not logged in. please log in',
+      name: 'login_message',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

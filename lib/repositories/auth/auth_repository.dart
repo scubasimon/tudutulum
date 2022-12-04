@@ -24,6 +24,8 @@ abstract class AuthRepository {
   Future<void> signOut();
 
   Future<void> changePassword(String newPassword);
+
+  Future<void> deleteAccount();
 }
 
 class AuthRepositoryImpl extends AuthRepository {
@@ -143,5 +145,15 @@ class AuthRepositoryImpl extends AuthRepository {
   @override
   Future<void> changePassword(String newPassword) {
     return _firebaseService.changePassword(newPassword);
+  }
+
+  @override
+  Future<void> deleteAccount() async {
+    if (FirebaseAuth.instance.currentUser == null){
+      throw AuthenticationError.notLogin;
+    }
+
+    await _firebaseService.removeUser(FirebaseAuth.instance.currentUser!.uid);
+    await _firebaseService.deleteAccount();
   }
 }

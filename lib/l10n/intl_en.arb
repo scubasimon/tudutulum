@@ -99,5 +99,12 @@
   "new_password_empty_error": "New password must be not empty",
   "repeat_password_empty_error": "Repeat password must be not empty",
   "password_not_match_error": "New password and Repeat password do not match",
-  "update_successful": "Update successful"
+  "update_successful": "Update successful",
+  "notification": "Notification",
+  "not_login_error": "Requires login",
+  "account_incorrect_error": "Incorrect email or password",
+  "explore_deals": "Explore Deals",
+  "cancel": "Cancel",
+  "confirm_delete_account_message": "Do you want to delete your account?",
+  "login_message": "You are not logged in. please log in"
 }

@@ -29,6 +29,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "The account already exists for that email"),
         "account_exist_message":
             MessageLookupByLibrary.simpleMessage("Already have an account?"),
+        "account_incorrect_error":
+            MessageLookupByLibrary.simpleMessage("Incorrect email or password"),
         "account_not_exist":
             MessageLookupByLibrary.simpleMessage("Don\'t have an account?"),
         "agree_message":
@@ -41,10 +43,13 @@ class MessageLookup extends MessageLookupByLibrary {
         "bookmarks": MessageLookupByLibrary.simpleMessage("Bookmarks"),
         "business_type":
             MessageLookupByLibrary.simpleMessage("\'Business Type\'"),
+        "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
         "capacity": MessageLookupByLibrary.simpleMessage("Capacity"),
         "change_password":
             MessageLookupByLibrary.simpleMessage("Change Password"),
         "coming_soon": MessageLookupByLibrary.simpleMessage("•  Coming soon"),
+        "confirm_delete_account_message": MessageLookupByLibrary.simpleMessage(
+            "Do you want to delete your account?"),
         "create_account":
             MessageLookupByLibrary.simpleMessage("Create account"),
         "current_password":
@@ -67,6 +72,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Do you really want to exit?"),
         "explore_all_location":
             MessageLookupByLibrary.simpleMessage("Explore All Location"),
+        "explore_deals": MessageLookupByLibrary.simpleMessage("Explore Deals"),
         "failed": MessageLookupByLibrary.simpleMessage("Failed"),
         "family_name": MessageLookupByLibrary.simpleMessage("Family Name"),
         "fees": MessageLookupByLibrary.simpleMessage("Fees"),
@@ -84,6 +90,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "login": MessageLookupByLibrary.simpleMessage("Login"),
         "login_description": MessageLookupByLibrary.simpleMessage(
             "Welcome back,\nPlease sign in"),
+        "login_message": MessageLookupByLibrary.simpleMessage(
+            "You are not logged in. please log in"),
         "map": MessageLookupByLibrary.simpleMessage("Map"),
         "maybe_later": MessageLookupByLibrary.simpleMessage("Maybe later"),
         "mobile": MessageLookupByLibrary.simpleMessage("Mobile"),
@@ -104,6 +112,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "not_agree_term_and_conditions_error":
             MessageLookupByLibrary.simpleMessage(
                 "You have not agreed to the terms and conditions."),
+        "not_login_error":
+            MessageLookupByLibrary.simpleMessage("Requires login"),
+        "notification": MessageLookupByLibrary.simpleMessage("Notification"),
         "ok": MessageLookupByLibrary.simpleMessage("OK"),
         "onboard_description_1":
             MessageLookupByLibrary.simpleMessage("Your Tulum travel companion"),

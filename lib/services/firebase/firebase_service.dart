@@ -35,6 +35,10 @@ abstract class FirebaseService {
   Future<void> changePassword(String newPassword);
 
   Future<void> signOut();
+
+  Future<void> removeUser(String userId);
+
+  Future<void> deleteAccount();
 }
 
 class FirebaseServiceImpl extends FirebaseService {
@@ -78,7 +82,7 @@ class FirebaseServiceImpl extends FirebaseService {
       throw AuthenticationError
           .badCredentials({
         "error": e,
-      }, message: e.message ?? "");
+      }, message: S.current.account_incorrect_error);
     } catch (e) {
       print(e);
       throw CommonError.serverError;
@@ -231,4 +235,25 @@ class FirebaseServiceImpl extends FirebaseService {
     return FirebaseAuth.instance.signOut();
   }
 
+  @override
+  Future<void> removeUser(String userId) async {
+    try {
+      return await FirebaseFirestore
+          .instance
+          .collection("users")
+          .doc(userId)
+          .delete();
+    } catch (e) {
+      print(e);
+      throw CommonError.serverError;
+    }
+  }
+
+  @override
+  Future<void> deleteAccount() {
+    if (FirebaseAuth.instance.currentUser == null) {
+      throw AuthenticationError.notLogin;
+    }
+    return FirebaseAuth.instance.currentUser!.delete();
+  }
 }

@@ -1,13 +1,18 @@
 import 'dart:async';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
+import 'package:notification_center/notification_center.dart';
+import 'package:pull_down_button/pull_down_button.dart';
+import 'package:tudu/consts/color/Colors.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
-import 'package:tudu/localization/language_constants.dart';
 import 'package:tudu/utils/colors_const.dart';
 import 'package:tudu/consts/font/font_size_const.dart';
-import 'package:tudu/consts/strings/str_language_key.dart';
 import 'package:tudu/viewmodels/deals_viewmodel.dart';
 import 'package:tudu/consts/images/ImagePath.dart';
+import 'package:tudu/consts/strings/str_const.dart';
+import 'package:tudu/consts/font/Fonts.dart';
+import 'package:tudu/generated/l10n.dart';
 
 class DealsView extends StatefulWidget {
   const DealsView({super.key});
@@ -20,6 +25,8 @@ class _DealsView extends State<DealsView> {
   DealsViewModel dealsViewModel = DealsViewModel();
 
   final ScrollController _scrollController = ScrollController();
+
+  var _enableAllLocation = false;
 
   @override
   void initState() {
@@ -34,15 +41,15 @@ class _DealsView extends State<DealsView> {
     return ExitAppScope(
       child: Scaffold(
         appBar: AppBar(
-          toolbarHeight: 88,
+          toolbarHeight: 94,
           automaticallyImplyLeading: false,
           flexibleSpace: Container(
             padding: EdgeInsets.only(
-                top: MediaQuery.of(context).padding.top+8,
+                top: MediaQuery.of(context).padding.top + 8,
                 left: 16,
                 right: 16,
                 bottom: 8,),
-            color: ColorsConst.defaulGreen2,
+            color: ColorStyle.navigation,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -50,9 +57,21 @@ class _DealsView extends State<DealsView> {
                   height: 36.0,
                   alignment: Alignment.center,
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       InkWell(
+                        child: Image.asset(
+                          ImagePath.humbergerIcon,
+                          width: 28,
+                          height: 28,
+                        ),
+                        onTap: () {
+                          NotificationCenter().notify(StrConst.openMenu);
+                        },
+                      ),
+                      const Spacer(),
+                      InkWell(
+                        onTap: () {},
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -64,167 +83,210 @@ class _DealsView extends State<DealsView> {
                                     width: 16.0)
                             ),
                             Text(
-                                getTranslated(context, StrLanguageKey.sort),
-                                style: const TextStyle(
-                                    color: ColorsConst.defaulOrange,
-                                    fontSize: FontSizeConst.font10,
-                                    fontWeight: FontWeight.w500)),
+                              S.current.sort,
+                              style: const TextStyle(
+                                color: ColorStyle.primary,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w500,
+                                fontFamily: FontStyles.raleway,
+                              ),
+                            ),
                           ],
                         ),
-                        onTap: () {
-                          //TODO: IMPLEMENT SORT FEATURE
-                          showToast(
-                              "SORT NOT IMPL YET",
-                              context: context,
-                              duration: Duration(seconds: 3),
-                              axis: Axis.horizontal,
-                              alignment: Alignment.center,
-                              position: StyledToastPosition.bottom,
-                              textStyle: const TextStyle(
-                                  fontWeight: FontWeight.w400,
-                                  color: ColorsConst.white,
-                                  fontSize: FontSizeConst.font12));                        },
                       ),
-                      Container(
-                        padding: const EdgeInsets.only(left: 8, right: 8),
-                        child: InkWell(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Expanded(
-                                  child: Image.asset(
-                                      ImagePath.filterIcon,
-                                      fit: BoxFit.contain,
-                                      width: 16.0)
+                      const SizedBox(width: 12.0,),
+                      PullDownButton(
+                        itemBuilder: (context) => [
+                          PullDownMenuItem(
+                            title: S.current.business_type,
+                            iconWidget: Image.asset(
+                              ImagePath.cenoteIcon,
+                              width: 28, height: 28,
+                            ),
+                            itemTheme: const PullDownMenuItemTheme(
+                              textStyle: TextStyle(
+                                  fontFamily: FontStyles.sfProText,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 17,
+                                  color: ColorStyle.menuLabel
                               ),
-                              Text(
-                                  getTranslated(context, StrLanguageKey.filter),
-                                  style: const TextStyle(
-                                      color: ColorsConst.defaulOrange,
-                                      fontSize: FontSizeConst.font10,
-                                      fontWeight: FontWeight.w500)),
-                            ],
+
+                            ),
+                            onTap: () {},
                           ),
-                          onTap: () {
-                            //TODO: IMPLEMENT FILTER FEATURE
-                            showToast(
-                                "FILTER NOT IMPL YET",
-                                context: context,
-                                duration: Duration(seconds: 3),
-                                axis: Axis.horizontal,
-                                alignment: Alignment.center,
-                                position: StyledToastPosition.bottom,
-                                textStyle: const TextStyle(
-                                    fontWeight: FontWeight.w400,
-                                    color: ColorsConst.white,
-                                    fontSize: FontSizeConst.font12));
-                          },
+                          const PullDownMenuDivider(),
+                          PullDownMenuItem(
+                            title: S.current.beach_clubs,
+                            itemTheme: const PullDownMenuItemTheme(
+                              textStyle: TextStyle(
+                                  fontFamily: FontStyles.sfProText,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 17,
+                                  color: ColorStyle.menuLabel
+                              ),
+
+                            ),
+                            iconWidget: Image.asset(
+                              ImagePath.sunAndHorizonCircleIcon,
+                              width: 28, height: 28,
+                            ),
+                            onTap: () {},
+                          ),
+                          const PullDownMenuDivider(),
+                          PullDownMenuItem(
+                            title: S.current.work_spots,
+                            itemTheme: const PullDownMenuItemTheme(
+                              textStyle: TextStyle(
+                                  fontFamily: FontStyles.sfProText,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 17,
+                                  color: ColorStyle.menuLabel
+                              ),
+
+                            ),
+                            iconWidget: Image.asset(
+                              ImagePath.desktopComputerIcon,
+                              width: 28, height: 28,
+                            ),
+                            onTap: () {},
+                          ),
+                          const PullDownMenuDivider.large(),
+                          PullDownMenuItem(
+                            title: S.current.all_location,
+                            itemTheme: const PullDownMenuItemTheme(
+                              textStyle: TextStyle(
+                                  fontFamily: FontStyles.sfProText,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 17,
+                                  color: ColorStyle.menuLabel
+                              ),
+
+                            ),
+                            iconWidget: Image.asset(
+                              _enableAllLocation
+                                  ? ImagePath.mappinIcon
+                                  : ImagePath.mappinDisableIcon,
+                              width: 28, height: 28,
+                            ),
+                            enabled: _enableAllLocation,
+                            onTap: () {},
+                          ),
+                        ],
+                        position: PullDownMenuPosition.automatic,
+                        buttonBuilder: (context, showMenu) => Container(
+                          padding: const EdgeInsets.only(left: 8, right: 8),
+                          child: InkWell(
+                            onTap: showMenu,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: Image.asset(
+                                    ImagePath.filterIcon,
+                                    fit: BoxFit.contain,
+                                    width: 16,
+                                  ),
+                                ),
+                                Text(
+                                  S.current.filter,
+                                  style: const TextStyle(
+                                      color: ColorStyle.primary,
+                                      fontSize: FontSizeConst.font10,
+                                      fontWeight: FontWeight.w500,
+                                      fontFamily: FontStyles.raleway
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
                     ],
                   ),
                 ),
-                Container(
-                  height: 36.0,
-                  padding: const EdgeInsets.only(left: 8, right: 8),
-                  decoration: const BoxDecoration(
-                    color: ColorsConst.defaulGray3,
-                    borderRadius: BorderRadius.all(
-                        Radius.circular(10.0)
-                    ),
+                CupertinoSearchTextField(
+                  style: const TextStyle(
+                      color: ColorStyle.darkLabel,
+                      fontFamily: FontStyles.sfProText,
+                      fontSize: FontSizeConst.font17,
+                      fontWeight: FontWeight.w400
                   ),
-                  child: Row(
-                    children: [
-                      Image.asset(
-                          ImagePath.searchIcon,
-                          fit: BoxFit.contain,
-                          width: 16.0),
-                      Container(
-                        padding: EdgeInsets.only(left: 8, right: 8),
-                        child: Text(
-                          "Search here or use the filter above",
-                          style: const TextStyle(
-                              color: ColorsConst.defaulGray4,
-                              fontSize: FontSizeConst.font17,
-                              fontWeight: FontWeight.w400),
-                      ))
-                    ],
+                  placeholder: S.current.search_placeholder,
+                  placeholderStyle: const TextStyle(
+                    color: ColorStyle.placeHolder,
+                    fontWeight: FontWeight.w400,
+                    fontSize: FontSizeConst.font17,
+                    fontFamily: FontStyles.sfProText,
                   ),
-                )
+                ),
               ],
             ),
           ),
         ),
-        body: Container(
-          child: ListView(
-            controller: _scrollController,
-            children: <Widget>[
-              createDealsView()
-            ],
-          ),
+        body: ListView(
+          controller: _scrollController,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
+              child: createDealsView(),
+            ),
+          ],
         ),
       ),
     );
   }
 
   Widget createDealsView() {
-    return Container(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-            padding: EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 8),
-            width: MediaQuery.of(context).size.width,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Explore Deals",
-                  style: const TextStyle(
-                      color: ColorsConst.black,
-                      fontSize: FontSizeConst.font16,
-                      fontWeight: FontWeight.w400),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Container(
+          padding: const EdgeInsets.only(bottom: 8),
+          width: MediaQuery.of(context).size.width,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                S.current.explore_deals,
+                style: const TextStyle(
+                  color: ColorStyle.darkLabel,
+                  fontSize: FontSizeConst.font16,
+                  fontFamily: FontStyles.mouser,
+                  fontWeight: FontWeight.w400,
                 ),
-                InkWell(
-                  onTap: () {
-                    //TODO: IMPLEMENT MAP
-                    showToast(
-                        "MAP NOT IMPL YET",
-                        context: context,
-                        duration: Duration(seconds: 3),
-                        axis: Axis.horizontal,
-                        alignment: Alignment.center,
-                        position: StyledToastPosition.bottom,
-                        textStyle: const TextStyle(
-                            fontWeight: FontWeight.w400,
-                            color: ColorsConst.white,
-                            fontSize: FontSizeConst.font12));
-                  },
-                  child: Column(
-                    children: [
-                      Image.asset(
-                        ImagePath.mapControllerIcon,
-                        width: 19,
-                        fit: BoxFit.contain,
+              ),
+              const Spacer(),
+              InkWell(
+                hoverColor: Colors.transparent,
+                focusColor: Colors.transparent,
+                splashColor: Colors.transparent,
+                onTap: () {},
+                child: Column(
+                  children: [
+                    Image.asset(
+                      ImagePath.pinMapIcon,
+                      width: 16,
+                      height: 16,
+                    ),
+                    Text(
+                      S.current.map,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontFamily: FontStyles.raleway,
+                          fontSize: FontSizeConst.font10,
+                          color: ColorStyle.primary
                       ),
-                      Text(
-                        "Map",
-                        style: const TextStyle(
-                            color: ColorsConst.defaulOrange,
-                            fontSize: FontSizeConst.font10,
-                            fontWeight: FontWeight.w400),
-                      ),
-                    ],
-                  ),
-                )
-              ],
-            )
-          ),
-          getExploreDealsView(),
-        ],
-      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          )
+        ),
+        getExploreDealsView(),
+      ],
     );
   }
 
@@ -232,13 +294,7 @@ class _DealsView extends State<DealsView> {
     return StreamBuilder<List<String>?>(
       stream: dealsViewModel.listDealsStream,
       builder: (_, snapshot) {
-        if (!snapshot.hasData) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        } else if (snapshot.hasError) {
-          return Center(child: Text("snapshot.hasError"));
-        } else {
+        if (snapshot.hasData) {
           return ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -247,27 +303,20 @@ class _DealsView extends State<DealsView> {
                 return Stack(
                   children: [
                     InkWell(
-                      onTap: () {
-                        // TODO IMPL ON CLICK A DEAL
-                        showToast(
-                            "DEAL NOT IMPL YET",
-                            context: context,
-                            duration: Duration(seconds: 3),
-                            axis: Axis.horizontal,
-                            alignment: Alignment.center,
-                            position: StyledToastPosition.bottom,
-                            textStyle: const TextStyle(
-                                fontWeight: FontWeight.w400,
-                                color: ColorsConst.white,
-                                fontSize: FontSizeConst.font12));
-                      },
+                      onTap: () {},
                       child: Container(
-                          margin: EdgeInsets.only(left: 8, right: 8, bottom: 8),
-                          decoration: const BoxDecoration(
-                            color: ColorsConst.defaulGray3,
-                            borderRadius: BorderRadius.all(
-                                Radius.circular(10.0)
-                            ),
+                          margin: const EdgeInsets.only(bottom: 8),
+                          decoration: BoxDecoration(
+                              borderRadius: const BorderRadius.all(
+                                  Radius.circular(10.0)
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.25),
+                                  blurRadius: 7,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ]
                           ),
                           alignment: Alignment.centerLeft,
                           width: MediaQuery.of(context).size.width,
@@ -276,7 +325,8 @@ class _DealsView extends State<DealsView> {
                             child: Image.network(
                               snapshot.data![index],
                               width: MediaQuery.of(context).size.width,
-                              fit: BoxFit.contain,
+                              fit: BoxFit.cover,
+                              height: 236,
                             ),
                           )
                       ),
@@ -286,7 +336,7 @@ class _DealsView extends State<DealsView> {
                       width: 40,
                       margin: const EdgeInsets.only(top: 16, left: 16),
                       decoration: const BoxDecoration(
-                        color: ColorsConst.defaulGray4,
+                        color: ColorStyle.secondaryBackground,
                         borderRadius: BorderRadius.all(
                             Radius.circular(10.0)
                         ),
@@ -301,37 +351,72 @@ class _DealsView extends State<DealsView> {
                       bottom: 0,
                       child: Container(
                         height: 50.0,
-                        width: 128.0,
+                        width: 130.0,
                         alignment: Alignment.centerLeft,
-                        margin: EdgeInsets.only(left: 8, bottom: 24),
+                        margin: const EdgeInsets.only(bottom: 24),
                         decoration: BoxDecoration(
-                            color: Colors.white,
                             gradient: LinearGradient(
                                 begin: FractionalOffset.centerLeft,
                                 end: FractionalOffset.centerRight,
                                 colors: [
-                                  ColorsConst.defaulGray5.withOpacity(0.8),
-                                  ColorsConst.defaulGray5.withOpacity(0.0),
+                                  ColorStyle.systemBackground.withOpacity(0.8),
+                                  ColorStyle.systemBackground.withOpacity(0.0),
                                 ],
-                                stops: [0.2, 1.0]
+                                stops: const [0.2, 1.0]
                             )),
                         child: Padding(
                           padding: const EdgeInsets.only(left: 16.0),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text("Offset.title"),
-                              Text("Site.Title")
+                            children: const [
+                              Text(
+                                "Tres Galeones",
+                                style: TextStyle(
+                                  color: ColorStyle.darkLabel,
+                                  fontFamily: FontStyles.mouser,
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: FontSizeConst.font12,
+                                ),
+                              ),
+                              Text(
+                                "15% Off food",
+                                style: TextStyle(
+                                  fontFamily: FontStyles.raleway,
+                                  fontSize: FontSizeConst.font12,
+                                  fontWeight: FontWeight.w400,
+                                  color: ColorStyle.darkLabel,
+                                ),
+                              ),
                             ],
                           ),
                         ),
                       ),
+                    ),
+
+                    Positioned(
+                      right: 16,
+                      bottom: 0,
+                      child: Container(
+                        alignment: Alignment.centerRight,
+                        margin: const EdgeInsets.only(bottom: 24),
+                        child: Image.network(
+                          "https://www.starbucks.vn/media/jlrf0uhs/logo_tcm89-366_w1024_n.png",
+                          height: 50,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
                     )
+
                   ],
                 );
               });
+        } else {
+          return Container(
+            color: ColorStyle.systemBackground,
+          );
         }
+
       },
     );
   }

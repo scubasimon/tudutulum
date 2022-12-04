@@ -1,9 +1,8 @@
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tudu/consts/font/Fonts.dart';
 import 'package:tudu/consts/urls/URLConst.dart';
+import 'package:tudu/models/error.dart';
 import 'package:tudu/viewmodels/profile_viewmodel.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
 import 'package:tudu/consts/font/font_size_const.dart';
@@ -11,6 +10,7 @@ import 'package:tudu/consts/images/ImagePath.dart';
 import 'package:tudu/consts/color/Colors.dart';
 import 'package:tudu/generated/l10n.dart';
 import 'package:tudu/views/common/alert.dart';
+import 'dart:io';
 
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
@@ -46,8 +46,14 @@ class _ProfileView extends State<ProfileView> {
       }
     });
     _profileViewModel.error.listen((event) {
-      var message = event.message != null ? event.message! : S.current.failed;
-      _showAlert(message);
+      if (event.code == AuthenticationError.unAuthorized.code) {
+        showDialog(context: context, builder: (context){
+          return ErrorAlert.alertLogin(context);
+        });
+      } else {
+        var message = event.message != null ? event.message! : S.current.failed;
+        _showAlertError(message);
+      }
     });
     _profileViewModel.profile.listen((event) {
       setState(() {
@@ -60,7 +66,7 @@ class _ProfileView extends State<ProfileView> {
       });
     });
     _profileViewModel.updateSuccessful.listen((event) {
-      _showAlertSuccess();
+      _showAlert(S.current.update_successful);
     });
     super.initState();
 
@@ -422,7 +428,7 @@ class _ProfileView extends State<ProfileView> {
                   hoverColor: Colors.transparent,
                   focusColor: Colors.transparent,
                   splashColor: Colors.transparent,
-                  onTap: () {},
+                  onTap: _forgotPasswordAction,
                   child: Text(
                     S.current.forgot_password,
                     style: const TextStyle(
@@ -552,7 +558,7 @@ class _ProfileView extends State<ProfileView> {
               hoverColor: Colors.transparent,
               focusColor: Colors.transparent,
               splashColor: Colors.transparent,
-              onTap: () {},
+              onTap: _deleteAccountAction,
               child: RichText(
                 text: TextSpan(
                   style: const TextStyle(
@@ -584,11 +590,12 @@ class _ProfileView extends State<ProfileView> {
     );
   }
 
-  void _showAlert(String message) {
+  void _showAlertError(String message) {
     showDialog(context: context, builder: (BuildContext context) {
       return ErrorAlert.alert(context, message);
     });
   }
+
   void _showLoading() {
     showDialog(
         context: context,
@@ -607,42 +614,17 @@ class _ProfileView extends State<ProfileView> {
     );
   }
 
-  void _showAlertSuccess() {
+  void _showAlert(String message) {
     showDialog(context: context, builder: (context) {
-      if (Platform.isAndroid) {
-        var okAction = TextButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          child: Text(S.current.ok),
-        );
-        return AlertDialog(
-          content: Text(S.current.update_successful),
-          actions: [
-            okAction,
-          ],
-        );
-      } else {
-        return CupertinoAlertDialog(
-          content: Text(S.current.update_successful),
-          actions: [
-            CupertinoDialogAction(
-              isDefaultAction: true,
-              child: Text(S.current.ok),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            )
-          ],
-        );
-      }
+      return NotificationAlert.alert(context, message);
     });
   }
 
   void _signOutAction() {
-    print("sign out");
+    _showLoading();
     _profileViewModel.signOut()
         .then((value) {
+          Navigator.of(context).pop();
           Navigator.of(context).pushReplacementNamed(URLConsts.login);
     });
   }
@@ -659,4 +641,74 @@ class _ProfileView extends State<ProfileView> {
         _isReceiveMonthlyNewsLetter
     );
   }
+
+  void _forgotPasswordAction() {
+    _showLoading();
+    _profileViewModel
+        .forgotPassword(_emailController.text)
+        .then((_){
+          Navigator.of(context).pop();
+          _showAlert(S.current.reset_password_message);
+    });
+  }
+
+  void _deleteAccountAction() {
+    Widget alert;
+    if (Platform.isAndroid) {
+      var okAction = TextButton(
+        onPressed: _deleteAccount,
+        child: Text(S.current.ok),
+      );
+      var cancelAction = TextButton(
+        onPressed: (){Navigator.of(context).pop();},
+        child: Text(S.current.cancel),
+      );
+      alert = AlertDialog(
+        title: Text(S.current.warning),
+        content: Text(S.current.confirm_delete_account_message),
+        actions: [
+          okAction,
+          cancelAction,
+        ],
+      );
+    } else {
+      alert = CupertinoAlertDialog(
+        title: Text(S.current.warning),
+        content: Text(S.current.confirm_delete_account_message),
+        actions: [
+          CupertinoDialogAction(
+            isDefaultAction: true,
+            onPressed: _deleteAccount,
+            child: Text(S.current.ok),
+          ),
+          CupertinoDialogAction(
+            isDestructiveAction: true,
+            onPressed: (){Navigator.of(context).pop();},
+            child: Text(S.current.cancel),
+          )
+        ],
+      );
+    }
+    showDialog(context: context, builder: (context) {
+      return alert;
+    });
+  }
+
+  void _deleteAccount() {
+    _showLoading();
+    _profileViewModel.deleteAccount()
+        .catchError((e, stackTrace){
+      Navigator.of(context).pop();
+      var error = e as CustomError;
+      var message = error.message != null ? error.message! : S.current.failed;
+      _showAlertError(message);
+
+    })
+        .then((_) {
+      Navigator.of(context).pop();
+      Navigator.of(context).pushReplacementNamed(URLConsts.login);
+    });
+  }
+
+
 }

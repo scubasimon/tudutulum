@@ -93,4 +93,8 @@ class AuthenticationError {
     "E_AUTH_115",
     message: S.current.password_not_match_error,
   );
+  static CustomError notLogin = CustomError(
+    "E_AUTH_115",
+    message: S.current.not_login_error,
+  );
 }
