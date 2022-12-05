@@ -105,6 +105,8 @@
   "account_incorrect_error": "Incorrect email or password",
   "explore_deals": "Explore Deals",
   "cancel": "Cancel",
-  "confirm_delete_account_message": "Do you want to delete your account?",
+  "delete_now": "Delete Now",
+  "deactivate_account_title": "Deactivate Account",
+  "confirm_delete_account_message": "Your account information will be completely removed from our system.\n\nYou will no longer be able to redeem any offers unless you sign up again.\n\nIf you are a subscriber, please ensure you also unsubscribe through Google Play/Appstore.",
   "login_message": "You are not logged in. please log in"
 }

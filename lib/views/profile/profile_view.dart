@@ -657,14 +657,14 @@ class _ProfileView extends State<ProfileView> {
     if (Platform.isAndroid) {
       var okAction = TextButton(
         onPressed: _deleteAccount,
-        child: Text(S.current.ok),
+        child: Text(S.current.delete_now),
       );
       var cancelAction = TextButton(
         onPressed: (){Navigator.of(context).pop();},
         child: Text(S.current.cancel),
       );
       alert = AlertDialog(
-        title: Text(S.current.warning),
+        title: Text(S.current.deactivate_account_title),
         content: Text(S.current.confirm_delete_account_message),
         actions: [
           okAction,
@@ -673,13 +673,13 @@ class _ProfileView extends State<ProfileView> {
       );
     } else {
       alert = CupertinoAlertDialog(
-        title: Text(S.current.warning),
+        title: Text(S.current.deactivate_account_title),
         content: Text(S.current.confirm_delete_account_message),
         actions: [
           CupertinoDialogAction(
             isDefaultAction: true,
             onPressed: _deleteAccount,
-            child: Text(S.current.ok),
+            child: Text(S.current.delete_now),
           ),
           CupertinoDialogAction(
             isDestructiveAction: true,

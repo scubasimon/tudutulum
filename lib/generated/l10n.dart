@@ -1110,10 +1110,30 @@ class S {
     );
   }
 
-  /// `Do you want to delete your account?`
+  /// `Delete Now`
+  String get delete_now {
+    return Intl.message(
+      'Delete Now',
+      name: 'delete_now',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Deactivate Account`
+  String get deactivate_account_title {
+    return Intl.message(
+      'Deactivate Account',
+      name: 'deactivate_account_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your account information will be completely removed from our system.\n\nYou will no longer be able to redeem any offers unless you sign up again.\n\nIf you are a subscriber, please ensure you also unsubscribe through Google Play/Appstore.`
   String get confirm_delete_account_message {
     return Intl.message(
-      'Do you want to delete your account?',
+      'Your account information will be completely removed from our system.\n\nYou will no longer be able to redeem any offers unless you sign up again.\n\nIf you are a subscriber, please ensure you also unsubscribe through Google Play/Appstore.',
       name: 'confirm_delete_account_message',
       desc: '',
       args: [],

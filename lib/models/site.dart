@@ -1,3 +1,5 @@
+import 'package:tudu/models/user.dart';
+
 class Site {
   late String siteId;
   late int locationId;
@@ -28,6 +30,48 @@ class Site {
   late bool visible;
   late String partnerId;
 
+  Site(
+      this.siteId,
+      this.locationId,
+      this.title,
+      this.businessId,
+      this.images,
+      this.logo,
+      this.description,
+      this.moreInfo,
+      this.advisory,
+      this.amenities,
+      this.amenitiesDescription,
+      this.times,
+      this.timeOther,
+      this.timeOtherDescription,
+      this.fees,
+      this.capacity,
+      this.eventIcon,
+      this.eventLink,
+      this.location,
+      this.email,
+      this.telephone,
+      this.whatsapp,
+      this.instagram,
+      this.facebook,
+      this.website,
+      this.google,
+      this.visible,
+      this.partnerId,
+      );
+
+  Site.from(Map<String, dynamic> data) {
+    siteId = data["siteid"] as String;
+    locationId = data["locationid"] as int? ?? defaultLocationId;
+    title = data["title"] as String? ?? "";
+    images = data["images"] as List<String>? ?? [];
+    logo = data["logo"] as String? ?? "";
+    description = data["description"] as String? ?? "";
+    moreInfo = data["moreinfo"] as String? ?? "";
+    advisory = data["advisory"] as String? ?? "";
+
+  }
 }
 
 enum WeekDays {

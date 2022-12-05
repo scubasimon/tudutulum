@@ -49,16 +49,19 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Change Password"),
         "coming_soon": MessageLookupByLibrary.simpleMessage("•  Coming soon"),
         "confirm_delete_account_message": MessageLookupByLibrary.simpleMessage(
-            "Do you want to delete your account?"),
+            "Your account information will be completely removed from our system.\n\nYou will no longer be able to redeem any offers unless you sign up again.\n\nIf you are a subscriber, please ensure you also unsubscribe through Google Play/Appstore."),
         "create_account":
             MessageLookupByLibrary.simpleMessage("Create account"),
         "current_password":
             MessageLookupByLibrary.simpleMessage("Current Password"),
         "current_password_empty_error": MessageLookupByLibrary.simpleMessage(
             "Current password must be not empty"),
+        "deactivate_account_title":
+            MessageLookupByLibrary.simpleMessage("Deactivate Account"),
         "deals": MessageLookupByLibrary.simpleMessage("Deals"),
         "delete_account":
             MessageLookupByLibrary.simpleMessage("Or deactivate your account"),
+        "delete_now": MessageLookupByLibrary.simpleMessage("Delete Now"),
         "email": MessageLookupByLibrary.simpleMessage("Email"),
         "email_empty_error":
             MessageLookupByLibrary.simpleMessage("Email must be not empty"),
