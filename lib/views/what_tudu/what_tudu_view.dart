@@ -8,6 +8,7 @@ import 'package:rounded_background_text/rounded_background_text.dart';
 import 'package:tudu/consts/color/Colors.dart';
 import 'package:tudu/consts/font/Fonts.dart';
 import 'package:tudu/models/article.dart';
+import 'package:tudu/viewmodels/home_viewmodel.dart';
 import 'package:tudu/viewmodels/what_tudu_site_content_detail_viewmodel.dart';
 import 'package:tudu/viewmodels/what_tudu_viewmodel.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
@@ -19,8 +20,10 @@ import 'package:tudu/consts/images/ImagePath.dart';
 import 'package:tudu/generated/l10n.dart';
 
 import '../../models/site.dart';
+import '../../utils/permission_request.dart';
 import '../../utils/photo_view.dart';
 import '../../viewmodels/what_tudu_article_content_detail_viewmodel.dart';
+import '../map/map_view.dart';
 
 class WhatTuduView extends StatefulWidget {
   const WhatTuduView({super.key});
@@ -31,6 +34,7 @@ class WhatTuduView extends StatefulWidget {
 
 class _WhatTuduView extends State<WhatTuduView> {
   WhatTuduViewModel _whatTuduViewModel = WhatTuduViewModel();
+  HomeViewModel _homeViewModel = HomeViewModel();
   WhatTuduArticleContentDetailViewModel _whatTuduArticleDetailViewModel = WhatTuduArticleContentDetailViewModel();
   WhatTuduSiteContentDetailViewModel _whatTuduSiteContentDetailViewModel = WhatTuduSiteContentDetailViewModel();
 
@@ -39,7 +43,7 @@ class _WhatTuduView extends State<WhatTuduView> {
 
   bool isAtTop = true;
 
-  int _filterType = 3;
+  int _filterType = 0;
   int _sortType = 0;
 
   @override
@@ -47,6 +51,8 @@ class _WhatTuduView extends State<WhatTuduView> {
     Future.delayed(const Duration(seconds: 2), () {
       _whatTuduViewModel.getListWhatTudu();
     });
+
+    _filterType = _homeViewModel.listBusiness.length;
 
     _scrollController.addListener(() {
       if (_scrollController.position.pixels == 0.0) {
@@ -120,10 +126,6 @@ class _WhatTuduView extends State<WhatTuduView> {
                                   color: ColorStyle.menuLabel
                               ),
                             ),
-                            iconWidget: Image.asset(
-                              ImagePath.cenoteIcon,
-                              width: 28, height: 28,
-                            ),
                             enabled: _sortType != 0,
                             onTap: () {
                               _whatTuduViewModel.sortWithAlphabet();
@@ -132,7 +134,7 @@ class _WhatTuduView extends State<WhatTuduView> {
                           ),
                           const PullDownMenuDivider(),
                           PullDownMenuItem(
-                            title: "Location",
+                            title: "Ditance",
                             itemTheme: const PullDownMenuItemTheme(
                               textStyle: TextStyle(
                                   fontFamily: FontStyles.sfProText,
@@ -142,14 +144,33 @@ class _WhatTuduView extends State<WhatTuduView> {
                               ),
 
                             ),
-                            iconWidget: Image.asset(
-                              ImagePath.sunAndHorizonCircleIcon,
-                              width: 28, height: 28,
-                            ),
                             enabled: _sortType != 1,
                             onTap: () {
-                              _whatTuduViewModel.sortWithLocation();
-                              _sortType = 1;
+                              PermissionRequest.isResquestPermission = true;
+                              PermissionRequest().permissionServiceCall(
+                                    context,
+                                    (){
+                                      _whatTuduViewModel.sortWithLocation();
+                                      _sortType = 1;
+                                    },
+                              );
+                            },
+                          ),
+                          const PullDownMenuDivider(),
+                          PullDownMenuItem(
+                            title: "Rating",
+                            itemTheme: const PullDownMenuItemTheme(
+                              textStyle: TextStyle(
+                                  fontFamily: FontStyles.sfProText,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 17,
+                                  color: ColorStyle.menuLabel
+                              ),
+                            ),
+                            enabled: _sortType != 2,
+                            onTap: () {
+                              _whatTuduViewModel.sortWithAlphabet();
+                              _sortType = 2;
                             },
                           ),
                         ],
@@ -184,96 +205,55 @@ class _WhatTuduView extends State<WhatTuduView> {
                       ),
                       const SizedBox(width: 12.0,),
                       PullDownButton(
-                        itemBuilder: (context) => [
-                          PullDownMenuItem(
-                            title: S.current.business_type,
-                            itemTheme: const PullDownMenuItemTheme(
-                              textStyle: TextStyle(
-                                fontFamily: FontStyles.sfProText,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 17,
-                                color: ColorStyle.menuLabel
-                              ),
-                            ),
-                            iconWidget: Image.asset(
-                              ImagePath.cenoteIcon,
-                              width: 28, height: 28,
-                            ),
-                            enabled: _filterType != 0,
-                            onTap: () {
-                              _whatTuduViewModel.filterByBusinessType(0);
-                              _filterType = 0;
-                            },
-                          ),
-                          const PullDownMenuDivider(),
-                          PullDownMenuItem(
-                            title: S.current.beach_clubs,
-                            itemTheme: const PullDownMenuItemTheme(
-                              textStyle: TextStyle(
-                                  fontFamily: FontStyles.sfProText,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 17,
-                                  color: ColorStyle.menuLabel
-                              ),
+                        itemBuilder: (context) =>
+                        List<PullDownMenuEntry>.generate(_homeViewModel.listBusiness.length*2+1,(counter) =>
+                        (counter == _homeViewModel.listBusiness.length*2)
+                            ? PullDownMenuItem(
+                              title: S.current.all_location,
+                              itemTheme: const PullDownMenuItemTheme(
+                                textStyle: TextStyle(
+                                    fontFamily: FontStyles.sfProText,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 17,
+                                    color: ColorStyle.menuLabel
+                                ),
 
-                            ),
-                            iconWidget: Image.asset(
-                              ImagePath.sunAndHorizonCircleIcon,
-                              width: 28, height: 28,
-                            ),
-                            enabled: _filterType != 1,
-                            onTap: () {
-                              _whatTuduViewModel.filterByBusinessType(1);
-                              _filterType = 1;
-                            },
-                          ),
-                          const PullDownMenuDivider(),
-                          PullDownMenuItem(
-                            title: S.current.work_spots,
-                            itemTheme: const PullDownMenuItemTheme(
-                              textStyle: TextStyle(
-                                  fontFamily: FontStyles.sfProText,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 17,
-                                  color: ColorStyle.menuLabel
                               ),
-
-                            ),
-                            iconWidget: Image.asset(
-                              ImagePath.desktopComputerIcon,
-                              width: 28, height: 28,
-                            ),
-                            enabled: _filterType != 2,
-                            onTap: () {
-                              _whatTuduViewModel.filterByBusinessType(2);
-                              _filterType = 2;
-                            },
-                          ),
-                          const PullDownMenuDivider.large(),
-                          PullDownMenuItem(
-                            title: S.current.all_location,
-                            itemTheme: const PullDownMenuItemTheme(
-                              textStyle: TextStyle(
-                                  fontFamily: FontStyles.sfProText,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 17,
-                                  color: ColorStyle.menuLabel
+                              iconWidget: Image.asset(
+                                _filterType != 3
+                                    ? ImagePath.mappinIcon
+                                    : ImagePath.mappinDisableIcon,
+                                width: 28, height: 28,
                               ),
-
-                            ),
-                            iconWidget: Image.asset(
-                              _filterType != 3
-                              ? ImagePath.mappinIcon
-                              : ImagePath.mappinDisableIcon,
-                              width: 28, height: 28,
-                            ),
-                            enabled: _filterType != 3,
-                            onTap: () {
-                              _whatTuduViewModel.filterByBusinessType(3);
-                              _filterType = 3;
-                            },
-                          ),
-                        ],
+                              enabled: _filterType != ((counter)/2).round(),
+                              onTap: () {
+                                _whatTuduViewModel.filterByBusinessType(((counter)/2).round());
+                                _filterType = ((counter)/2).round();
+                              },
+                            )
+                            : (counter == _homeViewModel.listBusiness.length*2-1)
+                            ? const PullDownMenuDivider.large()
+                            : (counter % 2 == 0)
+                              ? PullDownMenuItem(
+                                title: (counter %2 == 0) ? _homeViewModel.listBusiness[((counter)/2).round()].type : "",
+                                itemTheme: const PullDownMenuItemTheme(
+                                  textStyle: TextStyle(
+                                      fontFamily: FontStyles.sfProText,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 17,
+                                      color: ColorStyle.menuLabel
+                                  ),
+                                ),
+                                iconWidget: Image.asset(
+                                  ImagePath.cenoteIcon,
+                                  width: 28, height: 28,
+                                ),
+                                enabled: _filterType != ((counter)/2).round(),
+                                onTap: () {
+                                  _whatTuduViewModel.filterByBusinessType(((counter)/2).round());
+                                  _filterType = 0;
+                                },
+                              ) : const PullDownMenuDivider(), growable: false),
                         position: PullDownMenuPosition.automatic,
                         buttonBuilder: (context, showMenu) => Container(
                           padding: const EdgeInsets.only(left: 8, right: 8),
@@ -463,7 +443,16 @@ class _WhatTuduView extends State<WhatTuduView> {
                 hoverColor: Colors.transparent,
                 focusColor: Colors.transparent,
                 splashColor: Colors.transparent,
-                onTap: () {},
+                onTap: () {
+                  print("PermissionRequest -> START");
+                  PermissionRequest.isResquestPermission = true;
+                  PermissionRequest().permissionServiceCall(
+                      context,
+                          () {
+                        Navigator.of(context).push(MaterialPageRoute(builder: (_) => const MapView(isGotoCurrent: true)));
+                      }
+                  );
+                },
                 child: Column(
                   children: [
                     Image.asset(

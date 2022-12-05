@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:tudu/base/base_viewmodel.dart';
 import 'package:tudu/models/amenity.dart';
+import 'package:tudu/models/business.dart';
 
 import '../models/partner.dart';
 import '../repositories/home/home_repository.dart';
@@ -26,6 +27,7 @@ class HomeViewModel extends BaseViewModel {
 
   List<Partner> listPartners = [];
   List<Amenity> listAmenites = [];
+  List<Business> listBusiness = [];
 
   @override
   FutureOr<void> init() {
@@ -67,6 +69,15 @@ class HomeViewModel extends BaseViewModel {
   Future<void> getListAmenities() async {
     try {
       listAmenites = await _homeRepository.getListAmenities();
+      notifyListeners();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> getListBusiness() async {
+    try {
+      listBusiness = await _homeRepository.getListBusinesses();
       notifyListeners();
     } catch (e) {
       rethrow;

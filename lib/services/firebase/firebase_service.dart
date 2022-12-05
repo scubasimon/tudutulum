@@ -33,6 +33,8 @@ abstract class FirebaseService {
   Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getPartners();
 
   Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getAmenities();
+
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getBusinesses();
 }
 
 class FirebaseServiceImpl extends FirebaseService {
@@ -223,6 +225,20 @@ class FirebaseServiceImpl extends FirebaseService {
       final listSite = await FirebaseFirestore
           .instance
           .collection("amenities")
+          .get();
+
+      return listSite.docs;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  @override
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getBusinesses() async {
+    try {
+      final listSite = await FirebaseFirestore
+          .instance
+          .collection("businesses")
           .get();
 
       return listSite.docs;

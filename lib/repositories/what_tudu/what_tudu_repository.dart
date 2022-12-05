@@ -58,9 +58,12 @@ class WhatTuduRepositoryImpl extends WhatTuduRepository {
       for (var remoteArticle in listRemoteArticles) {
         listArticles.add(
           Article(
-              articleId: remoteArticle["articleId"],
-              banner: remoteArticle["banner"],
-              title: remoteArticle["title"])
+            articleId: remoteArticle["articleId"],
+            banner: remoteArticle["banner"],
+            title: remoteArticle["title"],
+            business: FuncUlti.getListIntFromListDynamic(remoteArticle["business"]),
+            listContent: FuncUlti.getMapStringListFromStringDynamic(remoteArticle["listContent"]),
+          )
         );
       }
     }

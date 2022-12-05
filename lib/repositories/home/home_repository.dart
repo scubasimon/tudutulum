@@ -1,3 +1,4 @@
+import 'package:tudu/models/business.dart';
 import 'package:tudu/utils/func_utils.dart';
 
 import '../../models/amenity.dart';
@@ -8,6 +9,7 @@ import '../../services/firebase/firebase_service.dart';
 abstract class HomeRepository {
   Future<List<Partner>> getListPartners();
   Future<List<Amenity>> getListAmenities();
+  Future<List<Business>> getListBusinesses();
 }
 
 class HomeRepositoryImpl extends HomeRepository {
@@ -49,5 +51,23 @@ class HomeRepositoryImpl extends HomeRepository {
       }
     }
     return listAmenites;
+  }
+
+  @override
+  Future<List<Business>> getListBusinesses() async {
+    List<Business> listBusiness = [];
+    var listRemoteBusiness = await _firebaseService.getBusinesses();
+    if (listRemoteBusiness != null) {
+      for (var remoteBusiness in listRemoteBusiness) {
+        listBusiness.add(
+            Business(
+              businessid: remoteBusiness["businessid"],
+              locationid: remoteBusiness["locationid"],
+              type: remoteBusiness["type"],
+            )
+        );
+      }
+    }
+    return listBusiness;
   }
 }

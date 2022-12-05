@@ -9,7 +9,7 @@ import 'package:tudu/consts/strings/str_const.dart';
 import 'package:tudu/viewmodels/home_viewmodel.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
 import 'package:tudu/consts/font/font_size_const.dart';
-import 'package:tudu/views/what_tudu/what_tudu_screen.dart';
+import 'package:tudu/views/what_tudu/what_tudu_view.dart';
 import 'package:tudu/views/events/events_view.dart';
 import 'package:tudu/views/deals/deals_view.dart';
 import 'package:tudu/views/bookmarks/bookmarks_view.dart';
@@ -57,6 +57,7 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
     SystemChrome.setPreferredOrientations(
         [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
+    _homeViewModel.getListBusiness();
     _homeViewModel.getListPartners();
     _homeViewModel.getListAmenities();
 

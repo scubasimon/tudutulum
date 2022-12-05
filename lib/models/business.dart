@@ -1,17 +1,17 @@
 class Business {
-  int businessId;
+  int businessid;
   int locationid;
   String type;
 
   Business(
       {
-        required this.businessId,
+        required this.businessid,
         required this.locationid,
         required this.type,
       });
 
   Map<String, dynamic> toJson() => {
-    "businessId": businessId,
+    "businessid": businessid,
     "locationid": locationid,
     "type": type
   };
