@@ -19,22 +19,6 @@ class WhatTuduSiteContentDetailViewModel extends BaseViewModel {
 
   late Site siteContentDetail;
 
-  // List<String> listOpenTimes = [
-  //   "9:30 - 17:30 Monday",
-  //   "9:30 - 17:30 Tuesday",
-  //   "9:30 - 17:30 Wednesday",
-  //   "9:30 - 17:30 Thursday",
-  //   "9:30 - 17:30 Friday",
-  //   "9:30 - 17:30 Saturday",
-  //   "9:30 - 17:30 Sunday",
-  // ];
-
-  List<String> listFees = [
-    "'FeesTitle1': 'FeesDetail'1'",
-    "'FeesTitle2': 'FeesDetail'2'",
-    "'FeesTitle3': 'FeesDetail'3'",
-  ];
-
   @override
   FutureOr<void> init() {
 
@@ -42,11 +26,6 @@ class WhatTuduSiteContentDetailViewModel extends BaseViewModel {
 
   void setSiteContentDetailCover(Site input) {
     siteContentDetail = input;
-    notifyListeners();
-  }
-
-  void showData() {
-    _siteContentDetailController.sink.add(siteContentDetail);
     notifyListeners();
   }
 }

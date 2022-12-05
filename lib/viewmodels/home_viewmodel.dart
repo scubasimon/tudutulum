@@ -4,6 +4,9 @@ import 'package:tudu/models/amenity.dart';
 
 import '../models/partner.dart';
 import '../repositories/home/home_repository.dart';
+import 'dart:async';
+import 'package:tudu/base/base_viewmodel.dart';
+import 'package:rxdart/rxdart.dart';
 
 class HomeViewModel extends BaseViewModel {
 
@@ -18,12 +21,20 @@ class HomeViewModel extends BaseViewModel {
 
   HomeViewModel._internal();
 
+  final StreamController<int> _redirectTabController = BehaviorSubject<int>();
+  Stream<int> get redirectTabStream => _redirectTabController.stream;
+
   List<Partner> listPartners = [];
   List<Amenity> listAmenites = [];
 
   @override
   FutureOr<void> init() {
 
+  }
+
+  void redirectTab(int tabIndex) {
+    _redirectTabController.sink.add(tabIndex);
+    notifyListeners();
   }
 
   Partner? getPartnerById(int idInput) {

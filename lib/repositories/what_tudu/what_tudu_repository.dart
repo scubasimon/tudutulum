@@ -20,7 +20,7 @@ class WhatTuduRepositoryImpl extends WhatTuduRepository {
        for (var remoteSite in listRemoteSites) {
          listSites.add(
            Site(
-             banner: remoteSite["banner"],
+             images: FuncUlti.getListStringFromListDynamic(remoteSite["image"]),
              siteId: remoteSite["siteid"],
              haveDeals: remoteSite["haveDeals"],
              title: remoteSite["title"],
@@ -32,10 +32,13 @@ class WhatTuduRepositoryImpl extends WhatTuduRepository {
                description: remoteSite["contentDescription"],
                moreInformation: remoteSite["moreInformation"],
                advisory: remoteSite["advisory"],
-               openingTimes: FuncUlti.getListStringFromListDynamic(remoteSite["openingTimes"]),
+               amenities: FuncUlti.getListIntFromListDynamic(remoteSite["amenities"]),
+               amentityDescriptions: FuncUlti.getListStringFromListDynamic(remoteSite["amentityDescriptions"]),
+               openingTimes: FuncUlti.getMapStringStringFromStringDynamic(remoteSite["openingTimes"]),
                fees: FuncUlti.getMapStringListFromStringDynamic(remoteSite["fees"]),
                capacity: remoteSite["capacity"],
-               eventsAndExps: FuncUlti.getListIntFromListDynamic(remoteSite["amenities"]),
+               eventIcons: FuncUlti.getListStringFromListDynamic(remoteSite["eventIcons"]),
+               eventLinks: FuncUlti.getListStringFromListDynamic(remoteSite["eventLinks"]),
                getIntouch: FuncUlti.getMapStringStringFromStringDynamic(remoteSite["getIntouch"]),
                logo: remoteSite["logo"],
                partner: remoteSite["partner"],

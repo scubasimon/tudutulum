@@ -20,7 +20,7 @@ import 'package:tudu/generated/l10n.dart';
 
 
 class PhotoViewUtil extends StatefulWidget {
-  final String banner;
+  final List<String> banner;
   const PhotoViewUtil({
     Key? key,
     required this.banner,
@@ -83,7 +83,7 @@ class _PhotoViewUtil extends State<PhotoViewUtil> with WidgetsBindingObserver {
             onTap: () => Navigator.of(context).pop(),
             child: PhotoView(
                 imageProvider: NetworkImage(
-                    widget.banner
+                    widget.banner.first
                 )
             )
         )

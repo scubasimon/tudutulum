@@ -150,6 +150,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "warning": MessageLookupByLibrary.simpleMessage("Warning"),
         "what_tudu": MessageLookupByLibrary.simpleMessage("What tudu?"),
         "work_spots": MessageLookupByLibrary.simpleMessage("Workspots"),
-        "yes": MessageLookupByLibrary.simpleMessage("Yes")
+        "yes": MessageLookupByLibrary.simpleMessage("Yes"),
+        "you_can_expect":
+            MessageLookupByLibrary.simpleMessage("You can expect...")
       };
 }

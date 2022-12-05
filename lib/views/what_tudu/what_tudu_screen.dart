@@ -11,6 +11,7 @@ import 'package:tudu/models/article.dart';
 import 'package:tudu/viewmodels/what_tudu_site_content_detail_viewmodel.dart';
 import 'package:tudu/viewmodels/what_tudu_viewmodel.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
+import 'package:tudu/views/what_tudu/what_tudu_article_content_detail_view.dart';
 import 'package:tudu/views/what_tudu/what_tudu_site_content_detail_view.dart';
 import 'package:tudu/consts/font/font_size_const.dart';
 import 'package:tudu/consts/strings/str_const.dart';
@@ -19,6 +20,7 @@ import 'package:tudu/generated/l10n.dart';
 
 import '../../models/site.dart';
 import '../../utils/photo_view.dart';
+import '../../viewmodels/what_tudu_article_content_detail_viewmodel.dart';
 
 class WhatTuduView extends StatefulWidget {
   const WhatTuduView({super.key});
@@ -29,6 +31,7 @@ class WhatTuduView extends StatefulWidget {
 
 class _WhatTuduView extends State<WhatTuduView> {
   WhatTuduViewModel _whatTuduViewModel = WhatTuduViewModel();
+  WhatTuduArticleContentDetailViewModel _whatTuduArticleDetailViewModel = WhatTuduArticleContentDetailViewModel();
   WhatTuduSiteContentDetailViewModel _whatTuduSiteContentDetailViewModel = WhatTuduSiteContentDetailViewModel();
 
   final ScrollController _scrollController = ScrollController();
@@ -379,12 +382,12 @@ class _WhatTuduView extends State<WhatTuduView> {
                 itemBuilder: (BuildContext context, int index) {
                   return InkWell(
                     onTap: () {
-                      // _whatTuduSiteContentDetailViewModel.setSiteContentDetailCover(snapshot.data![index]);
-                      // Navigator.push(
-                      //     context,
-                      //     MaterialPageRoute(
-                      //         builder: (context) => const WhatTuduSiteContentDetailView(),
-                      //         settings: const RouteSettings(name: StrConst.whatTuduSiteContentDetailScene)));
+                      _whatTuduArticleDetailViewModel.setArticleDetailCover(snapshot.data![index]);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const WhatTuduArticleContentDetailView(),
+                              settings: const RouteSettings(name: StrConst.whatTuduSiteContentDetailScene)));
                     },
                     child: Stack(
                       children: [
@@ -535,7 +538,7 @@ class _WhatTuduView extends State<WhatTuduView> {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(8.0),
                           child: Image.network(
-                            snapshot.data![index].banner,
+                            snapshot.data![index].images.first,
                             width: MediaQuery.of(context).size.width,
                             height: 236,
                             fit: BoxFit.cover,

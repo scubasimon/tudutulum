@@ -47,5 +47,19 @@ class FuncUlti {
     }
     return result;
   }
+
+  static String getDayInWeekFromKeyword(String input) {
+    switch (input) {
+      case "mon": return "Monday";
+      case "tue": return "Tueday";
+      case "wed": return "Wedday";
+      case "fri": return "Friday";
+      case "thu": return "Thuday";
+      case "sat": return "Satday";
+      case "sun": return "Sunday";
+      case "other": return "Other";
+      default: return "NaN";
+    }
+  }
 }
 

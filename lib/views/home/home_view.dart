@@ -45,9 +45,13 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
 
   late StreamSubscription<String> connectWalletStreamStringListener;
 
+  StreamSubscription<int>? redirectTabStreamListener = null;
+
+
   @override
   void initState() {
     NotificationCenter().subscribe(StrConst.openMenu, _openDrawer);
+    listenToRedirectTab();
     //set orientation is portrait
     pageIndex = widget.pageIndex;
     SystemChrome.setPreferredOrientations(
@@ -63,6 +67,20 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
       // Action after build()
     });
 
+  }
+
+  void listenToRedirectTab() {
+    if (redirectTabStreamListener == null) {
+      redirectTabStreamListener = _homeViewModel.redirectTabStream.asBroadcastStream().listen((data) {
+        print("listenToRedirectTab -> $data");
+        Navigator.of(context).popUntil((route){
+          return (route.isFirst);
+        });
+        setState(() {
+          pageIndex = data;
+        });
+      });
+    }
   }
 
   @override

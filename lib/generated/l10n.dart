@@ -790,6 +790,16 @@ class S {
     );
   }
 
+  /// `You can expect...`
+  String get you_can_expect {
+    return Intl.message(
+      'You can expect...',
+      name: 'you_can_expect',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Opening times`
   String get open_times {
     return Intl.message(

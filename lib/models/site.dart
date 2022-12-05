@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Site {
   int siteId;
-  String banner;
+  List<String> images;
   bool haveDeals;
   String title;
   String subTitle;
@@ -12,7 +12,7 @@ class Site {
 
   Site(
       {
-        required this.banner,
+        required this.images,
         required this.siteId,
         required this.haveDeals,
         required this.title,
@@ -32,10 +32,13 @@ class SiteContent {
   String description;
   String moreInformation;
   String advisory;
-  List<String> openingTimes;
+  List<int> amenities;
+  List<String> amentityDescriptions;
+  Map<String, String> openingTimes;
   Map<String, List<String>> fees;
   String capacity;
-  List<int> eventsAndExps;
+  List<String> eventIcons;
+  List<String> eventLinks;
   Map<String, String> getIntouch;
   String logo;
   int partner;
@@ -46,10 +49,13 @@ class SiteContent {
         required this.description,
         required this.moreInformation,
         required this.advisory,
+        required this.amenities,
+        required this.amentityDescriptions,
         required this.openingTimes,
         required this.fees,
         required this.capacity,
-        required this.eventsAndExps,
+        required this.eventIcons,
+        required this.eventLinks,
         required this.getIntouch,
         required this.logo,
         required this.partner,
