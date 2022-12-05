@@ -166,7 +166,7 @@ class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDeta
 
   Widget getTitle(Map<String, List<String>> listContent) {
     return Container(
-      padding: const EdgeInsets.only(top: 20.0, left: 18, right: 18),
+      padding: const EdgeInsets.only(top: 20.0),
       child: Column(
         children: listContent["title"]!.map((content) =>
             getArticleContentView(listContent["title"]!.indexOf(content), listContent)).toList(),

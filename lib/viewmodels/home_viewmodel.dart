@@ -39,6 +39,15 @@ class HomeViewModel extends BaseViewModel {
     notifyListeners();
   }
 
+  Business? getBusinessById(int idInput) {
+    for (var element in listBusiness) {
+      if (element.businessid == idInput) {
+        return element;
+      }
+    }
+    return null;
+  }
+
   Partner? getPartnerById(int idInput) {
     for (var element in listPartners) {
       if (element.partnerId == idInput) {

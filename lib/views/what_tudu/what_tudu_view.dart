@@ -10,6 +10,7 @@ import 'package:rounded_background_text/rounded_background_text.dart';
 import 'package:tudu/consts/color/Colors.dart';
 import 'package:tudu/consts/font/Fonts.dart';
 import 'package:tudu/models/article.dart';
+import 'package:tudu/models/business.dart';
 import 'package:tudu/viewmodels/home_viewmodel.dart';
 import 'package:tudu/viewmodels/what_tudu_site_content_detail_viewmodel.dart';
 import 'package:tudu/viewmodels/what_tudu_viewmodel.dart';
@@ -28,6 +29,12 @@ import '../../viewmodels/what_tudu_article_content_detail_viewmodel.dart';
 import '../common/alert.dart';
 import '../map/map_view.dart';
 
+enum DataLoadingType {
+  LOADING,
+  EMPTY,
+  DATA,
+}
+
 class WhatTuduView extends StatefulWidget {
   const WhatTuduView({super.key});
 
@@ -44,8 +51,13 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
 
+  StreamSubscription<List<Article>?>? zeroDataArticleListener = null;
+  StreamSubscription<List<Site>?>? zeroDataSiteListener = null;
+
   bool isAtTop = true;
 
+  DataLoadingType _isArticleZeroDataResult = DataLoadingType.LOADING;
+  DataLoadingType _isSiteZeroDataResult = DataLoadingType.LOADING;
   int _filterType = 0;
   int _sortType = 0;
 
@@ -53,6 +65,8 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
 
   @override
   void initState() {
+    listenToZeroDataFilter();
+
     _filterType = _homeViewModel.listBusiness.length;
 
     _scrollController.addListener(() {
@@ -85,8 +99,36 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
     });
   }
 
+  void listenToZeroDataFilter() {
+    zeroDataArticleListener ??= _whatTuduViewModel.listArticlesStream.asBroadcastStream().listen((data) {
+      setState(() {
+        if (data == null) {
+          _isArticleZeroDataResult = DataLoadingType.EMPTY;
+        } else if (data.isEmpty) {
+          _isArticleZeroDataResult = DataLoadingType.EMPTY;
+        } else {
+          _isArticleZeroDataResult = DataLoadingType.DATA;
+        }
+      });
+    });
+
+    zeroDataSiteListener ??= _whatTuduViewModel.listSitesStream.asBroadcastStream().listen((data) {
+      setState(() {
+        if (data == null) {
+          _isSiteZeroDataResult = DataLoadingType.EMPTY;
+        } else if (data.isEmpty) {
+          _isSiteZeroDataResult = DataLoadingType.EMPTY;
+        } else {
+          _isSiteZeroDataResult = DataLoadingType.DATA;
+        }
+      });
+    });
+  }
+
   @override
   void dispose() {
+    zeroDataArticleListener?.cancel();
+    zeroDataSiteListener?.cancel();
     super.dispose();
   }
 
@@ -111,7 +153,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
 
   void _onLoading() async{
     // monitor network fetch
-    _whatTuduViewModel.getListWhatTudu();
+    await _whatTuduViewModel.getListWhatTudu();
     if(mounted) setState(() {});
     _refreshController.loadComplete();
   }
@@ -350,16 +392,62 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
             controller: _refreshController,
             onRefresh: _onRefresh,
             onLoading: _onLoading,
-            child: ListView(
-              controller: _scrollController,
-              children: [
-                createAllLocationArticlesView(),
-                createExploreAllLocationView()
-              ],
-            ),
+            child: getMainView(),
           )
       ),
     );
+  }
+
+  Widget getMainView() {
+    if (_isArticleZeroDataResult == DataLoadingType.EMPTY && _isSiteZeroDataResult == DataLoadingType.EMPTY) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            height: MediaQuery.of(context).size.width,
+            width: MediaQuery.of(context).size.width,
+            child: CachedNetworkImage(
+              imageUrl: "https://www.designbolts.com/wp-content/uploads/2016/03/404-Web-Page-Design-Examples-17.jpg",
+              height: MediaQuery.of(context).size.width,
+              width: MediaQuery.of(context).size.width,
+              fit: BoxFit.fill,
+              imageBuilder: (context, imageProvider) => Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                      image: imageProvider,
+                      fit: BoxFit.cover),
+                ),
+              ),
+              placeholder: (context, url) => const CupertinoActivityIndicator(
+                radius: 20,
+                color: ColorStyle.primary,
+              ),
+              errorWidget: (context, url, error) => Icon(Icons.error),
+            ),
+          )
+        ],
+      );
+    } else if (_isArticleZeroDataResult == DataLoadingType.LOADING && _isSiteZeroDataResult == DataLoadingType.LOADING) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: const [
+          CupertinoActivityIndicator(
+            radius: 20,
+            color: ColorStyle.primary,
+          ),
+        ],
+      );
+    } else {
+      return ListView(
+        controller: _scrollController,
+        children: [
+          createAllLocationArticlesView(),
+          createExploreAllLocationView()
+        ],
+      );
+    }
   }
 
   Widget createAllLocationArticlesView() {
@@ -367,29 +455,12 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
       stream: _whatTuduViewModel.listArticlesStream,
       builder: (_, snapshot) {
         if (!snapshot.hasData) {
-          return const Center(
-            child: CupertinoActivityIndicator(
-              radius: 20,
-              color: ColorStyle.primary,
-            ),
-          );
+          return Container();
         } else if (snapshot.hasError) {
           return const Center(child: Text("snapshot.hasError"));
         } else {
           if (snapshot.data!.isEmpty) {
-            return Container(
-              alignment: Alignment.center,
-              height: 50,
-              child: Text(
-                "There is no Site",
-                style: const TextStyle(
-                    fontWeight: FontWeight.w500,
-                    fontFamily: FontStyles.mouser,
-                    fontSize: FontSizeConst.font14,
-                    color: ColorStyle.primary
-                ),
-              ),
-            );
+            return Container();
           }
           return Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -399,7 +470,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                 padding: const EdgeInsets.only(top: 8, bottom: 8, left: 16, right: 16),
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  S.current.all_location_articles,
+                  getArticleTitleText(_filterType),
                   style: const TextStyle(
                       color: ColorStyle.darkLabel,
                       fontSize: FontSizeConst.font16,
@@ -503,29 +574,12 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
       stream: _whatTuduViewModel.listSitesStream,
       builder: (_, snapshot) {
         if (!snapshot.hasData) {
-          return const Center(
-            child: CupertinoActivityIndicator(
-              radius: 20,
-              color: ColorStyle.primary,
-            ),
-          );
+          return Container();
         } else if (snapshot.hasError) {
           return const Center(child: Text("snapshot.hasError"));
         } else {
           if (snapshot.data!.isEmpty) {
-            return Container(
-              alignment: Alignment.center,
-              height: 50,
-              child: Text(
-                "There is no Article",
-                style: const TextStyle(
-                    fontWeight: FontWeight.w500,
-                    fontFamily: FontStyles.mouser,
-                    fontSize: FontSizeConst.font14,
-                    color: ColorStyle.primary
-                ),
-              ),
-            );
+            return Container();
           }
           return Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -537,7 +591,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                 child: Row(
                   children: [
                     Text(
-                      S.current.explore_all_location,
+                      getSiteTitleText(_filterType),
                       style: const TextStyle(
                         color: ColorStyle.darkLabel,
                         fontSize: FontSizeConst.font16,
@@ -754,5 +808,21 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
     showDialog(context: context, builder: (BuildContext context) {
       return ErrorAlert.alert(context, message);
     });
+  }
+
+  String getArticleTitleText(int index) {
+    if (index >= _homeViewModel.listBusiness.length) {
+      return "All Tulum Articles";
+    } else {
+      return "${_homeViewModel.listBusiness[index].type} Articles";
+    }
+  }
+
+  String getSiteTitleText(int index) {
+    if (index >= _homeViewModel.listBusiness.length) {
+      return "Explore All Location";
+    } else {
+      return "Explore ${_homeViewModel.listBusiness[index]}";
+    }
   }
 }
