@@ -6,6 +6,7 @@ import 'package:location/location.dart';
 import 'package:tudu/base/base_viewmodel.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:tudu/models/article.dart';
+import 'package:tudu/models/business.dart';
 import 'package:tudu/models/site.dart';
 
 import '../models/auth.dart';
@@ -30,7 +31,9 @@ class WhatTuduViewModel extends BaseViewModel {
   Stream<List<Site>?> get listSitesStream => _listSitesController.stream;
 
   List<Article> listArticles = [];
+  List<Article> listArticlesFilter = [];
   List<Site> listSites = [];
+  List<Site> listSitesFilter = [];
 
   late bool serviceEnabled;
   locationLib.Location location = locationLib.Location();
@@ -41,6 +44,7 @@ class WhatTuduViewModel extends BaseViewModel {
   Future<void> getListWhatTudu() async {
     try {
       listArticles = await _whatTuduRepository.getListArticle();
+      listArticlesFilter = listArticles.where((o) => true).toList();
       listArticles.sort((a, b) => a.title.compareTo(b.title));
       _listArticlesController.sink.add(listArticles);
       notifyListeners();
@@ -50,6 +54,7 @@ class WhatTuduViewModel extends BaseViewModel {
 
     try {
       listSites = await _whatTuduRepository.getListWhatTudu();
+      listSitesFilter = listSites.where((o) => true).toList();
       listSites.sort((a, b) => a.title.compareTo(b.title));
       _listSitesController.sink.add(listSites);
       notifyListeners();
@@ -62,57 +67,69 @@ class WhatTuduViewModel extends BaseViewModel {
     _listArticlesController.sink.add(null);
     _listSitesController.sink.add(null);
 
-    List<Article> outputListA =
-        listArticles.where((o) => o.title.toLowerCase().contains(keyWord.toLowerCase())).toList();
-    List<Site> outputListS = listSites.where((o) => o.title.toLowerCase().contains(keyWord.toLowerCase())).toList();
+    listArticlesFilter = listArticles.where((o) => o.title.toLowerCase().contains(keyWord.toLowerCase())).toList();
+    listSitesFilter = listSites.where((o) => o.title.toLowerCase().contains(keyWord.toLowerCase())).toList();
 
-    _listArticlesController.sink.add(outputListA);
-    _listSitesController.sink.add(outputListS);
+    _listArticlesController.sink.add(listArticlesFilter);
+    _listSitesController.sink.add(listSitesFilter);
     notifyListeners();
   }
 
-  void filterByBusinessType(int business) async {
-    if (business == 3) {
-      _listSitesController.sink.add(null);
-      _listArticlesController.sink.add(null);
+  void filterByBusinessType(Business? business) {
+    if (business != null) {
+      listArticlesFilter = listArticles.where((o) => o.business.contains(business.businessid)).toList();
+      listSitesFilter = listSites.where((o) => o.business.contains(business.businessid)).toList();
 
-      _listSitesController.sink.add(listSites);
-      _listArticlesController.sink.add(listArticles);
-      notifyListeners();
+      _listArticlesController.sink.add(null);
+      _listSitesController.sink.add(null);
+
+      _listArticlesController.sink.add(listArticlesFilter);
+      _listSitesController.sink.add(listSitesFilter);
     } else {
-      List<Article> outputAList = listArticles.where((o) => o.business.contains(business)).toList();
-      List<Site> outputSList = listSites.where((o) => o.business.contains(business)).toList();
+      listArticlesFilter = listArticles.where((o) => true).toList();
+      listSitesFilter = listSites.where((o) => true).toList();
 
       _listArticlesController.sink.add(null);
       _listSitesController.sink.add(null);
 
-      _listArticlesController.sink.add(outputAList);
-      _listSitesController.sink.add(outputSList);
-      notifyListeners();
+      _listArticlesController.sink.add(listArticles);
+      _listSitesController.sink.add(listSites);
     }
+    notifyListeners();
   }
 
   void sortWithAlphabet() async {
     _listArticlesController.sink.add(null);
     _listSitesController.sink.add(null);
 
-    listArticles.sort((a, b) => a.title.compareTo(b.title));
-    listSites.sort((a, b) => a.title.compareTo(b.title));
+    listArticlesFilter.sort((a, b) => a.title.compareTo(b.title));
+    listSitesFilter.sort((a, b) => a.title.compareTo(b.title));
 
-    _listArticlesController.sink.add(listArticles);
-    _listSitesController.sink.add(listSites);
+    _listArticlesController.sink.add(listArticlesFilter);
+    _listSitesController.sink.add(listSitesFilter);
 
     notifyListeners();
   }
 
-  void sortWithLocation() async {
+  void sortWithRating() async {
+    _listSitesController.sink.add(null);
+    listSitesFilter.sort((b, a) => a.rating.compareTo(b.rating));
+    _listSitesController.sink.add(listSitesFilter);
+    notifyListeners();
+  }
+
+  void sortWithLocation(BuildContext buildContext, void showLoading) async {
+    showLoading;
+
     await checkLocationEnable();
     var currentPosition = await location.getLocation();
     if (currentPosition.latitude != null && currentPosition.longitude != null) {
       _listSitesController.sink.add(null);
-      listSites.sort((a, b) => getDistance(currentPosition, a).compareTo(getDistance(currentPosition, b)));
-      _listSitesController.sink.add(listSites);
+      listSitesFilter.sort((a, b) => getDistance(currentPosition, a).compareTo(getDistance(currentPosition, b)));
+      _listSitesController.sink.add(listSitesFilter);
       notifyListeners();
+      // ignore: use_build_context_synchronously
+      Navigator.pop(buildContext);
     }
   }
 

@@ -1,9 +1,13 @@
 import 'dart:async';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_down_button/pull_down_button.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:tudu/consts/color/Colors.dart';
 import 'package:tudu/consts/font/Fonts.dart';
 import 'package:tudu/consts/images/ImagePath.dart';
+import 'package:tudu/models/amenity.dart';
 import 'package:tudu/models/partner.dart';
 import 'package:tudu/utils/func_utils.dart';
 import 'package:tudu/viewmodels/what_tudu_site_content_detail_viewmodel.dart';
@@ -29,11 +33,20 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
   WhatTuduSiteContentDetailViewModel _whatTuduSiteContentDetailViewModel = WhatTuduSiteContentDetailViewModel();
   HomeViewModel _homeViewModel = HomeViewModel();
 
+  Offset _tapPosition = Offset.zero;
+
+  RefreshController _refreshController = RefreshController(initialRefresh: false);
+
   @override
   void initState() {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {});
+  }
+
+  void _onRefresh() async{
+    setState(() {});
+    _refreshController.refreshCompleted();
   }
 
   @override
@@ -97,10 +110,16 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
             ),
           ),
         ),
-        body: ListView(
-          children: <Widget>[
-            getExploreAllLocationView(),
-          ],
+        body: SmartRefresher(
+          enablePullDown: true,
+          header: WaterDropHeader(),
+          controller: _refreshController,
+          onRefresh: _onRefresh,
+          child: ListView(
+            children: <Widget>[
+              getExploreAllLocationView(),
+            ],
+          ),
         ),
       ),
     );
@@ -167,28 +186,47 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
           child: Container(
               alignment: Alignment.centerLeft,
               width: MediaQuery.of(context).size.width,
-              child: Image.network(
-                urlImage,
+              child: CachedNetworkImage(
+                imageUrl: urlImage,
                 width: MediaQuery.of(context).size.width,
                 height: 300,
                 fit: BoxFit.cover,
-              )),
+                imageBuilder: (context, imageProvider) => Container(
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                        image: imageProvider,
+                        fit: BoxFit.cover),
+                  ),
+                ),
+                placeholder: (context, url) => const CupertinoActivityIndicator(
+                  radius: 20,
+                  color: ColorStyle.primary,
+                ),
+                errorWidget: (context, url, error) => Icon(Icons.error),
+              ),
+              // child: Image.network(
+              //   urlImage,
+              //   width: MediaQuery.of(context).size.width,
+              //   height: 300,
+              //   fit: BoxFit.cover,
+              // )
+          ),
         ),
         (haveDeals)
             ? Container(
-                height: 40,
-                width: 40,
-                margin: const EdgeInsets.only(top: 16, left: 16),
-                decoration: const BoxDecoration(
-                  color: ColorStyle.tertiaryBackground,
-                  borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                ),
-                child: Image.asset(
-                  ImagePath.tab1stActiveIcon,
-                  width: 30,
-                  fit: BoxFit.contain,
-                ),
-              )
+          height: 40,
+          width: 40,
+          margin: const EdgeInsets.only(top: 16, left: 16),
+          decoration: const BoxDecoration(
+            color: ColorStyle.tertiaryBackground,
+            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+          ),
+          child: Image.asset(
+            ImagePath.tab1stActiveIcon,
+            width: 30,
+            fit: BoxFit.contain,
+          ),
+        )
             : Container(),
       ],
     );
@@ -507,11 +545,29 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
         Positioned(
           top: 10,
           right: 20,
-          child: Image.network(
-            logo,
-            fit: BoxFit.contain,
+          child: CachedNetworkImage(
+            imageUrl: logo,
+            width: MediaQuery.of(context).size.width,
             height: 48.0,
+            fit: BoxFit.contain,
+            imageBuilder: (context, imageProvider) => Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: imageProvider,
+                    fit: BoxFit.cover),
+              ),
+            ),
+            placeholder: (context, url) => const CupertinoActivityIndicator(
+              radius: 20,
+              color: ColorStyle.primary,
+            ),
+            errorWidget: (context, url, error) => Icon(Icons.error),
           ),
+          // child: Image.network(
+          //   logo,
+          //   fit: BoxFit.contain,
+          //   height: 48.0,
+          // ),
         ),
         Container(
             padding: const EdgeInsets.only(top: 8.0, left: 18, right: 18, bottom: 8),
@@ -654,11 +710,29 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
           Positioned(
             top: 10,
             right: 20,
-            child: Image.network(
-              partner.icon,
-              fit: BoxFit.contain,
+            child: CachedNetworkImage(
+              imageUrl: partner.icon,
+              width: MediaQuery.of(context).size.width,
               height: 48.0,
+              fit: BoxFit.contain,
+              imageBuilder: (context, imageProvider) => Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                      image: imageProvider,
+                      fit: BoxFit.cover),
+                ),
+              ),
+              placeholder: (context, url) => const CupertinoActivityIndicator(
+                radius: 20,
+                color: ColorStyle.primary,
+              ),
+              errorWidget: (context, url, error) => Icon(Icons.error),
             ),
+            // child: Image.network(
+            //   partner.icon,
+            //   fit: BoxFit.contain,
+            //   height: 48.0,
+            // ),
           ),
           Container(
               padding: const EdgeInsets.only(top: 8.0, left: 18, right: 18, bottom: 8),
@@ -710,48 +784,21 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
   }
 
   Widget getAmenity(int amenityId) {
-    return PullDownButton(
-      itemBuilder: (context) => [
-        PullDownMenuItem(
-          title: "${_homeViewModel.getAmenityById(amenityId)?.title}",
-          itemTheme: const PullDownMenuItemTheme(
-            textStyle: TextStyle(
-                fontFamily: FontStyles.sfProText,
-                fontWeight: FontWeight.w500,
-                fontSize: 14,
-                color: ColorStyle.menuLabel),
-          ),
-          enabled: true,
-          onTap: () {},
-        ),
-        PullDownMenuItem(
-          title: "${_homeViewModel.getAmenityById(amenityId)?.description}",
-          itemTheme: const PullDownMenuItemTheme(
-            textStyle: TextStyle(
-                fontFamily: FontStyles.sfProText,
-                fontWeight: FontWeight.w300,
-                fontSize: 12,
-                color: ColorStyle.menuLabel),
-          ),
-          enabled: true,
-          onTap: () {},
-        )
-      ],
-      position: PullDownMenuPosition.automatic,
-      buttonBuilder: (context, showMenu) => Container(
-        child: InkWell(
-          onTap: showMenu,
-          child: Container(
-            padding: const EdgeInsets.only(top: 4.0, right: 4.0, bottom: 4.0),
-            child: Image.asset(
-                // "${_homeViewModel.getAmenityById(amenityId)?.icon}", // ICON DIDNT HAVE LINK YET
-                ImagePath.yogaIcon, // FAKE ICON
-                fit: BoxFit.contain,
-                height: 25.0),
-          ),
-        ),
-      ),
-    );
+    return GestureDetector(
+        onTapDown: (position) {
+          _getTapPosition(position);
+          _showContextMenu(context, amenityId);
+        },
+        onLongPress: () => {_showContextMenu(context, amenityId)},
+        onDoubleTap: () => {_showContextMenu(context, amenityId)},
+        child: Container(
+          padding: const EdgeInsets.only(top: 4.0, right: 4.0, bottom: 4.0),
+          child: Image.asset(
+            // "${_homeViewModel.getAmenityById(amenityId)?.icon}", // ICON DIDNT HAVE LINK YET
+              ImagePath.yogaIcon, // FAKE ICON
+              fit: BoxFit.contain,
+              height: 25.0),
+        ));
   }
 
   Widget getAmenityDescription(String amenityDescription) {
@@ -828,5 +875,78 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
         ),
       ),
     );
+  }
+
+  void _getTapPosition(TapDownDetails tapPosition) {
+    final RenderBox referenceBox = context.findRenderObject() as RenderBox;
+    setState(() {
+      _tapPosition = referenceBox.globalToLocal(tapPosition.globalPosition);
+      print(_tapPosition);
+    });
+  }
+
+  void _showContextMenu(BuildContext context, int amenityId) async {
+    Amenity? amenity = _homeViewModel.getAmenityById(amenityId);
+    if (amenity != null) {
+      final RenderObject? overlay = Overlay.of(context)?.context.findRenderObject();
+      await showMenu(
+          context: context,
+          position: RelativeRect.fromRect(
+              Rect.fromLTWH(
+                _tapPosition.dx,
+                _tapPosition.dy,
+                0,
+                0,
+              ),
+              Rect.fromLTWH(
+                0,
+                0,
+                overlay!.paintBounds.size.width,
+                overlay.paintBounds.size.height,
+              )),
+          items: [
+            PopupMenuItem(
+              child: Container(
+                // color: ColorStyle.placeHolder,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: overlay.paintBounds.size.width,
+                      alignment: Alignment.center,
+                      // color: ColorStyle.placeHolder,
+                      child: Text(
+                        "${amenity.title}",
+                        style: const TextStyle(
+                          color: ColorStyle.darkLabel,
+                          fontWeight: FontWeight.w400,
+                          fontSize: FontSizeConst.font12,
+                          fontFamily: FontStyles.mouser,
+                          height: 2,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: overlay.paintBounds.size.width,
+                      alignment: Alignment.center,
+                      // color: ColorStyle.placeHolder,
+                      child: Text(
+                        "${amenity.description}",
+                        style: const TextStyle(
+                          color: ColorStyle.darkLabel,
+                          fontWeight: FontWeight.w400,
+                          fontSize: FontSizeConst.font12,
+                          fontFamily: FontStyles.sfProText,
+                          height: 2,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ]);
+    }
   }
 }

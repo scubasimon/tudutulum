@@ -303,7 +303,9 @@ class _LoginStateView extends State<LoginView> {
                     const SizedBox(height: 70.0,),
                     InkWell(
                       onTap: () {
-                        Navigator.of(context).pushReplacementNamed(URLConsts.home);
+                        // Navigator.of(context).pushReplacementNamed(URLConsts.home);
+                        Navigator.of(context)
+                            .pushNamedAndRemoveUntil(URLConsts.home, (Route<dynamic> route) => false);
                       },
                       child: Text(
                         S.current.maybe_later,

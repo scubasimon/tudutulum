@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:tudu/viewmodels/bookmarks_viewmodel.dart';
@@ -269,11 +270,25 @@ class _BookmarksView extends State<BookmarksView> {
                           width: MediaQuery.of(context).size.width,
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(8.0),
-                            child: Image.network(
-                              snapshot.data![index],
+                            child: CachedNetworkImage(
+                              imageUrl: snapshot.data![index],
                               width: MediaQuery.of(context).size.width,
                               fit: BoxFit.contain,
+                              imageBuilder: (context, imageProvider) => Container(
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                      image: imageProvider,
+                                      fit: BoxFit.cover),
+                                ),
+                              ),
+                              placeholder: (context, url) => CircularProgressIndicator(),
+                              errorWidget: (context, url, error) => Icon(Icons.error),
                             ),
+                            // child: Image.network(
+                            //   snapshot.data![index],
+                            //   width: MediaQuery.of(context).size.width,
+                            //   fit: BoxFit.contain,
+                            // ),
                           )
                       ),
                     ),

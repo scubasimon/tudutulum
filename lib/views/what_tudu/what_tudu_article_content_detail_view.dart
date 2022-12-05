@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_down_button/pull_down_button.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:tudu/consts/color/Colors.dart';
 import 'package:tudu/consts/font/Fonts.dart';
 import 'package:tudu/consts/images/ImagePath.dart';
@@ -30,11 +33,17 @@ class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDeta
   WhatTuduArticleContentDetailViewModel _whatTuduArticleContentDetailViewModel = WhatTuduArticleContentDetailViewModel();
   HomeViewModel _homeViewModel = HomeViewModel();
 
+  RefreshController _refreshController = RefreshController(initialRefresh: false);
+
   @override
   void initState() {
     super.initState();
-
     WidgetsBinding.instance.addPostFrameCallback((_) {});
+  }
+
+  void _onRefresh() async{
+    setState(() {});
+    _refreshController.refreshCompleted();
   }
 
   @override
@@ -82,10 +91,16 @@ class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDeta
             ),
           ),
         ),
-        body: ListView(
-          children: <Widget>[
-            getExploreAllLocationView(),
-          ],
+        body: SmartRefresher(
+          enablePullDown: true,
+          header: WaterDropHeader(),
+          controller: _refreshController,
+          onRefresh: _onRefresh,
+          child: ListView(
+            children: <Widget>[
+              getExploreAllLocationView(),
+            ],
+          ),
         ),
       ),
     );
@@ -119,12 +134,31 @@ class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDeta
           child: Container(
               alignment: Alignment.centerLeft,
               width: MediaQuery.of(context).size.width,
-              child: Image.network(
-                urlImage,
+              child: CachedNetworkImage(
+                imageUrl: urlImage,
                 width: MediaQuery.of(context).size.width,
                 height: 300,
                 fit: BoxFit.cover,
-              )),
+                imageBuilder: (context, imageProvider) => Container(
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                        image: imageProvider,
+                        fit: BoxFit.cover),
+                  ),
+                ),
+                placeholder: (context, url) => const CupertinoActivityIndicator(
+                  radius: 20,
+                  color: ColorStyle.primary,
+                ),
+                errorWidget: (context, url, error) => Icon(Icons.error),
+              ),
+              // child: Image.network(
+              //   urlImage,
+              //   width: MediaQuery.of(context).size.width,
+              //   height: 300,
+              //   fit: BoxFit.cover,
+              // )
+          ),
         ),
       ],
     );
@@ -182,12 +216,30 @@ class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDeta
                             PhotoViewUtil(banner: [listContent["image"]![contentIndex]]),
                         settings: const RouteSettings(name: StrConst.viewPhoto)));
               },
-              child: Image.network(
-                listContent["image"]![contentIndex],
+              child: CachedNetworkImage(
+                imageUrl: listContent["image"]![contentIndex],
                 width: MediaQuery.of(context).size.width - 88,
                 height: 140,
                 fit: BoxFit.fill,
+                imageBuilder: (context, imageProvider) => Container(
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                        image: imageProvider,
+                        fit: BoxFit.cover),
+                  ),
+                ),
+                placeholder: (context, url) => const CupertinoActivityIndicator(
+                  radius: 20,
+                  color: ColorStyle.primary,
+                ),
+                errorWidget: (context, url, error) => Icon(Icons.error),
               ),
+              // child: Image.network(
+              //   listContent["image"]![contentIndex],
+              //   width: MediaQuery.of(context).size.width - 88,
+              //   height: 140,
+              //   fit: BoxFit.fill,
+              // ),
             ),
           )
         ],

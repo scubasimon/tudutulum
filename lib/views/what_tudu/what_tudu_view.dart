@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:notification_center/notification_center.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:pull_down_button/pull_down_button.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:rounded_background_text/rounded_background_text.dart';
 import 'package:tudu/consts/color/Colors.dart';
 import 'package:tudu/consts/font/Fonts.dart';
@@ -23,6 +25,7 @@ import '../../models/site.dart';
 import '../../utils/permission_request.dart';
 import '../../utils/photo_view.dart';
 import '../../viewmodels/what_tudu_article_content_detail_viewmodel.dart';
+import '../common/alert.dart';
 import '../map/map_view.dart';
 
 class WhatTuduView extends StatefulWidget {
@@ -32,7 +35,7 @@ class WhatTuduView extends StatefulWidget {
   State<StatefulWidget> createState() => _WhatTuduView();
 }
 
-class _WhatTuduView extends State<WhatTuduView> {
+class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
   WhatTuduViewModel _whatTuduViewModel = WhatTuduViewModel();
   HomeViewModel _homeViewModel = HomeViewModel();
   WhatTuduArticleContentDetailViewModel _whatTuduArticleDetailViewModel = WhatTuduArticleContentDetailViewModel();
@@ -46,12 +49,10 @@ class _WhatTuduView extends State<WhatTuduView> {
   int _filterType = 0;
   int _sortType = 0;
 
+  RefreshController _refreshController = RefreshController(initialRefresh: false);
+
   @override
   void initState() {
-    Future.delayed(const Duration(seconds: 2), () {
-      _whatTuduViewModel.getListWhatTudu();
-    });
-
     _filterType = _homeViewModel.listBusiness.length;
 
     _scrollController.addListener(() {
@@ -72,12 +73,47 @@ class _WhatTuduView extends State<WhatTuduView> {
     });
 
     super.initState();
+
+    WidgetsBinding.instance.addObserver(this);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      try {
+        _whatTuduViewModel.getListWhatTudu();
+      } catch (e) {
+        _showAlert("Get data fail because of $e");
+      }
+    });
   }
 
   @override
   void dispose() {
-    _whatTuduViewModel.dispose();
     super.dispose();
+  }
+
+  void _onRefresh() async{
+    try {
+      await _whatTuduViewModel.getListWhatTudu();
+
+      _whatTuduViewModel.filterByBusinessType(null);
+      _filterType = _homeViewModel.listBusiness.length;
+
+      _whatTuduViewModel.sortWithAlphabet();
+      _sortType = 0;
+
+      _refreshController.refreshCompleted();
+      setState(() {});
+    } catch (e) {
+      _refreshController.refreshFailed();
+      
+      _showAlert("Get data fail because of $e");
+    }
+  }
+
+  void _onLoading() async{
+    // monitor network fetch
+    _whatTuduViewModel.getListWhatTudu();
+    if(mounted) setState(() {});
+    _refreshController.loadComplete();
   }
 
   @override
@@ -150,7 +186,7 @@ class _WhatTuduView extends State<WhatTuduView> {
                               PermissionRequest().permissionServiceCall(
                                     context,
                                     (){
-                                      _whatTuduViewModel.sortWithLocation();
+                                      _whatTuduViewModel.sortWithLocation(context, _showLoading());
                                       _sortType = 1;
                                     },
                               );
@@ -169,7 +205,7 @@ class _WhatTuduView extends State<WhatTuduView> {
                             ),
                             enabled: _sortType != 2,
                             onTap: () {
-                              _whatTuduViewModel.sortWithAlphabet();
+                              _whatTuduViewModel.sortWithRating();
                               _sortType = 2;
                             },
                           ),
@@ -227,7 +263,7 @@ class _WhatTuduView extends State<WhatTuduView> {
                               ),
                               enabled: _filterType != ((counter)/2).round(),
                               onTap: () {
-                                _whatTuduViewModel.filterByBusinessType(((counter)/2).round());
+                                _whatTuduViewModel.filterByBusinessType(null);
                                 _filterType = ((counter)/2).round();
                               },
                             )
@@ -250,8 +286,8 @@ class _WhatTuduView extends State<WhatTuduView> {
                                 ),
                                 enabled: _filterType != ((counter)/2).round(),
                                 onTap: () {
-                                  _whatTuduViewModel.filterByBusinessType(((counter)/2).round());
-                                  _filterType = 0;
+                                  _whatTuduViewModel.filterByBusinessType(_homeViewModel.listBusiness[((counter)/2).round()]);
+                                  _filterType = ((counter)/2).round();
                                 },
                               ) : const PullDownMenuDivider(), growable: false),
                         position: PullDownMenuPosition.automatic,
@@ -307,288 +343,367 @@ class _WhatTuduView extends State<WhatTuduView> {
             ),
           ),
         ),
-        body: ListView(
-          controller: _scrollController,
-          children: [
-            createAllLocationArticlesView(),
-            createExploreAllLocationView()
-          ],
-        ),
+          body: SmartRefresher(
+            enablePullDown: true,
+            enablePullUp: true,
+            header: WaterDropHeader(),
+            controller: _refreshController,
+            onRefresh: _onRefresh,
+            onLoading: _onLoading,
+            child: ListView(
+              controller: _scrollController,
+              children: [
+                createAllLocationArticlesView(),
+                createExploreAllLocationView()
+              ],
+            ),
+          )
       ),
     );
   }
 
   Widget createAllLocationArticlesView() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Container(
-          padding: const EdgeInsets.only(top: 8, bottom: 8, left: 16, right: 16),
-          alignment: Alignment.centerLeft,
-          child: Text(
-            S.current.all_location_articles,
-            style: const TextStyle(
-                color: ColorStyle.darkLabel,
-                fontSize: FontSizeConst.font16,
-                fontWeight: FontWeight.w400,
-              fontFamily: FontStyles.mouser
+    return StreamBuilder<List<Article>?>(
+      stream: _whatTuduViewModel.listArticlesStream,
+      builder: (_, snapshot) {
+        if (!snapshot.hasData) {
+          return const Center(
+            child: CupertinoActivityIndicator(
+              radius: 20,
+              color: ColorStyle.primary,
             ),
-          ),
-        ),
-        getAllLocationArticlesView(),
-      ],
+          );
+        } else if (snapshot.hasError) {
+          return const Center(child: Text("snapshot.hasError"));
+        } else {
+          if (snapshot.data!.isEmpty) {
+            return Container(
+              alignment: Alignment.center,
+              height: 50,
+              child: Text(
+                "There is no Site",
+                style: const TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontFamily: FontStyles.mouser,
+                    fontSize: FontSizeConst.font14,
+                    color: ColorStyle.primary
+                ),
+              ),
+            );
+          }
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.only(top: 8, bottom: 8, left: 16, right: 16),
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  S.current.all_location_articles,
+                  style: const TextStyle(
+                      color: ColorStyle.darkLabel,
+                      fontSize: FontSizeConst.font16,
+                      fontWeight: FontWeight.w400,
+                      fontFamily: FontStyles.mouser
+                  ),
+                ),
+              ),
+              getAllLocationArticlesView(snapshot.data!),
+            ],
+          );
+        }
+      },
     );
   }
 
-  Widget getAllLocationArticlesView() {
+  Widget getAllLocationArticlesView(List<Article> list) {
     return Container(
       margin: const EdgeInsets.only(left: 16, right: 16),
         height: 108.0,
-        child: StreamBuilder<List<Article>?>(
-          stream: _whatTuduViewModel.listArticlesStream,
-          builder: (_, snapshot) {
-            if (!snapshot.hasData) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            } else if (snapshot.hasError) {
-              return const Center(child: Text("snapshot.hasError"));
-            } else {
-              return ListView.builder(
-                scrollDirection: Axis.horizontal,
-                shrinkWrap: true,
-                itemCount: snapshot.data!.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return InkWell(
-                    onTap: () {
-                      _whatTuduArticleDetailViewModel.setArticleDetailCover(snapshot.data![index]);
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const WhatTuduArticleContentDetailView(),
-                              settings: const RouteSettings(name: StrConst.whatTuduSiteContentDetailScene)));
-                    },
-                    child: Stack(
-                      children: [
-                        Container(
-                            margin: const EdgeInsets.only(right: 8, bottom: 8),
-                            decoration: const BoxDecoration(
-                              borderRadius: BorderRadius.all(
-                                  Radius.circular(10.0)
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          shrinkWrap: true,
+          itemCount: list.length,
+          itemBuilder: (BuildContext context, int index) {
+            return InkWell(
+              onTap: () {
+                _whatTuduArticleDetailViewModel.setArticleDetailCover(list[index]);
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const WhatTuduArticleContentDetailView(),
+                        settings: const RouteSettings(name: StrConst.whatTuduSiteContentDetailScene)));
+              },
+              child: Stack(
+                children: [
+                  Container(
+                      margin: const EdgeInsets.only(right: 8, bottom: 8),
+                      decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.all(
+                            Radius.circular(10.0)
+                        ),
+                      ),
+                      alignment: Alignment.centerLeft,
+                      height: 108,
+                      width: 208,
+                      child: Stack(
+                        children: [
+                          ClipRRect(
+                            child: CachedNetworkImage(
+                              imageUrl: list[index].banner,
+                              width: MediaQuery.of(context).size.width,
+                              fit: BoxFit.fill,
+                              imageBuilder: (context, imageProvider) => Container(
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                      image: imageProvider,
+                                      fit: BoxFit.cover),
+                                ),
+                              ),
+                              placeholder: (context, url) => const CupertinoActivityIndicator(
+                                radius: 20,
+                                color: ColorStyle.primary,
+                              ),
+                              errorWidget: (context, url, error) => Icon(Icons.error),
+                            ),
+                            // child: Image.network(
+                            //   snapshot.data![index].banner,
+                            //   width: MediaQuery.of(context).size.width,
+                            //   fit: BoxFit.fill,
+                            // ),
+                          ),
+                          Positioned.fill(
+                            top: 40,
+                            child: Center(
+                              child: RoundedBackgroundText(
+                                list[index].title,
+                                style: const TextStyle(
+                                  fontFamily: FontStyles.raleway,
+                                  fontSize: FontSizeConst.font12,
+                                  fontWeight: FontWeight.w600,
+                                  color: ColorStyle.darkLabel,
+                                ),
+                                backgroundColor: ColorStyle.tertiaryBackground,
                               ),
                             ),
-                            alignment: Alignment.centerLeft,
-                            height: 108,
-                            width: 208,
-                            child: Stack(
-                              children: [
-                                ClipRRect(
-                                  child: Image.network(
-                                    snapshot.data![index].banner,
-                                    width: MediaQuery.of(context).size.width,
-                                    fit: BoxFit.fill,
-                                  ),
-                                ),
-                                Positioned.fill(
-                                  top: 40,
-                                  child: Center(
-                                    child: RoundedBackgroundText(
-                                      snapshot.data![index].title,
-                                      style: const TextStyle(
-                                        fontFamily: FontStyles.raleway,
-                                        fontSize: FontSizeConst.font12,
-                                        fontWeight: FontWeight.w600,
-                                        color: ColorStyle.darkLabel,
-                                      ),
-                                      backgroundColor: ColorStyle.tertiaryBackground,
-                                    ),
-                                  ),
-                                )
-                              ],
-                            )
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              );
-            }
+                          )
+                        ],
+                      )
+                  ),
+                ],
+              ),
+            );
           },
         )
     );
   }
 
   Widget createExploreAllLocationView() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Container(
-          padding: const EdgeInsets.only(top: 8, bottom: 8, left: 16, right: 16),
-          alignment: Alignment.centerLeft,
-          child: Row(
-            children: [
-              Text(
-                S.current.explore_all_location,
-                style: const TextStyle(
-                  color: ColorStyle.darkLabel,
-                  fontSize: FontSizeConst.font16,
-                  fontWeight: FontWeight.w400,
-                  fontFamily: FontStyles.mouser,
-                ),
-              ),
-              const Spacer(),
-              InkWell(
-                hoverColor: Colors.transparent,
-                focusColor: Colors.transparent,
-                splashColor: Colors.transparent,
-                onTap: () {
-                  print("PermissionRequest -> START");
-                  PermissionRequest.isResquestPermission = true;
-                  PermissionRequest().permissionServiceCall(
-                      context,
-                          () {
-                        Navigator.of(context).push(MaterialPageRoute(builder: (_) => const MapView(isGotoCurrent: true)));
-                      }
-                  );
-                },
-                child: Column(
-                  children: [
-                    Image.asset(
-                      ImagePath.pinMapIcon,
-                      width: 16,
-                      height: 16,
-                    ),
-                    Text(
-                      S.current.map,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontFamily: FontStyles.raleway,
-                          fontSize: FontSizeConst.font10,
-                          color: ColorStyle.primary
-                      ),
-                    ),
-                  ],
-                ),
-              )
-            ],
-          ),
-        ),
-        getExploreAllLocationView(),
-      ],
-    );
-  }
-
-  Widget getExploreAllLocationView() {
     return StreamBuilder<List<Site>?>(
       stream: _whatTuduViewModel.listSitesStream,
       builder: (_, snapshot) {
         if (!snapshot.hasData) {
           return const Center(
-            child: CircularProgressIndicator(),
+            child: CupertinoActivityIndicator(
+              radius: 20,
+              color: ColorStyle.primary,
+            ),
           );
         } else if (snapshot.hasError) {
           return const Center(child: Text("snapshot.hasError"));
         } else {
-          return ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: snapshot.data!.length,
-              itemBuilder: (BuildContext context, int index) {
-                return Stack(
+          if (snapshot.data!.isEmpty) {
+            return Container(
+              alignment: Alignment.center,
+              height: 50,
+              child: Text(
+                "There is no Article",
+                style: const TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontFamily: FontStyles.mouser,
+                    fontSize: FontSizeConst.font14,
+                    color: ColorStyle.primary
+                ),
+              ),
+            );
+          }
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.only(top: 8, bottom: 8, left: 16, right: 16),
+                alignment: Alignment.centerLeft,
+                child: Row(
                   children: [
-                    InkWell(
-                      onTap: () {
-                        _whatTuduSiteContentDetailViewModel.setSiteContentDetailCover(snapshot.data![index]);
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const WhatTuduSiteContentDetailView(),
-                                settings: const RouteSettings(name: StrConst.whatTuduSiteContentDetailScene)));
-                      },
-                      child: Container(
-                        margin: const EdgeInsets.only(bottom: 8, left: 16, right: 16),
-                        height: 236,
-                        decoration: BoxDecoration(
-                          borderRadius: const BorderRadius.all(
-                              Radius.circular(10.0)
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                                color: Colors.black.withOpacity(0.25),
-                                blurRadius: 7,
-                                offset: const Offset(0, 2),
-                            )
-                          ],
-                        ),
-                        alignment: Alignment.centerLeft,
-                        width: MediaQuery.of(context).size.width,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8.0),
-                          child: Image.network(
-                            snapshot.data![index].images.first,
-                            width: MediaQuery.of(context).size.width,
-                            height: 236,
-                            fit: BoxFit.cover,
-                          ),
-                        )
+                    Text(
+                      S.current.explore_all_location,
+                      style: const TextStyle(
+                        color: ColorStyle.darkLabel,
+                        fontSize: FontSizeConst.font16,
+                        fontWeight: FontWeight.w400,
+                        fontFamily: FontStyles.mouser,
                       ),
                     ),
-                    getDealItemIfExist(snapshot.data![index].haveDeals),
-                    Positioned(
-                      bottom: 0,
-                      child: Container(
-                        height: 50.0,
-                        width: 128.0,
-                        alignment: Alignment.centerLeft,
-                        margin: const EdgeInsets.only(bottom: 24, left: 16),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                              begin: FractionalOffset.centerLeft,
-                              end: FractionalOffset.centerRight,
-                              colors: [
-                                ColorStyle.secondaryBackground.withOpacity(0.8),
-                                ColorStyle.secondaryBackground.withOpacity(0.0),
-                              ],
-                              stops: const [0.2, 1.0]
+                    const Spacer(),
+                    InkWell(
+                      hoverColor: Colors.transparent,
+                      focusColor: Colors.transparent,
+                      splashColor: Colors.transparent,
+                      onTap: () {
+                        print("PermissionRequest -> START");
+                        PermissionRequest.isResquestPermission = true;
+                        PermissionRequest().permissionServiceCall(
+                            context,
+                                () {
+                              Navigator.of(context).push(MaterialPageRoute(builder: (_) => const MapView(isGotoCurrent: true)));
+                            }
+                        );
+                      },
+                      child: Column(
+                        children: [
+                          Image.asset(
+                            ImagePath.pinMapIcon,
+                            width: 16,
+                            height: 16,
                           ),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 16.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                snapshot.data![index].title,
-                                style: const TextStyle(
-                                  color: ColorStyle.darkLabel,
-                                  fontFamily: FontStyles.mouser,
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: FontSizeConst.font12,
-                                ),
-                              ),
-                              Text(
-                                snapshot.data![index].subTitle,
-                                style: const TextStyle(
-                                  fontFamily: FontStyles.raleway,
-                                  fontSize: FontSizeConst.font12,
-                                  fontWeight: FontWeight.w400,
-                                  color: ColorStyle.darkLabel,
-                                ),
-                              ),
-                            ],
+                          Text(
+                            S.current.map,
+                            style: const TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontFamily: FontStyles.raleway,
+                                fontSize: FontSizeConst.font10,
+                                color: ColorStyle.primary
+                            ),
                           ),
-                        ),
+                        ],
                       ),
                     )
                   ],
-                );
-              });
+                ),
+              ),
+              getExploreAllLocationView(snapshot.data!),
+            ],
+          );
         }
       },
     );
+  }
+
+  Widget getExploreAllLocationView(List<Site> data) {
+    return ListView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: data.length,
+        itemBuilder: (BuildContext context, int index) {
+          return Stack(
+            children: [
+              InkWell(
+                onTap: () {
+                  _whatTuduSiteContentDetailViewModel.setSiteContentDetailCover(data[index]);
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const WhatTuduSiteContentDetailView(),
+                          settings: const RouteSettings(name: StrConst.whatTuduSiteContentDetailScene)));
+                },
+                child: Container(
+                    margin: const EdgeInsets.only(bottom: 8, left: 16, right: 16),
+                    height: 236,
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.all(
+                          Radius.circular(10.0)
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.25),
+                          blurRadius: 7,
+                          offset: const Offset(0, 2),
+                        )
+                      ],
+                    ),
+                    alignment: Alignment.centerLeft,
+                    width: MediaQuery.of(context).size.width,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8.0),
+                      child: CachedNetworkImage(
+                        imageUrl: data[index].images.first,
+                        width: MediaQuery.of(context).size.width,
+                        height: 236,
+                        fit: BoxFit.cover,
+                        imageBuilder: (context, imageProvider) => Container(
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                                image: imageProvider,
+                                fit: BoxFit.cover),
+                          ),
+                        ),
+                        placeholder: (context, url) => const CupertinoActivityIndicator(
+                          radius: 20,
+                          color: ColorStyle.primary,
+                        ),
+                        errorWidget: (context, url, error) => Icon(Icons.error),
+                      ),
+                      // child: Image.network(
+                      //   snapshot.data![index].images.first,
+                      //   width: MediaQuery.of(context).size.width,
+                      //   height: 236,
+                      //   fit: BoxFit.cover,
+                      // ),
+                    )
+                ),
+              ),
+              getDealItemIfExist(data[index].haveDeals),
+              Positioned(
+                bottom: 0,
+                child: Container(
+                  height: 50.0,
+                  width: 128.0,
+                  alignment: Alignment.centerLeft,
+                  margin: const EdgeInsets.only(bottom: 24, left: 16),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                        begin: FractionalOffset.centerLeft,
+                        end: FractionalOffset.centerRight,
+                        colors: [
+                          ColorStyle.secondaryBackground.withOpacity(0.8),
+                          ColorStyle.secondaryBackground.withOpacity(0.0),
+                        ],
+                        stops: const [0.2, 1.0]
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 16.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          data[index].title,
+                          style: const TextStyle(
+                            color: ColorStyle.darkLabel,
+                            fontFamily: FontStyles.mouser,
+                            fontWeight: FontWeight.w400,
+                            fontSize: FontSizeConst.font12,
+                          ),
+                        ),
+                        Text(
+                          data[index].subTitle,
+                          style: const TextStyle(
+                            fontFamily: FontStyles.raleway,
+                            fontSize: FontSizeConst.font12,
+                            fontWeight: FontWeight.w400,
+                            color: ColorStyle.darkLabel,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              )
+            ],
+          );
+        });;
   }
 
   Widget getDealItemIfExist(bool isDealExist) {
@@ -615,5 +730,29 @@ class _WhatTuduView extends State<WhatTuduView> {
         width: 40
       );
     }
+  }
+
+  void _showLoading() {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return Container(
+              decoration: const BoxDecoration(),
+              child: const Center(
+                child: CupertinoActivityIndicator(
+                  radius: 20,
+                  color: ColorStyle.primary,
+                ),
+              )
+          );
+        }
+    );
+  }
+
+  void _showAlert(String message) {
+    showDialog(context: context, builder: (BuildContext context) {
+      return ErrorAlert.alert(context, message);
+    });
   }
 }

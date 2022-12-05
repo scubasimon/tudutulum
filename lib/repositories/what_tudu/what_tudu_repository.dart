@@ -27,6 +27,7 @@ class WhatTuduRepositoryImpl extends WhatTuduRepository {
              subTitle: remoteSite["subTitle"],
              business: FuncUlti.getListIntFromListDynamic(remoteSite["business"]),
              location: remoteSite["location"],
+             rating: remoteSite["rating"],
              siteContent: SiteContent(
                title: remoteSite["contentTitle"],
                description: remoteSite["contentDescription"],

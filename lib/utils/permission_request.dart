@@ -59,8 +59,8 @@ class PermissionRequest {
     showCupertinoModalPopup<void>(
       context: context,
       builder: (BuildContext context) => CupertinoAlertDialog(
-        title: Text("ASK LOCATION TITLE"),
-        content: Text("ASK LOCATION CONTENT"),
+        title: Text('Allow "Tudu" to access device\'s location?'),
+        content: Text("App currently can access location only while you're using the app"),
         actions: <CupertinoDialogAction>[
           CupertinoDialogAction(
             onPressed: () {

@@ -9,6 +9,7 @@ class Site {
   List<int> business;
   GeoPoint location;
   SiteContent siteContent;
+  double rating;
 
   Site(
       {
@@ -20,6 +21,7 @@ class Site {
         required this.business,
         required this.location,
         required this.siteContent,
+        required this.rating,
       });
 
   Map<String, dynamic> toJson() => {
