@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/cupertino.dart';
@@ -24,12 +26,16 @@ class WhatTuduViewModel extends BaseViewModel {
 
   WhatTuduViewModel._internal();
 
+  final StreamController<bool> _loadingController = BehaviorSubject<bool>();
+  Stream<bool> get loadingStream => _loadingController.stream;
+
   final StreamController<List<Article>?> _listArticlesController = BehaviorSubject<List<Article>?>();
   Stream<List<Article>?> get listArticlesStream => _listArticlesController.stream;
 
   final StreamController<List<Site>?> _listSitesController = BehaviorSubject<List<Site>?>();
   Stream<List<Site>?> get listSitesStream => _listSitesController.stream;
 
+  bool isLoading = false;
   List<Article> listArticles = [];
   List<Article> listArticlesFilter = [];
   List<Site> listSites = [];
@@ -41,11 +47,67 @@ class WhatTuduViewModel extends BaseViewModel {
   @override
   FutureOr<void> init() {}
 
-  Future<void> getListWhatTudu() async {
+  void showHideLoading(bool showHide) {
+    _loadingController.sink.add(showHide);
+    notifyListeners();
+  }
+
+  Future<void> getListWhatTudu(
+      String orderType,
+      bool isDescending,
+      int startAt,) async {
+    showHideLoading(true);
+
     try {
-      listArticles = await _whatTuduRepository.getListArticle();
+      if (startAt == 0) {
+        listArticles.clear();
+      }
+      listArticles += await _whatTuduRepository.getListArticle(
+          orderType,
+          isDescending
+      );
       listArticlesFilter = listArticles.where((o) => true).toList();
-      listArticles.sort((a, b) => a.title.compareTo(b.title));
+      _listArticlesController.sink.add(listArticles);
+      notifyListeners();
+    } catch (e) {
+      showHideLoading(false);
+      rethrow;
+    }
+
+    try {
+      if (startAt == 0) {
+        listSites.clear();
+      }
+      listSites += await _whatTuduRepository.getListSite(
+          orderType,
+          isDescending,
+          startAt
+      );
+      listSitesFilter = listSites.where((o) => true).toList();
+      _listSitesController.sink.add(listSites);
+      notifyListeners();
+    } catch (e) {
+      showHideLoading(false);
+      rethrow;
+    }
+
+    showHideLoading(false);
+  }
+
+  void searchByTitle(
+      String field,
+      String keyWord,
+      String orderType,
+      bool isDescending) async {
+    try {
+      listArticles.clear();
+      listArticles += await _whatTuduRepository.getListArticleFilterContain(
+          field,
+          keyWord,
+          orderType,
+          isDescending
+      );
+      listArticlesFilter = listArticles.where((o) => true).toList();
       _listArticlesController.sink.add(listArticles);
       notifyListeners();
     } catch (e) {
@@ -53,9 +115,14 @@ class WhatTuduViewModel extends BaseViewModel {
     }
 
     try {
-      listSites = await _whatTuduRepository.getListWhatTudu();
+      listSites.clear();
+      listSites += await _whatTuduRepository.getListSiteFilterContain(
+          field,
+          keyWord,
+          orderType,
+          isDescending
+      );
       listSitesFilter = listSites.where((o) => true).toList();
-      listSites.sort((a, b) => a.title.compareTo(b.title));
       _listSitesController.sink.add(listSites);
       notifyListeners();
     } catch (e) {
@@ -63,59 +130,63 @@ class WhatTuduViewModel extends BaseViewModel {
     }
   }
 
-  void filterByTitle(String keyWord) async {
-    _listArticlesController.sink.add(null);
-    _listSitesController.sink.add(null);
-
-    listArticlesFilter = listArticles.where((o) => o.title.toLowerCase().contains(keyWord.toLowerCase())).toList();
-    listSitesFilter = listSites.where((o) => o.title.toLowerCase().contains(keyWord.toLowerCase())).toList();
-
-    _listArticlesController.sink.add(listArticlesFilter);
-    _listSitesController.sink.add(listSitesFilter);
-    notifyListeners();
-  }
-
-  void filterByBusinessType(Business? business) {
-    if (business != null) {
-      listArticlesFilter = listArticles.where((o) => o.business.contains(business.businessid)).toList();
-      listSitesFilter = listSites.where((o) => o.business.contains(business.businessid)).toList();
-
-      _listArticlesController.sink.add(null);
-      _listSitesController.sink.add(null);
-
-      _listArticlesController.sink.add(listArticlesFilter);
-      _listSitesController.sink.add(listSitesFilter);
-    } else {
+  void filterByBusinessType(
+      String field,
+      Business? business,
+      String orderType,
+      bool isDescending) async {
+    try {
+      listArticles.clear();
+      listArticles += await _whatTuduRepository.getListArticleFilterEqual(
+          field,
+          (business != null) ? business.businessid : -1,
+          orderType,
+          isDescending
+      );
       listArticlesFilter = listArticles.where((o) => true).toList();
-      listSitesFilter = listSites.where((o) => true).toList();
-
-      _listArticlesController.sink.add(null);
-      _listSitesController.sink.add(null);
-
       _listArticlesController.sink.add(listArticles);
-      _listSitesController.sink.add(listSites);
+      notifyListeners();
+    } catch (e) {
+      rethrow;
     }
-    notifyListeners();
-  }
 
-  void sortWithAlphabet() async {
-    _listArticlesController.sink.add(null);
-    _listSitesController.sink.add(null);
+    try {
+      listSites.clear();
+      listSites += await _whatTuduRepository.getListSiteFilterEqual(
+          field,
+          (business != null) ? business.businessid : -1,
+          orderType,
+          isDescending
+      );
+      listSitesFilter = listSites.where((o) => true).toList();
+      _listSitesController.sink.add(listSites);
+      notifyListeners();
+    } catch (e) {
+      rethrow;
+    }
 
-    listArticlesFilter.sort((a, b) => a.title.compareTo(b.title));
-    listSitesFilter.sort((a, b) => a.title.compareTo(b.title));
+    // if (business != null) {
+    //   listArticlesFilter = listArticles.where((o) => o.business.contains(business.businessid)).toList();
+    //   listSitesFilter = listSites.where((o) => o.business.contains(business.businessid)).toList();
+    //
+    //   _listArticlesController.sink.add(null);
+    //   _listSitesController.sink.add(null);
+    //
+    //   _listArticlesController.sink.add(listArticlesFilter);
+    //   _listSitesController.sink.add(listSitesFilter);
+    // } else {
+    //   listArticlesFilter = listArticles.where((o) => true).toList();
+    //   listSitesFilter = listSites.where((o) => true).toList();
+    //
+    //   _listArticlesController.sink.add(null);
+    //   _listSitesController.sink.add(null);
+    //
+    //   _listArticlesController.sink.add(listArticles);
+    //   _listSitesController.sink.add(listSites);
+    // }
+    // notifyListeners();
 
-    _listArticlesController.sink.add(listArticlesFilter);
-    _listSitesController.sink.add(listSitesFilter);
 
-    notifyListeners();
-  }
-
-  void sortWithRating() async {
-    _listSitesController.sink.add(null);
-    listSitesFilter.sort((b, a) => a.rating.compareTo(b.rating));
-    _listSitesController.sink.add(listSitesFilter);
-    notifyListeners();
   }
 
   void sortWithLocation(BuildContext buildContext, void showLoading) async {
@@ -127,9 +198,8 @@ class WhatTuduViewModel extends BaseViewModel {
       _listSitesController.sink.add(null);
       listSitesFilter.sort((a, b) => getDistance(currentPosition, a).compareTo(getDistance(currentPosition, b)));
       _listSitesController.sink.add(listSitesFilter);
-      notifyListeners();
-      // ignore: use_build_context_synchronously
       Navigator.pop(buildContext);
+      notifyListeners();
     }
   }
 

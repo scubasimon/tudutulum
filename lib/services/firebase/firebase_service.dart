@@ -26,9 +26,13 @@ abstract class FirebaseService {
 
   Future<User?> authChanged();
 
-  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getArticles();
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getArticles(String orderType, bool isDescending);
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getArticlesFilterEqual(String filterField, int filterKeyword);
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getArticlesFilterContain(String filterField, String filterKeyword);
 
-  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getSites();
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getSites(String orderType, bool isDescending, int startAt);
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getSitesFilterEqual(String filterField, int filterKeyword);
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getSitesFilterContain(String filterField, String filterKeyword);
 
   Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getPartners();
 
@@ -178,11 +182,14 @@ class FirebaseServiceImpl extends FirebaseService {
 
 
   @override
-  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getArticles() async {
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getArticles(
+      String orderType,
+      bool isDescending) async {
     try {
       final listSite = await FirebaseFirestore
           .instance
           .collection("articles")
+          .orderBy(orderType, descending: isDescending)
           .get();
 
       return listSite.docs;
@@ -192,16 +199,129 @@ class FirebaseServiceImpl extends FirebaseService {
   }
 
   @override
-  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getSites() async {
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getArticlesFilterEqual(
+      String filterField,
+      int filterKeyword) async {
+    try {
+      if (filterKeyword == -1) {
+        final listSite = await FirebaseFirestore
+            .instance
+            .collection("articles")
+            .get();
+        return listSite.docs;
+      }
+      final listSite = await FirebaseFirestore
+          .instance
+          .collection("articles")
+          .where(filterField, arrayContains: filterKeyword)
+          .limit(1)
+          .get();
+      return listSite.docs;
+
+    } catch (e) {
+      print("QueryDocumentSnapshot -> ERROR: $e");
+    }
+  }
+
+  @override
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getArticlesFilterContain(
+      String filterField,
+      String filterKeyword) async {
     try {
       final listSite = await FirebaseFirestore
           .instance
-          .collection("sites")
+          .collection("articles")
+          .where(filterField, isGreaterThanOrEqualTo: filterKeyword)
+          .where(filterField, isLessThanOrEqualTo: filterKeyword + '\uf8ff')
           .get();
 
       return listSite.docs;
     } catch (e) {
-      return null;
+      print("QueryDocumentSnapshot -> ERROR: $e");
+    }
+  }
+
+  @override
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getSites(
+      String orderType,
+      bool isDescending,
+      int startAt) async {
+    try {
+      if (startAt == 0) {
+        final listSite = await FirebaseFirestore
+            .instance
+            .collection("sites")
+            .orderBy(orderType, descending: isDescending)
+            .limit(1)
+            .get();
+        return listSite.docs;
+      }
+
+      final first = await FirebaseFirestore
+          .instance
+          .collection("sites")
+          .orderBy(orderType, descending: isDescending)
+          .limit(startAt)
+          .get();
+
+      final lastVisible = first.docs[first.size - 1];
+
+      final next = await FirebaseFirestore
+          .instance
+          .collection("sites")
+          .orderBy(orderType, descending: isDescending)
+          .startAfter([lastVisible.data()[orderType]])
+          .limit(1)
+          .get();
+
+      return next.docs;
+    } catch (e) {
+      print("QueryDocumentSnapshot -> ERROR: $e");
+    }
+  }
+
+  @override
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getSitesFilterEqual(
+      String filterField,
+      int filterKeyword) async {
+    try {
+      if (filterKeyword == -1) {
+        final listSite = await FirebaseFirestore
+            .instance
+            .collection("sites")
+            .limit(1)
+            .get();
+        return listSite.docs;
+      }
+      final listSite = await FirebaseFirestore
+          .instance
+          .collection("sites")
+          .where(filterField, arrayContains: filterKeyword)
+          .limit(1)
+          .get();
+      return listSite.docs;
+
+    } catch (e) {
+      print("QueryDocumentSnapshot -> ERROR: $e");
+    }
+  }
+
+  @override
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getSitesFilterContain(
+      String filterField,
+      String filterKeyword) async {
+    try {
+      final listSite = await FirebaseFirestore
+          .instance
+          .collection("sites")
+          .where(filterField, isGreaterThanOrEqualTo: filterKeyword)
+          .where(filterField, isLessThanOrEqualTo: filterKeyword + '\uf8ff')
+          .limit(1)
+          .get();
+
+      return listSite.docs;
+    } catch (e) {
+      print("QueryDocumentSnapshot -> ERROR: $e");
     }
   }
 

@@ -5,17 +5,25 @@ import '../../models/site.dart';
 import '../../services/firebase/firebase_service.dart';
 
 abstract class WhatTuduRepository {
-  Future<List<Site>> getListWhatTudu();
-  Future<List<Article>> getListArticle();
+  Future<List<Article>> getListArticle(String orderType, bool isDescending);
+  Future<List<Article>> getListArticleFilterEqual(String filterField, int filterKeyword, String orderType, bool isDescending);
+  Future<List<Article>> getListArticleFilterContain(String filterField, String filterKeyword, String orderType, bool isDescending);
+
+  Future<List<Site>> getListSite(String orderType, bool isDescending, int startAt);
+  Future<List<Site>> getListSiteFilterEqual(String filterField, int filterKeyword, String orderType, bool isDescending);
+  Future<List<Site>> getListSiteFilterContain(String filterField, String filterKeyword, String orderType, bool isDescending);
 }
 
 class WhatTuduRepositoryImpl extends WhatTuduRepository {
   final FirebaseService _firebaseService = FirebaseServiceImpl();
 
   @override
-  Future<List<Site>> getListWhatTudu() async {
+  Future<List<Site>> getListSite(
+      String orderType,
+      bool isDescending,
+      int startAt) async {
     List<Site> listSites = [];
-    var listRemoteSites = await _firebaseService.getSites();
+    var listRemoteSites = await _firebaseService.getSites(orderType, isDescending, startAt);
     if (listRemoteSites != null) {
       for (var remoteSite in listRemoteSites) {
         listSites.add(Site(
@@ -50,15 +58,146 @@ class WhatTuduRepositoryImpl extends WhatTuduRepository {
   }
 
   @override
-  Future<List<Article>> getListArticle() async {
+  Future<List<Site>> getListSiteFilterEqual(
+      String filterField,
+      int filterKeyword,
+      String orderType,
+      bool isDescending) async {
+    List<Site> listSites = [];
+    var listRemoteSites = await _firebaseService.getSitesFilterEqual(filterField, filterKeyword);
+    if (listRemoteSites != null) {
+      for (var remoteSite in listRemoteSites) {
+        listSites.add(Site(
+          images: FuncUlti.getListStringFromListDynamic(remoteSite["image"]),
+          siteId: remoteSite["siteid"],
+          haveDeals: remoteSite["haveDeals"],
+          title: remoteSite["title"],
+          subTitle: remoteSite["subTitle"],
+          business: FuncUlti.getListIntFromListDynamic(remoteSite["business"]),
+          location: remoteSite["location"],
+          rating: remoteSite["rating"],
+          siteContent: SiteContent(
+            title: remoteSite["contentTitle"],
+            description: remoteSite["contentDescription"],
+            moreInformation: remoteSite["moreInformation"],
+            advisory: remoteSite["advisory"],
+            amenities: FuncUlti.getListIntFromListDynamic(remoteSite["amenities"]),
+            amentityDescriptions: FuncUlti.getListStringFromListDynamic(remoteSite["amentityDescriptions"]),
+            openingTimes: FuncUlti.getMapStringStringFromStringDynamic(remoteSite["openingTimes"]),
+            fees: FuncUlti.getMapStringListFromStringDynamic(remoteSite["fees"]),
+            capacity: remoteSite["capacity"],
+            eventIcons: FuncUlti.getListStringFromListDynamic(remoteSite["eventIcons"]),
+            eventLinks: FuncUlti.getListStringFromListDynamic(remoteSite["eventLinks"]),
+            getIntouch: FuncUlti.getMapStringStringFromStringDynamic(remoteSite["getIntouch"]),
+            logo: remoteSite["logo"],
+            partner: remoteSite["partner"],
+          ),
+        ));
+      }
+    }
+    return listSites;
+  }
+
+  @override
+  Future<List<Site>> getListSiteFilterContain(
+      String filterField,
+      String filterKeyword,
+      String orderType,
+      bool isDescending) async {
+    List<Site> listSites = [];
+    var listRemoteSites = await _firebaseService.getSitesFilterContain(filterField, filterKeyword);
+    if (listRemoteSites != null) {
+      for (var remoteSite in listRemoteSites) {
+        listSites.add(Site(
+          images: FuncUlti.getListStringFromListDynamic(remoteSite["image"]),
+          siteId: remoteSite["siteid"],
+          haveDeals: remoteSite["haveDeals"],
+          title: remoteSite["title"],
+          subTitle: remoteSite["subTitle"],
+          business: FuncUlti.getListIntFromListDynamic(remoteSite["business"]),
+          location: remoteSite["location"],
+          rating: remoteSite["rating"],
+          siteContent: SiteContent(
+            title: remoteSite["contentTitle"],
+            description: remoteSite["contentDescription"],
+            moreInformation: remoteSite["moreInformation"],
+            advisory: remoteSite["advisory"],
+            amenities: FuncUlti.getListIntFromListDynamic(remoteSite["amenities"]),
+            amentityDescriptions: FuncUlti.getListStringFromListDynamic(remoteSite["amentityDescriptions"]),
+            openingTimes: FuncUlti.getMapStringStringFromStringDynamic(remoteSite["openingTimes"]),
+            fees: FuncUlti.getMapStringListFromStringDynamic(remoteSite["fees"]),
+            capacity: remoteSite["capacity"],
+            eventIcons: FuncUlti.getListStringFromListDynamic(remoteSite["eventIcons"]),
+            eventLinks: FuncUlti.getListStringFromListDynamic(remoteSite["eventLinks"]),
+            getIntouch: FuncUlti.getMapStringStringFromStringDynamic(remoteSite["getIntouch"]),
+            logo: remoteSite["logo"],
+            partner: remoteSite["partner"],
+          ),
+        ));
+      }
+    }
+    return listSites;
+  }
+
+  @override
+  Future<List<Article>> getListArticle(
+      String orderType,
+      bool isDescending) async {
     List<Article> listArticles = [];
-    var listRemoteArticles = await _firebaseService.getArticles();
+    var listRemoteArticles = await _firebaseService.getArticles(orderType, isDescending);
     if (listRemoteArticles != null) {
       for (var remoteArticle in listRemoteArticles) {
         listArticles.add(Article(
           articleId: remoteArticle["articleId"],
           banner: remoteArticle["banner"],
           title: remoteArticle["title"],
+          rating: double.parse(remoteArticle["rating"].toString()),
+          business: FuncUlti.getListIntFromListDynamic(remoteArticle["business"]),
+          listContent: FuncUlti.getMapStringListFromStringDynamic(remoteArticle["listContent"]),
+        ));
+      }
+    }
+    return listArticles;
+  }
+
+  @override
+  Future<List<Article>> getListArticleFilterEqual(
+      String filterField,
+      int filterKeyword,
+      String orderType,
+      bool isDescending) async {
+    List<Article> listArticles = [];
+    var listRemoteArticles = await _firebaseService.getArticlesFilterEqual(filterField, filterKeyword);
+    if (listRemoteArticles != null) {
+      for (var remoteArticle in listRemoteArticles) {
+        listArticles.add(Article(
+          articleId: remoteArticle["articleId"],
+          banner: remoteArticle["banner"],
+          title: remoteArticle["title"],
+          rating: double.parse(remoteArticle["rating"].toString()),
+          business: FuncUlti.getListIntFromListDynamic(remoteArticle["business"]),
+          listContent: FuncUlti.getMapStringListFromStringDynamic(remoteArticle["listContent"]),
+        ));
+      }
+    }
+    return listArticles;
+  }
+
+  @override
+  Future<List<Article>> getListArticleFilterContain(
+      String filterField,
+      String filterKeyword,
+      String orderType,
+      bool isDescending) async {
+    List<Article> listArticles = [];
+    var listRemoteArticles = await _firebaseService.getArticlesFilterContain(filterField, filterKeyword);
+    if (listRemoteArticles != null) {
+      for (var remoteArticle in listRemoteArticles) {
+        listArticles.add(Article(
+          articleId: remoteArticle["articleId"],
+          banner: remoteArticle["banner"],
+          title: remoteArticle["title"],
+          rating: double.parse(remoteArticle["rating"].toString()),
           business: FuncUlti.getListIntFromListDynamic(remoteArticle["business"]),
           listContent: FuncUlti.getMapStringListFromStringDynamic(remoteArticle["listContent"]),
         ));

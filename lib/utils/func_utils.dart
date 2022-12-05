@@ -61,5 +61,14 @@ class FuncUlti {
       default: return "NaN";
     }
   }
+
+  static String getOrderTypeByInt(int input) {
+    switch (input) {
+      case 0: return "title"; // Alphabet
+      case 1: return "title"; // Alphabet
+      case 2: return "rating"; // Alphabet
+      default: return "title"; // Alphabet
+    }
+  }
 }
 
