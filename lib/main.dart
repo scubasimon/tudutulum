@@ -37,7 +37,7 @@ Future<void> main() async {
     PrefUtil.init();
 
     if (kDebugMode) {
-      await _connectToFirebaseEmulator();
+      // await _connectToFirebaseEmulator();
     }
 
     SystemChrome.setPreferredOrientations(
