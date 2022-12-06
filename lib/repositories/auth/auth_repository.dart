@@ -50,11 +50,27 @@ class AuthRepositoryImpl extends AuthRepository {
       throw AuthenticationError.badCredentials({});
     }
 
+    String? firstName, familyName;
+    if (authentication.name != null) {
+      var array = authentication.name!.split(" ");
+      if (array.length == 1) {
+        firstName = authentication.name;
+      } else if (array.length == 2) {
+        firstName = array[0];
+        familyName = array[1];
+      } else {
+        firstName = array[0];
+        array.removeAt(0);
+        familyName = array.join(" ");
+      }
+    }
+
     var user = Profile(
       userCredentials.user!.uid,
       userCredentials.additionalUserInfo!.providerId!,
       email: authentication.email,
-      firstName: authentication.name,
+      firstName: firstName,
+      familyName: familyName,
       telephone: authentication.phone,
     );
     return _firebaseService
@@ -96,11 +112,26 @@ class AuthRepositoryImpl extends AuthRepository {
     if (await _firebaseService.userExists(userCredentials!.user!.uid)) {
       return;
     } else {
+      String? firstName, familyName;
+      if (userCredentials.user?.displayName != null) {
+        var array = userCredentials.user!.displayName!.split(" ");
+        if (array.length == 1) {
+          firstName = userCredentials.user!.displayName;
+        } else if (array.length == 2) {
+          firstName = array[0];
+          familyName = array[1];
+        } else {
+          firstName = array[0];
+          array.removeAt(0);
+          familyName = array.join(" ");
+        }
+      }
       var user = Profile(
         userCredentials.user!.uid,
         userCredentials.additionalUserInfo!.providerId!,
         email: userCredentials.user!.email,
-        firstName: userCredentials.user!.displayName,
+        firstName: firstName,
+        familyName: familyName,
         telephone: userCredentials.user!.phoneNumber,
       );
       return _firebaseService
