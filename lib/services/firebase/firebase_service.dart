@@ -316,7 +316,6 @@ class FirebaseServiceImpl extends FirebaseService {
           .collection("sites")
           .where(filterField, isGreaterThanOrEqualTo: filterKeyword)
           .where(filterField, isLessThanOrEqualTo: filterKeyword + '\uf8ff')
-          .orderBy("rating", descending: false)
           .limit(1)
           .get();
 
