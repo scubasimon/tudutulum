@@ -27,12 +27,12 @@ abstract class FirebaseService {
   Future<User?> authChanged();
 
   Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getArticles(String orderType, bool isDescending);
-  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getArticlesFilterEqual(String filterField, int filterKeyword);
-  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getArticlesFilterContain(String filterField, String filterKeyword);
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getArticlesFilterEqual(String filterField, int filterKeyword, String orderType, bool isDescending);
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getArticlesFilterContain(String filterField, String filterKeyword, String orderType, bool isDescending);
 
   Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getSites(String orderType, bool isDescending, int startAt);
-  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getSitesFilterEqual(String filterField, int filterKeyword);
-  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getSitesFilterContain(String filterField, String filterKeyword);
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getSitesFilterEqual(String filterField, int filterKeyword, String orderType, bool isDescending);
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getSitesFilterContain(String filterField, String filterKeyword, String orderType, bool isDescending);
 
   Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getPartners();
 
@@ -201,12 +201,15 @@ class FirebaseServiceImpl extends FirebaseService {
   @override
   Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getArticlesFilterEqual(
       String filterField,
-      int filterKeyword) async {
+      int filterKeyword,
+      String orderType,
+      bool isDescending) async {
     try {
       if (filterKeyword == -1) {
         final listSite = await FirebaseFirestore
             .instance
             .collection("articles")
+            .orderBy(orderType, descending: isDescending)
             .get();
         return listSite.docs;
       }
@@ -214,6 +217,8 @@ class FirebaseServiceImpl extends FirebaseService {
           .instance
           .collection("articles")
           .where(filterField, arrayContains: filterKeyword)
+          .orderBy(filterField)
+          .orderBy(orderType, descending: isDescending)
           .limit(1)
           .get();
       return listSite.docs;
@@ -226,16 +231,30 @@ class FirebaseServiceImpl extends FirebaseService {
   @override
   Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getArticlesFilterContain(
       String filterField,
-      String filterKeyword) async {
+      String filterKeyword,
+      String orderType,
+      bool isDescending) async {
     try {
-      final listSite = await FirebaseFirestore
-          .instance
-          .collection("articles")
-          .where(filterField, isGreaterThanOrEqualTo: filterKeyword)
-          .where(filterField, isLessThanOrEqualTo: filterKeyword + '\uf8ff')
-          .get();
-
-      return listSite.docs;
+      if (filterField != orderType) {
+        final listSite = await FirebaseFirestore
+            .instance
+            .collection("articles")
+            .where(filterField, isGreaterThanOrEqualTo: filterKeyword)
+            .where(filterField, isLessThanOrEqualTo: filterKeyword + '\uf8ff')
+            .orderBy(filterField)
+            .orderBy(orderType, descending: isDescending)
+            .get();
+        return listSite.docs;
+      } else {
+        final listSite = await FirebaseFirestore
+            .instance
+            .collection("articles")
+            .where(filterField, isGreaterThanOrEqualTo: filterKeyword)
+            .where(filterField, isLessThanOrEqualTo: filterKeyword + '\uf8ff')
+            .orderBy(orderType, descending: isDescending)
+            .get();
+        return listSite.docs;
+      }
     } catch (e) {
       print("QueryDocumentSnapshot -> ERROR: $e");
     }
@@ -283,12 +302,15 @@ class FirebaseServiceImpl extends FirebaseService {
   @override
   Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getSitesFilterEqual(
       String filterField,
-      int filterKeyword) async {
+      int filterKeyword,
+      String orderType,
+      bool isDescending) async {
     try {
       if (filterKeyword == -1) {
         final listSite = await FirebaseFirestore
             .instance
             .collection("sites")
+            .orderBy(orderType, descending: isDescending)
             .limit(1)
             .get();
         return listSite.docs;
@@ -297,6 +319,8 @@ class FirebaseServiceImpl extends FirebaseService {
           .instance
           .collection("sites")
           .where(filterField, arrayContains: filterKeyword)
+          .orderBy(filterField)
+          .orderBy(orderType, descending: isDescending)
           .limit(1)
           .get();
       return listSite.docs;
@@ -309,19 +333,36 @@ class FirebaseServiceImpl extends FirebaseService {
   @override
   Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getSitesFilterContain(
       String filterField,
-      String filterKeyword) async {
+      String filterKeyword,
+      String orderType,
+      bool isDescending) async {
     try {
-      final listSite = await FirebaseFirestore
-          .instance
-          .collection("sites")
-          .where(filterField, isGreaterThanOrEqualTo: filterKeyword)
-          .where(filterField, isLessThanOrEqualTo: filterKeyword + '\uf8ff')
-          .limit(1)
-          .get();
-
-      return listSite.docs;
+      if (filterField != orderType) {
+        final listSite = await FirebaseFirestore
+            .instance
+            .collection("sites")
+            .where(filterField, isGreaterThanOrEqualTo: filterKeyword)
+            .where(filterField, isLessThanOrEqualTo: filterKeyword + '\uf8ff')
+            .orderBy(filterField)
+            .orderBy(orderType, descending: isDescending)
+            .limit(1)
+            .get();
+        return listSite.docs;
+      } else {
+        final listSite = await FirebaseFirestore
+            .instance
+            .collection("sites")
+            .where(filterField, isGreaterThanOrEqualTo: filterKeyword)
+            .where(filterField, isLessThanOrEqualTo: filterKeyword + '\uf8ff')
+            .orderBy(orderType, descending: isDescending)
+            .limit(1)
+            .get();
+        return listSite.docs;
+      }
     } catch (e) {
-      print("QueryDocumentSnapshot -> ERROR: $e");
+      print("getSitesFilterContain -> ERROR: $e");
+      print("getSitesFilterContain -> 1: $filterField");
+      print("getSitesFilterContain -> 2: $orderType");
     }
   }
 

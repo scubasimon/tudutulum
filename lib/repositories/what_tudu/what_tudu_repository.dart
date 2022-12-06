@@ -64,7 +64,7 @@ class WhatTuduRepositoryImpl extends WhatTuduRepository {
       String orderType,
       bool isDescending) async {
     List<Site> listSites = [];
-    var listRemoteSites = await _firebaseService.getSitesFilterEqual(filterField, filterKeyword);
+    var listRemoteSites = await _firebaseService.getSitesFilterEqual(filterField, filterKeyword, orderType, isDescending);
     if (listRemoteSites != null) {
       for (var remoteSite in listRemoteSites) {
         listSites.add(Site(
@@ -105,7 +105,7 @@ class WhatTuduRepositoryImpl extends WhatTuduRepository {
       String orderType,
       bool isDescending) async {
     List<Site> listSites = [];
-    var listRemoteSites = await _firebaseService.getSitesFilterContain(filterField, filterKeyword);
+    var listRemoteSites = await _firebaseService.getSitesFilterContain(filterField, filterKeyword, orderType, isDescending);
     if (listRemoteSites != null) {
       for (var remoteSite in listRemoteSites) {
         listSites.add(Site(
@@ -167,7 +167,7 @@ class WhatTuduRepositoryImpl extends WhatTuduRepository {
       String orderType,
       bool isDescending) async {
     List<Article> listArticles = [];
-    var listRemoteArticles = await _firebaseService.getArticlesFilterEqual(filterField, filterKeyword);
+    var listRemoteArticles = await _firebaseService.getArticlesFilterEqual(filterField, filterKeyword, orderType, isDescending);
     if (listRemoteArticles != null) {
       for (var remoteArticle in listRemoteArticles) {
         listArticles.add(Article(
@@ -190,7 +190,7 @@ class WhatTuduRepositoryImpl extends WhatTuduRepository {
       String orderType,
       bool isDescending) async {
     List<Article> listArticles = [];
-    var listRemoteArticles = await _firebaseService.getArticlesFilterContain(filterField, filterKeyword);
+    var listRemoteArticles = await _firebaseService.getArticlesFilterContain(filterField, filterKeyword, orderType, isDescending);
     if (listRemoteArticles != null) {
       for (var remoteArticle in listRemoteArticles) {
         listArticles.add(Article(
