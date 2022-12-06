@@ -20,11 +20,25 @@ abstract class FirebaseService {
 
   Future<void> sendPasswordResetEmail(String email);
 
+  Future<Map<String, dynamic>> getUser(String id);
+
   Future<void> addUser(String userId, Map<String, dynamic> data);
+
+  Future<void> updateUser(String userId, Map<String, dynamic> data);
 
   Future<bool> userExists(String userId);
 
   Future<User?> authChanged();
+
+  Future<void> changeEmail(String email);
+  
+  Future<void> changePassword(String newPassword);
+
+  Future<void> signOut();
+
+  Future<void> removeUser(String userId);
+
+  Future<void> deleteAccount();
 }
 
 class FirebaseServiceImpl extends FirebaseService {
@@ -68,7 +82,7 @@ class FirebaseServiceImpl extends FirebaseService {
       throw AuthenticationError
           .badCredentials({
         "error": e,
-      }, message: e.message ?? "");
+      }, message: S.current.account_incorrect_error);
     } catch (e) {
       print(e);
       throw CommonError.serverError;
@@ -112,6 +126,20 @@ class FirebaseServiceImpl extends FirebaseService {
   }
 
   @override
+  Future<Map<String, dynamic>> getUser(String id) async {
+    var result = await FirebaseFirestore
+        .instance
+        .collection("users")
+        .doc(id)
+        .get();
+    if (result.exists) {
+      return result.data()!;
+    } else {
+      throw AuthenticationError.userNotExisted;
+    }
+  }
+
+  @override
   Future<void> addUser(String userId, Map<String, dynamic> data) async {
     try {
       return await FirebaseFirestore
@@ -119,6 +147,20 @@ class FirebaseServiceImpl extends FirebaseService {
           .collection("users")
           .doc(userId)
           .set(data);
+    } catch (e) {
+      print(e);
+      throw CommonError.serverError;
+    }
+  }
+
+  @override
+  Future<void> updateUser(String userId, Map<String, dynamic> data) async {
+    try {
+      return await FirebaseFirestore
+          .instance
+          .collection("users")
+          .doc(userId)
+          .update(data);
     } catch (e) {
       print(e);
       throw CommonError.serverError;
@@ -135,6 +177,28 @@ class FirebaseServiceImpl extends FirebaseService {
           completer.complete(user);
         });
     return completer.future;
+  }
+
+  @override
+  Future<void> changeEmail(String email) async {
+    try {
+      FirebaseAuth.instance.currentUser?.updateEmail(email);
+    } on FirebaseAuthException catch (e) {
+      print(e);
+      throw AuthenticationError.badCredentials({
+        "error": e
+      }, message: e.message ?? "");
+    } catch (e) {
+      print(e);
+      throw CommonError.serverError;
+    }
+  }
+
+  @override
+  Future<void> changePassword(String newPassword) async {
+    return await FirebaseAuth
+        .instance
+        .currentUser?.updatePassword(newPassword);
   }
 
   @override
@@ -166,4 +230,30 @@ class FirebaseServiceImpl extends FirebaseService {
     }
   }
 
+  @override
+  Future<void> signOut() {
+    return FirebaseAuth.instance.signOut();
+  }
+
+  @override
+  Future<void> removeUser(String userId) async {
+    try {
+      return await FirebaseFirestore
+          .instance
+          .collection("users")
+          .doc(userId)
+          .delete();
+    } catch (e) {
+      print(e);
+      throw CommonError.serverError;
+    }
+  }
+
+  @override
+  Future<void> deleteAccount() {
+    if (FirebaseAuth.instance.currentUser == null) {
+      throw AuthenticationError.notLogin;
+    }
+    return FirebaseAuth.instance.currentUser!.delete();
+  }
 }

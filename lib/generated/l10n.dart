@@ -520,6 +520,26 @@ class S {
     );
   }
 
+  /// `User not found`
+  String get user_not_existed_error {
+    return Intl.message(
+      'User not found',
+      name: 'user_not_existed_error',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `UnAuthorized`
+  String get un_authorized_error {
+    return Intl.message(
+      'UnAuthorized',
+      name: 'un_authorized_error',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `What tudu?`
   String get what_tudu {
     return Intl.message(
@@ -835,6 +855,296 @@ class S {
     return Intl.message(
       'With thanks to our trusted partner:',
       name: 'thanks_to_our_trusted_partner',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your Account`
+  String get your_account {
+    return Intl.message(
+      'Your Account',
+      name: 'your_account',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Hello '{name}'`
+  String hello_name(Object name) {
+    return Intl.message(
+      'Hello \'$name\'',
+      name: 'hello_name',
+      desc: '',
+      args: [name],
+    );
+  }
+
+  /// `Update Details`
+  String get update_details {
+    return Intl.message(
+      'Update Details',
+      name: 'update_details',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `First Name`
+  String get first_name {
+    return Intl.message(
+      'First Name',
+      name: 'first_name',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Family Name`
+  String get family_name {
+    return Intl.message(
+      'Family Name',
+      name: 'family_name',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Change Password`
+  String get change_password {
+    return Intl.message(
+      'Change Password',
+      name: 'change_password',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Current Password`
+  String get current_password {
+    return Intl.message(
+      'Current Password',
+      name: 'current_password',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `New Password`
+  String get new_password {
+    return Intl.message(
+      'New Password',
+      name: 'new_password',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Repeat New Password`
+  String get repeat_new_password {
+    return Intl.message(
+      'Repeat New Password',
+      name: 'repeat_new_password',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Receive new offer notification emails`
+  String get receive_new_offer_notification_email {
+    return Intl.message(
+      'Receive new offer notification emails',
+      name: 'receive_new_offer_notification_email',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Receive monthly newsletter email`
+  String get receive_monthly_newsletter_email {
+    return Intl.message(
+      'Receive monthly newsletter email',
+      name: 'receive_monthly_newsletter_email',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Save Changes`
+  String get save_changes {
+    return Intl.message(
+      'Save Changes',
+      name: 'save_changes',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Or deactivate your account`
+  String get delete_account {
+    return Intl.message(
+      'Or deactivate your account',
+      name: 'delete_account',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `here`
+  String get here {
+    return Intl.message(
+      'here',
+      name: 'here',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sign out`
+  String get sign_out {
+    return Intl.message(
+      'Sign out',
+      name: 'sign_out',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Current password must be not empty`
+  String get current_password_empty_error {
+    return Intl.message(
+      'Current password must be not empty',
+      name: 'current_password_empty_error',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `New password must be not empty`
+  String get new_password_empty_error {
+    return Intl.message(
+      'New password must be not empty',
+      name: 'new_password_empty_error',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Repeat password must be not empty`
+  String get repeat_password_empty_error {
+    return Intl.message(
+      'Repeat password must be not empty',
+      name: 'repeat_password_empty_error',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `New password and Repeat password do not match`
+  String get password_not_match_error {
+    return Intl.message(
+      'New password and Repeat password do not match',
+      name: 'password_not_match_error',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Update successful`
+  String get update_successful {
+    return Intl.message(
+      'Update successful',
+      name: 'update_successful',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Notification`
+  String get notification {
+    return Intl.message(
+      'Notification',
+      name: 'notification',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Requires login`
+  String get not_login_error {
+    return Intl.message(
+      'Requires login',
+      name: 'not_login_error',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Incorrect email or password`
+  String get account_incorrect_error {
+    return Intl.message(
+      'Incorrect email or password',
+      name: 'account_incorrect_error',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Explore Deals`
+  String get explore_deals {
+    return Intl.message(
+      'Explore Deals',
+      name: 'explore_deals',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Cancel`
+  String get cancel {
+    return Intl.message(
+      'Cancel',
+      name: 'cancel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Delete Now`
+  String get delete_now {
+    return Intl.message(
+      'Delete Now',
+      name: 'delete_now',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Deactivate Account`
+  String get deactivate_account_title {
+    return Intl.message(
+      'Deactivate Account',
+      name: 'deactivate_account_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your account information will be completely removed from our system.\n\nYou will no longer be able to redeem any offers unless you sign up again.\n\nIf you are a subscriber, please ensure you also unsubscribe through Google Play/Appstore.`
+  String get confirm_delete_account_message {
+    return Intl.message(
+      'Your account information will be completely removed from our system.\n\nYou will no longer be able to redeem any offers unless you sign up again.\n\nIf you are a subscriber, please ensure you also unsubscribe through Google Play/Appstore.',
+      name: 'confirm_delete_account_message',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You are not logged in. please log in`
+  String get login_message {
+    return Intl.message(
+      'You are not logged in. please log in',
+      name: 'login_message',
       desc: '',
       args: [],
     );

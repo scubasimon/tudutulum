@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tudu/consts/urls/URLConst.dart';
 import 'package:tudu/firebase_options.dart';
@@ -36,7 +37,7 @@ Future<void> main() async {
     PrefUtil.init();
 
     if (kDebugMode) {
-      await _connectToFirebaseEmulator();
+      // await _connectToFirebaseEmulator();
     }
 
     SystemChrome.setPreferredOrientations(

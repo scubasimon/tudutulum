@@ -381,7 +381,7 @@ class _WhatTuduView extends State<WhatTuduView> {
                     ),
                   ],
                 ),
-              )
+              ),
             ],
           ),
         ),

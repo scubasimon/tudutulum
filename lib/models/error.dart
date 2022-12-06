@@ -67,4 +67,34 @@ class AuthenticationError {
       data: data
     );
   }
+
+  static CustomError userNotExisted = CustomError(
+    "E_AUTH_110",
+    message: S.current.user_not_existed_error
+  );
+
+  static CustomError unAuthorized = CustomError(
+    "E_AUTH_111",
+    message: S.current.un_authorized_error,
+  );
+  static CustomError currentPasswordEmpty = CustomError(
+    "E_AUTH_112",
+    message: S.current.current_password_empty_error,
+  );
+  static CustomError newPasswordEmpty = CustomError(
+    "E_AUTH_113",
+    message: S.current.new_password_empty_error,
+  );
+  static CustomError repeatPasswordEmpty = CustomError(
+    "E_AUTH_114",
+    message: S.current.repeat_password_empty_error,
+  );
+  static CustomError passwordNotMatch = CustomError(
+    "E_AUTH_115",
+    message: S.current.password_not_match_error,
+  );
+  static CustomError notLogin = CustomError(
+    "E_AUTH_115",
+    message: S.current.not_login_error,
+  );
 }

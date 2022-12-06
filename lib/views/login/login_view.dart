@@ -268,7 +268,7 @@ class _LoginStateView extends State<LoginView> {
                         InkWell(
                           onTap: () {
                             Navigator.of(context).push(
-                                MaterialPageRoute(builder: (context) => RegisterView())
+                                MaterialPageRoute(builder: (context) => const RegisterView())
                             );
                           },
                           child: Text(
@@ -343,9 +343,15 @@ class _LoginStateView extends State<LoginView> {
     );
   }
 
-  void _showAlert(String message) {
+  void _showAlertError(String message) {
     showDialog(context: context, builder: (BuildContext context) {
       return ErrorAlert.alert(context, message);
+    });
+  }
+
+  void _showAlert(String message) {
+    showDialog(context: context, builder: (context) {
+      return NotificationAlert.alert(context, message);
     });
   }
 
@@ -365,7 +371,7 @@ class _LoginStateView extends State<LoginView> {
       Navigator.of(context).pop();
       CustomError err = error as CustomError;
       var message = err.message != null ? err.message! : S.current.failed;
-      _showAlert(message);
+      _showAlertError(message);
     });
   }
 
@@ -382,7 +388,7 @@ class _LoginStateView extends State<LoginView> {
       CustomError err = error as CustomError;
       if (err.code ==  AuthenticationError.emailEmpty.code) {
         var message = err.message != null ? err.message! : S.current.failed;
-        _showAlert(message);
+        _showAlertError(message);
       } else {
         _showAlert(S.current.reset_password_message);
       }

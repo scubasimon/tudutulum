@@ -16,6 +16,7 @@
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		C12496F025A4188E68AD6DDE /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 14DF2360C874879D27F1BAB0 /* Pods_Runner.framework */; };
 		F13763012930CB04006AC1ED /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F13763002930CB04006AC1ED /* GoogleService-Info.plist */; };
+		F150FE102935F765002057D2 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F150FE0F2935F765002057D2 /* StoreKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -51,6 +52,7 @@
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		ADF11754799769531233FFE8 /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
 		F13763002930CB04006AC1ED /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		F150FE0F2935F765002057D2 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		F15304B42934943800529E96 /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -60,6 +62,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C12496F025A4188E68AD6DDE /* Pods_Runner.framework in Frameworks */,
+				F150FE102935F765002057D2 /* StoreKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -79,6 +82,7 @@
 		0B60A97A3A691806F6E105F9 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F150FE0F2935F765002057D2 /* StoreKit.framework */,
 				14DF2360C874879D27F1BAB0 /* Pods_Runner.framework */,
 			);
 			name = Frameworks;

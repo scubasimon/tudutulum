@@ -14,6 +14,18 @@ abstract class AuthRepository {
   Future<void> signIn(Authentication authentication);
 
   Future<void> sendPasswordResetEmail(String email);
+
+  Future<Profile> getCurrentUser();
+
+  Future<void> changeEmail(String email);
+
+  Future<void> updateProfile(Profile profile);
+
+  Future<void> signOut();
+
+  Future<void> changePassword(String newPassword);
+
+  Future<void> deleteAccount();
 }
 
 class AuthRepositoryImpl extends AuthRepository {
@@ -101,7 +113,47 @@ class AuthRepositoryImpl extends AuthRepository {
     await _firebaseService.sendPasswordResetEmail(email);
   }
 
+  @override
+  Future<Profile> getCurrentUser() async {
+    if (FirebaseAuth.instance.currentUser == null) {
+      throw AuthenticationError.unAuthorized;
+    }
+    var data = await _firebaseService
+        .getUser(FirebaseAuth.instance.currentUser!.uid);
+    return Profile.from(data);
+  }
+
   Future<bool> userChangedState() {
     return _firebaseService.authChanged().then((value) => value != null);
+  }
+
+  @override
+  Future<void> changeEmail(String email) {
+    return _firebaseService.changeEmail(email);
+  }
+
+  @override
+  Future<void> updateProfile(Profile profile) {
+    return _firebaseService.updateUser(profile.id, profile.toJson());
+  }
+
+  @override
+  Future<void> signOut() {
+    return _firebaseService.signOut();
+  }
+
+  @override
+  Future<void> changePassword(String newPassword) {
+    return _firebaseService.changePassword(newPassword);
+  }
+
+  @override
+  Future<void> deleteAccount() async {
+    if (FirebaseAuth.instance.currentUser == null){
+      throw AuthenticationError.notLogin;
+    }
+
+    await _firebaseService.removeUser(FirebaseAuth.instance.currentUser!.uid);
+    await _firebaseService.deleteAccount();
   }
 }
