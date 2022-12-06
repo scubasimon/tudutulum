@@ -448,22 +448,15 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
         children: [
           Container(
             height: MediaQuery.of(context).size.width,
-            width: MediaQuery.of(context).size.width,
-            child: CachedNetworkImage(
-              imageUrl: "https://www.designbolts.com/wp-content/uploads/2016/03/404-Web-Page-Design-Examples-17.jpg",
-              height: MediaQuery.of(context).size.width,
-              width: MediaQuery.of(context).size.width,
-              fit: BoxFit.fill,
-              imageBuilder: (context, imageProvider) => Container(
-                decoration: BoxDecoration(
-                  image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
-                ),
+            child: Center(
+              child: Text(
+                S.current.can_not_find_result,
+                style: const TextStyle(
+                    color: ColorStyle.primary,
+                    fontSize: FontSizeConst.font20,
+                    fontWeight: FontWeight.w500,
+                    fontFamily: FontStyles.raleway),
               ),
-              placeholder: (context, url) => const CupertinoActivityIndicator(
-                radius: 20,
-                color: ColorStyle.primary,
-              ),
-              errorWidget: (context, url, error) => Icon(Icons.error),
             ),
           )
         ],
@@ -492,8 +485,8 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
             return Container();
           }
           return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
                 padding: const EdgeInsets.only(top: 8, bottom: 8, left: 16, right: 16),
@@ -834,7 +827,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
     if (index >= _homeViewModel.listBusiness.length) {
       return "Explore All Location";
     } else {
-      return "Explore ${_homeViewModel.listBusiness[index]}";
+      return "Explore ${_homeViewModel.listBusiness[index].type}";
     }
   }
 }

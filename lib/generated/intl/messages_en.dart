@@ -40,6 +40,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "bookmarks": MessageLookupByLibrary.simpleMessage("Bookmarks"),
         "business_type":
             MessageLookupByLibrary.simpleMessage("\'Business Type\'"),
+        "can_not_find_result":
+            MessageLookupByLibrary.simpleMessage("Can not find any result"),
         "capacity": MessageLookupByLibrary.simpleMessage("Capacity"),
         "coming_soon": MessageLookupByLibrary.simpleMessage("•  Coming soon"),
         "create_account":

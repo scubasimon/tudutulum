@@ -870,6 +870,16 @@ class S {
     );
   }
 
+  /// `Can not find any result`
+  String get can_not_find_result {
+    return Intl.message(
+      'Can not find any result',
+      name: 'can_not_find_result',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Please report anything missing/inaccurate here`
   String get please_report {
     return Intl.message(
