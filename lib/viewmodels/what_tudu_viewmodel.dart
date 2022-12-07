@@ -10,6 +10,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:tudu/models/article.dart';
 import 'package:tudu/models/business.dart';
 import 'package:tudu/models/site.dart';
+import 'package:tudu/utils/func_utils.dart';
 
 import '../models/auth.dart';
 import '../repositories/what_tudu/what_tudu_repository.dart';
@@ -50,6 +51,23 @@ class WhatTuduViewModel extends BaseViewModel {
   void showHideLoading(bool showHide) {
     _loadingController.sink.add(showHide);
     notifyListeners();
+  }
+
+  Future<void> createSites(int numberOfSites) async {
+    List<Map<String, dynamic>> listData = [];
+    for (int i = 0; i < numberOfSites; i++) {
+      var data = listSites[0].toJson();
+      data["siteid"] = i + listSites.length;
+      data["title"] = "${FuncUlti.getRandomText(5)} ${FuncUlti.getRandomText(4)}";
+      data["subTitle"] = "${FuncUlti.getRandomText(6)} ${FuncUlti.getRandomText(6)}";
+      if (Random().nextBool() == true) {
+        data["dealId"] = 0;
+      } else {
+        data["dealId"] = null;
+      }
+      listData.add(data);
+    }
+    await _whatTuduRepository.createData(listData);
   }
 
   Future<void> getListWhatTudu(

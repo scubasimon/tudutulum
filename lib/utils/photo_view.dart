@@ -85,112 +85,106 @@ class _PhotoViewUtil extends State<PhotoViewUtil> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: SafeArea(
-          child: Container(
-            child: Stack(
-              children: [
-                PageView(
-                  physics: NeverScrollableScrollPhysics(),
-                  controller: controller,
-                  children: widget.banner
-                      .map((item) => Container(
-                    child: Container(
-                        color: Colors.red,
-                        child: PhotoView(
-                            imageProvider: NetworkImage(
-                                item
-                            )
-                        )),
-                  )).toList(),
-                ),
-                Positioned(
-                    left: 40,
-                    bottom: 40,
-                    child: InkWell(
-                        onTap: () {
-                          if (controller.page != null) {
-                            controller.animateToPage(
-                                controller.page!.toInt() - 1,
-                                duration: const Duration(milliseconds: 200),
-                                curve: Curves.easeIn
-                            );
-                          }
-                        },
-                        child: Container(
-                            height: 40,
-                            width: 40,
-                            alignment: Alignment.center,
-                            child: Image.asset(ImagePath.leftArrowIcon, fit: BoxFit.contain, height: 20.0)
-                        )
-                    ),
-                ),
-                Positioned(
-                  right: 40,
-                  bottom: 40,
-                  child: RotationTransition(
-                    turns: const AlwaysStoppedAnimation(180 / 360),
-                    child: InkWell(
-                        onTap: () {
-                          if (controller.page != null) {
-                            controller.animateToPage(
-                                controller.page!.toInt() + 1,
-                                duration: const Duration(milliseconds: 200),
-                                curve: Curves.easeIn
-                            );
-                          }
-                        },
-                        child: Container(
-                            height: 40,
-                            width: 40,
-                            alignment: Alignment.center,
-                            child: Image.asset(ImagePath.leftArrowIcon, fit: BoxFit.contain, height: 20.0)
-                        )
-                    ),
-                  ),
-                ),
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: 40,
-                  child: Center(
-                    child: Text(
-                      "${currentItem+1}/${widget.banner.length}",
-                      style: const TextStyle(
-                        fontFamily: FontStyles.raleway,
-                        fontSize: FontSizeConst.font18,
-                        fontWeight: FontWeight.w400,
-                        color: ColorStyle.lightLabel,
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  left: 20,
-                  top: 40,
-                  child: InkWell(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Image.asset(ImagePath.leftArrowIcon, fit: BoxFit.contain, height: 20.0),
-                        Container(
-                            margin: const EdgeInsets.only(left: 8),
-                            child: Text(
-                              S.current.back,
-                              style: const TextStyle(
-                                color: ColorStyle.primary,
-                                fontWeight: FontWeight.w400,
-                                fontSize: FontSizeConst.font16,
-                                fontFamily: FontStyles.mouser,
-                              ),
-                            ))
-                      ],
-                    ),
-                    onTap: () { Navigator.pop(context); },
-                  ),
-                )
-              ],
+        body: Stack(
+          children: [
+            PageView(
+              physics: const NeverScrollableScrollPhysics(),
+              controller: controller,
+              children: widget.banner
+                  .map((item) => PhotoView(
+                  imageProvider: NetworkImage(
+                      item
+                  )
+              )).toList(),
             ),
-          ),
+            Positioned(
+              left: 40,
+              bottom: 30 + MediaQuery.of(context).padding.bottom,
+              child: InkWell(
+                  onTap: () {
+                    if (controller.page != null) {
+                      controller.animateToPage(
+                          controller.page!.toInt() - 1,
+                          duration: const Duration(milliseconds: 200),
+                          curve: Curves.easeIn
+                      );
+                    }
+                  },
+                  child: Container(
+                      height: 40,
+                      width: 40,
+                      alignment: Alignment.center,
+                      child: Image.asset(ImagePath.leftArrowIcon, fit: BoxFit.contain, height: 20.0)
+                  )
+              ),
+            ),
+            Positioned(
+              right: 40,
+              bottom: 30 + MediaQuery.of(context).padding.bottom,
+              child: RotationTransition(
+                turns: const AlwaysStoppedAnimation(180 / 360),
+                child: InkWell(
+                    onTap: () {
+                      if (controller.page != null) {
+                        controller.animateToPage(
+                            controller.page!.toInt() + 1,
+                            duration: const Duration(milliseconds: 200),
+                            curve: Curves.easeIn
+                        );
+                      }
+                    },
+                    child: Container(
+                        height: 40,
+                        width: 40,
+                        alignment: Alignment.center,
+                        child: Image.asset(ImagePath.leftArrowIcon, fit: BoxFit.contain, height: 20.0)
+                    )
+                ),
+              ),
+            ),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 30 + MediaQuery.of(context).padding.bottom,
+              child: Container(
+                alignment: Alignment.center,
+                height: 40,
+                child: Text(
+                  "${currentItem+1}/${widget.banner.length}",
+                  style: const TextStyle(
+                    fontFamily: FontStyles.raleway,
+                    fontSize: FontSizeConst.font18,
+                    fontWeight: FontWeight.w400,
+                    color: ColorStyle.lightLabel,
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              left: 20,
+              top: 30 + MediaQuery.of(context).padding.top,
+              child: InkWell(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Image.asset(ImagePath.leftArrowIcon, fit: BoxFit.contain, height: 20.0),
+                    Container(
+                        margin: const EdgeInsets.only(left: 8),
+                        child: Text(
+                          S.current.back,
+                          style: const TextStyle(
+                            color: ColorStyle.primary,
+                            fontWeight: FontWeight.w400,
+                            fontSize: FontSizeConst.font16,
+                            fontFamily: FontStyles.mouser,
+                          ),
+                        ))
+                  ],
+                ),
+                onTap: () { Navigator.pop(context); },
+              ),
+            )
+          ],
         ));
   }
 }

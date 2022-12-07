@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Site {
+  bool active;
   int siteId;
   List<String> images;
-  bool haveDeals;
+  int? dealId;
   String title;
   String subTitle;
   List<int> business;
@@ -13,9 +14,10 @@ class Site {
 
   Site(
       {
+        this.dealId,
+        required this.active,
         required this.images,
         required this.siteId,
-        required this.haveDeals,
         required this.title,
         required this.subTitle,
         required this.business,
@@ -24,9 +26,26 @@ class Site {
         required this.rating,
       });
 
-  Map<String, dynamic> toJson() => {
-    // "id": id,
-  };
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> result = {
+      "dealId": dealId,
+      "active": active,
+      "image": images,
+      "siteid": siteId,
+      "title": title,
+      "subTitle": subTitle,
+      "business": business,
+      "location": location,
+      "rating": rating,
+    };
+
+    var siteContentJson = siteContent.toJson();
+    for (var data in siteContentJson.keys.toList()) {
+      result[data] = siteContentJson[data];
+    }
+
+    return result;
+  }
 }
 
 class SiteContent {
@@ -64,6 +83,19 @@ class SiteContent {
       });
 
   Map<String, dynamic> toJson() => {
-    // "id": id,
+    "contentTitle": title,
+    "contentDescription": description,
+    "moreInformation": moreInformation,
+    "advisory": advisory,
+    "amenities": amenities,
+    "amentityDescriptions": amentityDescriptions,
+    "openingTimes": openingTimes,
+    "fees": fees,
+    "capacity": capacity,
+    "eventIcons": eventIcons,
+    "eventLinks": eventLinks,
+    "getIntouch": getIntouch,
+    "logo": logo,
+    "partner": partner,
   };
 }

@@ -130,7 +130,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
       children: [
         getCover(
           _whatTuduSiteContentDetailViewModel.siteContentDetail.images.first,
-          _whatTuduSiteContentDetailViewModel.siteContentDetail.haveDeals,
+          _whatTuduSiteContentDetailViewModel.siteContentDetail.dealId,
         ),
         getTitle(
           _whatTuduSiteContentDetailViewModel.siteContentDetail.siteContent.title,
@@ -171,7 +171,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
     );
   }
 
-  Widget getCover(String urlImage, bool haveDeals) {
+  Widget getCover(String urlImage, int? dealId) {
     return Stack(
       children: [
         InkWell(
@@ -212,7 +212,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
               // )
           ),
         ),
-        (haveDeals)
+        (dealId != null)
             ? Container(
           height: 40,
           width: 40,

@@ -87,7 +87,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
         FuncUlti.getOrderTypeByInt(0), // 0 == title
         _searchController.text,
         FuncUlti.getOrderTypeByInt(_orderType),
-        (FuncUlti.getOrderTypeByInt(_orderType) == "rating") ? true : false,
+        false,
       );
       if (_searchController.text != "") {
         isAtTop = true;
@@ -169,7 +169,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
         "business",
         null,
         FuncUlti.getOrderTypeByInt(_orderType),
-        (FuncUlti.getOrderTypeByInt(_orderType) == "rating") ? true : false,
+        false,
       );
       _filterType = _homeViewModel.listBusiness.length;
 
@@ -188,7 +188,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
     // monitor network fetch
     await _whatTuduViewModel.getListWhatTudu(
         FuncUlti.getOrderTypeByInt(_orderType),
-        (FuncUlti.getOrderTypeByInt(_orderType) == "rating") ? true : false,
+        false,
         _whatTuduViewModel.listSitesFilter.length);
     if (mounted) setState(() {});
     _refreshController.loadComplete();
@@ -269,23 +269,6 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                                 );
                               },
                             ),
-                            const PullDownMenuDivider(),
-                            PullDownMenuItem(
-                              title: "Rating",
-                              itemTheme: const PullDownMenuItemTheme(
-                                textStyle: TextStyle(
-                                    fontFamily: FontStyles.sfProText,
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 17,
-                                    color: ColorStyle.menuLabel),
-                              ),
-                              enabled: _orderType != 2,
-                              onTap: () {
-                                _orderType = 2;
-                                _whatTuduViewModel.getListWhatTudu(
-                                    FuncUlti.getOrderTypeByInt(_orderType), true, 0);
-                              },
-                            ),
                           ],
                           position: PullDownMenuPosition.automatic,
                           buttonBuilder: (context, showMenu) => Container(
@@ -338,7 +321,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                                           "business",
                                           null,
                                           FuncUlti.getOrderTypeByInt(_orderType),
-                                          (FuncUlti.getOrderTypeByInt(_orderType) == "rating") ? true : false,
+                                          false,
                                         );
                                         _filterType = ((counter) / 2).round();
                                       },
@@ -368,7 +351,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                                                   "business",
                                                   _homeViewModel.listBusiness[((counter) / 2).round()],
                                                   FuncUlti.getOrderTypeByInt(_orderType),
-                                                  (FuncUlti.getOrderTypeByInt(_orderType) == "rating") ? true : false,
+                                                  false,
                                                 );
                                                 _filterType = ((counter) / 2).round();
                                               },
@@ -714,7 +697,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                       // ),
                     )),
               ),
-              getDealItemIfExist(data[index].haveDeals),
+              getDealItemIfExist(data[index].dealId),
               Positioned(
                 bottom: 0,
                 child: Container(
@@ -767,8 +750,8 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
     ;
   }
 
-  Widget getDealItemIfExist(bool isDealExist) {
-    if (isDealExist) {
+  Widget getDealItemIfExist(int? dealId) {
+    if (dealId != null) {
       return Container(
         height: 40,
         width: 40,

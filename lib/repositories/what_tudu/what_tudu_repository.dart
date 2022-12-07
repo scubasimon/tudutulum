@@ -5,6 +5,8 @@ import '../../models/site.dart';
 import '../../services/firebase/firebase_service.dart';
 
 abstract class WhatTuduRepository {
+  Future<void> createData(List<Map<String, dynamic>> data);
+
   Future<List<Article>> getListArticle(String orderType, bool isDescending);
   Future<List<Article>> getListArticleFilterEqual(String filterField, int filterKeyword, String orderType, bool isDescending);
   Future<List<Article>> getListArticleFilterContain(String filterField, String filterKeyword, String orderType, bool isDescending);
@@ -18,6 +20,11 @@ class WhatTuduRepositoryImpl extends WhatTuduRepository {
   final FirebaseService _firebaseService = FirebaseServiceImpl();
 
   @override
+  Future<void> createData(List<Map<String, dynamic>> data) async {
+    await _firebaseService.createData(data);
+  }
+
+  @override
   Future<List<Site>> getListSite(
       String orderType,
       bool isDescending,
@@ -28,8 +35,9 @@ class WhatTuduRepositoryImpl extends WhatTuduRepository {
       for (var remoteSite in listRemoteSites) {
         listSites.add(Site(
           images: FuncUlti.getListStringFromListDynamic(remoteSite["image"]),
+          active: remoteSite["active"],
           siteId: remoteSite["siteid"],
-          haveDeals: remoteSite["haveDeals"],
+          dealId: (remoteSite.data()["dealId"] != null) ? remoteSite["dealId"] : null,
           title: remoteSite["title"],
           subTitle: remoteSite["subTitle"],
           business: FuncUlti.getListIntFromListDynamic(remoteSite["business"]),
@@ -69,8 +77,9 @@ class WhatTuduRepositoryImpl extends WhatTuduRepository {
       for (var remoteSite in listRemoteSites) {
         listSites.add(Site(
           images: FuncUlti.getListStringFromListDynamic(remoteSite["image"]),
+          active: remoteSite["active"],
           siteId: remoteSite["siteid"],
-          haveDeals: remoteSite["haveDeals"],
+          dealId: (remoteSite.data()["dealId"] != null) ? remoteSite["dealId"] : null,
           title: remoteSite["title"],
           subTitle: remoteSite["subTitle"],
           business: FuncUlti.getListIntFromListDynamic(remoteSite["business"]),
@@ -110,8 +119,9 @@ class WhatTuduRepositoryImpl extends WhatTuduRepository {
       for (var remoteSite in listRemoteSites) {
         listSites.add(Site(
           images: FuncUlti.getListStringFromListDynamic(remoteSite["image"]),
+          active: remoteSite["active"],
           siteId: remoteSite["siteid"],
-          haveDeals: remoteSite["haveDeals"],
+          dealId: (remoteSite.data()["dealId"] != null) ? remoteSite["dealId"] : null,
           title: remoteSite["title"],
           subTitle: remoteSite["subTitle"],
           business: FuncUlti.getListIntFromListDynamic(remoteSite["business"]),

@@ -7,7 +7,11 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:tudu/models/error.dart';
 import 'package:tudu/generated/l10n.dart';
 
+import '../../models/site.dart';
+
 abstract class FirebaseService {
+  Future<void> createData(List<Map<String, dynamic>> data);
+
   Future<UserCredential> signUp(String email, String password);
 
   Future<UserCredential> signIn(String email, String password);
@@ -49,6 +53,22 @@ class FirebaseServiceImpl extends FirebaseService {
     return _singleton;
   }
   FirebaseServiceImpl._internal();
+
+  @override
+  Future<void> createData(List<Map<String, dynamic>> data) async {
+    try {
+      for (var element in data) {
+        await FirebaseFirestore
+            .instance
+            .collection("sites")
+            .doc(element["siteid"].toString())
+            .set(element);
+      }
+    } catch (e) {
+      print(e);
+      throw CommonError.serverError;
+    }
+  }
 
   @override
   Future<UserCredential> signUp(String email, String password) async {
@@ -219,7 +239,7 @@ class FirebaseServiceImpl extends FirebaseService {
           .where(filterField, arrayContains: filterKeyword)
           .orderBy(filterField)
           .orderBy(orderType, descending: isDescending)
-          .limit(1)
+          .limit(10)
           .get();
       return listSite.docs;
 
@@ -271,7 +291,7 @@ class FirebaseServiceImpl extends FirebaseService {
             .instance
             .collection("sites")
             .orderBy(orderType, descending: isDescending)
-            .limit(1)
+            .limit(10)
             .get();
         return listSite.docs;
       }
@@ -290,7 +310,7 @@ class FirebaseServiceImpl extends FirebaseService {
           .collection("sites")
           .orderBy(orderType, descending: isDescending)
           .startAfter([lastVisible.data()[orderType]])
-          .limit(1)
+          .limit(10)
           .get();
 
       return next.docs;
@@ -311,7 +331,7 @@ class FirebaseServiceImpl extends FirebaseService {
             .instance
             .collection("sites")
             .orderBy(orderType, descending: isDescending)
-            .limit(1)
+            .limit(10)
             .get();
         return listSite.docs;
       }
@@ -321,7 +341,7 @@ class FirebaseServiceImpl extends FirebaseService {
           .where(filterField, arrayContains: filterKeyword)
           .orderBy(filterField)
           .orderBy(orderType, descending: isDescending)
-          .limit(1)
+          .limit(10)
           .get();
       return listSite.docs;
 
@@ -345,7 +365,7 @@ class FirebaseServiceImpl extends FirebaseService {
             .where(filterField, isLessThanOrEqualTo: filterKeyword + '\uf8ff')
             .orderBy(filterField)
             .orderBy(orderType, descending: isDescending)
-            .limit(1)
+            .limit(10)
             .get();
         return listSite.docs;
       } else {
@@ -355,14 +375,12 @@ class FirebaseServiceImpl extends FirebaseService {
             .where(filterField, isGreaterThanOrEqualTo: filterKeyword)
             .where(filterField, isLessThanOrEqualTo: filterKeyword + '\uf8ff')
             .orderBy(orderType, descending: isDescending)
-            .limit(1)
+            .limit(10)
             .get();
         return listSite.docs;
       }
     } catch (e) {
       print("getSitesFilterContain -> ERROR: $e");
-      print("getSitesFilterContain -> 1: $filterField");
-      print("getSitesFilterContain -> 2: $orderType");
     }
   }
 

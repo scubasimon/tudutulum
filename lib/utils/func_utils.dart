@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:assets_audio_player/assets_audio_player.dart';
 
 class FuncUlti {
@@ -66,9 +68,26 @@ class FuncUlti {
     switch (input) {
       case 0: return "title"; // Alphabet
       case 1: return "title"; // Alphabet
-      case 2: return "rating"; // Alphabet
       default: return "title"; // Alphabet
     }
+  }
+
+  static void printLongLog(String input) {
+    for (var i = 0; i < (input.length / 1000) - 2; i++) {
+      if ((i+1)*1000 < input.length) {
+        print(input.substring(i*1000 + (i+1)*1000));
+      } else {
+        print(input.substring(i*1000 + input.length));
+      }
+    }
+  }
+
+  static String getRandomText(int length) {
+    const _chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
+    Random _rnd = Random();
+
+    return String.fromCharCodes(Iterable.generate(
+        length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
   }
 }
 
