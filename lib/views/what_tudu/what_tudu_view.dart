@@ -23,12 +23,11 @@ import 'package:tudu/consts/strings/str_const.dart';
 import 'package:tudu/consts/images/ImagePath.dart';
 import 'package:tudu/generated/l10n.dart';
 
-import '../../models/site.dart';
-import '../../utils/permission_request.dart';
-import '../photo/photo_view.dart';
-import '../../viewmodels/what_tudu_article_content_detail_viewmodel.dart';
-import '../common/alert.dart';
-import '../map/map_view.dart';
+import 'package:tudu/models/site.dart';
+import 'package:tudu/utils/permission_request.dart';
+import 'package:tudu/viewmodels/what_tudu_article_content_detail_viewmodel.dart';
+import 'package:tudu/views/common/alert.dart';
+import 'package:tudu/views/map/map_view.dart';
 
 enum DataLoadingType {
   LOADING,
@@ -52,9 +51,9 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
 
-  StreamSubscription<bool>? loadingListener = null;
-  StreamSubscription<List<Article>?>? zeroDataArticleListener = null;
-  StreamSubscription<List<Site>?>? zeroDataSiteListener = null;
+  StreamSubscription<bool>? loadingListener;
+  StreamSubscription<List<Article>?>? zeroDataArticleListener;
+  StreamSubscription<List<Site>?>? zeroDataSiteListener;
 
   bool isAtTop = true;
 
@@ -63,7 +62,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
   int _filterType = 0;
   int _orderType = 0;
 
-  RefreshController _refreshController = RefreshController(initialRefresh: false);
+  final RefreshController _refreshController = RefreshController(initialRefresh: false);
 
   @override
   void initState() {
@@ -429,7 +428,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
+          SizedBox(
             height: MediaQuery.of(context).size.width,
             child: Center(
               child: Text(
@@ -767,7 +766,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
         ),
       );
     } else {
-      return SizedBox(height: 40, width: 40);
+      return const SizedBox(height: 40, width: 40);
     }
   }
 
