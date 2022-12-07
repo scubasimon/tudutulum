@@ -1,12 +1,10 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:notification_center/notification_center.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:tudu/consts/color/Colors.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
-import 'package:tudu/utils/colors_const.dart';
 import 'package:tudu/consts/font/font_size_const.dart';
 import 'package:tudu/viewmodels/deals_viewmodel.dart';
 import 'package:tudu/consts/images/ImagePath.dart';
@@ -219,7 +217,7 @@ class _DealsView extends State<DealsView> {
                     fontSize: FontSizeConst.font17,
                     fontFamily: FontStyles.sfProText,
                   ),
-                ),
+                )
               ],
             ),
           ),
@@ -336,7 +334,7 @@ class _DealsView extends State<DealsView> {
                       width: 40,
                       margin: const EdgeInsets.only(top: 16, left: 16),
                       decoration: const BoxDecoration(
-                        color: ColorStyle.secondaryBackground,
+                        color: ColorStyle.tertiaryBackground75,
                         borderRadius: BorderRadius.all(
                             Radius.circular(10.0)
                         ),

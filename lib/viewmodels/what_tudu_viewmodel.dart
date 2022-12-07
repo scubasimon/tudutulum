@@ -1,10 +1,25 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
+import 'dart:math';
+import 'package:flutter/cupertino.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:location/location.dart';
 import 'package:tudu/base/base_viewmodel.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:tudu/models/article.dart';
+import 'package:tudu/models/business.dart';
+import 'package:tudu/models/site.dart';
+import 'package:tudu/utils/func_utils.dart';
+
+import '../models/auth.dart';
+import '../repositories/what_tudu/what_tudu_repository.dart';
+import 'package:location/location.dart' as locationLib;
 
 class WhatTuduViewModel extends BaseViewModel {
-  static final WhatTuduViewModel _instance =
-  WhatTuduViewModel._internal();
+  final WhatTuduRepository _whatTuduRepository = WhatTuduRepositoryImpl();
+
+  static final WhatTuduViewModel _instance = WhatTuduViewModel._internal();
 
   factory WhatTuduViewModel() {
     return _instance;
@@ -12,18 +27,222 @@ class WhatTuduViewModel extends BaseViewModel {
 
   WhatTuduViewModel._internal();
 
-  final StreamController<List<String>> _listBusinessController = BehaviorSubject<List<String>>();
-  Stream<List<String>> get listBusinessStream => _listBusinessController.stream;
+  final StreamController<bool> _loadingController = BehaviorSubject<bool>();
+  Stream<bool> get loadingStream => _loadingController.stream;
+
+  final StreamController<List<Article>?> _listArticlesController = BehaviorSubject<List<Article>?>();
+  Stream<List<Article>?> get listArticlesStream => _listArticlesController.stream;
+
+  final StreamController<List<Site>?> _listSitesController = BehaviorSubject<List<Site>?>();
+  Stream<List<Site>?> get listSitesStream => _listSitesController.stream;
+
+  bool isLoading = false;
+  List<Article> listArticles = [];
+  List<Article> listArticlesFilter = [];
+  List<Site> listSites = [];
+  List<Site> listSitesFilter = [];
+
+  late bool serviceEnabled;
+  locationLib.Location location = locationLib.Location();
 
   @override
-  FutureOr<void> init() {
+  FutureOr<void> init() {}
+
+  void showHideLoading(bool showHide) {
+    _loadingController.sink.add(showHide);
+    notifyListeners();
+  }
+
+  Future<void> createSites(int numberOfSites) async {
+    List<Map<String, dynamic>> listData = [];
+    for (int i = 0; i < numberOfSites; i++) {
+      var data = listSites[0].toJson();
+      data["siteid"] = i + listSites.length;
+      data["title"] = "${FuncUlti.getRandomText(5)} ${FuncUlti.getRandomText(4)}";
+      data["subTitle"] = "${FuncUlti.getRandomText(6)} ${FuncUlti.getRandomText(6)}";
+      if (Random().nextBool() == true) {
+        data["dealId"] = 0;
+      } else {
+        data["dealId"] = null;
+      }
+      listData.add(data);
+    }
+    await _whatTuduRepository.createData(listData);
+  }
+
+  Future<void> getListWhatTudu(
+      String orderType,
+      bool isDescending,
+      int startAt,) async {
+    showHideLoading(true);
+
+    try {
+      if (startAt == 0) {
+        listArticles.clear();
+      }
+      listArticles += await _whatTuduRepository.getListArticle(
+          orderType,
+          isDescending
+      );
+      listArticlesFilter = listArticles.where((o) => true).toList();
+      _listArticlesController.sink.add(listArticles);
+      notifyListeners();
+    } catch (e) {
+      showHideLoading(false);
+      rethrow;
+    }
+
+    try {
+      if (startAt == 0) {
+        listSites.clear();
+      }
+      listSites += await _whatTuduRepository.getListSite(
+          orderType,
+          isDescending,
+          startAt
+      );
+      listSitesFilter = listSites.where((o) => true).toList();
+      _listSitesController.sink.add(listSites);
+      notifyListeners();
+    } catch (e) {
+      showHideLoading(false);
+      rethrow;
+    }
+
+    showHideLoading(false);
+  }
+
+  void searchByTitle(
+      String field,
+      String keyWord,
+      String orderType,
+      bool isDescending) async {
+    try {
+      listArticles.clear();
+      listArticles += await _whatTuduRepository.getListArticleFilterContain(
+          field,
+          keyWord,
+          orderType,
+          isDescending
+      );
+      listArticlesFilter = listArticles.where((o) => true).toList();
+      _listArticlesController.sink.add(listArticles);
+      notifyListeners();
+    } catch (e) {
+      rethrow;
+    }
+
+    try {
+      listSites.clear();
+      listSites += await _whatTuduRepository.getListSiteFilterContain(
+          field,
+          keyWord,
+          orderType,
+          isDescending
+      );
+      listSitesFilter = listSites.where((o) => true).toList();
+      _listSitesController.sink.add(listSites);
+      notifyListeners();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  void filterByBusinessType(
+      String field,
+      Business? business,
+      String orderType,
+      bool isDescending) async {
+    try {
+      listArticles.clear();
+      listArticles += await _whatTuduRepository.getListArticleFilterEqual(
+          field,
+          (business != null) ? business.businessid : -1,
+          orderType,
+          isDescending
+      );
+      listArticlesFilter = listArticles.where((o) => true).toList();
+      _listArticlesController.sink.add(listArticles);
+      notifyListeners();
+    } catch (e) {
+      rethrow;
+    }
+
+    try {
+      listSites.clear();
+      listSites += await _whatTuduRepository.getListSiteFilterEqual(
+          field,
+          (business != null) ? business.businessid : -1,
+          orderType,
+          isDescending
+      );
+      listSitesFilter = listSites.where((o) => true).toList();
+      _listSitesController.sink.add(listSites);
+      notifyListeners();
+    } catch (e) {
+      rethrow;
+    }
+
+    // if (business != null) {
+    //   listArticlesFilter = listArticles.where((o) => o.business.contains(business.businessid)).toList();
+    //   listSitesFilter = listSites.where((o) => o.business.contains(business.businessid)).toList();
+    //
+    //   _listArticlesController.sink.add(null);
+    //   _listSitesController.sink.add(null);
+    //
+    //   _listArticlesController.sink.add(listArticlesFilter);
+    //   _listSitesController.sink.add(listSitesFilter);
+    // } else {
+    //   listArticlesFilter = listArticles.where((o) => true).toList();
+    //   listSitesFilter = listSites.where((o) => true).toList();
+    //
+    //   _listArticlesController.sink.add(null);
+    //   _listSitesController.sink.add(null);
+    //
+    //   _listArticlesController.sink.add(listArticles);
+    //   _listSitesController.sink.add(listSites);
+    // }
+    // notifyListeners();
+
 
   }
 
-  void showData() {
-    _listBusinessController.sink.add(["https://image.thanhnien.vn/w1024/Uploaded/2022/pwivoviu/2022_09_16/cau-vang--1-anh-nt-739.jpg",
-      "https://www.dulichxanh.com.vn/uploads/plugin/products/2348/1661830269-645812250-t-t-d-ng-l-ch-tour-du-l-ch-phu-qu-c-4-ngay-3-em-kh-i-hanh-t-ha-n-i.jpg",
-      "https://nld.mediacdn.vn/291774122806476800/2021/10/28/3-anh-chot-32910-16353728564007125658.jpg"]);
-    notifyListeners();
+  void sortWithLocation(BuildContext buildContext, void showLoading) async {
+    showLoading;
+
+    await checkLocationEnable();
+    var currentPosition = await location.getLocation();
+    if (currentPosition.latitude != null && currentPosition.longitude != null) {
+      _listSitesController.sink.add(null);
+      listSitesFilter.sort((a, b) => getDistance(currentPosition, a).compareTo(getDistance(currentPosition, b)));
+      _listSitesController.sink.add(listSitesFilter);
+      Navigator.pop(buildContext);
+      notifyListeners();
+    }
+  }
+
+  double getDistance(LocationData location, Site a) {
+    return Geolocator.distanceBetween(
+      location.latitude!,
+      location.longitude!,
+      a.location.latitude,
+      a.location.longitude,
+    );
+  }
+
+  Future<void> checkLocationEnable() async {
+    serviceEnabled = await location.serviceEnabled();
+    if (!serviceEnabled) {
+      serviceEnabled = await location.requestService();
+      if (!serviceEnabled) {
+        handlerLocationPermissionChanged();
+        return;
+      }
+    }
+  }
+
+  void handlerLocationPermissionChanged() {
+    // ACTION ON PERMISSION CHANGED
+    print("handlerLocationPermissionChanged -> ACTION NOT IMPL YET");
   }
 }

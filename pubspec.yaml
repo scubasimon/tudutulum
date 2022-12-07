@@ -56,6 +56,13 @@ dependencies:
   flutter_rating_bar: ^4.0.1
   notification_center: ^0.0.2
   purchases_flutter: ^4.4.1
+  photo_view: ^0.14.0
+  google_maps_flutter: ^2.1.8
+  location: ^4.4.0
+  permission_handler: ^10.0.0
+  geolocator: ^9.0.2
+  cached_network_image: ^3.2.3
+  pull_to_refresh: ^2.0.0
 
 dev_dependencies:
   flutter_test:

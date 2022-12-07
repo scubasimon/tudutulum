@@ -74,10 +74,13 @@
   "the_legal_stuff": "•  The Legal stuff",
   "back": "Back",
   "more_information": "More Information",
+  "advisory": "Advisory",
+  "you_can_expect": "You can expect...",
   "open_times": "Opening times",
   "fees": "Fees",
   "capacity": "Capacity",
   "events_and_experiences": "Events and Experiences",
+  "get_in_touch_with": "Get in touch directly with:",
   "follow_title": "You can also follow Title on:",
   "thanks_to_our_trusted_partner": "With thanks to our trusted partner:",
   "your_account": "Your Account",
@@ -109,4 +112,6 @@
   "deactivate_account_title": "Deactivate Account",
   "confirm_delete_account_message": "Your account information will be completely removed from our system.\n\nYou will no longer be able to redeem any offers unless you sign up again.\n\nIf you are a subscriber, please ensure you also unsubscribe through Google Play/Appstore.",
   "login_message": "You are not logged in. please log in"
+  "can_not_find_result": "Can not find any result",
+  "please_report": "Please report anything missing/inaccurate here"
 }

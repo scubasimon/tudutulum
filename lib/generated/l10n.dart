@@ -800,6 +800,26 @@ class S {
     );
   }
 
+  /// `Advisory`
+  String get advisory {
+    return Intl.message(
+      'Advisory',
+      name: 'advisory',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You can expect...`
+  String get you_can_expect {
+    return Intl.message(
+      'You can expect...',
+      name: 'you_can_expect',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Opening times`
   String get open_times {
     return Intl.message(
@@ -835,6 +855,16 @@ class S {
     return Intl.message(
       'Events and Experiences',
       name: 'events_and_experiences',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Get in touch directly with:`
+  String get get_in_touch_with {
+    return Intl.message(
+      'Get in touch directly with:',
+      name: 'get_in_touch_with',
       desc: '',
       args: [],
     );
@@ -1145,6 +1175,26 @@ class S {
     return Intl.message(
       'You are not logged in. please log in',
       name: 'login_message',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Can not find any result`
+  String get can_not_find_result {
+    return Intl.message(
+      'Can not find any result',
+      name: 'can_not_find_result',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please report anything missing/inaccurate here`
+  String get please_report {
+    return Intl.message(
+      'Please report anything missing/inaccurate here',
+      name: 'please_report',
       desc: '',
       args: [],
     );
