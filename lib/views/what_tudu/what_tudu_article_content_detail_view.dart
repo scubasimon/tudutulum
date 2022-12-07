@@ -16,7 +16,7 @@ import 'package:tudu/consts/strings/str_const.dart';
 import 'package:tudu/generated/l10n.dart';
 
 import '../../models/site.dart';
-import '../../utils/photo_view.dart';
+import '../photo/photo_view.dart';
 import '../../viewmodels/home_viewmodel.dart';
 import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
 

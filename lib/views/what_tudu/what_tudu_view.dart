@@ -25,7 +25,7 @@ import 'package:tudu/generated/l10n.dart';
 
 import '../../models/site.dart';
 import '../../utils/permission_request.dart';
-import '../../utils/photo_view.dart';
+import '../photo/photo_view.dart';
 import '../../viewmodels/what_tudu_article_content_detail_viewmodel.dart';
 import '../common/alert.dart';
 import '../map/map_view.dart';

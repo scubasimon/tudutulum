@@ -1,8 +1,7 @@
-import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:pull_down_button/pull_down_button.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:tudu/consts/color/Colors.dart';
 import 'package:tudu/consts/font/Fonts.dart';
@@ -17,9 +16,8 @@ import 'package:tudu/consts/font/font_size_const.dart';
 import 'package:tudu/consts/strings/str_const.dart';
 import 'package:tudu/generated/l10n.dart';
 
-import '../../models/site.dart';
-import '../../utils/photo_view.dart';
-import '../../viewmodels/home_viewmodel.dart';
+import 'package:tudu/views/photo/photo_view.dart';
+import 'package:tudu/viewmodels/home_viewmodel.dart';
 import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
 
 class WhatTuduSiteContentDetailView extends StatefulWidget {
@@ -30,12 +28,12 @@ class WhatTuduSiteContentDetailView extends StatefulWidget {
 }
 
 class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView> {
-  WhatTuduSiteContentDetailViewModel _whatTuduSiteContentDetailViewModel = WhatTuduSiteContentDetailViewModel();
-  HomeViewModel _homeViewModel = HomeViewModel();
+  final WhatTuduSiteContentDetailViewModel _whatTuduSiteContentDetailViewModel = WhatTuduSiteContentDetailViewModel();
+  final HomeViewModel _homeViewModel = HomeViewModel();
 
   Offset _tapPosition = Offset.zero;
 
-  RefreshController _refreshController = RefreshController(initialRefresh: false);
+  final RefreshController _refreshController = RefreshController(initialRefresh: false);
 
   @override
   void initState() {
@@ -112,7 +110,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
         ),
         body: SmartRefresher(
           enablePullDown: true,
-          header: WaterDropHeader(),
+          header: const WaterDropHeader(),
           controller: _refreshController,
           onRefresh: _onRefresh,
           child: ListView(
@@ -204,27 +202,33 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                 ),
                 errorWidget: (context, url, error) => Icon(Icons.error),
               ),
-              // child: Image.network(
-              //   urlImage,
-              //   width: MediaQuery.of(context).size.width,
-              //   height: 300,
-              //   fit: BoxFit.cover,
-              // )
           ),
         ),
         (dealId != null)
-            ? Container(
-          height: 40,
-          width: 40,
-          margin: const EdgeInsets.only(top: 16, left: 16),
-          decoration: const BoxDecoration(
-            color: ColorStyle.tertiaryBackground,
-            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-          ),
-          child: Image.asset(
-            ImagePath.tab1stActiveIcon,
-            width: 30,
-            fit: BoxFit.contain,
+            ? InkWell(
+          hoverColor: Colors.transparent,
+          focusColor: Colors.transparent,
+          splashColor: Colors.transparent,
+          onTap: () {
+            if (FirebaseAuth.instance.currentUser != null) {
+              // show
+            } else {
+              // show login. da co alert login nhung o nhanh khac. ko can lam. a se dien vao khi merge
+            }
+          },
+          child: Container(
+            height: 40,
+            width: 40,
+            margin: const EdgeInsets.only(top: 16, left: 16),
+            decoration: const BoxDecoration(
+              color: ColorStyle.tertiaryBackground,
+              borderRadius: BorderRadius.all(Radius.circular(10.0)),
+            ),
+            child: Image.asset(
+              ImagePath.tab1stActiveIcon,
+              width: 30,
+              fit: BoxFit.contain,
+            ),
           ),
         )
             : Container(),

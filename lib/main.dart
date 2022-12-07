@@ -68,7 +68,8 @@ Future<void> main() async {
             child: Builder(builder: (context) {
               return const MyApp();
             }),
-          ));
+          )
+      );
     });
   }, (error, stackTrace) => print(error.toString() + stackTrace.toString()));
 }
