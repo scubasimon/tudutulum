@@ -8,6 +8,8 @@ import 'package:tudu/models/error.dart';
 import 'package:tudu/generated/l10n.dart';
 
 abstract class FirebaseService {
+  Future<void> createData(List<Map<String, dynamic>> data);
+
   Future<UserCredential> signUp(String email, String password);
 
   Future<UserCredential> signIn(String email, String password);
