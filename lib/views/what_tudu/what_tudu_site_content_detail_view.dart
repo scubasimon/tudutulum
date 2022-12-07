@@ -547,7 +547,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
           right: 20,
           child: CachedNetworkImage(
             imageUrl: logo,
-            width: MediaQuery.of(context).size.width,
+            width: 48.0,
             height: 48.0,
             fit: BoxFit.contain,
             imageBuilder: (context, imageProvider) => Container(
@@ -712,7 +712,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
             right: 20,
             child: CachedNetworkImage(
               imageUrl: partner.icon,
-              width: MediaQuery.of(context).size.width,
+              width: 48.0,
               height: 48.0,
               fit: BoxFit.contain,
               imageBuilder: (context, imageProvider) => Container(
