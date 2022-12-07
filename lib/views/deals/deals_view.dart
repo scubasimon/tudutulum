@@ -219,7 +219,7 @@ class _DealsView extends State<DealsView> {
                     fontSize: FontSizeConst.font17,
                     fontFamily: FontStyles.sfProText,
                   ),
-                ),
+                )
               ],
             ),
           ),
