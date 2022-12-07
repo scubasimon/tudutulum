@@ -173,26 +173,21 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
   }
 
   void _onRefresh() async {
-    // try {
-    //   await _whatTuduViewModel.getListWhatTudu(
-    //     FuncUlti.getOrderTypeByInt(_orderType),
-    //     false,
-    //     0,
-    //   );
-    //
-    //   await _whatTuduViewModel.filterByBusinessType(
-    //     "business",
-    //     _homeViewModel.listBusiness[_filterType],
-    //     FuncUlti.getOrderTypeByInt(_orderType),
-    //     false,
-    //   );
-    //
-    //   _refreshController.refreshCompleted();
-    //   setState(() {});
-    // } catch (e) {
-    //   _refreshController.refreshFailed();
-    //   _showAlert("Get data fail because of $e");
-    // }
+    try {
+      _whatTuduViewModel.getListWhatTudu(
+        null,
+        _searchController.text,
+        FuncUlti.getOrderTypeByInt(_orderType),
+        false,
+        0,
+      );
+
+      _refreshController.refreshCompleted();
+      setState(() {});
+    } catch (e) {
+      _refreshController.refreshFailed();
+      _showAlert("Get data fail because of $e");
+    }
   }
 
   void _onLoading() async {
