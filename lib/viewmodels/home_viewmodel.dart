@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:tudu/base/base_viewmodel.dart';
 import 'package:tudu/models/amenity.dart';
 import 'package:tudu/models/business.dart';
+import 'package:tudu/viewmodels/what_tudu_viewmodel.dart';
 
 import '../models/partner.dart';
 import '../repositories/home/home_repository.dart';
@@ -21,6 +22,9 @@ class HomeViewModel extends BaseViewModel {
   }
 
   HomeViewModel._internal();
+
+  final StreamController<bool> _reloadViewWhatTuduController = BehaviorSubject<bool>();
+  Stream<bool> get reloadViewStream => _reloadViewWhatTuduController.stream;
 
   final StreamController<int> _redirectTabController = BehaviorSubject<int>();
   Stream<int> get redirectTabStream => _redirectTabController.stream;
@@ -69,6 +73,7 @@ class HomeViewModel extends BaseViewModel {
   Future<void> getListPartners() async {
     try {
       listPartners = await _homeRepository.getListPartners();
+      _reloadViewWhatTuduController.sink.add(true);
       notifyListeners();
     } catch (e) {
       rethrow;
@@ -78,6 +83,7 @@ class HomeViewModel extends BaseViewModel {
   Future<void> getListAmenities() async {
     try {
       listAmenites = await _homeRepository.getListAmenities();
+      _reloadViewWhatTuduController.sink.add(true);
       notifyListeners();
     } catch (e) {
       rethrow;
@@ -87,6 +93,7 @@ class HomeViewModel extends BaseViewModel {
   Future<void> getListBusiness() async {
     try {
       listBusiness = await _homeRepository.getListBusinesses();
+      _reloadViewWhatTuduController.sink.add(true);
       notifyListeners();
     } catch (e) {
       rethrow;

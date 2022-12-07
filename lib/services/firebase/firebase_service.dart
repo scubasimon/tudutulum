@@ -32,13 +32,19 @@ abstract class FirebaseService {
 
   Future<User?> authChanged();
 
-  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getArticles(String orderType, bool isDescending);
-  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getArticlesFilterEqual(String filterField, int filterKeyword, String orderType, bool isDescending);
-  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getArticlesFilterContain(String filterField, String filterKeyword, String orderType, bool isDescending);
 
-  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getSites(String orderType, bool isDescending, int startAt);
-  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getSitesFilterEqual(String filterField, int filterKeyword, String orderType, bool isDescending);
-  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getSitesFilterContain(String filterField, String filterKeyword, String orderType, bool isDescending);
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getArticlesFilterSort(
+      int? businessId,
+      String? keyword,
+      String? orderType,
+      bool? isDescending,);
+
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getSitesFilterSort(
+      int? businessId,
+      String? keyword,
+      String? orderType,
+      bool? isDescending,
+      int startAt,);
 
   Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getPartners();
 
@@ -58,7 +64,6 @@ abstract class FirebaseService {
 }
 
 class FirebaseServiceImpl extends FirebaseService {
-
   static final FirebaseServiceImpl _singleton = FirebaseServiceImpl._internal();
 
   factory FirebaseServiceImpl() {
@@ -70,11 +75,7 @@ class FirebaseServiceImpl extends FirebaseService {
   Future<void> createData(List<Map<String, dynamic>> data) async {
     try {
       for (var element in data) {
-        await FirebaseFirestore
-            .instance
-            .collection("sites")
-            .doc(element["siteid"].toString())
-            .set(element);
+        await FirebaseFirestore.instance.collection("sites").doc(element["siteid"].toString()).set(element);
       }
     } catch (e) {
       print(e);
@@ -85,9 +86,7 @@ class FirebaseServiceImpl extends FirebaseService {
   @override
   Future<UserCredential> signUp(String email, String password) async {
     try {
-      return await FirebaseAuth
-          .instance
-          .createUserWithEmailAndPassword(email: email, password: password);
+      return await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
     } on FirebaseAuthException catch (e) {
       var error = "Bad credentials";
       if (e.code == "weak-password") {
@@ -95,9 +94,7 @@ class FirebaseServiceImpl extends FirebaseService {
       } else if (e.code == "email-already-in-use") {
         error = S.current.account_already_exists_error;
       }
-      throw AuthenticationError.badCredentials({
-        "error": e
-      }, message: error);
+      throw AuthenticationError.badCredentials({"error": e}, message: error);
     } catch (e) {
       print(e);
       throw CommonError.serverError;
@@ -107,12 +104,9 @@ class FirebaseServiceImpl extends FirebaseService {
   @override
   Future<UserCredential> signIn(String email, String password) async {
     try {
-      return await FirebaseAuth
-          .instance
-          .signInWithEmailAndPassword(email: email, password: password);
+      return await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
     } on FirebaseAuthException catch (e) {
-      throw AuthenticationError
-          .badCredentials({
+      throw AuthenticationError.badCredentials({
         "error": e,
       }, message: S.current.account_incorrect_error);
     } catch (e) {
@@ -142,8 +136,7 @@ class FirebaseServiceImpl extends FirebaseService {
 
   @override
   Future<UserCredential> signInWithFacebook(LoginResult loginResult) {
-    var facebookAuthCredential = FacebookAuthProvider
-        .credential(loginResult.accessToken!.token);
+    var facebookAuthCredential = FacebookAuthProvider.credential(loginResult.accessToken!.token);
     return _signInWith(facebookAuthCredential);
   }
 
@@ -159,11 +152,7 @@ class FirebaseServiceImpl extends FirebaseService {
 
   @override
   Future<Map<String, dynamic>> getUser(String id) async {
-    var result = await FirebaseFirestore
-        .instance
-        .collection("users")
-        .doc(id)
-        .get();
+    var result = await FirebaseFirestore.instance.collection("users").doc(id).get();
     if (result.exists) {
       return result.data()!;
     } else {
@@ -174,11 +163,7 @@ class FirebaseServiceImpl extends FirebaseService {
   @override
   Future<void> addUser(String userId, Map<String, dynamic> data) async {
     try {
-      return await FirebaseFirestore
-          .instance
-          .collection("users")
-          .doc(userId)
-          .set(data);
+      return await FirebaseFirestore.instance.collection("users").doc(userId).set(data);
     } catch (e) {
       print(e);
       throw CommonError.serverError;
@@ -188,11 +173,7 @@ class FirebaseServiceImpl extends FirebaseService {
   @override
   Future<void> updateUser(String userId, Map<String, dynamic> data) async {
     try {
-      return await FirebaseFirestore
-          .instance
-          .collection("users")
-          .doc(userId)
-          .update(data);
+      return await FirebaseFirestore.instance.collection("users").doc(userId).update(data);
     } catch (e) {
       print(e);
       throw CommonError.serverError;
@@ -202,12 +183,9 @@ class FirebaseServiceImpl extends FirebaseService {
   @override
   Future<User?> authChanged() async {
     var completer = Completer<User?>();
-    FirebaseAuth
-        .instance
-        .authStateChanges()
-        .listen((user) {
-          completer.complete(user);
-        });
+    FirebaseAuth.instance.authStateChanges().listen((user) {
+      completer.complete(user);
+    });
     return completer.future;
   }
 
@@ -217,9 +195,7 @@ class FirebaseServiceImpl extends FirebaseService {
       FirebaseAuth.instance.currentUser?.updateEmail(email);
     } on FirebaseAuthException catch (e) {
       print(e);
-      throw AuthenticationError.badCredentials({
-        "error": e
-      }, message: e.message ?? "");
+      throw AuthenticationError.badCredentials({"error": e}, message: e.message ?? "");
     } catch (e) {
       print(e);
       throw CommonError.serverError;
@@ -228,19 +204,13 @@ class FirebaseServiceImpl extends FirebaseService {
 
   @override
   Future<void> changePassword(String newPassword) async {
-    return await FirebaseAuth
-        .instance
-        .currentUser?.updatePassword(newPassword);
+    return await FirebaseAuth.instance.currentUser?.updatePassword(newPassword);
   }
 
   @override
   Future<bool> userExists(String userId) async {
     try {
-      var result = await FirebaseFirestore
-          .instance
-          .collection("users")
-          .doc(userId)
-          .get();
+      var result = await FirebaseFirestore.instance.collection("users").doc(userId).get();
       return result.exists;
     } catch (e) {
       print(e);
@@ -251,11 +221,9 @@ class FirebaseServiceImpl extends FirebaseService {
   Future<UserCredential> _signInWith(AuthCredential authCredential) async {
     try {
       return await FirebaseAuth.instance.signInWithCredential(authCredential);
-    }  on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException catch (e) {
       print(e);
-      throw AuthenticationError.badCredentials({
-        "error": e
-      }, message: e.message ?? "");
+      throw AuthenticationError.badCredentials({"error": e}, message: e.message ?? "");
     } catch (e) {
       print(e);
       throw CommonError.serverError;
@@ -270,11 +238,7 @@ class FirebaseServiceImpl extends FirebaseService {
   @override
   Future<void> removeUser(String userId) async {
     try {
-      return await FirebaseFirestore
-          .instance
-          .collection("users")
-          .doc(userId)
-          .delete();
+      return await FirebaseFirestore.instance.collection("users").doc(userId).delete();
     } catch (e) {
       print(e);
       throw CommonError.serverError;
@@ -290,195 +254,171 @@ class FirebaseServiceImpl extends FirebaseService {
   }
 
   @override
-  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getArticles(
-      String orderType,
-      bool isDescending) async {
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getArticlesFilterSort(
+      int? businessId,
+      String? keyword,
+      String? orderType,
+      bool? isDescending,
+      ) async {
     try {
-      final listSite = await FirebaseFirestore
-          .instance
-          .collection("articles")
-          .orderBy(orderType, descending: isDescending)
-          .get();
+      var listSiteResult = FirebaseFirestore.instance.collection("article");
+      Query<Map<String, dynamic>>? listSiteFilterBusiness = null;
+      Query<Map<String, dynamic>>? listSiteFilterTitle = null;
+      Query<Map<String, dynamic>>? listSiteFilterResult = null;
 
-      return listSite.docs;
-    } catch (e) {
-      return null;
-    }
-  }
-
-  @override
-  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getArticlesFilterEqual(
-      String filterField,
-      int filterKeyword,
-      String orderType,
-      bool isDescending) async {
-    try {
-      if (filterKeyword == -1) {
-        final listSite = await FirebaseFirestore
-            .instance
-            .collection("articles")
-            .orderBy(orderType, descending: isDescending)
-            .get();
-        return listSite.docs;
+      print("businessId ${businessId}");
+      if (businessId != null) {
+        if (businessId != -1) {
+          listSiteFilterBusiness = listSiteResult
+              .where("business", arrayContains: businessId);
+        }
       }
-      final listSite = await FirebaseFirestore
-          .instance
-          .collection("articles")
-          .where(filterField, arrayContains: filterKeyword)
-          .orderBy(filterField)
-          .orderBy(orderType, descending: isDescending)
-          .limit(10)
-          .get();
-      return listSite.docs;
 
-    } catch (e) {
-      print("QueryDocumentSnapshot -> ERROR: $e");
-    }
-  }
+      print("keyword ${keyword}");
+      if (keyword != null) {
+        if (listSiteFilterBusiness == null) {
+          listSiteFilterTitle = listSiteResult
+              .where("title", isGreaterThanOrEqualTo: keyword)
+              .where("title", isLessThanOrEqualTo: '$keyword\uf8ff');
+        } else {
+          listSiteFilterTitle = listSiteFilterBusiness
+              .where("title", isGreaterThanOrEqualTo: keyword)
+              .where("title", isLessThanOrEqualTo: '$keyword\uf8ff');
+        }
+      }
 
-  @override
-  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getArticlesFilterContain(
-      String filterField,
-      String filterKeyword,
-      String orderType,
-      bool isDescending) async {
-    try {
-      if (filterField != orderType) {
-        final listSite = await FirebaseFirestore
-            .instance
-            .collection("articles")
-            .where(filterField, isGreaterThanOrEqualTo: filterKeyword)
-            .where(filterField, isLessThanOrEqualTo: filterKeyword + '\uf8ff')
-            .orderBy(filterField)
-            .orderBy(orderType, descending: isDescending)
-            .get();
-        return listSite.docs;
+      print("orderType ${orderType}");
+      if (orderType == null) {
+        if (listSiteFilterTitle != null) {
+          listSiteFilterResult = listSiteFilterTitle.orderBy("title", descending: false);
+        } else if (listSiteFilterBusiness != null) {
+          listSiteFilterResult = listSiteFilterBusiness.orderBy("business", descending: false);
+        } else {
+          listSiteFilterResult = listSiteResult.orderBy("title", descending: false);
+        }
       } else {
-        final listSite = await FirebaseFirestore
-            .instance
-            .collection("articles")
-            .where(filterField, isGreaterThanOrEqualTo: filterKeyword)
-            .where(filterField, isLessThanOrEqualTo: filterKeyword + '\uf8ff')
-            .orderBy(orderType, descending: isDescending)
-            .get();
-        return listSite.docs;
+        if (listSiteFilterTitle != null) {
+          if (orderType == "title") {
+            listSiteFilterResult = listSiteFilterTitle.orderBy(orderType, descending: isDescending!);
+          } else {
+            listSiteFilterResult = listSiteFilterTitle.orderBy("title");
+            listSiteFilterResult = listSiteFilterTitle.orderBy(orderType, descending: isDescending!);
+          }
+        } else if (listSiteFilterBusiness != null) {
+          if (orderType == "business") {
+            listSiteFilterResult = listSiteFilterBusiness.orderBy(orderType, descending: isDescending!);
+          } else {
+            listSiteFilterResult = listSiteFilterBusiness.orderBy("business");
+            listSiteFilterResult = listSiteFilterBusiness.orderBy(orderType, descending: isDescending!);
+          }
+        } else {
+          listSiteFilterResult = listSiteResult.orderBy(orderType, descending: isDescending!);
+        }
       }
+
+      var dataResult = await listSiteFilterResult.get();
+      return dataResult.docs;
+
     } catch (e) {
-      print("QueryDocumentSnapshot -> ERROR: $e");
+      print("getArticlesFilterSort -> QueryDocumentSnapshot -> ERROR: $e");
     }
   }
 
   @override
-  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getSites(
-      String orderType,
-      bool isDescending,
-      int startAt) async {
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getSitesFilterSort(
+      int? businessId,
+      String? keyword,
+      String? orderType,
+      bool? isDescending,
+      int startAt,
+  ) async {
     try {
+      var listSiteResult = FirebaseFirestore.instance.collection("sites");
+      Query<Map<String, dynamic>>? listSiteFilterBusiness = null;
+      Query<Map<String, dynamic>>? listSiteFilterTitle = null;
+      Query<Map<String, dynamic>>? listSiteFilterResult = null;
+
+      print("businessId ${businessId}");
+      if (businessId != null) {
+        if (businessId != -1) {
+          listSiteFilterBusiness = listSiteResult
+              .where("business", arrayContains: businessId);
+        }
+      }
+
+      print("keyword ${keyword}");
+      if (keyword != null) {
+        if (listSiteFilterBusiness == null) {
+          listSiteFilterTitle = listSiteResult
+              .where("title", isGreaterThanOrEqualTo: keyword)
+              .where("title", isLessThanOrEqualTo: '$keyword\uf8ff');
+        } else {
+          listSiteFilterTitle = listSiteFilterBusiness
+              .where("title", isGreaterThanOrEqualTo: keyword)
+              .where("title", isLessThanOrEqualTo: '$keyword\uf8ff');
+        }
+      }
+
+      print("orderType ${orderType}");
+      if (orderType == null) {
+        if (listSiteFilterTitle != null) {
+          listSiteFilterResult = listSiteFilterTitle.orderBy("title", descending: false);
+        } else if (listSiteFilterBusiness != null) {
+          listSiteFilterResult = listSiteFilterBusiness.orderBy("business", descending: false);
+        } else {
+          listSiteFilterResult = listSiteResult.orderBy("title", descending: false);
+        }
+      } else {
+        if (listSiteFilterTitle != null) {
+          if (orderType == "title") {
+            listSiteFilterResult = listSiteFilterTitle.orderBy(orderType, descending: isDescending!);
+          } else {
+            listSiteFilterResult = listSiteFilterTitle.orderBy("title");
+            listSiteFilterResult = listSiteFilterTitle.orderBy(orderType, descending: isDescending!);
+          }
+        } else if (listSiteFilterBusiness != null) {
+          if (orderType == "business") {
+            listSiteFilterResult = listSiteFilterBusiness.orderBy(orderType, descending: isDescending!);
+          } else {
+            listSiteFilterResult = listSiteFilterBusiness.orderBy("business");
+            listSiteFilterResult = listSiteFilterBusiness.orderBy(orderType, descending: isDescending!);
+          }
+        } else {
+          listSiteFilterResult = listSiteResult.orderBy(orderType, descending: isDescending!);
+        }
+      }
+
+      print("startAt ${startAt}");
       if (startAt == 0) {
-        final listSite = await FirebaseFirestore
-            .instance
-            .collection("sites")
-            .orderBy(orderType, descending: isDescending)
-            .limit(10)
-            .get();
-        return listSite.docs;
-      }
-
-      final first = await FirebaseFirestore
-          .instance
-          .collection("sites")
-          .orderBy(orderType, descending: isDescending)
-          .limit(startAt)
-          .get();
-
-      final lastVisible = first.docs[first.size - 1];
-
-      final next = await FirebaseFirestore
-          .instance
-          .collection("sites")
-          .orderBy(orderType, descending: isDescending)
-          .startAfter([lastVisible.data()[orderType]])
-          .limit(10)
-          .get();
-
-      return next.docs;
-    } catch (e) {
-      print("QueryDocumentSnapshot -> ERROR: $e");
-    }
-  }
-
-  @override
-  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getSitesFilterEqual(
-      String filterField,
-      int filterKeyword,
-      String orderType,
-      bool isDescending) async {
-    try {
-      if (filterKeyword == -1) {
-        final listSite = await FirebaseFirestore
-            .instance
-            .collection("sites")
-            .orderBy(orderType, descending: isDescending)
-            .limit(10)
-            .get();
-        return listSite.docs;
-      }
-      final listSite = await FirebaseFirestore
-          .instance
-          .collection("sites")
-          .where(filterField, arrayContains: filterKeyword)
-          .orderBy(filterField)
-          .orderBy(orderType, descending: isDescending)
-          .limit(10)
-          .get();
-      return listSite.docs;
-
-    } catch (e) {
-      print("QueryDocumentSnapshot -> ERROR: $e");
-    }
-  }
-
-  @override
-  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getSitesFilterContain(
-      String filterField,
-      String filterKeyword,
-      String orderType,
-      bool isDescending) async {
-    try {
-      if (filterField != orderType) {
-        final listSite = await FirebaseFirestore
-            .instance
-            .collection("sites")
-            .where(filterField, isGreaterThanOrEqualTo: filterKeyword)
-            .where(filterField, isLessThanOrEqualTo: filterKeyword + '\uf8ff')
-            .orderBy(filterField)
-            .orderBy(orderType, descending: isDescending)
-            .limit(10)
-            .get();
-        return listSite.docs;
+        var dataResult = await listSiteFilterResult.limit(10).get();
+        return dataResult.docs;
       } else {
-        final listSite = await FirebaseFirestore
-            .instance
-            .collection("sites")
-            .where(filterField, isGreaterThanOrEqualTo: filterKeyword)
-            .where(filterField, isLessThanOrEqualTo: filterKeyword + '\uf8ff')
-            .orderBy(orderType, descending: isDescending)
+        var listSiteCurrent = await listSiteFilterResult
             .limit(10)
             .get();
-        return listSite.docs;
+
+        print("listSiteCurrent ${listSiteCurrent.docs.length}");
+
+        final lastVisible = listSiteCurrent.docs[listSiteCurrent.size - 1];
+
+        final listSiteResult = await listSiteFilterResult
+            .startAfter([lastVisible.data()[orderType]])
+            .limit(10)
+            .get();
+
+        return listSiteResult.docs;
       }
+
     } catch (e) {
-      print("getSitesFilterContain -> ERROR: $e");
+      print("getSitesFilterSort -> QueryDocumentSnapshot -> ERROR: $e");
     }
   }
+
 
   @override
   Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getPartners() async {
     try {
-      final listSite = await FirebaseFirestore
-          .instance
-          .collection("partners")
-          .get();
+      final listSite = await FirebaseFirestore.instance.collection("partners").get();
 
       return listSite.docs;
     } catch (e) {
@@ -489,10 +429,7 @@ class FirebaseServiceImpl extends FirebaseService {
   @override
   Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getAmenities() async {
     try {
-      final listSite = await FirebaseFirestore
-          .instance
-          .collection("amenities")
-          .get();
+      final listSite = await FirebaseFirestore.instance.collection("amenities").get();
 
       return listSite.docs;
     } catch (e) {
@@ -503,10 +440,7 @@ class FirebaseServiceImpl extends FirebaseService {
   @override
   Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getBusinesses() async {
     try {
-      final listSite = await FirebaseFirestore
-          .instance
-          .collection("businesses")
-          .get();
+      final listSite = await FirebaseFirestore.instance.collection("businesses").get();
 
       return listSite.docs;
     } catch (e) {

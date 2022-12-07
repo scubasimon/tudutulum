@@ -38,9 +38,7 @@ class WhatTuduViewModel extends BaseViewModel {
 
   bool isLoading = false;
   List<Article> listArticles = [];
-  List<Article> listArticlesFilter = [];
   List<Site> listSites = [];
-  List<Site> listSitesFilter = [];
 
   late bool serviceEnabled;
   locationLib.Location location = locationLib.Location();
@@ -49,6 +47,7 @@ class WhatTuduViewModel extends BaseViewModel {
   FutureOr<void> init() {}
 
   void showHideLoading(bool showHide) {
+    print("showHideLoading $showHide");
     _loadingController.sink.add(showHide);
     notifyListeners();
   }
@@ -71,24 +70,23 @@ class WhatTuduViewModel extends BaseViewModel {
   }
 
   Future<void> getListWhatTudu(
-      String orderType,
-      bool isDescending,
-      int startAt,) async {
+      Business? business,
+      String? filterKeyword,
+      String? orderType,
+      bool? isDescending,
+      int startAt,
+  ) async {
     showHideLoading(true);
 
     try {
-      if (startAt == 0) {
-        listArticles.clear();
-      }
-      listArticles += await _whatTuduRepository.getListArticle(
+      listArticles = await _whatTuduRepository.getListArticleFilterSort(
+          (business != null) ? business.businessid : -1,
+          filterKeyword,
           orderType,
-          isDescending
-      );
-      listArticlesFilter = listArticles.where((o) => true).toList();
+          isDescending);
       _listArticlesController.sink.add(listArticles);
       notifyListeners();
     } catch (e) {
-      showHideLoading(false);
       rethrow;
     }
 
@@ -96,115 +94,20 @@ class WhatTuduViewModel extends BaseViewModel {
       if (startAt == 0) {
         listSites.clear();
       }
-      listSites += await _whatTuduRepository.getListSite(
-          orderType,
-          isDescending,
-          startAt
+      listSites += await _whatTuduRepository.getListSiteFilterSort(
+        (business != null) ? business.businessid : -1,
+        filterKeyword,
+        orderType,
+        isDescending,
+        startAt,
       );
-      listSitesFilter = listSites.where((o) => true).toList();
       _listSitesController.sink.add(listSites);
       notifyListeners();
     } catch (e) {
-      showHideLoading(false);
       rethrow;
     }
 
     showHideLoading(false);
-  }
-
-  void searchByTitle(
-      String field,
-      String keyWord,
-      String orderType,
-      bool isDescending) async {
-    try {
-      listArticles.clear();
-      listArticles += await _whatTuduRepository.getListArticleFilterContain(
-          field,
-          keyWord,
-          orderType,
-          isDescending
-      );
-      listArticlesFilter = listArticles.where((o) => true).toList();
-      _listArticlesController.sink.add(listArticles);
-      notifyListeners();
-    } catch (e) {
-      rethrow;
-    }
-
-    try {
-      listSites.clear();
-      listSites += await _whatTuduRepository.getListSiteFilterContain(
-          field,
-          keyWord,
-          orderType,
-          isDescending
-      );
-      listSitesFilter = listSites.where((o) => true).toList();
-      _listSitesController.sink.add(listSites);
-      notifyListeners();
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  void filterByBusinessType(
-      String field,
-      Business? business,
-      String orderType,
-      bool isDescending) async {
-    try {
-      listArticles.clear();
-      listArticles += await _whatTuduRepository.getListArticleFilterEqual(
-          field,
-          (business != null) ? business.businessid : -1,
-          orderType,
-          isDescending
-      );
-      listArticlesFilter = listArticles.where((o) => true).toList();
-      _listArticlesController.sink.add(listArticles);
-      notifyListeners();
-    } catch (e) {
-      rethrow;
-    }
-
-    try {
-      listSites.clear();
-      listSites += await _whatTuduRepository.getListSiteFilterEqual(
-          field,
-          (business != null) ? business.businessid : -1,
-          orderType,
-          isDescending
-      );
-      listSitesFilter = listSites.where((o) => true).toList();
-      _listSitesController.sink.add(listSites);
-      notifyListeners();
-    } catch (e) {
-      rethrow;
-    }
-
-    // if (business != null) {
-    //   listArticlesFilter = listArticles.where((o) => o.business.contains(business.businessid)).toList();
-    //   listSitesFilter = listSites.where((o) => o.business.contains(business.businessid)).toList();
-    //
-    //   _listArticlesController.sink.add(null);
-    //   _listSitesController.sink.add(null);
-    //
-    //   _listArticlesController.sink.add(listArticlesFilter);
-    //   _listSitesController.sink.add(listSitesFilter);
-    // } else {
-    //   listArticlesFilter = listArticles.where((o) => true).toList();
-    //   listSitesFilter = listSites.where((o) => true).toList();
-    //
-    //   _listArticlesController.sink.add(null);
-    //   _listSitesController.sink.add(null);
-    //
-    //   _listArticlesController.sink.add(listArticles);
-    //   _listSitesController.sink.add(listSites);
-    // }
-    // notifyListeners();
-
-
   }
 
   void sortWithLocation(BuildContext buildContext, void showLoading) async {
@@ -214,8 +117,8 @@ class WhatTuduViewModel extends BaseViewModel {
     var currentPosition = await location.getLocation();
     if (currentPosition.latitude != null && currentPosition.longitude != null) {
       _listSitesController.sink.add(null);
-      listSitesFilter.sort((a, b) => getDistance(currentPosition, a).compareTo(getDistance(currentPosition, b)));
-      _listSitesController.sink.add(listSitesFilter);
+      listSites.sort((a, b) => getDistance(currentPosition, a).compareTo(getDistance(currentPosition, b)));
+      _listSitesController.sink.add(listSites);
       Navigator.pop(buildContext);
       notifyListeners();
     }

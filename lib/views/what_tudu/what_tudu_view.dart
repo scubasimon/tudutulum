@@ -51,25 +51,26 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
 
+  StreamSubscription<bool>? reloadListener;
   StreamSubscription<bool>? loadingListener;
   StreamSubscription<List<Article>?>? zeroDataArticleListener;
   StreamSubscription<List<Site>?>? zeroDataSiteListener;
 
   bool isAtTop = true;
+  String searchKeyword = "";
 
   DataLoadingType _isArticleZeroDataResult = DataLoadingType.LOADING;
   DataLoadingType _isSiteZeroDataResult = DataLoadingType.LOADING;
-  int _filterType = 0;
+  late int _filterType;
   int _orderType = 0;
 
   final RefreshController _refreshController = RefreshController(initialRefresh: false);
 
   @override
   void initState() {
+    listenToReloadView();
     listenToZeroDataFilter();
     listenToLoading();
-
-    _filterType = _homeViewModel.listBusiness.length;
 
     _scrollController.addListener(() {
       if (_scrollController.position.pixels == 0.0) {
@@ -82,12 +83,16 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
     });
 
     _searchController.addListener(() {
-      _whatTuduViewModel.searchByTitle(
-        FuncUlti.getOrderTypeByInt(0), // 0 == title
-        _searchController.text,
-        FuncUlti.getOrderTypeByInt(_orderType),
-        false,
-      );
+      if (_searchController.text != searchKeyword) {
+        searchKeyword = _searchController.text;
+        _whatTuduViewModel.getListWhatTudu(
+          (_filterType < _homeViewModel.listBusiness.length) ? _homeViewModel.listBusiness[_filterType] : null,
+          _searchController.text,
+          FuncUlti.getOrderTypeByInt(_orderType),
+          false,
+          0, // search -> from first item
+        );
+      }
       if (_searchController.text != "") {
         isAtTop = true;
       }
@@ -100,13 +105,22 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       try {
         _whatTuduViewModel.getListWhatTudu(
-          FuncUlti.getOrderTypeByInt(_orderType),
+          null,
+          _searchController.text,
+          "title", // First init sort with Alphabet
           false,
           0,
         );
       } catch (e) {
         _showAlert("Get data fail because of $e");
       }
+    });
+  }
+
+  void listenToReloadView() {
+    reloadListener ??= _homeViewModel.reloadViewStream.asBroadcastStream().listen((data) {
+      _filterType = _homeViewModel.listBusiness.length;
+      setState(() {});
     });
   }
 
@@ -117,7 +131,9 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
       } else {
         if (_whatTuduViewModel.isLoading) {
           _whatTuduViewModel.isLoading = false;
-          Navigator.pop(context);
+          Navigator.of(context).popUntil((route) {
+            return (route.isFirst);
+          });
         }
       }
     });
@@ -157,38 +173,37 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
   }
 
   void _onRefresh() async {
-    try {
-      await _whatTuduViewModel.getListWhatTudu(
-        FuncUlti.getOrderTypeByInt(_orderType),
-        false,
-        0,
-      );
-
-      _whatTuduViewModel.filterByBusinessType(
-        "business",
-        null,
-        FuncUlti.getOrderTypeByInt(_orderType),
-        false,
-      );
-      _filterType = _homeViewModel.listBusiness.length;
-
-      _orderType = 0;
-
-      _refreshController.refreshCompleted();
-      setState(() {});
-    } catch (e) {
-      _refreshController.refreshFailed();
-
-      _showAlert("Get data fail because of $e");
-    }
+    // try {
+    //   await _whatTuduViewModel.getListWhatTudu(
+    //     FuncUlti.getOrderTypeByInt(_orderType),
+    //     false,
+    //     0,
+    //   );
+    //
+    //   await _whatTuduViewModel.filterByBusinessType(
+    //     "business",
+    //     _homeViewModel.listBusiness[_filterType],
+    //     FuncUlti.getOrderTypeByInt(_orderType),
+    //     false,
+    //   );
+    //
+    //   _refreshController.refreshCompleted();
+    //   setState(() {});
+    // } catch (e) {
+    //   _refreshController.refreshFailed();
+    //   _showAlert("Get data fail because of $e");
+    // }
   }
 
   void _onLoading() async {
     // monitor network fetch
     await _whatTuduViewModel.getListWhatTudu(
-        FuncUlti.getOrderTypeByInt(_orderType),
-        false,
-        _whatTuduViewModel.listSitesFilter.length);
+      (_filterType < _homeViewModel.listBusiness.length) ? _homeViewModel.listBusiness[_filterType] : null,
+      _searchController.text,
+      FuncUlti.getOrderTypeByInt(_orderType),
+      false,
+      _whatTuduViewModel.listSites.length,
+    );
     if (mounted) setState(() {});
     _refreshController.loadComplete();
   }
@@ -241,9 +256,14 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                               ),
                               enabled: _orderType != 0,
                               onTap: () {
-                                _orderType = 0;
                                 _whatTuduViewModel.getListWhatTudu(
-                                    FuncUlti.getOrderTypeByInt(_orderType), false, 0);
+                                  (_filterType < _homeViewModel.listBusiness.length) ? _homeViewModel.listBusiness[_filterType] : null,
+                                  _searchController.text,
+                                  FuncUlti.getOrderTypeByInt(0), // 0 == title
+                                  false,
+                                  0, // 0 because of when change order, it go back to first item
+                                );
+                                _orderType = 0;
                               },
                             ),
                             const PullDownMenuDivider(),
@@ -262,6 +282,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                                 PermissionRequest().permissionServiceCall(
                                   context,
                                   () {
+                                    /// IMPL logic
                                     _whatTuduViewModel.sortWithLocation(context, _showLoading());
                                     _orderType = 1;
                                   },
@@ -316,11 +337,12 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                                       ),
                                       enabled: _filterType != ((counter) / 2).round(),
                                       onTap: () {
-                                        _whatTuduViewModel.filterByBusinessType(
-                                          "business",
-                                          null,
+                                        _whatTuduViewModel.getListWhatTudu(
+                                          null, // null == All business
+                                          _searchController.text,
                                           FuncUlti.getOrderTypeByInt(_orderType),
                                           false,
+                                          0, // 0 because of when change filter, it go back to first item
                                         );
                                         _filterType = ((counter) / 2).round();
                                       },
@@ -346,11 +368,12 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                                               ),
                                               enabled: _filterType != ((counter) / 2).round(),
                                               onTap: () {
-                                                _whatTuduViewModel.filterByBusinessType(
-                                                  "business",
-                                                  _homeViewModel.listBusiness[((counter) / 2).round()],
-                                                  FuncUlti.getOrderTypeByInt(_orderType),
-                                                  false,
+                                                _whatTuduViewModel.getListWhatTudu(
+                                                  _homeViewModel.listBusiness[((counter) / 2).round()], // get businessId
+                                                  _searchController.text,
+                                                  FuncUlti.getOrderTypeByInt(_orderType), // Title or Distance
+                                                  false, // false because of orderType of Title take order A>Z
+                                                  0, // 0 because of when change filter, it go back to first item
                                                 );
                                                 _filterType = ((counter) / 2).round();
                                               },
@@ -771,6 +794,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
   }
 
   void _showLoading() {
+    print("_whatTuduViewModel.isLoading ${_whatTuduViewModel.isLoading == false}");
     if (_whatTuduViewModel.isLoading == false) {
       _whatTuduViewModel.isLoading = true;
       showDialog(

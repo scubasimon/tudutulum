@@ -74,7 +74,7 @@ class FuncUlti {
   static String getOrderTypeByInt(int input) {
     switch (input) {
       case 0: return "title"; // Alphabet
-      case 1: return "title"; // Alphabet
+      case 1: return "title"; // TODO: IMPL LOGIC FOR SORT WITH Distance
       default: return "title"; // Alphabet
     }
   }
