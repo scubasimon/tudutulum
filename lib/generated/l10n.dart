@@ -1190,6 +1190,56 @@ class S {
     );
   }
 
+  /// `Alphabet`
+  String get alphabet {
+    return Intl.message(
+      'Alphabet',
+      name: 'alphabet',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Distance`
+  String get distance {
+    return Intl.message(
+      'Distance',
+      name: 'distance',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// ` Articles`
+  String get articles {
+    return Intl.message(
+      ' Articles',
+      name: 'articles',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Explore `
+  String get explore {
+    return Intl.message(
+      'Explore ',
+      name: 'explore',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `All Tulum Articles`
+  String get all_tulum_article {
+    return Intl.message(
+      'All Tulum Articles',
+      name: 'all_tulum_article',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Please report anything missing/inaccurate here`
   String get please_report {
     return Intl.message(

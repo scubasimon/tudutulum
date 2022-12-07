@@ -7,6 +7,8 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:tudu/models/error.dart';
 import 'package:tudu/generated/l10n.dart';
 
+import '../../consts/strings/str_const.dart';
+
 abstract class FirebaseService {
   Future<void> createData(List<Map<String, dynamic>> data);
 
@@ -270,7 +272,7 @@ class FirebaseServiceImpl extends FirebaseService {
       if (businessId != null) {
         if (businessId != -1) {
           listSiteFilterBusiness = listSiteResult
-              .where("business", arrayContains: businessId);
+              .where(StrConst.sortBusiness, arrayContains: businessId);
         }
       }
 
@@ -278,37 +280,37 @@ class FirebaseServiceImpl extends FirebaseService {
       if (keyword != null) {
         if (listSiteFilterBusiness == null) {
           listSiteFilterTitle = listSiteResult
-              .where("title", isGreaterThanOrEqualTo: keyword)
-              .where("title", isLessThanOrEqualTo: '$keyword\uf8ff');
+              .where(StrConst.sortTitle, isGreaterThanOrEqualTo: keyword)
+              .where(StrConst.sortTitle, isLessThanOrEqualTo: '$keyword\uf8ff');
         } else {
           listSiteFilterTitle = listSiteFilterBusiness
-              .where("title", isGreaterThanOrEqualTo: keyword)
-              .where("title", isLessThanOrEqualTo: '$keyword\uf8ff');
+              .where(StrConst.sortTitle, isGreaterThanOrEqualTo: keyword)
+              .where(StrConst.sortTitle, isLessThanOrEqualTo: '$keyword\uf8ff');
         }
       }
 
       print("orderType ${orderType}");
       if (orderType == null) {
         if (listSiteFilterTitle != null) {
-          listSiteFilterResult = listSiteFilterTitle.orderBy("title", descending: false);
+          listSiteFilterResult = listSiteFilterTitle.orderBy(StrConst.sortTitle, descending: false);
         } else if (listSiteFilterBusiness != null) {
-          listSiteFilterResult = listSiteFilterBusiness.orderBy("business", descending: false);
+          listSiteFilterResult = listSiteFilterBusiness.orderBy(StrConst.sortBusiness, descending: false);
         } else {
-          listSiteFilterResult = listSiteResult.orderBy("title", descending: false);
+          listSiteFilterResult = listSiteResult.orderBy(StrConst.sortTitle, descending: false);
         }
       } else {
         if (listSiteFilterTitle != null) {
-          if (orderType == "title") {
+          if (orderType == StrConst.sortTitle) {
             listSiteFilterResult = listSiteFilterTitle.orderBy(orderType, descending: isDescending!);
           } else {
-            listSiteFilterResult = listSiteFilterTitle.orderBy("title");
+            listSiteFilterResult = listSiteFilterTitle.orderBy(StrConst.sortTitle);
             listSiteFilterResult = listSiteFilterTitle.orderBy(orderType, descending: isDescending!);
           }
         } else if (listSiteFilterBusiness != null) {
-          if (orderType == "business") {
+          if (orderType == StrConst.sortBusiness) {
             listSiteFilterResult = listSiteFilterBusiness.orderBy(orderType, descending: isDescending!);
           } else {
-            listSiteFilterResult = listSiteFilterBusiness.orderBy("business");
+            listSiteFilterResult = listSiteFilterBusiness.orderBy(StrConst.sortBusiness);
             listSiteFilterResult = listSiteFilterBusiness.orderBy(orderType, descending: isDescending!);
           }
         } else {
@@ -342,7 +344,7 @@ class FirebaseServiceImpl extends FirebaseService {
       if (businessId != null) {
         if (businessId != -1) {
           listSiteFilterBusiness = listSiteResult
-              .where("business", arrayContains: businessId);
+              .where(StrConst.sortBusiness, arrayContains: businessId);
         }
       }
 
@@ -350,37 +352,37 @@ class FirebaseServiceImpl extends FirebaseService {
       if (keyword != null) {
         if (listSiteFilterBusiness == null) {
           listSiteFilterTitle = listSiteResult
-              .where("title", isGreaterThanOrEqualTo: keyword)
-              .where("title", isLessThanOrEqualTo: '$keyword\uf8ff');
+              .where(StrConst.sortTitle, isGreaterThanOrEqualTo: keyword)
+              .where(StrConst.sortTitle, isLessThanOrEqualTo: '$keyword\uf8ff');
         } else {
           listSiteFilterTitle = listSiteFilterBusiness
-              .where("title", isGreaterThanOrEqualTo: keyword)
-              .where("title", isLessThanOrEqualTo: '$keyword\uf8ff');
+              .where(StrConst.sortTitle, isGreaterThanOrEqualTo: keyword)
+              .where(StrConst.sortTitle, isLessThanOrEqualTo: '$keyword\uf8ff');
         }
       }
 
       print("orderType ${orderType}");
       if (orderType == null) {
         if (listSiteFilterTitle != null) {
-          listSiteFilterResult = listSiteFilterTitle.orderBy("title", descending: false);
+          listSiteFilterResult = listSiteFilterTitle.orderBy(StrConst.sortTitle, descending: false);
         } else if (listSiteFilterBusiness != null) {
-          listSiteFilterResult = listSiteFilterBusiness.orderBy("business", descending: false);
+          listSiteFilterResult = listSiteFilterBusiness.orderBy(StrConst.sortBusiness, descending: false);
         } else {
-          listSiteFilterResult = listSiteResult.orderBy("title", descending: false);
+          listSiteFilterResult = listSiteResult.orderBy(StrConst.sortTitle, descending: false);
         }
       } else {
         if (listSiteFilterTitle != null) {
-          if (orderType == "title") {
+          if (orderType == StrConst.sortTitle) {
             listSiteFilterResult = listSiteFilterTitle.orderBy(orderType, descending: isDescending!);
           } else {
-            listSiteFilterResult = listSiteFilterTitle.orderBy("title");
+            listSiteFilterResult = listSiteFilterTitle.orderBy(StrConst.sortTitle);
             listSiteFilterResult = listSiteFilterTitle.orderBy(orderType, descending: isDescending!);
           }
         } else if (listSiteFilterBusiness != null) {
-          if (orderType == "business") {
+          if (orderType == StrConst.sortBusiness) {
             listSiteFilterResult = listSiteFilterBusiness.orderBy(orderType, descending: isDescending!);
           } else {
-            listSiteFilterResult = listSiteFilterBusiness.orderBy("business");
+            listSiteFilterResult = listSiteFilterBusiness.orderBy(StrConst.sortBusiness);
             listSiteFilterResult = listSiteFilterBusiness.orderBy(orderType, descending: isDescending!);
           }
         } else {

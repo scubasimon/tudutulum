@@ -107,7 +107,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
         _whatTuduViewModel.getListWhatTudu(
           null,
           _searchController.text,
-          "title", // First init sort with Alphabet
+          StrConst.sortTitle, // First init sort with Alphabet
           false,
           0,
         );
@@ -241,7 +241,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                         PullDownButton(
                           itemBuilder: (context) => [
                             PullDownMenuItem(
-                              title: "Alphabet",
+                              title: S.current.alphabet,
                               itemTheme: const PullDownMenuItemTheme(
                                 textStyle: TextStyle(
                                     fontFamily: FontStyles.sfProText,
@@ -263,7 +263,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                             ),
                             const PullDownMenuDivider(),
                             PullDownMenuItem(
-                              title: "Ditance",
+                              title: S.current.distance,
                               itemTheme: const PullDownMenuItemTheme(
                                 textStyle: TextStyle(
                                     fontFamily: FontStyles.sfProText,
@@ -789,7 +789,6 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
   }
 
   void _showLoading() {
-    print("_whatTuduViewModel.isLoading ${_whatTuduViewModel.isLoading == false}");
     if (_whatTuduViewModel.isLoading == false) {
       _whatTuduViewModel.isLoading = true;
       showDialog(
@@ -818,17 +817,17 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
 
   String getArticleTitleText(int index) {
     if (index >= _homeViewModel.listBusiness.length) {
-      return "All Tulum Articles";
+      return S.current.all_location_articles;
     } else {
-      return "${_homeViewModel.listBusiness[index].type} Articles";
+      return "${_homeViewModel.listBusiness[index].type} ${S.current.articles}";
     }
   }
 
   String getSiteTitleText(int index) {
     if (index >= _homeViewModel.listBusiness.length) {
-      return "Explore All Location";
+      return S.current.explore_all_location;
     } else {
-      return "Explore ${_homeViewModel.listBusiness[index].type}";
+      return "${S.current.explore} ${_homeViewModel.listBusiness[index].type}";
     }
   }
 }
