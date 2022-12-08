@@ -101,6 +101,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "get_started": MessageLookupByLibrary.simpleMessage("Get Started"),
         "hello_name": m0,
         "here": MessageLookupByLibrary.simpleMessage("here"),
+        "local_fail": MessageLookupByLibrary.simpleMessage(
+            "Please connect to the internet and or contact with admin"),
         "login": MessageLookupByLibrary.simpleMessage("Login"),
         "login_description": MessageLookupByLibrary.simpleMessage(
             "Welcome back,\nPlease sign in"),
@@ -118,6 +120,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Name must be not empty"),
         "navigate_the_app":
             MessageLookupByLibrary.simpleMessage("•  Navigate the App"),
+        "network_fail": MessageLookupByLibrary.simpleMessage(
+            "Please connect to the internet"),
         "new_password": MessageLookupByLibrary.simpleMessage("New Password"),
         "new_password_empty_error": MessageLookupByLibrary.simpleMessage(
             "New password must be not empty"),

@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:localstore/localstore.dart';
 import 'package:notification_center/notification_center.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:pull_down_button/pull_down_button.dart';
@@ -9,6 +11,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:rounded_background_text/rounded_background_text.dart';
 import 'package:tudu/consts/color/Colors.dart';
 import 'package:tudu/consts/font/Fonts.dart';
+import 'package:tudu/models/amenity.dart';
 import 'package:tudu/models/article.dart';
 import 'package:tudu/models/business.dart';
 import 'package:tudu/utils/func_utils.dart';
@@ -29,6 +32,8 @@ import 'package:tudu/viewmodels/what_tudu_article_content_detail_viewmodel.dart'
 import 'package:tudu/views/common/alert.dart';
 import 'package:tudu/views/map/map_view.dart';
 
+import '../../services/observable/observable_serivce.dart';
+
 enum DataLoadingType {
   LOADING,
   EMPTY,
@@ -43,6 +48,7 @@ class WhatTuduView extends StatefulWidget {
 }
 
 class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
+  ObservableService _observableService = ObservableService();
   WhatTuduViewModel _whatTuduViewModel = WhatTuduViewModel();
   HomeViewModel _homeViewModel = HomeViewModel();
   WhatTuduArticleContentDetailViewModel _whatTuduArticleDetailViewModel = WhatTuduArticleContentDetailViewModel();
@@ -51,7 +57,6 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
 
-  StreamSubscription<bool>? reloadListener;
   StreamSubscription<bool>? loadingListener;
   StreamSubscription<List<Article>?>? zeroDataArticleListener;
   StreamSubscription<List<Site>?>? zeroDataSiteListener;
@@ -61,14 +66,13 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
 
   DataLoadingType _isArticleZeroDataResult = DataLoadingType.LOADING;
   DataLoadingType _isSiteZeroDataResult = DataLoadingType.LOADING;
-  late int _filterType;
+  int _filterType = 0;
   int _orderType = 0;
 
   final RefreshController _refreshController = RefreshController(initialRefresh: false);
 
   @override
   void initState() {
-    listenToReloadView();
     listenToZeroDataFilter();
     listenToLoading();
 
@@ -85,13 +89,13 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
     _searchController.addListener(() {
       if (_searchController.text != searchKeyword) {
         searchKeyword = _searchController.text;
-        _whatTuduViewModel.getListWhatTudu(
-          (_filterType < _homeViewModel.listBusiness.length) ? _homeViewModel.listBusiness[_filterType] : null,
-          _searchController.text,
-          FuncUlti.getOrderTypeByInt(_orderType),
-          false,
-          0, // search -> from first item
-        );
+        _whatTuduViewModel.getDataWithFilterSortSearch(
+            (_filterType < _homeViewModel.listBusiness.length)
+                ? _homeViewModel.listBusiness[_filterType]
+                : null, // Get current filterType
+            FuncUlti.getSortTypeByInt(_orderType), // Get current OrderType
+            _searchController.text // Search text
+            );
       }
       if (_searchController.text != "") {
         isAtTop = true;
@@ -102,30 +106,86 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
 
     WidgetsBinding.instance.addObserver(this);
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      try {
-        _whatTuduViewModel.getListWhatTudu(
-          null,
-          _searchController.text,
-          StrConst.sortTitle, // First init sort with Alphabet
-          false,
-          0,
-        );
-      } catch (e) {
-        _showAlert("Get data fail because of $e");
-      }
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await loadRemoteData();
     });
   }
 
-  void listenToReloadView() {
-    reloadListener ??= _homeViewModel.reloadViewStream.asBroadcastStream().listen((data) {
+  Future<void> loadRemoteData() async {
+    try {
+      print("loadRemoteData -> start");
+      // Get data from firestore
+      await _homeViewModel.getDataFromFireStore();
+
       _filterType = _homeViewModel.listBusiness.length;
-      setState(() {});
-    });
+
+      // Save data to local after get data from firestore have done
+      saveDataToLocal();
+
+      _whatTuduViewModel.getDataWithFilterSortSearch(
+        null, // On init, no business filter have not been chose
+        StrConst.sortTitle, // First init sort with Alphabet
+        null, // On init, no text have not been searched
+      );
+    } catch (e) {
+      // If network has prob -> Load data from local
+      await loadLocalData();
+    }
+  }
+
+  Future<void> loadLocalData() async {
+    try {
+      print("loadLocalData -> start");
+      // Get data from local
+      _homeViewModel.getDataFromLocalDatabase();
+
+      _filterType = _homeViewModel.listBusiness.length;
+
+      _whatTuduViewModel.getDataWithFilterSortSearch(
+        null, // On init, no business filter have not been chose
+        StrConst.sortTitle, // First init sort with Alphabet
+        null, // On init, no text have not been searched
+      );
+    } catch (e) {
+      _observableService.whatTuduProgressLoadingController.sink.add(false);
+      _observableService.networkController.sink.add(e.toString());
+    }
+  }
+
+  void saveDataToLocal() {
+    if (_homeViewModel.listBusiness.isNotEmpty) {
+      for (var business in _homeViewModel.listBusiness) {
+        Localstore.instance.collection('businesses').doc(business.businessid.toString()).set(business.toJson());
+      }
+    }
+
+    if (_homeViewModel.listAmenites.isNotEmpty) {
+      for (var amenites in _homeViewModel.listAmenites) {
+        Localstore.instance.collection('amenities').doc(amenites.amenityId.toString()).set(amenites.toJson());
+      }
+    }
+
+    if (_homeViewModel.listPartners.isNotEmpty) {
+      for (var partner in _homeViewModel.listPartners) {
+        Localstore.instance.collection('partners').doc(partner.partnerId.toString()).set(partner.toJson());
+      }
+    }
+
+    if (_homeViewModel.listArticles.isNotEmpty) {
+      for (var article in _homeViewModel.listArticles) {
+        Localstore.instance.collection('articles').doc(article.articleId.toString()).set(article.toJson());
+      }
+    }
+
+    if (_homeViewModel.listSites.isNotEmpty) {
+      for (var site in _homeViewModel.listSites) {
+        Localstore.instance.collection('sites').doc(site.siteId.toString()).set(site.toJson());
+      }
+    }
   }
 
   void listenToLoading() {
-    loadingListener ??= _whatTuduViewModel.loadingStream.asBroadcastStream().listen((data) {
+    loadingListener ??= _observableService.whatTuduProgressLoadingStream.asBroadcastStream().listen((data) {
       if (data) {
         _showLoading();
       } else {
@@ -140,7 +200,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
   }
 
   void listenToZeroDataFilter() {
-    zeroDataArticleListener ??= _whatTuduViewModel.listArticlesStream.asBroadcastStream().listen((data) {
+    zeroDataArticleListener ??= _observableService.listArticlesStream.asBroadcastStream().listen((data) {
       setState(() {
         if (data == null) {
           _isArticleZeroDataResult = DataLoadingType.EMPTY;
@@ -152,7 +212,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
       });
     });
 
-    zeroDataSiteListener ??= _whatTuduViewModel.listSitesStream.asBroadcastStream().listen((data) {
+    zeroDataSiteListener ??= _observableService.listSitesStream.asBroadcastStream().listen((data) {
       setState(() {
         if (data == null) {
           _isSiteZeroDataResult = DataLoadingType.EMPTY;
@@ -167,6 +227,8 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
 
   @override
   void dispose() {
+    print("dispose -> what_tudu_view");
+    loadingListener?.cancel();
     zeroDataArticleListener?.cancel();
     zeroDataSiteListener?.cancel();
     super.dispose();
@@ -174,13 +236,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
 
   void _onRefresh() async {
     try {
-      _whatTuduViewModel.getListWhatTudu(
-        null,
-        _searchController.text,
-        FuncUlti.getOrderTypeByInt(_orderType),
-        false,
-        0,
-      );
+      await loadRemoteData();
 
       _refreshController.refreshCompleted();
       setState(() {});
@@ -188,19 +244,6 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
       _refreshController.refreshFailed();
       _showAlert("Get data fail because of $e");
     }
-  }
-
-  void _onLoading() async {
-    // monitor network fetch
-    await _whatTuduViewModel.getListWhatTudu(
-      (_filterType < _homeViewModel.listBusiness.length) ? _homeViewModel.listBusiness[_filterType] : null,
-      _searchController.text,
-      FuncUlti.getOrderTypeByInt(_orderType),
-      false,
-      _whatTuduViewModel.listSites.length,
-    );
-    if (mounted) setState(() {});
-    _refreshController.loadComplete();
   }
 
   @override
@@ -251,12 +294,12 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                               ),
                               enabled: _orderType != 0,
                               onTap: () {
-                                _whatTuduViewModel.getListWhatTudu(
-                                  (_filterType < _homeViewModel.listBusiness.length) ? _homeViewModel.listBusiness[_filterType] : null,
-                                  _searchController.text,
-                                  FuncUlti.getOrderTypeByInt(0), // 0 == title
-                                  false,
-                                  0, // 0 because of when change order, it go back to first item
+                                _whatTuduViewModel.getDataWithFilterSortSearch(
+                                  (_filterType < _homeViewModel.listBusiness.length)
+                                      ? _homeViewModel.listBusiness[_filterType]
+                                      : null,
+                                  FuncUlti.getSortTypeByInt(0), // Search with Alphabet => "title" = 0
+                                  _searchController.text, // Search with Alphabet => "title" = 0
                                 );
                                 _orderType = 0;
                               },
@@ -278,7 +321,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                                   context,
                                   () {
                                     /// IMPL logic
-                                    _whatTuduViewModel.sortWithLocation(context, _showLoading());
+                                    _whatTuduViewModel.sortWithLocation();
                                     _orderType = 1;
                                   },
                                 );
@@ -332,12 +375,10 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                                       ),
                                       enabled: _filterType != ((counter) / 2).round(),
                                       onTap: () {
-                                        _whatTuduViewModel.getListWhatTudu(
-                                          null, // null == All business
+                                        _whatTuduViewModel.getDataWithFilterSortSearch(
+                                          null, // Filter all business => businnesFilter = null
+                                          FuncUlti.getSortTypeByInt(_orderType),
                                           _searchController.text,
-                                          FuncUlti.getOrderTypeByInt(_orderType),
-                                          false,
-                                          0, // 0 because of when change filter, it go back to first item
                                         );
                                         _filterType = ((counter) / 2).round();
                                       },
@@ -363,12 +404,10 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                                               ),
                                               enabled: _filterType != ((counter) / 2).round(),
                                               onTap: () {
-                                                _whatTuduViewModel.getListWhatTudu(
-                                                  _homeViewModel.listBusiness[((counter) / 2).round()], // get businessId
+                                                _whatTuduViewModel.getDataWithFilterSortSearch(
+                                                  _homeViewModel.listBusiness[((counter) / 2).round()], // get business
+                                                  FuncUlti.getSortTypeByInt(_orderType),
                                                   _searchController.text,
-                                                  FuncUlti.getOrderTypeByInt(_orderType), // Title or Distance
-                                                  false, // false because of orderType of Title take order A>Z
-                                                  0, // 0 because of when change filter, it go back to first item
                                                 );
                                                 _filterType = ((counter) / 2).round();
                                               },
@@ -430,11 +469,10 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
           ),
           body: SmartRefresher(
             enablePullDown: true,
-            enablePullUp: true,
+            enablePullUp: false,
             header: WaterDropHeader(),
             controller: _refreshController,
             onRefresh: _onRefresh,
-            onLoading: _onLoading,
             child: getMainView(),
           )),
     );
@@ -474,7 +512,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
 
   Widget createAllLocationArticlesView() {
     return StreamBuilder<List<Article>?>(
-      stream: _whatTuduViewModel.listArticlesStream,
+      stream: _observableService.listArticlesStream,
       builder: (_, snapshot) {
         if (!snapshot.hasData) {
           return Container();
@@ -586,7 +624,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
 
   Widget createExploreAllLocationView() {
     return StreamBuilder<List<Site>?>(
-      stream: _whatTuduViewModel.listSitesStream,
+      stream: _observableService.listSitesStream,
       builder: (_, snapshot) {
         if (!snapshot.hasData) {
           return Container();
@@ -622,10 +660,13 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                       onTap: () {
                         print("PermissionRequest -> START");
                         PermissionRequest.isResquestPermission = true;
-                        PermissionRequest().permissionServiceCall(context, () {
-                          Navigator.of(context)
-                              .push(MaterialPageRoute(builder: (_) => const MapView(isGotoCurrent: true)));
-                        });
+                        PermissionRequest().permissionServiceCall(
+                          context,
+                          () {
+                            Navigator.of(context)
+                                .push(MaterialPageRoute(builder: (_) => const MapView(isGotoCurrent: true)));
+                          },
+                        );
                       },
                       child: Column(
                         children: [
@@ -764,7 +805,6 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
             ],
           );
         });
-    ;
   }
 
   Widget getDealItemIfExist(int? dealId) {

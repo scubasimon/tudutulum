@@ -1,114 +1,75 @@
 import 'package:tudu/models/article.dart';
 import 'package:tudu/utils/func_utils.dart';
 
+import '../../consts/strings/str_const.dart';
 import '../../models/site.dart';
 import '../../services/firebase/firebase_service.dart';
 
 abstract class WhatTuduRepository {
-  Future<void> createData(List<Map<String, dynamic>> data);
+  List<Article> getArticlesWithFilterSortSearch(
+      List<Article> listArticleInput, int? businessFilterId, String? keywordSearch);
 
-  Future<List<Article>> getListArticleFilterSort(
-    int? businessId,
-    String? keyword,
-    String? orderType,
-    bool? isDescending,
-  );
-
-  Future<List<Site>> getListSiteFilterSort(
-    int? businessId,
-    String? keyword,
-    String? orderType,
-    bool? isDescending,
-    int startAt,
-  );
+  List<Site> getSitesWithFilterSortSearch(
+      List<Site> listSiteInput, int? businessFilterId, String? keywordSort, String? keywordSearch);
 }
 
 class WhatTuduRepositoryImpl extends WhatTuduRepository {
-  final FirebaseService _firebaseService = FirebaseServiceImpl();
-
   @override
-  Future<void> createData(List<Map<String, dynamic>> data) async {
-    await _firebaseService.createData(data);
+  List<Article> getArticlesWithFilterSortSearch(
+      List<Article> listArtileInput, int? businessFilterId, String? keywordSearch) {
+    // Clone data of input Sites
+    List<Article> listArticleResult = listArtileInput.where((site) => true).toList();
+    // Filter with businessId (Filter function)
+    if (businessFilterId != null) {
+      if (businessFilterId != -1) {
+        listArticleResult = listArticleResult.where((site) => site.business.contains(businessFilterId)).toList();
+      }
+    }
+
+    // Filter with keywordSearch (Search function)
+    if (keywordSearch != null) {
+      if (keywordSearch.isNotEmpty) {
+        listArticleResult =
+            listArticleResult.where((site) => site.title.toLowerCase().contains(keywordSearch.toLowerCase())).toList();
+      }
+    }
+
+    return listArticleResult;
   }
 
   @override
-  Future<List<Article>> getListArticleFilterSort(
-    int? businessId,
-    String? keyword,
-    String? orderType,
-    bool? isDescending,
-  ) async {
-    List<Article> listArticles = [];
-    var listRemoteArticles = await _firebaseService.getArticlesFilterSort(
-      businessId,
-      keyword,
-      orderType,
-      isDescending,
-    );
-    if (listRemoteArticles != null) {
-      for (var remoteArticle in listRemoteArticles) {
-        listArticles.add(Article(
-          articleId: remoteArticle["articleId"],
-          banner: remoteArticle["banner"],
-          title: remoteArticle["title"],
-          rating: double.parse(remoteArticle["rating"].toString()),
-          business: FuncUlti.getListIntFromListDynamic(remoteArticle["business"]),
-          listContent: FuncUlti.getMapStringListFromStringDynamic(remoteArticle["listContent"]),
-        ));
+  List<Site> getSitesWithFilterSortSearch(
+      List<Site> listSiteInput, int? businessFilterId, String? keywordSort, String? keywordSearch) {
+    // Clone data of input Sites
+    List<Site> listSiteResult = listSiteInput.where((site) => true).toList();
+    // Filter with businessId (Filter function)
+    if (businessFilterId != null) {
+      if (businessFilterId != -1) {
+        listSiteResult = listSiteResult.where((site) => site.business.contains(businessFilterId)).toList();
       }
     }
-    return listArticles;
-  }
 
-  @override
-  Future<List<Site>> getListSiteFilterSort(
-    int? businessId,
-    String? keyword,
-    String? orderType,
-    bool? isDescending,
-    int startAt,
-  ) async {
-    List<Site> listSites = [];
-    var listRemoteSites = await _firebaseService.getSitesFilterSort(
-      businessId,
-      keyword,
-      orderType,
-      isDescending,
-      startAt,
-    );
-    if (listRemoteSites != null) {
-      print("listRemoteSites ${listRemoteSites.length}");
-      for (var remoteSite in listRemoteSites) {
-        print("remoteSite.title ${remoteSite["title"]}");
-        listSites.add(Site(
-          images: FuncUlti.getListStringFromListDynamic(remoteSite["image"]),
-          active: remoteSite["active"],
-          siteId: remoteSite["siteid"],
-          dealId: (remoteSite.data()["dealId"] != null) ? remoteSite["dealId"] : null,
-          title: remoteSite["title"],
-          subTitle: remoteSite["subTitle"],
-          business: FuncUlti.getListIntFromListDynamic(remoteSite["business"]),
-          location: remoteSite["location"],
-          rating: remoteSite["rating"],
-          siteContent: SiteContent(
-            title: remoteSite["contentTitle"],
-            description: remoteSite["contentDescription"],
-            moreInformation: remoteSite["moreInformation"],
-            advisory: remoteSite["advisory"],
-            amenities: FuncUlti.getListIntFromListDynamic(remoteSite["amenities"]),
-            amentityDescriptions: FuncUlti.getListStringFromListDynamic(remoteSite["amentityDescriptions"]),
-            openingTimes: FuncUlti.getMapStringStringFromStringDynamic(remoteSite["openingTimes"]),
-            fees: FuncUlti.getMapStringListFromStringDynamic(remoteSite["fees"]),
-            capacity: remoteSite["capacity"],
-            eventIcons: FuncUlti.getListStringFromListDynamic(remoteSite["eventIcons"]),
-            eventLinks: FuncUlti.getListStringFromListDynamic(remoteSite["eventLinks"]),
-            getIntouch: FuncUlti.getMapStringStringFromStringDynamic(remoteSite["getIntouch"]),
-            logo: remoteSite["logo"],
-            partner: remoteSite["partner"],
-          ),
-        ));
+    // Sort with keywordSort (Sort function)
+    if (keywordSort != null) {
+      if (keywordSort == StrConst.sortTitle) {
+        // Sort with title
+        listSiteResult.sort((a, b) => a.title.compareTo(b.title));
+      } else if (keywordSort == StrConst.sortDistance) {
+        // Sort with distance ///TODO: IMPL LOGIC
+        listSiteResult.sort((a, b) => a.title.compareTo(b.title));
+      } else {
+        throw Exception("Sort type not found. Please check again");
       }
     }
-    return listSites;
+
+    // Filter with keywordSearch (Search function)
+    if (keywordSearch != null) {
+      if (keywordSearch.isNotEmpty) {
+        listSiteResult =
+            listSiteResult.where((site) => site.title.toLowerCase().contains(keywordSearch.toLowerCase())).toList();
+      }
+    }
+
+    return listSiteResult;
   }
 }

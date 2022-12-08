@@ -17,6 +17,9 @@ import 'package:tudu/views/profile/profile_view.dart';
 import 'package:tudu/consts/images/ImagePath.dart';
 import 'package:tudu/generated/l10n.dart';
 
+import '../../services/observable/observable_serivce.dart';
+import '../common/alert.dart';
+
 
 class HomeView extends StatefulWidget {
   final int pageIndex;
@@ -30,6 +33,7 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeView extends State<HomeView> with WidgetsBindingObserver {
+  ObservableService _observableService = ObservableService();
   HomeViewModel _homeViewModel = HomeViewModel();
   int pageIndex = 0;
 
@@ -46,20 +50,17 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
   late StreamSubscription<String> connectWalletStreamStringListener;
 
   StreamSubscription<int>? redirectTabStreamListener = null;
-
+  StreamSubscription<String>? networkStreamListener = null;
 
   @override
   void initState() {
     NotificationCenter().subscribe(StrConst.openMenu, _openDrawer);
+    listenToNetwork();
     listenToRedirectTab();
     //set orientation is portrait
     pageIndex = widget.pageIndex;
     SystemChrome.setPreferredOrientations(
         [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
-
-    _homeViewModel.getListBusiness();
-    _homeViewModel.getListPartners();
-    _homeViewModel.getListAmenities();
 
     super.initState();
     WidgetsBinding.instance.addObserver(this);
@@ -71,8 +72,7 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
   }
 
   void listenToRedirectTab() {
-    if (redirectTabStreamListener == null) {
-      redirectTabStreamListener = _homeViewModel.redirectTabStream.asBroadcastStream().listen((data) {
+    redirectTabStreamListener ??= _observableService.redirectTabStream.asBroadcastStream().listen((data) {
         print("listenToRedirectTab -> $data");
         Navigator.of(context).popUntil((route){
           return (route.isFirst);
@@ -81,11 +81,19 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
           pageIndex = data;
         });
       });
-    }
+  }
+
+  void listenToNetwork() {
+    networkStreamListener ??= _observableService.networkStream.asBroadcastStream().listen((data) {
+      print("listenToNetwork -> $data");
+      _showAlert(data);
+    });
   }
 
   @override
   void dispose() {
+    print("dispose -> home_view");
+    networkStreamListener?.cancel();
     super.dispose();
   }
 
@@ -546,5 +554,15 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
   void _openDrawer() {
     print("open menu");
     _scaffoldKey.currentState?.openDrawer();
+  }
+
+
+  void _showAlert(String message) {
+    print("_showAlert $message");
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return ErrorAlert.alert(context, message);
+        });
   }
 }

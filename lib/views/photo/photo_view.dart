@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -92,9 +94,19 @@ class _PhotoViewUtil extends State<PhotoViewUtil> with WidgetsBindingObserver {
               controller: controller,
               children: widget.banner
                   .map((item) => PhotoView(
-                  imageProvider: NetworkImage(
-                      item
-                  )
+                imageProvider: CachedNetworkImageProvider(
+                    item,
+                ),
+                loadingBuilder: (context, event) => Center(
+                  child: Container(
+                    width: 20.0,
+                    height: 20.0,
+                    child: const CupertinoActivityIndicator(
+                      radius: 20,
+                      color: ColorStyle.primary,
+                    ),
+                  ),
+                ),
               )).toList(),
             ),
             Positioned(

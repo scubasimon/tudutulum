@@ -1,19 +1,19 @@
 class Amenity {
-  int amenitiyId;
+  int amenityId;
   String title;
   String description;
   String icon;
 
   Amenity(
       {
-        required this.amenitiyId,
+        required this.amenityId,
         required this.title,
         required this.description,
         required this.icon,
       });
 
   Map<String, dynamic> toJson() => {
-    "amenitiesid": amenitiyId,
+    "amenityId": amenityId,
     "description": description,
     "icon": icon,
     "title": title

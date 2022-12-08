@@ -1240,6 +1240,26 @@ class S {
     );
   }
 
+  /// `Please connect to the internet`
+  String get network_fail {
+    return Intl.message(
+      'Please connect to the internet',
+      name: 'network_fail',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please connect to the internet and or contact with admin`
+  String get local_fail {
+    return Intl.message(
+      'Please connect to the internet and or contact with admin',
+      name: 'local_fail',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Please report anything missing/inaccurate here`
   String get please_report {
     return Intl.message(

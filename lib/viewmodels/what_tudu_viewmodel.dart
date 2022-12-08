@@ -11,10 +11,13 @@ import 'package:tudu/models/article.dart';
 import 'package:tudu/models/business.dart';
 import 'package:tudu/models/site.dart';
 import 'package:tudu/utils/func_utils.dart';
+import 'package:tudu/viewmodels/home_viewmodel.dart';
 
 import '../models/auth.dart';
 import '../repositories/what_tudu/what_tudu_repository.dart';
 import 'package:location/location.dart' as locationLib;
+
+import '../services/observable/observable_serivce.dart';
 
 class WhatTuduViewModel extends BaseViewModel {
   final WhatTuduRepository _whatTuduRepository = WhatTuduRepositoryImpl();
@@ -27,18 +30,10 @@ class WhatTuduViewModel extends BaseViewModel {
 
   WhatTuduViewModel._internal();
 
-  final StreamController<bool> _loadingController = BehaviorSubject<bool>();
-  Stream<bool> get loadingStream => _loadingController.stream;
-
-  final StreamController<List<Article>?> _listArticlesController = BehaviorSubject<List<Article>?>();
-  Stream<List<Article>?> get listArticlesStream => _listArticlesController.stream;
-
-  final StreamController<List<Site>?> _listSitesController = BehaviorSubject<List<Site>?>();
-  Stream<List<Site>?> get listSitesStream => _listSitesController.stream;
+  ObservableService _observableService = ObservableService();
+  HomeViewModel _homeViewModel = HomeViewModel();
 
   bool isLoading = false;
-  List<Article> listArticles = [];
-  List<Site> listSites = [];
 
   late bool serviceEnabled;
   locationLib.Location location = locationLib.Location();
@@ -48,88 +43,59 @@ class WhatTuduViewModel extends BaseViewModel {
 
   void showHideLoading(bool showHide) {
     print("showHideLoading $showHide");
-    _loadingController.sink.add(showHide);
+    _observableService.whatTuduProgressLoadingController.sink.add(showHide);
     notifyListeners();
   }
 
-  Future<void> createSites(int numberOfSites) async {
-    List<Map<String, dynamic>> listData = [];
-    for (int i = 0; i < numberOfSites; i++) {
-      var data = listSites[0].toJson();
-      data["siteid"] = i + listSites.length;
-      data["title"] = "${FuncUlti.getRandomText(5)} ${FuncUlti.getRandomText(4)}";
-      data["subTitle"] = "${FuncUlti.getRandomText(6)} ${FuncUlti.getRandomText(6)}";
-      if (Random().nextBool() == true) {
-        data["dealId"] = 0;
-      } else {
-        data["dealId"] = null;
-      }
-      listData.add(data);
-    }
-    await _whatTuduRepository.createData(listData);
-  }
-
-  Future<void> getListWhatTudu(
-      Business? business,
-      String? filterKeyword,
-      String? orderType,
-      bool? isDescending,
-      int startAt,
-  ) async {
-    showHideLoading(true);
-
+  void getDataWithFilterSortSearch(
+      Business? businessFilter,
+      String? keywordSort,
+      String? keywordSearch) {
     try {
-      listArticles = await _whatTuduRepository.getListArticleFilterSort(
-          (business != null) ? business.businessid : -1,
-          filterKeyword,
-          orderType,
-          isDescending);
-      _listArticlesController.sink.add(listArticles);
-      notifyListeners();
-    } catch (e) {
-      rethrow;
-    }
-
-    try {
-      if (startAt == 0) {
-        listSites.clear();
-      }
-      listSites += await _whatTuduRepository.getListSiteFilterSort(
-        (business != null) ? business.businessid : -1,
-        filterKeyword,
-        orderType,
-        isDescending,
-        startAt,
+      _observableService.whatTuduProgressLoadingController.sink.add(true);
+      List<Article> listArticlesResult = _whatTuduRepository.getArticlesWithFilterSortSearch(
+        _homeViewModel.listArticles,
+        (businessFilter != null) ? businessFilter.businessid : -1,
+        keywordSearch,
       );
-      _listSitesController.sink.add(listSites);
-      notifyListeners();
+      List<Site> listSitesResult = _whatTuduRepository.getSitesWithFilterSortSearch(
+        _homeViewModel.listSites,
+        (businessFilter != null) ? businessFilter.businessid : -1,
+        keywordSort,
+        keywordSearch,
+      );
+
+      _observableService.listArticlesController.sink.add(listArticlesResult);
+      _observableService.listSitesController.sink.add(listSitesResult);
+      _observableService.whatTuduProgressLoadingController.sink.add(false);
     } catch (e) {
       rethrow;
     }
-
-    showHideLoading(false);
   }
 
-  void sortWithLocation(BuildContext buildContext, void showLoading) async {
-    showLoading;
-
+  void sortWithLocation() async {
+    _observableService.whatTuduProgressLoadingController.sink.add(true);
     await checkLocationEnable();
     var currentPosition = await location.getLocation();
     if (currentPosition.latitude != null && currentPosition.longitude != null) {
-      _listSitesController.sink.add(null);
-      listSites.sort((a, b) => getDistance(currentPosition, a).compareTo(getDistance(currentPosition, b)));
-      _listSitesController.sink.add(listSites);
-      Navigator.pop(buildContext);
-      notifyListeners();
+
+      List<Site>? listSiteCurrent = (_observableService.listSitesController as BehaviorSubject<List<Site>?>).value;
+
+      if (listSiteCurrent != null) {
+        listSiteCurrent.sort((a, b) => getDistance(currentPosition, a).compareTo(getDistance(currentPosition, b)));
+        _observableService.listSitesController.sink.add(listSiteCurrent);
+        notifyListeners();
+      }
     }
+    _observableService.whatTuduProgressLoadingController.sink.add(false);
   }
 
   double getDistance(LocationData location, Site a) {
     return Geolocator.distanceBetween(
       location.latitude!,
       location.longitude!,
-      a.location.latitude,
-      a.location.longitude,
+      a.locationLat,
+      a.locationLon,
     );
   }
 

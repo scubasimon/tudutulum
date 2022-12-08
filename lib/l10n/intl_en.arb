@@ -117,8 +117,8 @@
   "distance": "Distance",
   "articles": " Articles",
   "explore": "Explore ",
-  "distance": "Distance",
   "all_tulum_article": "All Tulum Articles",
-  "explore_all_location": "Explore All Location",
+  "network_fail": "Please connect to the internet",
+  "local_fail": "Please connect to the internet and or contact with admin",
   "please_report": "Please report anything missing/inaccurate here"
 }

@@ -6,6 +6,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:tudu/models/error.dart';
 import 'package:tudu/generated/l10n.dart';
+import 'package:tudu/services/observable/observable_serivce.dart';
+import 'package:tudu/utils/func_utils.dart';
 
 import '../../consts/strings/str_const.dart';
 
@@ -34,19 +36,9 @@ abstract class FirebaseService {
 
   Future<User?> authChanged();
 
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getArticles();
 
-  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getArticlesFilterSort(
-      int? businessId,
-      String? keyword,
-      String? orderType,
-      bool? isDescending,);
-
-  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getSitesFilterSort(
-      int? businessId,
-      String? keyword,
-      String? orderType,
-      bool? isDescending,
-      int startAt,);
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getSites();
 
   Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getPartners();
 
@@ -256,197 +248,59 @@ class FirebaseServiceImpl extends FirebaseService {
   }
 
   @override
-  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getArticlesFilterSort(
-      int? businessId,
-      String? keyword,
-      String? orderType,
-      bool? isDescending,
-      ) async {
-    try {
-      var listSiteResult = FirebaseFirestore.instance.collection("article");
-      Query<Map<String, dynamic>>? listSiteFilterBusiness = null;
-      Query<Map<String, dynamic>>? listSiteFilterTitle = null;
-      Query<Map<String, dynamic>>? listSiteFilterResult = null;
-
-      print("businessId ${businessId}");
-      if (businessId != null) {
-        if (businessId != -1) {
-          listSiteFilterBusiness = listSiteResult
-              .where(StrConst.sortBusiness, arrayContains: businessId);
-        }
-      }
-
-      print("keyword ${keyword}");
-      if (keyword != null) {
-        if (listSiteFilterBusiness == null) {
-          listSiteFilterTitle = listSiteResult
-              .where(StrConst.sortTitle, isGreaterThanOrEqualTo: keyword)
-              .where(StrConst.sortTitle, isLessThanOrEqualTo: '$keyword\uf8ff');
-        } else {
-          listSiteFilterTitle = listSiteFilterBusiness
-              .where(StrConst.sortTitle, isGreaterThanOrEqualTo: keyword)
-              .where(StrConst.sortTitle, isLessThanOrEqualTo: '$keyword\uf8ff');
-        }
-      }
-
-      print("orderType ${orderType}");
-      if (orderType == null) {
-        if (listSiteFilterTitle != null) {
-          listSiteFilterResult = listSiteFilterTitle.orderBy(StrConst.sortTitle, descending: false);
-        } else if (listSiteFilterBusiness != null) {
-          listSiteFilterResult = listSiteFilterBusiness.orderBy(StrConst.sortBusiness, descending: false);
-        } else {
-          listSiteFilterResult = listSiteResult.orderBy(StrConst.sortTitle, descending: false);
-        }
-      } else {
-        if (listSiteFilterTitle != null) {
-          if (orderType == StrConst.sortTitle) {
-            listSiteFilterResult = listSiteFilterTitle.orderBy(orderType, descending: isDescending!);
-          } else {
-            listSiteFilterResult = listSiteFilterTitle.orderBy(StrConst.sortTitle);
-            listSiteFilterResult = listSiteFilterTitle.orderBy(orderType, descending: isDescending!);
-          }
-        } else if (listSiteFilterBusiness != null) {
-          if (orderType == StrConst.sortBusiness) {
-            listSiteFilterResult = listSiteFilterBusiness.orderBy(orderType, descending: isDescending!);
-          } else {
-            listSiteFilterResult = listSiteFilterBusiness.orderBy(StrConst.sortBusiness);
-            listSiteFilterResult = listSiteFilterBusiness.orderBy(orderType, descending: isDescending!);
-          }
-        } else {
-          listSiteFilterResult = listSiteResult.orderBy(orderType, descending: isDescending!);
-        }
-      }
-
-      var dataResult = await listSiteFilterResult.get();
-      return dataResult.docs;
-
-    } catch (e) {
-      print("getArticlesFilterSort -> QueryDocumentSnapshot -> ERROR: $e");
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getArticles() async {
+    bool? netWork = await FuncUlti.NetworkChecking();
+    if (netWork == true) {
+      var listSiteResult =
+          await FirebaseFirestore.instance.collection("articles").orderBy(StrConst.sortTitle, descending: false).get();
+      return listSiteResult.docs;
+    } else {
+      throw S.current.network_fail;
     }
   }
 
   @override
-  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getSitesFilterSort(
-      int? businessId,
-      String? keyword,
-      String? orderType,
-      bool? isDescending,
-      int startAt,
-  ) async {
-    try {
-      var listSiteResult = FirebaseFirestore.instance.collection("sites");
-      Query<Map<String, dynamic>>? listSiteFilterBusiness = null;
-      Query<Map<String, dynamic>>? listSiteFilterTitle = null;
-      Query<Map<String, dynamic>>? listSiteFilterResult = null;
-
-      print("businessId ${businessId}");
-      if (businessId != null) {
-        if (businessId != -1) {
-          listSiteFilterBusiness = listSiteResult
-              .where(StrConst.sortBusiness, arrayContains: businessId);
-        }
-      }
-
-      print("keyword ${keyword}");
-      if (keyword != null) {
-        if (listSiteFilterBusiness == null) {
-          listSiteFilterTitle = listSiteResult
-              .where(StrConst.sortTitle, isGreaterThanOrEqualTo: keyword)
-              .where(StrConst.sortTitle, isLessThanOrEqualTo: '$keyword\uf8ff');
-        } else {
-          listSiteFilterTitle = listSiteFilterBusiness
-              .where(StrConst.sortTitle, isGreaterThanOrEqualTo: keyword)
-              .where(StrConst.sortTitle, isLessThanOrEqualTo: '$keyword\uf8ff');
-        }
-      }
-
-      print("orderType ${orderType}");
-      if (orderType == null) {
-        if (listSiteFilterTitle != null) {
-          listSiteFilterResult = listSiteFilterTitle.orderBy(StrConst.sortTitle, descending: false);
-        } else if (listSiteFilterBusiness != null) {
-          listSiteFilterResult = listSiteFilterBusiness.orderBy(StrConst.sortBusiness, descending: false);
-        } else {
-          listSiteFilterResult = listSiteResult.orderBy(StrConst.sortTitle, descending: false);
-        }
-      } else {
-        if (listSiteFilterTitle != null) {
-          if (orderType == StrConst.sortTitle) {
-            listSiteFilterResult = listSiteFilterTitle.orderBy(orderType, descending: isDescending!);
-          } else {
-            listSiteFilterResult = listSiteFilterTitle.orderBy(StrConst.sortTitle);
-            listSiteFilterResult = listSiteFilterTitle.orderBy(orderType, descending: isDescending!);
-          }
-        } else if (listSiteFilterBusiness != null) {
-          if (orderType == StrConst.sortBusiness) {
-            listSiteFilterResult = listSiteFilterBusiness.orderBy(orderType, descending: isDescending!);
-          } else {
-            listSiteFilterResult = listSiteFilterBusiness.orderBy(StrConst.sortBusiness);
-            listSiteFilterResult = listSiteFilterBusiness.orderBy(orderType, descending: isDescending!);
-          }
-        } else {
-          listSiteFilterResult = listSiteResult.orderBy(orderType, descending: isDescending!);
-        }
-      }
-
-      print("startAt ${startAt}");
-      if (startAt == 0) {
-        var dataResult = await listSiteFilterResult.limit(10).get();
-        return dataResult.docs;
-      } else {
-        var listSiteCurrent = await listSiteFilterResult
-            .limit(10)
-            .get();
-
-        print("listSiteCurrent ${listSiteCurrent.docs.length}");
-
-        final lastVisible = listSiteCurrent.docs[listSiteCurrent.size - 1];
-
-        final listSiteResult = await listSiteFilterResult
-            .startAfter([lastVisible.data()[orderType]])
-            .limit(10)
-            .get();
-
-        return listSiteResult.docs;
-      }
-
-    } catch (e) {
-      print("getSitesFilterSort -> QueryDocumentSnapshot -> ERROR: $e");
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getSites() async {
+    bool? netWork = await FuncUlti.NetworkChecking();
+    if (netWork == true) {
+      var listSiteResult =
+          await FirebaseFirestore.instance.collection("sites").orderBy(StrConst.sortTitle, descending: false).get();
+      return listSiteResult.docs;
+    } else {
+      throw S.current.network_fail;
     }
   }
-
 
   @override
   Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getPartners() async {
-    try {
+    bool? netWork = await FuncUlti.NetworkChecking();
+    if (netWork == true) {
       final listSite = await FirebaseFirestore.instance.collection("partners").get();
-
       return listSite.docs;
-    } catch (e) {
-      return null;
+    } else {
+      throw S.current.network_fail;
     }
   }
 
   @override
   Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getAmenities() async {
-    try {
+    bool? netWork = await FuncUlti.NetworkChecking();
+    if (netWork == true) {
       final listSite = await FirebaseFirestore.instance.collection("amenities").get();
-
       return listSite.docs;
-    } catch (e) {
-      return null;
+    } else {
+      throw S.current.network_fail;
     }
   }
 
   @override
   Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getBusinesses() async {
-    try {
+    bool? netWork = await FuncUlti.NetworkChecking();
+    if (netWork == true) {
       final listSite = await FirebaseFirestore.instance.collection("businesses").get();
-
       return listSite.docs;
-    } catch (e) {
-      return null;
+    } else {
+      throw S.current.network_fail;
     }
   }
 }

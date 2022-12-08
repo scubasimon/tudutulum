@@ -26,6 +26,7 @@ import 'package:tudu/views/onboard/onboard_view.dart';
 import 'localization/app_localization.dart';
 import 'localization/language_constants.dart';
 import 'generated/l10n.dart';
+import 'package:localstore/localstore.dart';
 
 Future<void> main() async {
   await S.load(const Locale.fromSubtags(languageCode: 'en')); // mimic localization delegate init
@@ -36,41 +37,37 @@ Future<void> main() async {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
+
     PrefUtil.init();
 
     // if (kDebugMode) {
     //   await _connectToFirebaseEmulator();
     // }
 
-    SystemChrome.setPreferredOrientations(
-        [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown])
-        .then((_) {
-      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark
-          .copyWith(statusBarColor: Colors.transparent));
-      runApp(
-          MultiProvider(
-            providers: [
-              ChangeNotifierProvider(
-                create: (_) => HomeViewModel(),
-              ),
-              ChangeNotifierProvider(
-                create: (_) => WhatTuduViewModel(),
-              ),
-              ChangeNotifierProvider(
-                create: (_) => WhatTuduSiteContentDetailViewModel(),
-              ),
-              ChangeNotifierProvider(
-                create: (_) => WhatTuduArticleContentDetailViewModel(),
-              ),
-              ChangeNotifierProvider(
-                create: (_) => MapViewModel(),
-              )
-            ],
-            child: Builder(builder: (context) {
-              return const MyApp();
-            }),
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]).then((_) {
+      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(statusBarColor: Colors.transparent));
+      runApp(MultiProvider(
+        providers: [
+          ChangeNotifierProvider(
+            create: (_) => HomeViewModel(),
+          ),
+          ChangeNotifierProvider(
+            create: (_) => WhatTuduViewModel(),
+          ),
+          ChangeNotifierProvider(
+            create: (_) => WhatTuduSiteContentDetailViewModel(),
+          ),
+          ChangeNotifierProvider(
+            create: (_) => WhatTuduArticleContentDetailViewModel(),
+          ),
+          ChangeNotifierProvider(
+            create: (_) => MapViewModel(),
           )
-      );
+        ],
+        child: Builder(builder: (context) {
+          return const MyApp();
+        }),
+      ));
     });
   }, (error, stackTrace) => print(error.toString() + stackTrace.toString()));
 }
@@ -98,7 +95,6 @@ class MyApp extends StatefulWidget {
   @override
   _MyAppState createState() => _MyAppState();
 }
-
 
 class _MyAppState extends State<MyApp> {
   Locale _locale = const Locale(StrConst.englishLanguageCode);
@@ -140,9 +136,7 @@ class _MyAppState extends State<MyApp> {
       return const Center(child: CircularProgressIndicator());
     } else {
       return MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (context) => AuthenticationViewModel())
-        ],
+        providers: [ChangeNotifierProvider(create: (context) => AuthenticationViewModel())],
         child: MaterialApp(
           theme: ThemeData(
             highlightColor: Colors.transparent,

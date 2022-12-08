@@ -18,7 +18,16 @@ class Article {
         required this.listContent,
       });
 
-  Map<String, dynamic> toJson() => {
-    // "articleId": articleId,
-  };
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> result = {
+      "articleId": articleId,
+      "banner": banner,
+      "title": title,
+      "rating": rating,
+      "business": business,
+      "listContent": listContent,
+    };
+
+    return result;
+  }
 }
