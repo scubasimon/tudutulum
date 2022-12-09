@@ -35,8 +35,8 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeView extends State<HomeView> with WidgetsBindingObserver {
-  ObservableService _observableService = ObservableService();
-  HomeViewModel _homeViewModel = HomeViewModel();
+  final ObservableService _observableService = ObservableService();
+  final HomeViewModel _homeViewModel = HomeViewModel();
   int pageIndex = 0;
 
   final pages = [
@@ -52,8 +52,8 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
 
   late StreamSubscription<String> connectWalletStreamStringListener;
 
-  StreamSubscription<int>? redirectTabStreamListener = null;
-  StreamSubscription<String>? networkStreamListener = null;
+  StreamSubscription<int>? redirectTabStreamListener;
+  StreamSubscription<String>? networkStreamListener;
 
   @override
   void initState() {

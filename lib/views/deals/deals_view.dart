@@ -1,9 +1,11 @@
-import 'dart:async';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:notification_center/notification_center.dart';
 import 'package:pull_down_button/pull_down_button.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:tudu/consts/color/Colors.dart';
+import 'package:tudu/models/deal.dart';
 import 'package:tudu/views/common/alert.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
 import 'package:tudu/consts/font/font_size_const.dart';
@@ -21,18 +23,17 @@ class DealsView extends StatefulWidget {
 }
 
 class _DealsView extends State<DealsView> {
-  final DealsViewModel _dealsViewModel = DealsViewModel();
+  final _dealsViewModel = DealsViewModel();
 
-  final ScrollController _scrollController = ScrollController();
+  final _scrollController = ScrollController();
+  final _searchController = TextEditingController();
+  final _refreshController = RefreshController(initialRefresh: false);
 
   var _enableAllLocation = false;
+  bool _isAtTop = true;
 
   @override
   void initState() {
-    Future.delayed(const Duration(seconds: 2), () {
-      _dealsViewModel.showData();
-    });
-
     _dealsViewModel.userLoginStream.listen((event) {
       if (!event) {
         showDialog(context: context, builder: (context){
@@ -40,15 +41,224 @@ class _DealsView extends State<DealsView> {
         });
       }
     });
+
+    _dealsViewModel.loading.listen((event) {
+      if (event) {
+        _showLoading();
+      } else {
+        Navigator.of(context).pop();
+      }
+    });
+
+    _scrollController.addListener(() {
+      print(_scrollController.offset);
+      if (_scrollController.position.pixels == 0.0) {
+        _isAtTop = true;
+        setState(() {});
+      } else {
+        _isAtTop = false;
+        setState(() {});
+      }
+    });
+    _searchController.addListener(() {
+      _dealsViewModel.searchWithParam(
+        title: _searchController.text,
+      );
+    });
+    _dealsViewModel.error.listen((event) {
+      showDialog(context: context, builder: (context){
+        return ErrorAlert.alert(context, event.message ?? S.current.failed);
+      });
+    });
     super.initState();
   }
 
   @override
+  void dispose() {
+    _scrollController.dispose();
+    _searchController.dispose();
+    _refreshController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    List<Widget> array = [
+      Container(
+        height: 36.0,
+        alignment: Alignment.center,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            InkWell(
+              child: Image.asset(
+                ImagePath.humbergerIcon,
+                width: 28,
+                height: 28,
+              ),
+              onTap: () {
+                NotificationCenter().notify(StrConst.openMenu);
+              },
+            ),
+            const Spacer(),
+            InkWell(
+              onTap: () {},
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                      child: Image.asset(
+                          ImagePath.sortIcon,
+                          fit: BoxFit.contain,
+                          width: 16.0)
+                  ),
+                  Text(
+                    S.current.sort,
+                    style: const TextStyle(
+                      color: ColorStyle.primary,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w500,
+                      fontFamily: FontStyles.raleway,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 12.0,),
+            PullDownButton(
+              itemBuilder: (context) => [
+                PullDownMenuItem(
+                  title: S.current.business_type,
+                  iconWidget: Image.asset(
+                    ImagePath.cenoteIcon,
+                    width: 28, height: 28,
+                  ),
+                  itemTheme: const PullDownMenuItemTheme(
+                    textStyle: TextStyle(
+                        fontFamily: FontStyles.sfProText,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 17,
+                        color: ColorStyle.menuLabel
+                    ),
+
+                  ),
+                  onTap: () {},
+                ),
+                const PullDownMenuDivider(),
+                PullDownMenuItem(
+                  title: S.current.beach_clubs,
+                  itemTheme: const PullDownMenuItemTheme(
+                    textStyle: TextStyle(
+                        fontFamily: FontStyles.sfProText,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 17,
+                        color: ColorStyle.menuLabel
+                    ),
+
+                  ),
+                  iconWidget: Image.asset(
+                    ImagePath.sunAndHorizonCircleIcon,
+                    width: 28, height: 28,
+                  ),
+                  onTap: () {},
+                ),
+                const PullDownMenuDivider(),
+                PullDownMenuItem(
+                  title: S.current.work_spots,
+                  itemTheme: const PullDownMenuItemTheme(
+                    textStyle: TextStyle(
+                        fontFamily: FontStyles.sfProText,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 17,
+                        color: ColorStyle.menuLabel
+                    ),
+
+                  ),
+                  iconWidget: Image.asset(
+                    ImagePath.desktopComputerIcon,
+                    width: 28, height: 28,
+                  ),
+                  onTap: () {},
+                ),
+                const PullDownMenuDivider.large(),
+                PullDownMenuItem(
+                  title: S.current.all_location,
+                  itemTheme: const PullDownMenuItemTheme(
+                    textStyle: TextStyle(
+                        fontFamily: FontStyles.sfProText,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 17,
+                        color: ColorStyle.menuLabel
+                    ),
+
+                  ),
+                  iconWidget: Image.asset(
+                    _enableAllLocation
+                        ? ImagePath.mappinIcon
+                        : ImagePath.mappinDisableIcon,
+                    width: 28, height: 28,
+                  ),
+                  enabled: _enableAllLocation,
+                  onTap: () {},
+                ),
+              ],
+              position: PullDownMenuPosition.automatic,
+              buttonBuilder: (context, showMenu) => Container(
+                padding: const EdgeInsets.only(left: 8, right: 8),
+                child: InkWell(
+                  onTap: showMenu,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: Image.asset(
+                          ImagePath.filterIcon,
+                          fit: BoxFit.contain,
+                          width: 16,
+                        ),
+                      ),
+                      Text(
+                        S.current.filter,
+                        style: const TextStyle(
+                            color: ColorStyle.primary,
+                            fontSize: FontSizeConst.font10,
+                            fontWeight: FontWeight.w500,
+                            fontFamily: FontStyles.raleway
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ];
+    if (_isAtTop) {
+      array.add(CupertinoSearchTextField(
+        controller: _searchController,
+        style: const TextStyle(
+            color: ColorStyle.darkLabel,
+            fontFamily: FontStyles.sfProText,
+            fontSize: FontSizeConst.font17,
+            fontWeight: FontWeight.w400
+        ),
+        placeholder: S.current.search_placeholder,
+        placeholderStyle: const TextStyle(
+          color: ColorStyle.placeHolder,
+          fontWeight: FontWeight.w400,
+          fontSize: FontSizeConst.font17,
+          fontFamily: FontStyles.sfProText,
+        ),
+      ));
+    }
     return ExitAppScope(
       child: Scaffold(
         appBar: AppBar(
-          toolbarHeight: 94,
+          toolbarHeight: (_isAtTop) ? 94 : 56,
           automaticallyImplyLeading: false,
           flexibleSpace: Container(
             padding: EdgeInsets.only(
@@ -59,195 +269,34 @@ class _DealsView extends State<DealsView> {
             color: ColorStyle.navigation,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  height: 36.0,
-                  alignment: Alignment.center,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      InkWell(
-                        child: Image.asset(
-                          ImagePath.humbergerIcon,
-                          width: 28,
-                          height: 28,
-                        ),
-                        onTap: () {
-                          NotificationCenter().notify(StrConst.openMenu);
-                        },
-                      ),
-                      const Spacer(),
-                      InkWell(
-                        onTap: () {},
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Expanded(
-                                child: Image.asset(
-                                    ImagePath.sortIcon,
-                                    fit: BoxFit.contain,
-                                    width: 16.0)
-                            ),
-                            Text(
-                              S.current.sort,
-                              style: const TextStyle(
-                                color: ColorStyle.primary,
-                                fontSize: 10,
-                                fontWeight: FontWeight.w500,
-                                fontFamily: FontStyles.raleway,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 12.0,),
-                      PullDownButton(
-                        itemBuilder: (context) => [
-                          PullDownMenuItem(
-                            title: S.current.business_type,
-                            iconWidget: Image.asset(
-                              ImagePath.cenoteIcon,
-                              width: 28, height: 28,
-                            ),
-                            itemTheme: const PullDownMenuItemTheme(
-                              textStyle: TextStyle(
-                                  fontFamily: FontStyles.sfProText,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 17,
-                                  color: ColorStyle.menuLabel
-                              ),
-
-                            ),
-                            onTap: () {},
-                          ),
-                          const PullDownMenuDivider(),
-                          PullDownMenuItem(
-                            title: S.current.beach_clubs,
-                            itemTheme: const PullDownMenuItemTheme(
-                              textStyle: TextStyle(
-                                  fontFamily: FontStyles.sfProText,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 17,
-                                  color: ColorStyle.menuLabel
-                              ),
-
-                            ),
-                            iconWidget: Image.asset(
-                              ImagePath.sunAndHorizonCircleIcon,
-                              width: 28, height: 28,
-                            ),
-                            onTap: () {},
-                          ),
-                          const PullDownMenuDivider(),
-                          PullDownMenuItem(
-                            title: S.current.work_spots,
-                            itemTheme: const PullDownMenuItemTheme(
-                              textStyle: TextStyle(
-                                  fontFamily: FontStyles.sfProText,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 17,
-                                  color: ColorStyle.menuLabel
-                              ),
-
-                            ),
-                            iconWidget: Image.asset(
-                              ImagePath.desktopComputerIcon,
-                              width: 28, height: 28,
-                            ),
-                            onTap: () {},
-                          ),
-                          const PullDownMenuDivider.large(),
-                          PullDownMenuItem(
-                            title: S.current.all_location,
-                            itemTheme: const PullDownMenuItemTheme(
-                              textStyle: TextStyle(
-                                  fontFamily: FontStyles.sfProText,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 17,
-                                  color: ColorStyle.menuLabel
-                              ),
-
-                            ),
-                            iconWidget: Image.asset(
-                              _enableAllLocation
-                                  ? ImagePath.mappinIcon
-                                  : ImagePath.mappinDisableIcon,
-                              width: 28, height: 28,
-                            ),
-                            enabled: _enableAllLocation,
-                            onTap: () {},
-                          ),
-                        ],
-                        position: PullDownMenuPosition.automatic,
-                        buttonBuilder: (context, showMenu) => Container(
-                          padding: const EdgeInsets.only(left: 8, right: 8),
-                          child: InkWell(
-                            onTap: showMenu,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Expanded(
-                                  child: Image.asset(
-                                    ImagePath.filterIcon,
-                                    fit: BoxFit.contain,
-                                    width: 16,
-                                  ),
-                                ),
-                                Text(
-                                  S.current.filter,
-                                  style: const TextStyle(
-                                      color: ColorStyle.primary,
-                                      fontSize: FontSizeConst.font10,
-                                      fontWeight: FontWeight.w500,
-                                      fontFamily: FontStyles.raleway
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                CupertinoSearchTextField(
-                  style: const TextStyle(
-                      color: ColorStyle.darkLabel,
-                      fontFamily: FontStyles.sfProText,
-                      fontSize: FontSizeConst.font17,
-                      fontWeight: FontWeight.w400
-                  ),
-                  placeholder: S.current.search_placeholder,
-                  placeholderStyle: const TextStyle(
-                    color: ColorStyle.placeHolder,
-                    fontWeight: FontWeight.w400,
-                    fontSize: FontSizeConst.font17,
-                    fontFamily: FontStyles.sfProText,
-                  ),
-                )
-              ],
+              children: array,
             ),
           ),
         ),
-        body: StreamBuilder(
-          stream: _dealsViewModel.userLoginStream,
-          builder: (context, snapshot) {
-            if (snapshot.hasData && snapshot.data!) {
-              return ListView(
-                controller: _scrollController,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
-                    child: createDealsView(),
-                  ),
-                ],
-              );
-            }
-            return Container();
-          },
-        )
+        body: SmartRefresher(
+          enablePullDown: true,
+          enablePullUp: false,
+          header: const WaterDropHeader(),
+          controller: _refreshController,
+          onRefresh: _refresh,
+          child: StreamBuilder(
+            stream: _dealsViewModel.userLoginStream,
+            builder: (context, snapshot) {
+              if (snapshot.hasData && snapshot.data!) {
+                return ListView(
+                  controller: _scrollController,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
+                      child: createDealsView(),
+                    ),
+                  ],
+                );
+              }
+              return Container();
+            },
+          ),
+        ),
       ),
     );
   }
@@ -306,8 +355,8 @@ class _DealsView extends State<DealsView> {
   }
 
   Widget getExploreDealsView() {
-    return StreamBuilder<List<String>?>(
-      stream: _dealsViewModel.listDealsStream,
+    return StreamBuilder<List<Deal>>(
+      stream: _dealsViewModel.deals,
       builder: (_, snapshot) {
         if (snapshot.hasData) {
           return ListView.builder(
@@ -337,11 +386,11 @@ class _DealsView extends State<DealsView> {
                           width: MediaQuery.of(context).size.width,
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(8.0),
-                            child: Image.network(
-                              snapshot.data![index],
+                            child: CachedNetworkImage(
+                              imageUrl: snapshot.data![index].images.first,
                               width: MediaQuery.of(context).size.width,
-                              fit: BoxFit.cover,
                               height: 236,
+                              fit: BoxFit.cover,
                             ),
                           )
                       ),
@@ -364,46 +413,53 @@ class _DealsView extends State<DealsView> {
                     ),
                     Positioned(
                       bottom: 0,
-                      child: Container(
-                        height: 50.0,
-                        width: 130.0,
-                        alignment: Alignment.centerLeft,
-                        margin: const EdgeInsets.only(bottom: 24),
-                        decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                                begin: FractionalOffset.centerLeft,
-                                end: FractionalOffset.centerRight,
-                                colors: [
-                                  ColorStyle.systemBackground.withOpacity(0.8),
-                                  ColorStyle.systemBackground.withOpacity(0.0),
-                                ],
-                                stops: const [0.2, 1.0]
-                            )),
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 16.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
-                              Text(
-                                "Tres Galeones",
-                                style: TextStyle(
-                                  color: ColorStyle.darkLabel,
-                                  fontFamily: FontStyles.mouser,
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: FontSizeConst.font12,
+                      child: IntrinsicWidth(
+                        child: Container(
+                          height: 50.0,
+                          constraints: BoxConstraints(
+                            maxWidth: MediaQuery.of(context).size.width - 110,
+                            minWidth: 130,
+                          ),
+                          alignment: Alignment.centerLeft,
+                          margin: const EdgeInsets.only(bottom: 24),
+                          decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                  begin: FractionalOffset.centerLeft,
+                                  end: FractionalOffset.centerRight,
+                                  colors: [
+                                    ColorStyle.systemBackground.withOpacity(0.8),
+                                    ColorStyle.systemBackground.withOpacity(0.0),
+                                  ],
+                                  stops: const [0.2, 1.0]
+                              )),
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 16.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  snapshot.data![index].title,
+                                  maxLines: 1,
+                                  style: const TextStyle(
+                                    color: ColorStyle.darkLabel,
+                                    fontFamily: FontStyles.mouser,
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: FontSizeConst.font12,
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                "15% Off food",
-                                style: TextStyle(
-                                  fontFamily: FontStyles.raleway,
-                                  fontSize: FontSizeConst.font12,
-                                  fontWeight: FontWeight.w400,
-                                  color: ColorStyle.darkLabel,
+                                Text(
+                                  snapshot.data![index].titleShort,
+                                  maxLines: 1,
+                                  style: const TextStyle(
+                                    fontFamily: FontStyles.raleway,
+                                    fontSize: FontSizeConst.font12,
+                                    fontWeight: FontWeight.w400,
+                                    color: ColorStyle.darkLabel,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -415,11 +471,11 @@ class _DealsView extends State<DealsView> {
                       child: Container(
                         alignment: Alignment.centerRight,
                         margin: const EdgeInsets.only(bottom: 24),
-                        child: Image.network(
-                          "https://www.starbucks.vn/media/jlrf0uhs/logo_tcm89-366_w1024_n.png",
+                        child: CachedNetworkImage(
+                          imageUrl: snapshot.data![index].logo,
                           height: 50,
-                          fit: BoxFit.contain,
-                        ),
+                          fit: BoxFit.cover,
+                        )
                       ),
                     )
 
@@ -434,5 +490,32 @@ class _DealsView extends State<DealsView> {
 
       },
     );
+  }
+
+  void _showLoading() {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return Container(
+              decoration: const BoxDecoration(),
+              child: const Center(
+                child: CupertinoActivityIndicator(
+                  radius: 20,
+                  color: ColorStyle.primary,
+                ),
+              )
+          );
+        }
+    );
+  }
+
+  void _refresh() {
+    print("refresh");
+    _isAtTop = true;
+    setState(() {
+
+    });
+    _dealsViewModel.refresh().then((value) => _refreshController.refreshCompleted());
   }
 }

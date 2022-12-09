@@ -1,19 +1,15 @@
 import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:localstore/localstore.dart';
 import 'package:notification_center/notification_center.dart';
-import 'package:photo_view/photo_view.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:rounded_background_text/rounded_background_text.dart';
 import 'package:tudu/consts/color/Colors.dart';
 import 'package:tudu/consts/font/Fonts.dart';
-import 'package:tudu/models/amenity.dart';
 import 'package:tudu/models/article.dart';
-import 'package:tudu/models/business.dart';
 import 'package:tudu/utils/func_utils.dart';
 import 'package:tudu/viewmodels/home_viewmodel.dart';
 import 'package:tudu/viewmodels/map_screen_viewmodel.dart';
@@ -468,7 +464,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
           body: SmartRefresher(
             enablePullDown: true,
             enablePullUp: false,
-            header: WaterDropHeader(),
+            header: const WaterDropHeader(),
             controller: _refreshController,
             onRefresh: _onRefresh,
             child: getMainView(),
