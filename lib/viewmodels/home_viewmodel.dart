@@ -7,6 +7,7 @@ import 'package:tudu/models/business.dart';
 import 'package:tudu/services/observable/observable_serivce.dart';
 import 'package:tudu/viewmodels/what_tudu_viewmodel.dart';
 
+import '../generated/l10n.dart';
 import '../models/article.dart';
 import '../models/partner.dart';
 import '../models/site.dart';
@@ -30,6 +31,10 @@ class HomeViewModel extends BaseViewModel {
 
   ObservableService _observableService = ObservableService();
 
+  String searchKeyword = "";
+  int filterType = 0;
+  int orderType = 0;
+
   List<Article> listArticles = [];
   List<Site> listSites = [];
   List<Partner> listPartners = [];
@@ -42,6 +47,15 @@ class HomeViewModel extends BaseViewModel {
   void redirectTab(int tabIndex) {
     _observableService.redirectTabController.sink.add(tabIndex);
     notifyListeners();
+  }
+
+  String getBusinessStringById(int idInput) {
+    for (var element in listBusiness) {
+      if (element.businessid == idInput) {
+        return element.type;
+      }
+    }
+    return S.current.all_location;
   }
 
   Business? getBusinessById(int idInput) {

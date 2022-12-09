@@ -11,7 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tudu/consts/urls/URLConst.dart';
 import 'package:tudu/firebase_options.dart';
 import 'package:tudu/viewmodels/authentication_viewmodel.dart';
-import 'package:tudu/viewmodels/map_viewmodel.dart';
+import 'package:tudu/viewmodels/map_screen_viewmodel.dart';
 import 'package:tudu/viewmodels/what_tudu_article_content_detail_viewmodel.dart';
 import 'package:tudu/views/login/login_view.dart';
 import 'package:flutter/services.dart';
@@ -61,7 +61,7 @@ Future<void> main() async {
             create: (_) => WhatTuduArticleContentDetailViewModel(),
           ),
           ChangeNotifierProvider(
-            create: (_) => MapViewModel(),
+            create: (_) => MapScreenViewModel(),
           )
         ],
         child: Builder(builder: (context) {
@@ -131,7 +131,7 @@ class _MyAppState extends State<MyApp> {
     Provider.of<WhatTuduViewModel>(context, listen: true);
     Provider.of<WhatTuduArticleContentDetailViewModel>(context, listen: true);
     Provider.of<WhatTuduSiteContentDetailViewModel>(context, listen: true);
-    Provider.of<MapViewModel>(context, listen: true);
+    Provider.of<MapScreenViewModel>(context, listen: true);
     if (_locale == null) {
       return const Center(child: CircularProgressIndicator());
     } else {

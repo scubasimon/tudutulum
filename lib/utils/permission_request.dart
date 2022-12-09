@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../views/map/map_view.dart';
+import '../views/map/map_screen_view.dart';
 import 'audio_path.dart';
 
 class PermissionRequest {

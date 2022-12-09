@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -9,6 +10,7 @@ import 'package:tudu/consts/strings/str_const.dart';
 import 'package:tudu/viewmodels/home_viewmodel.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
 import 'package:tudu/consts/font/font_size_const.dart';
+import 'package:tudu/views/map/map_screen_view.dart';
 import 'package:tudu/views/what_tudu/what_tudu_view.dart';
 import 'package:tudu/views/events/events_view.dart';
 import 'package:tudu/views/deals/deals_view.dart';
@@ -43,6 +45,7 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
     const DealsView(),
     const BookmarksView(),
     const ProfileView(),
+    const MapScreenView(),
   ];
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -371,7 +374,7 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                     children: [
                       Expanded(
                         child: Image.asset(
-                          pageIndex == 0
+                          (pageIndex == 0 || pageIndex == 5)
                               ? ImagePath.tab1stActiveIcon
                               : ImagePath.tab1stDeactiveIcon,
                           alignment: Alignment.center,

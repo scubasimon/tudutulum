@@ -16,6 +16,7 @@ import 'package:tudu/models/article.dart';
 import 'package:tudu/models/business.dart';
 import 'package:tudu/utils/func_utils.dart';
 import 'package:tudu/viewmodels/home_viewmodel.dart';
+import 'package:tudu/viewmodels/map_screen_viewmodel.dart';
 import 'package:tudu/viewmodels/what_tudu_site_content_detail_viewmodel.dart';
 import 'package:tudu/viewmodels/what_tudu_viewmodel.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
@@ -30,7 +31,7 @@ import 'package:tudu/models/site.dart';
 import 'package:tudu/utils/permission_request.dart';
 import 'package:tudu/viewmodels/what_tudu_article_content_detail_viewmodel.dart';
 import 'package:tudu/views/common/alert.dart';
-import 'package:tudu/views/map/map_view.dart';
+import 'package:tudu/views/map/map_screen_view.dart';
 
 import '../../services/observable/observable_serivce.dart';
 
@@ -46,9 +47,9 @@ class WhatTuduView extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _WhatTuduView();
 }
-
 class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
   ObservableService _observableService = ObservableService();
+  MapScreenViewModel _mapScreenViewModel = MapScreenViewModel();
   WhatTuduViewModel _whatTuduViewModel = WhatTuduViewModel();
   HomeViewModel _homeViewModel = HomeViewModel();
   WhatTuduArticleContentDetailViewModel _whatTuduArticleDetailViewModel = WhatTuduArticleContentDetailViewModel();
@@ -62,12 +63,9 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
   StreamSubscription<List<Site>?>? zeroDataSiteListener;
 
   bool isAtTop = true;
-  String searchKeyword = "";
 
   DataLoadingType _isArticleZeroDataResult = DataLoadingType.LOADING;
   DataLoadingType _isSiteZeroDataResult = DataLoadingType.LOADING;
-  int _filterType = 0;
-  int _orderType = 0;
 
   final RefreshController _refreshController = RefreshController(initialRefresh: false);
 
@@ -87,13 +85,13 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
     });
 
     _searchController.addListener(() {
-      if (_searchController.text != searchKeyword) {
-        searchKeyword = _searchController.text;
+      if (_searchController.text != _homeViewModel.searchKeyword) {
+        _homeViewModel.searchKeyword = _searchController.text;
         _whatTuduViewModel.getDataWithFilterSortSearch(
-            (_filterType < _homeViewModel.listBusiness.length)
-                ? _homeViewModel.listBusiness[_filterType]
+            (_homeViewModel.filterType < _homeViewModel.listBusiness.length)
+                ? _homeViewModel.listBusiness[_homeViewModel.filterType]
                 : null, // Get current filterType
-            FuncUlti.getSortTypeByInt(_orderType), // Get current OrderType
+            FuncUlti.getSortTypeByInt(_homeViewModel.orderType), // Get current OrderType
             _searchController.text // Search text
             );
       }
@@ -117,7 +115,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
       // Get data from firestore
       await _homeViewModel.getDataFromFireStore();
 
-      _filterType = _homeViewModel.listBusiness.length;
+      _homeViewModel.filterType = _homeViewModel.listBusiness.length;
 
       // Save data to local after get data from firestore have done
       saveDataToLocal();
@@ -139,7 +137,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
       // Get data from local
       _homeViewModel.getDataFromLocalDatabase();
 
-      _filterType = _homeViewModel.listBusiness.length;
+      _homeViewModel.filterType = _homeViewModel.listBusiness.length;
 
       _whatTuduViewModel.getDataWithFilterSortSearch(
         null, // On init, no business filter have not been chose
@@ -292,16 +290,16 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                                     fontSize: 17,
                                     color: ColorStyle.menuLabel),
                               ),
-                              enabled: _orderType != 0,
+                              enabled: _homeViewModel.orderType != 0,
                               onTap: () {
                                 _whatTuduViewModel.getDataWithFilterSortSearch(
-                                  (_filterType < _homeViewModel.listBusiness.length)
-                                      ? _homeViewModel.listBusiness[_filterType]
+                                  (_homeViewModel.filterType < _homeViewModel.listBusiness.length)
+                                      ? _homeViewModel.listBusiness[_homeViewModel.filterType]
                                       : null,
                                   FuncUlti.getSortTypeByInt(0), // Search with Alphabet => "title" = 0
                                   _searchController.text, // Search with Alphabet => "title" = 0
                                 );
-                                _orderType = 0;
+                                _homeViewModel.orderType = 0;
                               },
                             ),
                             const PullDownMenuDivider(),
@@ -314,7 +312,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                                     fontSize: 17,
                                     color: ColorStyle.menuLabel),
                               ),
-                              enabled: _orderType != 1,
+                              enabled: _homeViewModel.orderType != 1,
                               onTap: () {
                                 PermissionRequest.isResquestPermission = true;
                                 PermissionRequest().permissionServiceCall(
@@ -322,7 +320,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                                   () {
                                     /// IMPL logic
                                     _whatTuduViewModel.sortWithLocation();
-                                    _orderType = 1;
+                                    _homeViewModel.orderType = 1;
                                   },
                                 );
                               },
@@ -369,18 +367,18 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                                             color: ColorStyle.menuLabel),
                                       ),
                                       iconWidget: Image.asset(
-                                        _filterType != 3 ? ImagePath.mappinIcon : ImagePath.mappinDisableIcon,
+                                        _homeViewModel.filterType != 3 ? ImagePath.mappinIcon : ImagePath.mappinDisableIcon,
                                         width: 28,
                                         height: 28,
                                       ),
-                                      enabled: _filterType != ((counter) / 2).round(),
+                                      enabled: _homeViewModel.filterType != ((counter) / 2).round(),
                                       onTap: () {
                                         _whatTuduViewModel.getDataWithFilterSortSearch(
                                           null, // Filter all business => businnesFilter = null
-                                          FuncUlti.getSortTypeByInt(_orderType),
+                                          FuncUlti.getSortTypeByInt(_homeViewModel.orderType),
                                           _searchController.text,
                                         );
-                                        _filterType = ((counter) / 2).round();
+                                        _homeViewModel.filterType = ((counter) / 2).round();
                                       },
                                     )
                                   : (counter == _homeViewModel.listBusiness.length * 2 - 1)
@@ -402,14 +400,14 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                                                 width: 28,
                                                 height: 28,
                                               ),
-                                              enabled: _filterType != ((counter) / 2).round(),
+                                              enabled: _homeViewModel.filterType != ((counter) / 2).round(),
                                               onTap: () {
                                                 _whatTuduViewModel.getDataWithFilterSortSearch(
                                                   _homeViewModel.listBusiness[((counter) / 2).round()], // get business
-                                                  FuncUlti.getSortTypeByInt(_orderType),
+                                                  FuncUlti.getSortTypeByInt(_homeViewModel.orderType),
                                                   _searchController.text,
                                                 );
-                                                _filterType = ((counter) / 2).round();
+                                                _homeViewModel.filterType = ((counter) / 2).round();
                                               },
                                             )
                                           : const PullDownMenuDivider(),
@@ -530,7 +528,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                 padding: const EdgeInsets.only(top: 8, bottom: 8, left: 16, right: 16),
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  getArticleTitleText(_filterType),
+                  getArticleTitleText(_homeViewModel.filterType),
                   style: const TextStyle(
                       color: ColorStyle.darkLabel,
                       fontSize: FontSizeConst.font16,
@@ -557,7 +555,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
           itemBuilder: (BuildContext context, int index) {
             return InkWell(
               onTap: () {
-                _whatTuduArticleDetailViewModel.setArticleDetailCover(list[index]);
+                _whatTuduArticleDetailViewModel.setSelectedArticle(list[index]);
                 Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -644,7 +642,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                 child: Row(
                   children: [
                     Text(
-                      getSiteTitleText(_filterType),
+                      getSiteTitleText(_homeViewModel.filterType),
                       style: const TextStyle(
                         color: ColorStyle.darkLabel,
                         fontSize: FontSizeConst.font16,
@@ -663,8 +661,8 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                         PermissionRequest().permissionServiceCall(
                           context,
                           () {
-                            Navigator.of(context)
-                                .push(MaterialPageRoute(builder: (_) => const MapView(isGotoCurrent: true)));
+                            _mapScreenViewModel.isGotoCurrent = true;
+                            _homeViewModel.redirectTab(5);
                           },
                         );
                       },
