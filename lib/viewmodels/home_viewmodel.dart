@@ -67,7 +67,7 @@ class HomeViewModel extends BaseViewModel {
     return null;
   }
 
-  Partner? getPartnerById(int idInput) {
+  Partner? getPartnerById(int? idInput) {
     for (var element in listPartners) {
       if (element.partnerId == idInput) {
         return element;

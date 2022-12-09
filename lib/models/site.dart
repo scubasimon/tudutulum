@@ -8,10 +8,10 @@ class Site {
   String title;
   String subTitle;
   List<int> business;
-  double locationLat;
-  double locationLon;
+  double? locationLat;
+  double? locationLon;
   SiteContent siteContent;
-  double rating;
+  double? rating;
 
   Site(
       {
@@ -22,10 +22,10 @@ class Site {
         required this.title,
         required this.subTitle,
         required this.business,
-        required this.locationLat,
-        required this.locationLon,
+        this.locationLat,
+        this.locationLon,
         required this.siteContent,
-        required this.rating,
+        this.rating,
       });
 
   Map<String, dynamic> toJson() {
@@ -52,37 +52,37 @@ class Site {
 }
 
 class SiteContent {
-  String title;
-  String description;
-  String moreInformation;
-  String advisory;
-  List<int> amenities;
-  List<String> amentityDescriptions;
-  Map<String, String> openingTimes;
-  Map<String, List<String>> fees;
-  String capacity;
-  List<String> eventIcons;
-  List<String> eventLinks;
-  Map<String, String> getIntouch;
-  String logo;
-  int partner;
+  String? title;
+  String? description;
+  String? moreInformation;
+  String? advisory;
+  List<int>? amenities;
+  List<String>? amentityDescriptions;
+  Map<String, String>? openingTimes;
+  Map<String, List<String>>? fees;
+  String? capacity;
+  List<String>? eventIcons;
+  List<String>? eventLinks;
+  Map<String, String>? getIntouch;
+  String? logo;
+  int? partner;
 
   SiteContent(
       {
-        required this.title,
-        required this.description,
-        required this.moreInformation,
-        required this.advisory,
-        required this.amenities,
-        required this.amentityDescriptions,
-        required this.openingTimes,
-        required this.fees,
-        required this.capacity,
-        required this.eventIcons,
-        required this.eventLinks,
-        required this.getIntouch,
-        required this.logo,
-        required this.partner,
+        this.title,
+        this.description,
+        this.moreInformation,
+        this.advisory,
+        this.amenities,
+        this.amentityDescriptions,
+        this.openingTimes,
+        this.fees,
+        this.capacity,
+        this.eventIcons,
+        this.eventLinks,
+        this.getIntouch,
+        this.logo,
+        this.partner,
       });
 
   Map<String, dynamic> toJson() => {
