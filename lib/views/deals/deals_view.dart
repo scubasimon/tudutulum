@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:notification_center/notification_center.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:tudu/consts/color/Colors.dart';
+import 'package:tudu/views/common/alert.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
 import 'package:tudu/consts/font/font_size_const.dart';
 import 'package:tudu/viewmodels/deals_viewmodel.dart';
@@ -20,7 +21,7 @@ class DealsView extends StatefulWidget {
 }
 
 class _DealsView extends State<DealsView> {
-  DealsViewModel dealsViewModel = DealsViewModel();
+  final DealsViewModel _dealsViewModel = DealsViewModel();
 
   final ScrollController _scrollController = ScrollController();
 
@@ -29,7 +30,15 @@ class _DealsView extends State<DealsView> {
   @override
   void initState() {
     Future.delayed(const Duration(seconds: 2), () {
-      dealsViewModel.showData();
+      _dealsViewModel.showData();
+    });
+
+    _dealsViewModel.userLoginStream.listen((event) {
+      if (!event) {
+        showDialog(context: context, builder: (context){
+          return ErrorAlert.alertLogin(context);
+        });
+      }
     });
     super.initState();
   }
@@ -222,15 +231,23 @@ class _DealsView extends State<DealsView> {
             ),
           ),
         ),
-        body: ListView(
-          controller: _scrollController,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
-              child: createDealsView(),
-            ),
-          ],
-        ),
+        body: StreamBuilder(
+          stream: _dealsViewModel.userLoginStream,
+          builder: (context, snapshot) {
+            if (snapshot.hasData && snapshot.data!) {
+              return ListView(
+                controller: _scrollController,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
+                    child: createDealsView(),
+                  ),
+                ],
+              );
+            }
+            return Container();
+          },
+        )
       ),
     );
   }
@@ -290,7 +307,7 @@ class _DealsView extends State<DealsView> {
 
   Widget getExploreDealsView() {
     return StreamBuilder<List<String>?>(
-      stream: dealsViewModel.listDealsStream,
+      stream: _dealsViewModel.listDealsStream,
       builder: (_, snapshot) {
         if (snapshot.hasData) {
           return ListView.builder(

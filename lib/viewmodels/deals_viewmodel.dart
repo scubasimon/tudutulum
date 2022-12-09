@@ -1,22 +1,31 @@
 import 'dart:async';
+import 'dart:ffi';
 import 'package:tudu/base/base_viewmodel.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:tudu/repositories/auth/auth_repository.dart';
+import 'package:tudu/models/user.dart';
 
 class DealsViewModel extends BaseViewModel {
-  static final DealsViewModel _instance =
-  DealsViewModel._internal();
 
-  factory DealsViewModel() {
-    return _instance;
-  }
-
-  DealsViewModel._internal();
-
+  AuthRepository _authRepository = AuthRepositoryImpl();
   final StreamController<List<String>> _listDealsController = BehaviorSubject<List<String>>();
   Stream<List<String>> get listDealsStream => _listDealsController.stream;
+  final _userLogin = BehaviorSubject<bool>();
+  Stream<bool> get userLoginStream => _userLogin.stream;
 
   @override
-  FutureOr<void> init() {
+  FutureOr<void> init() async {
+    Profile? user;
+    try {
+      user = await _authRepository.getCurrentUser();
+    } catch (e) {
+      print(e);
+    }
+    _userLogin.sink.add(user != null);
+    if (user == null) {
+      return;
+    }
+
 
   }
 
