@@ -124,27 +124,29 @@ class _MapScreenView extends State<MapScreenView> {
     markers.clear();
 
     for (var site in data) {
-      final Marker marker = Marker(
-          markerId: MarkerId(site.title),
-          position: LatLng(site.locationLat, site.locationLon),
-          // infoWindow: InfoWindow(title: "Title: ${site.title}", snippet: "Subtitle: ${site.subTitle}"),
-          icon: await MarkerIcon.downloadResizePictureCircle(
-              site.images[0],
-              size: 150,
-              addBorder: true,
-              borderColor: Colors.white,
-              borderSize: 15),
-          onTap: () {
-            print("ON TAP MARKER -> ${site.title}");
-            _whatTuduSiteContentDetailViewModel.setSiteContentDetailCover(site);
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const WhatTuduSiteContentDetailView(),
-                    settings: const RouteSettings(name: StrConst.whatTuduSiteContentDetailScene)));
-          }
-      );
-      markers.add(marker);
+      if (site.locationLat != null && site.locationLon != null) {
+        final Marker marker = Marker(
+            markerId: MarkerId(site.title),
+            position: LatLng(site.locationLat!, site.locationLon!),
+            // infoWindow: InfoWindow(title: "Title: ${site.title}", snippet: "Subtitle: ${site.subTitle}"),
+            icon: await MarkerIcon.downloadResizePictureCircle(
+                site.images[0],
+                size: 150,
+                addBorder: true,
+                borderColor: Colors.white,
+                borderSize: 15),
+            onTap: () {
+              print("ON TAP MARKER -> ${site.title}");
+              _whatTuduSiteContentDetailViewModel.setSiteContentDetailCover(site);
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const WhatTuduSiteContentDetailView(),
+                      settings: const RouteSettings(name: StrConst.whatTuduSiteContentDetailScene)));
+            }
+        );
+        markers.add(marker);
+      }
     }
     Navigator.pop(context);
     setState(() {});

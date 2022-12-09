@@ -44,14 +44,12 @@ class HomeRepositoryImpl extends HomeRepository {
     var listRemotePartners = await _firebaseService.getPartners();
     if (listRemotePartners != null) {
       for (var remotePartner in listRemotePartners) {
-        listPartners.add(
-            Partner(
-              partnerId: remotePartner["partnerId"],
-              icon: remotePartner["icon"],
-              link: remotePartner["link"],
-              name: remotePartner["name"],
-            )
-        );
+        listPartners.add(Partner(
+          partnerId: remotePartner["partnerId"],
+          icon: remotePartner["icon"],
+          link: remotePartner["link"],
+          name: remotePartner["name"],
+        ));
       }
     }
     return listPartners;
@@ -63,14 +61,12 @@ class HomeRepositoryImpl extends HomeRepository {
     var listRemoteAmenites = await _firebaseService.getAmenities();
     if (listRemoteAmenites != null) {
       for (var remoteAmenity in listRemoteAmenites) {
-        listAmenites.add(
-            Amenity(
-              amenityId: remoteAmenity["amenityId"],
-              title: remoteAmenity["title"],
-              description: remoteAmenity["description"],
-              icon: remoteAmenity["icon"],
-            )
-        );
+        listAmenites.add(Amenity(
+          amenityId: remoteAmenity["amenityId"],
+          title: remoteAmenity["title"],
+          description: remoteAmenity["description"],
+          icon: remoteAmenity["icon"],
+        ));
       }
     }
     return listAmenites;
@@ -82,13 +78,11 @@ class HomeRepositoryImpl extends HomeRepository {
     var listRemoteBusiness = await _firebaseService.getBusinesses();
     if (listRemoteBusiness != null) {
       for (var remoteBusiness in listRemoteBusiness) {
-        listBusiness.add(
-            Business(
-              businessid: remoteBusiness["businessid"],
-              locationid: remoteBusiness["locationid"],
-              type: remoteBusiness["type"],
-            )
-        );
+        listBusiness.add(Business(
+          businessid: remoteBusiness["businessid"],
+          locationid: remoteBusiness["locationid"],
+          type: remoteBusiness["type"],
+        ));
       }
     }
     return listBusiness;
@@ -124,28 +118,41 @@ class HomeRepositoryImpl extends HomeRepository {
             images: FuncUlti.getListStringFromListDynamic(remoteSite["image"]),
             active: remoteSite["active"],
             siteId: remoteSite["siteid"],
-            dealId: (remoteSite.data()["dealId"] != null) ? remoteSite["dealId"] : null,
+            dealId: (remoteSite["dealId"] != null) ? remoteSite["dealId"] : null,
             title: remoteSite["title"],
             subTitle: remoteSite["subTitle"],
             business: FuncUlti.getListIntFromListDynamic(remoteSite["business"]),
-            locationLat: remoteSite["locationLat"],
-            locationLon: remoteSite["locationLon"],
-            rating: remoteSite["rating"],
+            locationLat: (remoteSite["locationLat"] != null) ? remoteSite["locationLat"]: null,
+            locationLon: (remoteSite["locationLon"] != null) ? remoteSite["locationLon"]: null,
+            rating: (remoteSite["rating"] != null) ? remoteSite["rating"] : null,
             siteContent: SiteContent(
-              title: remoteSite["contentTitle"],
-              description: remoteSite["contentDescription"],
-              moreInformation: remoteSite["moreInformation"],
-              advisory: remoteSite["advisory"],
-              amenities: FuncUlti.getListIntFromListDynamic(remoteSite["amenities"]),
-              amentityDescriptions: FuncUlti.getListStringFromListDynamic(remoteSite["amentityDescriptions"]),
-              openingTimes: FuncUlti.getMapStringStringFromStringDynamic(remoteSite["openingTimes"]),
-              fees: FuncUlti.getMapStringListFromStringDynamic(remoteSite["fees"]),
-              capacity: remoteSite["capacity"],
-              eventIcons: FuncUlti.getListStringFromListDynamic(remoteSite["eventIcons"]),
-              eventLinks: FuncUlti.getListStringFromListDynamic(remoteSite["eventLinks"]),
-              getIntouch: FuncUlti.getMapStringStringFromStringDynamic(remoteSite["getIntouch"]),
-              logo: remoteSite["logo"],
-              partner: remoteSite["partner"],
+              title: (remoteSite["contentTitle"] != null) ? remoteSite["contentTitle"] : null,
+              description: (remoteSite["contentDescription"] != null) ? remoteSite["contentDescription"] : null,
+              moreInformation: (remoteSite["moreInformation"] != null) ? remoteSite["moreInformation"] : null,
+              advisory: (remoteSite["advisory"] != null) ? remoteSite["advisory"] : null,
+              amenities: (remoteSite["amenities"] != null)
+                  ? FuncUlti.getListIntFromListDynamic(remoteSite["amenities"])
+                  : null,
+              amentityDescriptions: (remoteSite["amentityDescriptions"] != null)
+                  ? FuncUlti.getListStringFromListDynamic(remoteSite["amentityDescriptions"])
+                  : null,
+              openingTimes: (remoteSite["openingTimes"] != null)
+                  ? FuncUlti.getMapStringStringFromStringDynamic(remoteSite["openingTimes"])
+                  : null,
+              fees:
+              (remoteSite["fees"] != null) ? FuncUlti.getMapStringListFromStringDynamic(remoteSite["fees"]) : null,
+              capacity: (remoteSite["capacity"] != null) ? remoteSite["capacity"] : remoteSite["capacity"],
+              eventIcons: (remoteSite["eventIcons"] != null)
+                  ? FuncUlti.getListStringFromListDynamic(remoteSite["eventIcons"])
+                  : null,
+              eventLinks: (remoteSite["eventLinks"] != null)
+                  ? FuncUlti.getListStringFromListDynamic(remoteSite["eventLinks"])
+                  : null,
+              getIntouch: (remoteSite["getIntouch"] != null)
+                  ? FuncUlti.getMapStringStringFromStringDynamic(remoteSite["getIntouch"])
+                  : null,
+              logo: (remoteSite["logo"] != null) ? remoteSite["logo"] : null,
+              partner: (remoteSite["partner"] != null) ? remoteSite["partner"] : null,
             ),
           ));
         }
@@ -161,14 +168,12 @@ class HomeRepositoryImpl extends HomeRepository {
     var listRemotePartners = await _localDatabaseService.getPartners();
     if (listRemotePartners != null) {
       for (var remotePartner in listRemotePartners) {
-        listPartners.add(
-            Partner(
-              partnerId: remotePartner["partnerId"],
-              icon: remotePartner["icon"],
-              link: remotePartner["link"],
-              name: remotePartner["name"],
-            )
-        );
+        listPartners.add(Partner(
+          partnerId: remotePartner["partnerId"],
+          icon: remotePartner["icon"],
+          link: remotePartner["link"],
+          name: remotePartner["name"],
+        ));
       }
     }
     return listPartners;
@@ -180,14 +185,12 @@ class HomeRepositoryImpl extends HomeRepository {
     var listRemoteAmenites = await _localDatabaseService.getAmenities();
     if (listRemoteAmenites != null) {
       for (var remoteAmenity in listRemoteAmenites) {
-        listAmenites.add(
-            Amenity(
-              amenityId: remoteAmenity["amenityId"],
-              title: remoteAmenity["title"],
-              description: remoteAmenity["description"],
-              icon: remoteAmenity["icon"],
-            )
-        );
+        listAmenites.add(Amenity(
+          amenityId: remoteAmenity["amenityId"],
+          title: remoteAmenity["title"],
+          description: remoteAmenity["description"],
+          icon: remoteAmenity["icon"],
+        ));
       }
     }
     return listAmenites;
@@ -199,13 +202,11 @@ class HomeRepositoryImpl extends HomeRepository {
     var listRemoteBusiness = await _localDatabaseService.getBusinesses();
     if (listRemoteBusiness != null) {
       for (var remoteBusiness in listRemoteBusiness) {
-        listBusiness.add(
-            Business(
-              businessid: remoteBusiness["businessid"],
-              locationid: remoteBusiness["locationid"],
-              type: remoteBusiness["type"],
-            )
-        );
+        listBusiness.add(Business(
+          businessid: remoteBusiness["businessid"],
+          locationid: remoteBusiness["locationid"],
+          type: remoteBusiness["type"],
+        ));
       }
     }
     return listBusiness;
@@ -247,22 +248,35 @@ class HomeRepositoryImpl extends HomeRepository {
             business: FuncUlti.getListIntFromListDynamic(remoteSite["business"]),
             locationLat: remoteSite["locationLat"],
             locationLon: remoteSite["locationLon"],
-            rating: remoteSite["rating"],
+            rating: (remoteSite["rating"] != null) ? remoteSite["rating"] : null,
             siteContent: SiteContent(
-              title: remoteSite["contentTitle"],
-              description: remoteSite["contentDescription"],
-              moreInformation: remoteSite["moreInformation"],
-              advisory: remoteSite["advisory"],
-              amenities: FuncUlti.getListIntFromListDynamic(remoteSite["amenities"]),
-              amentityDescriptions: FuncUlti.getListStringFromListDynamic(remoteSite["amentityDescriptions"]),
-              openingTimes: FuncUlti.getMapStringStringFromStringDynamic(remoteSite["openingTimes"]),
-              fees: FuncUlti.getMapStringListFromStringDynamic(remoteSite["fees"]),
-              capacity: remoteSite["capacity"],
-              eventIcons: FuncUlti.getListStringFromListDynamic(remoteSite["eventIcons"]),
-              eventLinks: FuncUlti.getListStringFromListDynamic(remoteSite["eventLinks"]),
-              getIntouch: FuncUlti.getMapStringStringFromStringDynamic(remoteSite["getIntouch"]),
-              logo: remoteSite["logo"],
-              partner: remoteSite["partner"],
+              title: (remoteSite["contentTitle"] != null) ? remoteSite["contentTitle"] : null,
+              description: (remoteSite["contentDescription"] != null) ? remoteSite["contentDescription"] : null,
+              moreInformation: (remoteSite["moreInformation"] != null) ? remoteSite["moreInformation"] : null,
+              advisory: (remoteSite["advisory"] != null) ? remoteSite["advisory"] : null,
+              amenities: (remoteSite["amenities"] != null)
+                  ? FuncUlti.getListIntFromListDynamic(remoteSite["amenities"])
+                  : null,
+              amentityDescriptions: (remoteSite["amentityDescriptions"] != null)
+                  ? FuncUlti.getListStringFromListDynamic(remoteSite["amentityDescriptions"])
+                  : null,
+              openingTimes: (remoteSite["openingTimes"] != null)
+                  ? FuncUlti.getMapStringStringFromStringDynamic(remoteSite["openingTimes"])
+                  : null,
+              fees:
+                  (remoteSite["fees"] != null) ? FuncUlti.getMapStringListFromStringDynamic(remoteSite["fees"]) : null,
+              capacity: (remoteSite["capacity"] != null) ? remoteSite["capacity"] : remoteSite["capacity"],
+              eventIcons: (remoteSite["eventIcons"] != null)
+                  ? FuncUlti.getListStringFromListDynamic(remoteSite["eventIcons"])
+                  : null,
+              eventLinks: (remoteSite["eventLinks"] != null)
+                  ? FuncUlti.getListStringFromListDynamic(remoteSite["eventLinks"])
+                  : null,
+              getIntouch: (remoteSite["getIntouch"] != null)
+                  ? FuncUlti.getMapStringStringFromStringDynamic(remoteSite["getIntouch"])
+                  : null,
+              logo: (remoteSite["logo"] != null) ? remoteSite["logo"] : null,
+              partner: (remoteSite["partner"] != null) ? remoteSite["partner"] : null,
             ),
           ));
         }

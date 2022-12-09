@@ -39,28 +39,34 @@ class WhatTuduSiteContentDetailViewModel extends BaseViewModel {
   void directionWithGoogleMap() async {
     await checkLocationEnable();
     var currentPosition = await location.getLocation();
-    if (currentPosition.latitude != null && currentPosition.longitude != null) {
-
+    if (currentPosition.latitude != null &&
+        currentPosition.longitude != null &&
+        siteContentDetail.locationLat != null &&
+        siteContentDetail.locationLon != null) {
       List<GeoPoint> fromTo = [
-        GeoPoint(siteContentDetail.locationLat, siteContentDetail.locationLon),
+        GeoPoint(siteContentDetail.locationLat!, siteContentDetail.locationLon!),
         GeoPoint(currentPosition.latitude!, currentPosition.longitude!),
       ];
       _observableService.listenToRedirectToGoogleMapController.sink.add(fromTo);
     } else {
       List<GeoPoint> position = [
-        GeoPoint(siteContentDetail.locationLat, siteContentDetail.locationLon),
+        GeoPoint(siteContentDetail.locationLat!, siteContentDetail.locationLon!),
       ];
       _observableService.listenToRedirectToGoogleMapController.sink.add(position);
     }
   }
 
   double getDistance(LocationData location, Site a) {
-    return Geolocator.distanceBetween(
-      location.latitude!,
-      location.longitude!,
-      a.locationLat,
-      a.locationLon,
-    );
+    if (a.locationLat != null && a.locationLon != null) {
+      return Geolocator.distanceBetween(
+        location.latitude!,
+        location.longitude!,
+        a.locationLat!,
+        a.locationLon!,
+      );
+    } else {
+      return 0.0;
+    }
   }
 
   Future<void> checkLocationEnable() async {

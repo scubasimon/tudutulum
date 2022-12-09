@@ -251,370 +251,19 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
     );
   }
 
-  Widget getTitle(String title, String description) {
-    return Container(
-      padding: const EdgeInsets.only(top: 20.0, left: 18, right: 18, bottom: 8),
-      child: Column(
-        children: [
-          SizedBox(
-            height: 20,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontFamily: FontStyles.mouser,
-                    fontSize: FontSizeConst.font12,
-                    fontWeight: FontWeight.w400,
-                    color: ColorStyle.darkLabel,
-                  ),
-                ),
-                InkWell(
-                  onTap: () {
-                    PermissionRequest.isResquestPermission = true;
-                    PermissionRequest().permissionServiceCall(
-                      context,
-                      _whatTuduSiteContentDetailViewModel.directionWithGoogleMap,
-                    );
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
-                    child: Image.asset(ImagePath.mapIcon, fit: BoxFit.contain, height: 20.0),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(
-            height: 8,
-          ),
-          Text(
-            description,
-            style: const TextStyle(
-              color: ColorStyle.darkLabel,
-              fontWeight: FontWeight.w400,
-              fontSize: FontSizeConst.font12,
-              fontFamily: FontStyles.raleway,
-              height: 2,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget getMoreInformation(String moreInformation) {
-    return Container(
-      padding: const EdgeInsets.only(top: 20.0, left: 18, right: 18, bottom: 8),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-              height: 20,
-              child: Text(
-                S.current.more_information,
-                style: const TextStyle(
-                  color: ColorStyle.darkLabel,
-                  fontFamily: FontStyles.mouser,
-                  fontSize: FontSizeConst.font12,
-                  fontWeight: FontWeight.w400,
-                ),
-              )),
-          Text(
-            moreInformation,
-            style: const TextStyle(
-              color: ColorStyle.darkLabel,
-              fontWeight: FontWeight.w400,
-              fontSize: FontSizeConst.font12,
-              fontFamily: FontStyles.raleway,
-              height: 2,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget getAdvisory(String advisory) {
-    return Container(
-      padding: const EdgeInsets.only(top: 20.0, left: 18, right: 18, bottom: 8),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-              height: 20,
-              child: Text(
-                S.current.advisory,
-                style: const TextStyle(
-                  color: ColorStyle.darkLabel,
-                  fontFamily: FontStyles.mouser,
-                  fontSize: FontSizeConst.font12,
-                  fontWeight: FontWeight.w400,
-                ),
-              )),
-          Text(
-            advisory,
-            style: const TextStyle(
-              color: ColorStyle.darkLabel,
-              fontWeight: FontWeight.w400,
-              fontSize: FontSizeConst.font12,
-              fontFamily: FontStyles.raleway,
-              height: 2,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget getAmenityView(List<int> amenities, List<String> amenitiyDescriptions) {
-    return Container(
-        padding: const EdgeInsets.only(top: 8.0, left: 18, right: 18, bottom: 8),
+  Widget getTitle(String? title, String? description) {
+    if (title != null && description != null) {
+      return Container(
+        padding: const EdgeInsets.only(top: 20.0, left: 18, right: 18, bottom: 8),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-                height: 20,
-                child: Text(
-                  S.current.you_can_expect,
-                  style: const TextStyle(
-                    fontFamily: FontStyles.mouser,
-                    fontSize: FontSizeConst.font12,
-                    fontWeight: FontWeight.w400,
-                    color: ColorStyle.darkLabel,
-                  ),
-                )),
-            Container(
-              alignment: Alignment.topLeft,
-              child: Wrap(
-                children: amenities.map((amenity) => getAmenity(amenity)).toList(),
-              ),
-            ),
-            Column(
-              children: amenitiyDescriptions.map((amenityDescrip) => getAmenityDescription(amenityDescrip)).toList(),
-            )
-          ],
-        ));
-  }
-
-  Widget getOpenTimes(Map<String, String> listOpenTimes) {
-    return Container(
-        padding: const EdgeInsets.only(top: 8.0, left: 18, right: 18, bottom: 8),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
               height: 20,
-              child: Text(
-                S.current.open_times,
-                style: const TextStyle(
-                  fontFamily: FontStyles.mouser,
-                  fontSize: FontSizeConst.font12,
-                  fontWeight: FontWeight.w400,
-                  color: ColorStyle.darkLabel,
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 8,
-            ),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: listOpenTimes.values.toList().length - 1,
-              itemBuilder: (BuildContext context, int index) {
-                return getOpeningTime(listOpenTimes, index);
-              },
-            )
-          ],
-        ));
-  }
-
-  Widget getFees(Map<String, List<String>> fees) {
-    return Container(
-        padding: const EdgeInsets.only(top: 8.0, left: 18, right: 18, bottom: 8),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-              height: 20,
-              child: Text(
-                S.current.fees,
-                style: const TextStyle(
-                  fontFamily: FontStyles.mouser,
-                  fontSize: FontSizeConst.font12,
-                  fontWeight: FontWeight.w400,
-                  color: ColorStyle.darkLabel,
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 8,
-            ),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: fees["feeDetail"]!.length,
-              itemBuilder: (BuildContext context, int index) {
-                return Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      flex: 1,
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: Text(
-                          fees["feeTitle"]![index],
-                          style: const TextStyle(
-                            color: ColorStyle.darkLabel,
-                            fontWeight: FontWeight.w400,
-                            fontSize: FontSizeConst.font12,
-                            fontFamily: FontStyles.raleway,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      flex: 4,
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: Text(
-                          fees["feeDetail"]![index],
-                          style: const TextStyle(
-                            color: ColorStyle.darkLabel,
-                            fontWeight: FontWeight.w400,
-                            fontSize: FontSizeConst.font12,
-                            fontFamily: FontStyles.raleway,
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
-                );
-              },
-            )
-          ],
-        ));
-  }
-
-  Widget getCapacity(String capacity) {
-    return Container(
-        padding: const EdgeInsets.only(top: 8.0, left: 18, right: 18, bottom: 8),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          textBaseline: TextBaseline.alphabetic,
-          children: [
-            SizedBox(
-              height: 20,
-              child: Text(
-                S.current.capacity,
-                style: const TextStyle(
-                  fontFamily: FontStyles.mouser,
-                  fontSize: FontSizeConst.font12,
-                  fontWeight: FontWeight.w400,
-                  color: ColorStyle.darkLabel,
-                ),
-              ),
-            ),
-            const SizedBox(
-              width: 12,
-            ),
-            Text(
-              capacity,
-              style: const TextStyle(
-                color: ColorStyle.darkLabel,
-                fontWeight: FontWeight.w400,
-                fontSize: FontSizeConst.font12,
-                fontFamily: FontStyles.raleway,
-              ),
-            ),
-          ],
-        ));
-  }
-
-  Widget getEventsAndExpsView(List<String> eventIcons, List<String> eventLinks) {
-    return Container(
-        padding: const EdgeInsets.only(top: 8.0, left: 18, right: 18, bottom: 8),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-                height: 20,
-                child: Text(
-                  S.current.events_and_experiences,
-                  style: const TextStyle(
-                    fontFamily: FontStyles.mouser,
-                    fontSize: FontSizeConst.font12,
-                    fontWeight: FontWeight.w400,
-                    color: ColorStyle.darkLabel,
-                  ),
-                )),
-            Container(
-              alignment: Alignment.topLeft,
-              child: Wrap(
-                children: eventIcons.map((eventIcon) => getEventsAndExps(eventIcons.indexOf(eventIcon))).toList(),
-              ),
-            ),
-          ],
-        ));
-  }
-
-  Widget getIntouch(Map<String, String> getIntouch, String logo) {
-    return Stack(
-      children: [
-        Positioned(
-          top: 10,
-          right: 20,
-          child: CachedNetworkImage(
-            imageUrl: logo,
-            width: 48.0,
-            height: 48.0,
-            fit: BoxFit.contain,
-            imageBuilder: (context, imageProvider) => Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
-              ),
-            ),
-            placeholder: (context, url) => const CupertinoActivityIndicator(
-              radius: 20,
-              color: ColorStyle.primary,
-            ),
-            errorWidget: (context, url, error) => Icon(Icons.error),
-          ),
-          // child: Image.network(
-          //   logo,
-          //   fit: BoxFit.contain,
-          //   height: 48.0,
-          // ),
-        ),
-        Container(
-            padding: const EdgeInsets.only(top: 8.0, left: 18, right: 18, bottom: 8),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  height: 20,
-                  child: Text(S.current.get_in_touch_with,
-                      style: const TextStyle(
-                        color: ColorStyle.darkLabel,
-                        fontSize: FontSizeConst.font12,
-                        fontWeight: FontWeight.w400,
-                        fontFamily: FontStyles.raleway,
-                      )),
-                ),
-                SizedBox(
-                  height: 20,
-                  child: Text(
-                    getIntouch["title"].toString(),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    title,
                     style: const TextStyle(
                       fontFamily: FontStyles.mouser,
                       fontSize: FontSizeConst.font12,
@@ -622,111 +271,498 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                       color: ColorStyle.darkLabel,
                     ),
                   ),
-                ),
-                Row(
-                  children: [
-                    InkWell(
-                      child: Container(
-                        padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                        child: Image.asset(ImagePath.phoneIcon, fit: BoxFit.contain, height: 25.0),
-                      ),
-                      onTap: () {
-                        UrlLauncher.launch("tel://${getIntouch["phone"].toString()}");
-                      },
+                  InkWell(
+                    onTap: () {
+                      PermissionRequest.isResquestPermission = true;
+                      PermissionRequest().permissionServiceCall(
+                        context,
+                        _whatTuduSiteContentDetailViewModel.directionWithGoogleMap,
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: Image.asset(ImagePath.mapIcon, fit: BoxFit.contain, height: 20.0),
                     ),
-                    InkWell(
-                      child: Container(
-                        padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                        child: Image.asset(ImagePath.emailIcon, fit: BoxFit.contain, height: 25.0),
-                      ),
-                      onTap: () {
-                        UrlLauncher.launch("mailto:${getIntouch["email"].toString()}");
-                      },
-                    ),
-                    InkWell(
-                      child: Container(
-                        padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                        child: Image.asset(ImagePath.whatsAppIcon, fit: BoxFit.contain, height: 25.0),
-                      ),
-                      onTap: () {
-                        UrlLauncher.launch("https://wa.me/${getIntouch["whatsapp"].toString()}?text=Hello");
-                      },
-                    ),
-                    Container(
-                      padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                      child: Image.asset(ImagePath.internetIcon, fit: BoxFit.contain, height: 25.0),
-                    )
-                  ],
-                ),
-                const SizedBox(
-                  height: 8,
-                ),
-                SizedBox(
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(
+              height: 8,
+            ),
+            Text(
+              description,
+              style: const TextStyle(
+                color: ColorStyle.darkLabel,
+                fontWeight: FontWeight.w400,
+                fontSize: FontSizeConst.font12,
+                fontFamily: FontStyles.raleway,
+                height: 2,
+              ),
+            ),
+          ],
+        ),
+      );
+    } else {
+      return Container();
+    }
+  }
+
+  Widget getMoreInformation(String? moreInformation) {
+    if (moreInformation != null) {
+      return Container(
+        padding: const EdgeInsets.only(top: 20.0, left: 18, right: 18, bottom: 8),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+                height: 20,
+                child: Text(
+                  S.current.more_information,
+                  style: const TextStyle(
+                    color: ColorStyle.darkLabel,
+                    fontFamily: FontStyles.mouser,
+                    fontSize: FontSizeConst.font12,
+                    fontWeight: FontWeight.w400,
+                  ),
+                )),
+            Text(
+              moreInformation,
+              style: const TextStyle(
+                color: ColorStyle.darkLabel,
+                fontWeight: FontWeight.w400,
+                fontSize: FontSizeConst.font12,
+                fontFamily: FontStyles.raleway,
+                height: 2,
+              ),
+            ),
+          ],
+        ),
+      );
+    } else {
+      return Container();
+    }
+  }
+
+  Widget getAdvisory(String? advisory) {
+    if (advisory != null) {
+      return Container(
+        padding: const EdgeInsets.only(top: 20.0, left: 18, right: 18, bottom: 8),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+                height: 20,
+                child: Text(
+                  S.current.advisory,
+                  style: const TextStyle(
+                    color: ColorStyle.darkLabel,
+                    fontFamily: FontStyles.mouser,
+                    fontSize: FontSizeConst.font12,
+                    fontWeight: FontWeight.w400,
+                  ),
+                )),
+            Text(
+              advisory,
+              style: const TextStyle(
+                color: ColorStyle.darkLabel,
+                fontWeight: FontWeight.w400,
+                fontSize: FontSizeConst.font12,
+                fontFamily: FontStyles.raleway,
+                height: 2,
+              ),
+            ),
+          ],
+        ),
+      );
+    } else {
+      return Container();
+    }
+  }
+
+  Widget getAmenityView(List<int>? amenities, List<String>? amenitiyDescriptions) {
+    if (amenities != null && amenitiyDescriptions != null) {
+      return Container(
+          padding: const EdgeInsets.only(top: 8.0, left: 18, right: 18, bottom: 8),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
                   height: 20,
-                  child: Text(S.current.follow_title,
+                  child: Text(
+                    S.current.you_can_expect,
+                    style: const TextStyle(
+                      fontFamily: FontStyles.mouser,
+                      fontSize: FontSizeConst.font12,
+                      fontWeight: FontWeight.w400,
+                      color: ColorStyle.darkLabel,
+                    ),
+                  )),
+              Container(
+                alignment: Alignment.topLeft,
+                child: Wrap(
+                  children: amenities.map((amenity) => getAmenity(amenity)).toList(),
+                ),
+              ),
+              Column(
+                children: amenitiyDescriptions.map((amenityDescrip) => getAmenityDescription(amenityDescrip)).toList(),
+              )
+            ],
+          ));
+    } else {
+      return Container();
+    }
+  }
+
+  Widget getOpenTimes(Map<String, String>? listOpenTimes) {
+    if (listOpenTimes != null) {
+      return Container(
+          padding: const EdgeInsets.only(top: 8.0, left: 18, right: 18, bottom: 8),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                height: 20,
+                child: Text(
+                  S.current.open_times,
+                  style: const TextStyle(
+                    fontFamily: FontStyles.mouser,
+                    fontSize: FontSizeConst.font12,
+                    fontWeight: FontWeight.w400,
+                    color: ColorStyle.darkLabel,
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 8,
+              ),
+              ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: listOpenTimes.values.toList().length - 1,
+                itemBuilder: (BuildContext context, int index) {
+                  return getOpeningTime(listOpenTimes, index);
+                },
+              )
+            ],
+          ));
+    } else {
+      return Container();
+    }
+  }
+
+  Widget getFees(Map<String, List<String>>? fees) {
+    if (fees != null) {
+      return Container(
+          padding: const EdgeInsets.only(top: 8.0, left: 18, right: 18, bottom: 8),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                height: 20,
+                child: Text(
+                  S.current.fees,
+                  style: const TextStyle(
+                    fontFamily: FontStyles.mouser,
+                    fontSize: FontSizeConst.font12,
+                    fontWeight: FontWeight.w400,
+                    color: ColorStyle.darkLabel,
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 8,
+              ),
+              ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: fees["feeDetail"]!.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        flex: 1,
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Text(
+                            fees["feeTitle"]![index],
+                            style: const TextStyle(
+                              color: ColorStyle.darkLabel,
+                              fontWeight: FontWeight.w400,
+                              fontSize: FontSizeConst.font12,
+                              fontFamily: FontStyles.raleway,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 4,
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Text(
+                            fees["feeDetail"]![index],
+                            style: const TextStyle(
+                              color: ColorStyle.darkLabel,
+                              fontWeight: FontWeight.w400,
+                              fontSize: FontSizeConst.font12,
+                              fontFamily: FontStyles.raleway,
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  );
+                },
+              )
+            ],
+          ));
+    } else {
+      return Container();
+    }
+  }
+
+  Widget getCapacity(String? capacity) {
+    if (capacity != null) {
+      return Container(
+          padding: const EdgeInsets.only(top: 8.0, left: 18, right: 18, bottom: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              SizedBox(
+                height: 20,
+                child: Text(
+                  S.current.capacity,
+                  style: const TextStyle(
+                    fontFamily: FontStyles.mouser,
+                    fontSize: FontSizeConst.font12,
+                    fontWeight: FontWeight.w400,
+                    color: ColorStyle.darkLabel,
+                  ),
+                ),
+              ),
+              const SizedBox(
+                width: 12,
+              ),
+              Text(
+                capacity,
+                style: const TextStyle(
+                  color: ColorStyle.darkLabel,
+                  fontWeight: FontWeight.w400,
+                  fontSize: FontSizeConst.font12,
+                  fontFamily: FontStyles.raleway,
+                ),
+              ),
+            ],
+          ));
+    } else {
+      return Container();
+    }
+  }
+
+  Widget getEventsAndExpsView(List<String>? eventIcons, List<String>? eventLinks) {
+    if (eventIcons != null && eventLinks != null) {
+      return Container(
+          padding: const EdgeInsets.only(top: 8.0, left: 18, right: 18, bottom: 8),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                  height: 20,
+                  child: Text(
+                    S.current.events_and_experiences,
+                    style: const TextStyle(
+                      fontFamily: FontStyles.mouser,
+                      fontSize: FontSizeConst.font12,
+                      fontWeight: FontWeight.w400,
+                      color: ColorStyle.darkLabel,
+                    ),
+                  )),
+              Container(
+                alignment: Alignment.topLeft,
+                child: Wrap(
+                  children: eventIcons.map((eventIcon) => getEventsAndExps(eventIcons.indexOf(eventIcon))).toList(),
+                ),
+              ),
+            ],
+          ));
+    } else {
+      return Container();
+    }
+  }
+
+  Widget getIntouch(Map<String, String>? getIntouch, String? logo) {
+    if (getIntouch != null && logo != null) {
+      return Stack(
+        children: [
+          Positioned(
+            top: 10,
+            right: 20,
+            child: CachedNetworkImage(
+              imageUrl: logo,
+              width: 48.0,
+              height: 48.0,
+              fit: BoxFit.contain,
+              imageBuilder: (context, imageProvider) => Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                ),
+              ),
+              placeholder: (context, url) => const CupertinoActivityIndicator(
+                radius: 20,
+                color: ColorStyle.primary,
+              ),
+              errorWidget: (context, url, error) => Icon(Icons.error),
+            ),
+            // child: Image.network(
+            //   logo,
+            //   fit: BoxFit.contain,
+            //   height: 48.0,
+            // ),
+          ),
+          Container(
+              padding: const EdgeInsets.only(top: 8.0, left: 18, right: 18, bottom: 8),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    height: 20,
+                    child: Text(S.current.get_in_touch_with,
+                        style: const TextStyle(
+                          color: ColorStyle.darkLabel,
+                          fontSize: FontSizeConst.font12,
+                          fontWeight: FontWeight.w400,
+                          fontFamily: FontStyles.raleway,
+                        )),
+                  ),
+                  SizedBox(
+                    height: 20,
+                    child: Text(
+                      getIntouch["title"].toString(),
                       style: const TextStyle(
-                        color: ColorStyle.darkLabel,
+                        fontFamily: FontStyles.mouser,
                         fontSize: FontSizeConst.font12,
                         fontWeight: FontWeight.w400,
-                        fontFamily: FontStyles.raleway,
-                      )),
-                ),
-                Row(
-                  children: [
-                    InkWell(
-                      child: Container(
-                        padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                        child: Image.asset(ImagePath.instagramIcon, fit: BoxFit.contain, height: 25.0),
+                        color: ColorStyle.darkLabel,
                       ),
-                      onTap: () {
-                        UrlLauncher.launch(
-                          getIntouch["instagram"].toString(),
-                          universalLinksOnly: true,
-                        );
-                      },
                     ),
-                    InkWell(
-                      child: Container(
-                        padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                        child: Image.asset(ImagePath.facebookIcon, fit: BoxFit.contain, height: 25.0),
+                  ),
+                  Row(
+                    children: [
+                      InkWell(
+                        child: Container(
+                          padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
+                          child: Image.asset(ImagePath.phoneIcon, fit: BoxFit.contain, height: 25.0),
+                        ),
+                        onTap: () {
+                          UrlLauncher.launch("tel://${getIntouch["phone"].toString()}");
+                        },
                       ),
-                      onTap: () {
-                        UrlLauncher.launch(
-                          getIntouch["facebook"].toString(),
-                          universalLinksOnly: true,
-                        );
-                      },
-                    ),
-                    InkWell(
-                      child: Container(
-                        padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                        child: Image.asset(ImagePath.owlIcon, fit: BoxFit.contain, height: 25.0),
+                      InkWell(
+                        child: Container(
+                          padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
+                          child: Image.asset(ImagePath.emailIcon, fit: BoxFit.contain, height: 25.0),
+                        ),
+                        onTap: () {
+                          UrlLauncher.launch("mailto:${getIntouch["email"].toString()}");
+                        },
                       ),
-                      onTap: () {
-                        UrlLauncher.launch(
-                          getIntouch["owl"].toString(),
-                          universalLinksOnly: true,
-                        );
-                      },
-                    ),
-                    InkWell(
-                      child: Container(
-                        padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                        child: Image.asset(ImagePath.twitterIcon, fit: BoxFit.contain, height: 25.0),
+                      InkWell(
+                        child: Container(
+                          padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
+                          child: Image.asset(ImagePath.whatsAppIcon, fit: BoxFit.contain, height: 25.0),
+                        ),
+                        onTap: () {
+                          UrlLauncher.launch("https://wa.me/${getIntouch["whatsapp"].toString()}?text=Hello");
+                        },
                       ),
-                      onTap: () {
-                        UrlLauncher.launch(
-                          getIntouch["twitter"].toString(),
-                          universalLinksOnly: true,
-                        );
-                      },
-                    )
-                  ],
-                ),
-              ],
-            )),
-      ],
-    );
+                      Container(
+                        padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
+                        child: Image.asset(ImagePath.internetIcon, fit: BoxFit.contain, height: 25.0),
+                      )
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  SizedBox(
+                    height: 20,
+                    child: Text(S.current.follow_title,
+                        style: const TextStyle(
+                          color: ColorStyle.darkLabel,
+                          fontSize: FontSizeConst.font12,
+                          fontWeight: FontWeight.w400,
+                          fontFamily: FontStyles.raleway,
+                        )),
+                  ),
+                  Row(
+                    children: [
+                      InkWell(
+                        child: Container(
+                          padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
+                          child: Image.asset(ImagePath.instagramIcon, fit: BoxFit.contain, height: 25.0),
+                        ),
+                        onTap: () {
+                          UrlLauncher.launch(
+                            getIntouch["instagram"].toString(),
+                            universalLinksOnly: true,
+                          );
+                        },
+                      ),
+                      InkWell(
+                        child: Container(
+                          padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
+                          child: Image.asset(ImagePath.facebookIcon, fit: BoxFit.contain, height: 25.0),
+                        ),
+                        onTap: () {
+                          UrlLauncher.launch(
+                            getIntouch["facebook"].toString(),
+                            universalLinksOnly: true,
+                          );
+                        },
+                      ),
+                      InkWell(
+                        child: Container(
+                          padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
+                          child: Image.asset(ImagePath.owlIcon, fit: BoxFit.contain, height: 25.0),
+                        ),
+                        onTap: () {
+                          UrlLauncher.launch(
+                            getIntouch["owl"].toString(),
+                            universalLinksOnly: true,
+                          );
+                        },
+                      ),
+                      InkWell(
+                        child: Container(
+                          padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
+                          child: Image.asset(ImagePath.twitterIcon, fit: BoxFit.contain, height: 25.0),
+                        ),
+                        onTap: () {
+                          UrlLauncher.launch(
+                            getIntouch["twitter"].toString(),
+                            universalLinksOnly: true,
+                          );
+                        },
+                      )
+                    ],
+                  ),
+                ],
+              )),
+        ],
+      );
+    } else {
+      return Container();
+    }
   }
 
   Widget getFooter(Partner? partner) {
@@ -807,38 +843,46 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
     }
   }
 
-  Widget getAmenity(int amenityId) {
-    return GestureDetector(
-        onTapDown: (position) {
-          _getTapPosition(position);
-          _showContextMenu(context, amenityId);
-        },
-        onLongPress: () => {_showContextMenu(context, amenityId)},
-        onDoubleTap: () => {_showContextMenu(context, amenityId)},
-        child: Container(
-          padding: const EdgeInsets.only(top: 4.0, right: 4.0, bottom: 4.0),
-          child: Image.asset(
+  Widget getAmenity(int? amenityId) {
+    if (amenityId != null) {
+      return GestureDetector(
+          onTapDown: (position) {
+            _getTapPosition(position);
+            _showContextMenu(context, amenityId);
+          },
+          onLongPress: () => {_showContextMenu(context, amenityId)},
+          onDoubleTap: () => {_showContextMenu(context, amenityId)},
+          child: Container(
+            padding: const EdgeInsets.only(top: 4.0, right: 4.0, bottom: 4.0),
+            child: Image.asset(
               // "${_homeViewModel.getAmenityById(amenityId)?.icon}", // ICON DIDNT HAVE LINK YET
-              ImagePath.yogaIcon, // FAKE ICON
-              fit: BoxFit.contain,
-              height: 25.0),
-        ));
+                ImagePath.yogaIcon, // FAKE ICON
+                fit: BoxFit.contain,
+                height: 25.0),
+          ));
+    } else {
+      return Container();
+    }
   }
 
-  Widget getAmenityDescription(String amenityDescription) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 8.0),
-      child: Text(
-        "• $amenityDescription",
-        style: const TextStyle(
-          color: ColorStyle.darkLabel,
-          fontWeight: FontWeight.w400,
-          fontSize: FontSizeConst.font12,
-          fontFamily: FontStyles.raleway,
-          height: 2,
+  Widget getAmenityDescription(String? amenityDescription) {
+    if (amenityDescription != null) {
+      return Padding(
+        padding: const EdgeInsets.only(left: 8.0),
+        child: Text(
+          "• $amenityDescription",
+          style: const TextStyle(
+            color: ColorStyle.darkLabel,
+            fontWeight: FontWeight.w400,
+            fontSize: FontSizeConst.font12,
+            fontFamily: FontStyles.raleway,
+            height: 2,
+          ),
         ),
-      ),
-    );
+      );
+    } else {
+      return Container();
+    }
   }
 
   Widget getEventsAndExps(int eventIndex) {

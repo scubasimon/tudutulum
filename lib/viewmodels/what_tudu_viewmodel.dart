@@ -85,12 +85,16 @@ class WhatTuduViewModel extends BaseViewModel {
   }
 
   double getDistance(LocationData location, Site a) {
-    return Geolocator.distanceBetween(
-      location.latitude!,
-      location.longitude!,
-      a.locationLat,
-      a.locationLon,
-    );
+    if (a.locationLat != null && a.locationLon != null) {
+      return Geolocator.distanceBetween(
+        location.latitude!,
+        location.longitude!,
+        a.locationLat!,
+        a.locationLon!,
+      );
+    } else {
+      return 0.0;
+    }
   }
 
   Future<void> checkLocationEnable() async {

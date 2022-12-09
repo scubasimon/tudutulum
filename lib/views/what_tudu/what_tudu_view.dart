@@ -131,6 +131,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver, Aut
       );
       PrefUtil.setValue(StrConst.isDataBinded, true);
     } catch (e) {
+      print("loadRemoteData: $e");
       // If network has prob -> Load data from local
       await loadLocalData();
     }
