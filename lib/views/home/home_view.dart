@@ -63,8 +63,8 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
 
   late StreamSubscription<String> connectWalletStreamStringListener;
 
-  StreamSubscription<int>? redirectTabStreamListener = null;
-  StreamSubscription<String>? networkStreamListener = null;
+  StreamSubscription<int>? redirectTabStreamListener;
+  StreamSubscription<String>? networkStreamListener;
   StreamSubscription<List<GeoPoint>>? redirectToGoogleMapStreamListener = null;
 
   @override

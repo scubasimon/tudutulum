@@ -55,6 +55,8 @@ abstract class FirebaseService {
   Future<void> removeUser(String userId);
 
   Future<void> deleteAccount();
+  
+  Future<List<Map<String, dynamic>>> getDeals();
 }
 
 class FirebaseServiceImpl extends FirebaseService {
@@ -100,6 +102,9 @@ class FirebaseServiceImpl extends FirebaseService {
     try {
       return await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
     } on FirebaseAuthException catch (e) {
+      if (e.code == "network-request-failed") {
+        throw CommonError.serverError;
+      }
       throw AuthenticationError.badCredentials({
         "error": e,
       }, message: S.current.account_incorrect_error);
@@ -146,7 +151,13 @@ class FirebaseServiceImpl extends FirebaseService {
 
   @override
   Future<Map<String, dynamic>> getUser(String id) async {
-    var result = await FirebaseFirestore.instance.collection("users").doc(id).get();
+    DocumentSnapshot<Map<String, dynamic>> result;
+    try {
+      result = await FirebaseFirestore.instance.collection("users").doc(id).get();
+    } catch (e) {
+      print(e);
+      throw CommonError.serverError;
+    }
     if (result.exists) {
       return result.data()!;
     } else {
@@ -167,7 +178,10 @@ class FirebaseServiceImpl extends FirebaseService {
   @override
   Future<void> updateUser(String userId, Map<String, dynamic> data) async {
     try {
-      return await FirebaseFirestore.instance.collection("users").doc(userId).update(data);
+      return await FirebaseFirestore
+          .instance
+          .collection("users")
+          .doc(userId).update(data);
     } catch (e) {
       print(e);
       throw CommonError.serverError;
@@ -301,6 +315,16 @@ class FirebaseServiceImpl extends FirebaseService {
       return listSite.docs;
     } else {
       throw S.current.network_fail;
+    }
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>> getDeals() async {
+    try {
+      var results = await FirebaseFirestore.instance.collection("deals").get();
+      return results.docs.map((e) => e.data()).toList();
+    } catch (e) {
+      throw CommonError.serverError;
     }
   }
 }
