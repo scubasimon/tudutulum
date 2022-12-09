@@ -42,7 +42,6 @@ class PermissionRequest {
   Future<Map<Permission, PermissionStatus>> permissionServices(BuildContext context, Function callback) async {
     // You can request multiple permissions at once.
     Map<Permission, PermissionStatus> statuses = await [Permission.location].request();
-
     if (statuses[Permission.location] != null) {
       if (statuses[Permission.location]!.isPermanentlyDenied) {
         showDialogLocationSettings(context, callback);

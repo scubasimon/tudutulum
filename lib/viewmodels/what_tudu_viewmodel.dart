@@ -41,12 +41,6 @@ class WhatTuduViewModel extends BaseViewModel {
   @override
   FutureOr<void> init() {}
 
-  void showHideLoading(bool showHide) {
-    print("showHideLoading $showHide");
-    _observableService.whatTuduProgressLoadingController.sink.add(showHide);
-    notifyListeners();
-  }
-
   void getDataWithFilterSortSearch(
       Business? businessFilter,
       String? keywordSort,
@@ -113,5 +107,23 @@ class WhatTuduViewModel extends BaseViewModel {
   void handlerLocationPermissionChanged() {
     // ACTION ON PERMISSION CHANGED
     print("handlerLocationPermissionChanged -> ACTION NOT IMPL YET");
+  }
+
+  void getDataWithFilterSortSearchForMap(
+      Business? businessFilter,
+      String? keywordSort,
+      String? keywordSearch) {
+    try {
+      List<Site> listSitesResult = _whatTuduRepository.getSitesWithFilterSortSearch(
+        _homeViewModel.listSites,
+        (businessFilter != null) ? businessFilter.businessid : -1,
+        keywordSort,
+        keywordSearch,
+      );
+
+      _observableService.mapProgressLoadingController.sink.add(listSitesResult);
+    } catch (e) {
+      rethrow;
+    }
   }
 }

@@ -15,6 +15,7 @@ import 'package:tudu/models/amenity.dart';
 import 'package:tudu/models/article.dart';
 import 'package:tudu/models/business.dart';
 import 'package:tudu/utils/func_utils.dart';
+import 'package:tudu/utils/pref_util.dart';
 import 'package:tudu/viewmodels/home_viewmodel.dart';
 import 'package:tudu/viewmodels/map_screen_viewmodel.dart';
 import 'package:tudu/viewmodels/what_tudu_site_content_detail_viewmodel.dart';
@@ -26,6 +27,7 @@ import 'package:tudu/consts/font/font_size_const.dart';
 import 'package:tudu/consts/strings/str_const.dart';
 import 'package:tudu/consts/images/ImagePath.dart';
 import 'package:tudu/generated/l10n.dart';
+import 'package:rxdart/rxdart.dart';
 
 import 'package:tudu/models/site.dart';
 import 'package:tudu/utils/permission_request.dart';
@@ -47,7 +49,7 @@ class WhatTuduView extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _WhatTuduView();
 }
-class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
+class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver, AutomaticKeepAliveClientMixin{
   ObservableService _observableService = ObservableService();
   MapScreenViewModel _mapScreenViewModel = MapScreenViewModel();
   WhatTuduViewModel _whatTuduViewModel = WhatTuduViewModel();
@@ -70,7 +72,11 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
   final RefreshController _refreshController = RefreshController(initialRefresh: false);
 
   @override
+  bool get wantKeepAlive => true;
+
+  @override
   void initState() {
+    print("what_tudu_view -> initState");
     listenToZeroDataFilter();
     listenToLoading();
 
@@ -105,7 +111,9 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await loadRemoteData();
+      if ((PrefUtil.getValue(StrConst.isDataBinded, true) as bool == false)) {
+        await loadRemoteData();
+      }
     });
   }
 
@@ -125,6 +133,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
         StrConst.sortTitle, // First init sort with Alphabet
         null, // On init, no text have not been searched
       );
+      PrefUtil.setValue(StrConst.isDataBinded, true);
     } catch (e) {
       // If network has prob -> Load data from local
       await loadLocalData();
@@ -144,6 +153,8 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
         StrConst.sortTitle, // First init sort with Alphabet
         null, // On init, no text have not been searched
       );
+
+      PrefUtil.setValue(StrConst.isDataBinded, true);
     } catch (e) {
       _observableService.whatTuduProgressLoadingController.sink.add(false);
       _observableService.networkController.sink.add(e.toString());
@@ -661,9 +672,13 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                         PermissionRequest().permissionServiceCall(
                           context,
                           () {
-                            _mapScreenViewModel.isGotoCurrent = true;
-                            _homeViewModel.redirectTab(5);
-                          },
+                            _mapScreenViewModel.setInitMapInfo(
+                              (_observableService.listSitesController as BehaviorSubject<List<Site>?>).value,
+                              true,
+                              _homeViewModel.filterType
+                            );
+                            _homeViewModel.redirectTab(5); // Map tab
+                            },
                         );
                       },
                       child: Column(

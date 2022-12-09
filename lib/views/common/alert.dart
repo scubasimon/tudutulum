@@ -64,8 +64,10 @@ class ErrorAlert {
             isDefaultAction: true,
             child: Text(S.current.ok),
             onPressed: () {
-              Navigator.of(context).pop();
-              Navigator.of(context).pushReplacementNamed(URLConsts.login);
+              Navigator.of(context).popUntil((route) {
+                return (route.isFirst);
+              });
+              Navigator.of(context).pushNamedAndRemoveUntil(URLConsts.login, (Route<dynamic> route) => false);
             },
           )
         ],
