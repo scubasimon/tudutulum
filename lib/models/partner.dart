@@ -15,6 +15,9 @@ class Partner {
       });
 
   Map<String, dynamic> toJson() => {
-    // "partnerId": partnerId,
+    "partnerId": partnerId,
+    "icon": icon,
+    "link": link,
+    "name": name,
   };
 }

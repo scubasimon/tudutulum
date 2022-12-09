@@ -11,7 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tudu/consts/urls/URLConst.dart';
 import 'package:tudu/firebase_options.dart';
 import 'package:tudu/viewmodels/authentication_viewmodel.dart';
-import 'package:tudu/viewmodels/map_viewmodel.dart';
+import 'package:tudu/viewmodels/map_screen_viewmodel.dart';
 import 'package:tudu/viewmodels/what_tudu_article_content_detail_viewmodel.dart';
 import 'package:tudu/views/login/login_view.dart';
 import 'package:flutter/services.dart';
@@ -26,6 +26,7 @@ import 'package:tudu/views/onboard/onboard_view.dart';
 import 'localization/app_localization.dart';
 import 'localization/language_constants.dart';
 import 'generated/l10n.dart';
+import 'package:localstore/localstore.dart';
 
 Future<void> main() async {
   await S.load(const Locale.fromSubtags(languageCode: 'en')); // mimic localization delegate init
@@ -36,41 +37,37 @@ Future<void> main() async {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
+
     PrefUtil.init();
 
     // if (kDebugMode) {
     //   await _connectToFirebaseEmulator();
     // }
 
-    SystemChrome.setPreferredOrientations(
-        [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown])
-        .then((_) {
-      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark
-          .copyWith(statusBarColor: Colors.transparent));
-      runApp(
-          MultiProvider(
-            providers: [
-              ChangeNotifierProvider(
-                create: (_) => HomeViewModel(),
-              ),
-              ChangeNotifierProvider(
-                create: (_) => WhatTuduViewModel(),
-              ),
-              ChangeNotifierProvider(
-                create: (_) => WhatTuduSiteContentDetailViewModel(),
-              ),
-              ChangeNotifierProvider(
-                create: (_) => WhatTuduArticleContentDetailViewModel(),
-              ),
-              ChangeNotifierProvider(
-                create: (_) => MapViewModel(),
-              )
-            ],
-            child: Builder(builder: (context) {
-              return const MyApp();
-            }),
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]).then((_) {
+      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(statusBarColor: Colors.transparent));
+      runApp(MultiProvider(
+        providers: [
+          ChangeNotifierProvider(
+            create: (_) => HomeViewModel(),
+          ),
+          ChangeNotifierProvider(
+            create: (_) => WhatTuduViewModel(),
+          ),
+          ChangeNotifierProvider(
+            create: (_) => WhatTuduSiteContentDetailViewModel(),
+          ),
+          ChangeNotifierProvider(
+            create: (_) => WhatTuduArticleContentDetailViewModel(),
+          ),
+          ChangeNotifierProvider(
+            create: (_) => MapScreenViewModel(),
           )
-      );
+        ],
+        child: Builder(builder: (context) {
+          return const MyApp();
+        }),
+      ));
     });
   }, (error, stackTrace) => print(error.toString() + stackTrace.toString()));
 }
@@ -98,7 +95,6 @@ class MyApp extends StatefulWidget {
   @override
   _MyAppState createState() => _MyAppState();
 }
-
 
 class _MyAppState extends State<MyApp> {
   Locale _locale = const Locale(StrConst.englishLanguageCode);
@@ -135,14 +131,12 @@ class _MyAppState extends State<MyApp> {
     Provider.of<WhatTuduViewModel>(context, listen: true);
     Provider.of<WhatTuduArticleContentDetailViewModel>(context, listen: true);
     Provider.of<WhatTuduSiteContentDetailViewModel>(context, listen: true);
-    Provider.of<MapViewModel>(context, listen: true);
+    Provider.of<MapScreenViewModel>(context, listen: true);
     if (_locale == null) {
       return const Center(child: CircularProgressIndicator());
     } else {
       return MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (context) => AuthenticationViewModel())
-        ],
+        providers: [ChangeNotifierProvider(create: (context) => AuthenticationViewModel())],
         child: MaterialApp(
           theme: ThemeData(
             highlightColor: Colors.transparent,

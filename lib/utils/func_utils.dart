@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:assets_audio_player/assets_audio_player.dart';
@@ -71,10 +72,10 @@ class FuncUlti {
     }
   }
 
-  static String getOrderTypeByInt(int input) {
+  static String getSortTypeByInt(int input) {
     switch (input) {
       case 0: return "title"; // Alphabet
-      case 1: return "title"; // Alphabet
+      case 1: return "title"; // TODO: IMPL LOGIC FOR SORT WITH Distance
       default: return "title"; // Alphabet
     }
   }
@@ -95,6 +96,18 @@ class FuncUlti {
 
     return String.fromCharCodes(Iterable.generate(
         length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
+  }
+
+  static Future<bool?> NetworkChecking() async {
+    try {
+      final result = await InternetAddress.lookup('firestore.googleapis.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        return true;
+      }
+    } on SocketException catch (_) {
+      return false;
+    }
+    return null;
   }
 }
 

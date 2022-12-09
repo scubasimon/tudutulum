@@ -13,16 +13,18 @@ import 'package:rxdart/rxdart.dart';
 
 import 'package:location/location.dart' as locationLib;
 
-class MapViewModel extends BaseViewModel {
+class MapScreenViewModel extends BaseViewModel {
 
-  static final MapViewModel _instance =
-  MapViewModel._internal();
+  static final MapScreenViewModel _instance =
+  MapScreenViewModel._internal();
 
-  factory MapViewModel() {
+  factory MapScreenViewModel() {
     return _instance;
   }
 
-  MapViewModel._internal();
+  MapScreenViewModel._internal();
+
+  bool isGotoCurrent = false;
 
   late bool serviceEnabled;
   locationLib.Location location = locationLib.Location();

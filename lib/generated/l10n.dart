@@ -1190,6 +1190,76 @@ class S {
     );
   }
 
+  /// `Alphabet`
+  String get alphabet {
+    return Intl.message(
+      'Alphabet',
+      name: 'alphabet',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Distance`
+  String get distance {
+    return Intl.message(
+      'Distance',
+      name: 'distance',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// ` Articles`
+  String get articles {
+    return Intl.message(
+      ' Articles',
+      name: 'articles',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Explore `
+  String get explore {
+    return Intl.message(
+      'Explore ',
+      name: 'explore',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `All Tulum Articles`
+  String get all_tulum_article {
+    return Intl.message(
+      'All Tulum Articles',
+      name: 'all_tulum_article',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please connect to the internet`
+  String get network_fail {
+    return Intl.message(
+      'Please connect to the internet',
+      name: 'network_fail',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please connect to the internet and or contact with admin`
+  String get local_fail {
+    return Intl.message(
+      'Please connect to the internet and or contact with admin',
+      name: 'local_fail',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Please report anything missing/inaccurate here`
   String get please_report {
     return Intl.message(

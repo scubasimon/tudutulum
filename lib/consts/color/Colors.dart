@@ -15,6 +15,7 @@ class ColorStyle {
   static const tertiaryBackground75 = Color(0xbfd9d9d9);
 
   static const darkLabel = Colors.black;
+  static const secondaryDarkLabel94 = Color(0xf01d1d1d);
   static const secondaryDarkLabel = Color(0xff262626);
   static const tertiaryDarkLabel = Color(0xff3c3c43);
   static const tertiaryDarkLabel60 = Color(0x993c3c43);
