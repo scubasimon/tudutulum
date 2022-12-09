@@ -39,14 +39,18 @@ class MessageLookup extends MessageLookupByLibrary {
         "all_location": MessageLookupByLibrary.simpleMessage("All \'Location"),
         "all_location_articles":
             MessageLookupByLibrary.simpleMessage("All Location Articles"),
+        "all_tulum_article":
+            MessageLookupByLibrary.simpleMessage("All Tulum Articles"),
+        "alphabet": MessageLookupByLibrary.simpleMessage("Alphabet"),
+        "articles": MessageLookupByLibrary.simpleMessage(" Articles"),
         "back": MessageLookupByLibrary.simpleMessage("Back"),
         "beach_clubs": MessageLookupByLibrary.simpleMessage("Beach Clubs"),
         "bookmarks": MessageLookupByLibrary.simpleMessage("Bookmarks"),
         "business_type":
             MessageLookupByLibrary.simpleMessage("\'Business Type\'"),
-        "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
         "can_not_find_result":
             MessageLookupByLibrary.simpleMessage("Can not find any result"),
+        "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
         "capacity": MessageLookupByLibrary.simpleMessage("Capacity"),
         "change_password":
             MessageLookupByLibrary.simpleMessage("Change Password"),
@@ -65,6 +69,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "delete_account":
             MessageLookupByLibrary.simpleMessage("Or deactivate your account"),
         "delete_now": MessageLookupByLibrary.simpleMessage("Delete Now"),
+        "distance": MessageLookupByLibrary.simpleMessage("Distance"),
         "email": MessageLookupByLibrary.simpleMessage("Email"),
         "email_empty_error":
             MessageLookupByLibrary.simpleMessage("Email must be not empty"),
@@ -76,6 +81,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Events and Experiences"),
         "exit_app_message":
             MessageLookupByLibrary.simpleMessage("Do you really want to exit?"),
+        "explore": MessageLookupByLibrary.simpleMessage("Explore "),
         "explore_all_location":
             MessageLookupByLibrary.simpleMessage("Explore All Location"),
         "explore_deals": MessageLookupByLibrary.simpleMessage("Explore Deals"),
@@ -95,6 +101,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "get_started": MessageLookupByLibrary.simpleMessage("Get Started"),
         "hello_name": m0,
         "here": MessageLookupByLibrary.simpleMessage("here"),
+        "local_fail": MessageLookupByLibrary.simpleMessage(
+            "Please connect to the internet and or contact with admin"),
         "login": MessageLookupByLibrary.simpleMessage("Login"),
         "login_description": MessageLookupByLibrary.simpleMessage(
             "Welcome back,\nPlease sign in"),
@@ -112,6 +120,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Name must be not empty"),
         "navigate_the_app":
             MessageLookupByLibrary.simpleMessage("•  Navigate the App"),
+        "network_fail": MessageLookupByLibrary.simpleMessage(
+            "Please connect to the internet"),
         "new_password": MessageLookupByLibrary.simpleMessage("New Password"),
         "new_password_empty_error": MessageLookupByLibrary.simpleMessage(
             "New password must be not empty"),

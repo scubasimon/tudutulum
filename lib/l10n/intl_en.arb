@@ -111,7 +111,14 @@
   "delete_now": "Delete Now",
   "deactivate_account_title": "Deactivate Account",
   "confirm_delete_account_message": "Your account information will be completely removed from our system.\n\nYou will no longer be able to redeem any offers unless you sign up again.\n\nIf you are a subscriber, please ensure you also unsubscribe through Google Play/Appstore.",
-  "login_message": "You are not logged in. please log in"
+  "login_message": "You are not logged in. please log in",
   "can_not_find_result": "Can not find any result",
+  "alphabet": "Alphabet",
+  "distance": "Distance",
+  "articles": " Articles",
+  "explore": "Explore ",
+  "all_tulum_article": "All Tulum Articles",
+  "network_fail": "Please connect to the internet",
+  "local_fail": "Please connect to the internet and or contact with admin",
   "please_report": "Please report anything missing/inaccurate here"
 }

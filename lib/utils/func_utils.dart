@@ -1,18 +1,20 @@
+import 'dart:io';
 import 'dart:math';
 
-import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:map_launcher/map_launcher.dart';
 import 'package:tudu/consts/strings/str_const.dart';
 
 class FuncUlti {
-  static void checkSoundOnOff(String sound) {
-    final assetsAudioPlayer = AssetsAudioPlayer();
-
-    // (PrefUtil.getValue(StrConst.SOUND_STATUS, false) as bool)
-    //     ? assetsAudioPlayer.open(Audio(sound))
-    //     : () {};
-
-    assetsAudioPlayer.open(Audio(sound));
-  }
+  // static void checkSoundOnOff(String sound) {
+  //   final assetsAudioPlayer = AssetsAudioPlayer();
+  //
+  //   // (PrefUtil.getValue(StrConst.SOUND_STATUS, false) as bool)
+  //   //     ? assetsAudioPlayer.open(Audio(sound))
+  //   //     : () {};
+  //
+  //   assetsAudioPlayer.open(Audio(sound));
+  // }
 
   static bool validateEmail(String email) {
     RegExp emailRegex = RegExp(StrConst.emailRegex);
@@ -71,10 +73,10 @@ class FuncUlti {
     }
   }
 
-  static String getOrderTypeByInt(int input) {
+  static String getSortTypeByInt(int input) {
     switch (input) {
       case 0: return "title"; // Alphabet
-      case 1: return "title"; // Alphabet
+      case 1: return "title"; // TODO: IMPL LOGIC FOR SORT WITH Distance
       default: return "title"; // Alphabet
     }
   }
@@ -95,6 +97,33 @@ class FuncUlti {
 
     return String.fromCharCodes(Iterable.generate(
         length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
+  }
+
+  static Future<bool?> NetworkChecking() async {
+    try {
+      final result = await InternetAddress.lookup('firestore.googleapis.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        return true;
+      }
+    } on SocketException catch (_) {
+      return false;
+    }
+    return null;
+  }
+
+  static Future<void> redirectAndDirection(GeoPoint from, GeoPoint to) async {
+    final availableMaps = await MapLauncher.installedMaps;
+    await availableMaps.first.showDirections(
+        origin: Coords(from.latitude, from.longitude),
+        destination: Coords(to.latitude, to.longitude));
+  }
+
+  static Future<void> redirectAndMoveToLocation(GeoPoint position, String title) async {
+    final availableMaps = await MapLauncher.installedMaps;
+    await availableMaps.first.showMarker(
+        coords: Coords(position.latitude, position.longitude),
+        title: title,
+    );
   }
 }
 

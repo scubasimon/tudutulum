@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../views/map/map_view.dart';
+import '../views/map/map_screen_view.dart';
 import 'audio_path.dart';
 
 class PermissionRequest {
@@ -42,7 +42,6 @@ class PermissionRequest {
   Future<Map<Permission, PermissionStatus>> permissionServices(BuildContext context, Function callback) async {
     // You can request multiple permissions at once.
     Map<Permission, PermissionStatus> statuses = await [Permission.location].request();
-
     if (statuses[Permission.location] != null) {
       if (statuses[Permission.location]!.isPermanentlyDenied) {
         showDialogLocationSettings(context, callback);

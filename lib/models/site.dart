@@ -1,14 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Site {
-  bool active;
   int siteId;
+  bool active;
   List<String> images;
   int? dealId;
   String title;
   String subTitle;
   List<int> business;
-  GeoPoint location;
+  double locationLat;
+  double locationLon;
   SiteContent siteContent;
   double rating;
 
@@ -21,7 +22,8 @@ class Site {
         required this.title,
         required this.subTitle,
         required this.business,
-        required this.location,
+        required this.locationLat,
+        required this.locationLon,
         required this.siteContent,
         required this.rating,
       });
@@ -35,7 +37,8 @@ class Site {
       "title": title,
       "subTitle": subTitle,
       "business": business,
-      "location": location,
+      "locationLat": locationLat,
+      "locationLon": locationLon,
       "rating": rating,
     };
 

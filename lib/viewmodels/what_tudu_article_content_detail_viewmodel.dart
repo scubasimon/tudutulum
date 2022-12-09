@@ -25,7 +25,7 @@ class WhatTuduArticleContentDetailViewModel extends BaseViewModel {
 
   }
 
-  void setArticleDetailCover(Article input) {
+  void setSelectedArticle(Article input) {
     articleDetail = input;
     notifyListeners();
   }

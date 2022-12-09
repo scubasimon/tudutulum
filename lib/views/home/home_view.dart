@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:collection';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -6,9 +8,12 @@ import 'package:notification_center/notification_center.dart';
 import 'package:tudu/consts/color/Colors.dart';
 import 'package:tudu/consts/font/Fonts.dart';
 import 'package:tudu/consts/strings/str_const.dart';
+import 'package:tudu/utils/func_utils.dart';
 import 'package:tudu/viewmodels/home_viewmodel.dart';
+import 'package:tudu/viewmodels/what_tudu_site_content_detail_viewmodel.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
 import 'package:tudu/consts/font/font_size_const.dart';
+import 'package:tudu/views/map/map_screen_view.dart';
 import 'package:tudu/views/what_tudu/what_tudu_view.dart';
 import 'package:tudu/views/events/events_view.dart';
 import 'package:tudu/views/deals/deals_view.dart';
@@ -16,6 +21,9 @@ import 'package:tudu/views/bookmarks/bookmarks_view.dart';
 import 'package:tudu/views/profile/profile_view.dart';
 import 'package:tudu/consts/images/ImagePath.dart';
 import 'package:tudu/generated/l10n.dart';
+
+import '../../services/observable/observable_serivce.dart';
+import '../common/alert.dart';
 
 
 class HomeView extends StatefulWidget {
@@ -30,15 +38,25 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeView extends State<HomeView> with WidgetsBindingObserver {
+  ObservableService _observableService = ObservableService();
   HomeViewModel _homeViewModel = HomeViewModel();
+  WhatTuduSiteContentDetailViewModel _whatTuduSiteContentDetailViewModel = WhatTuduSiteContentDetailViewModel();
   int pageIndex = 0;
 
   final pages = [
+    // Navigator(
+    //   onGenerateRoute: (settings) {
+    //     Widget page = const WhatTuduView();
+    //     if (settings.name == 'MapScreenView') page = const MapScreenView();
+    //     return MaterialPageRoute(builder: (_) => page);
+    //   },
+    // ),
     const WhatTuduView(),
     const EventsView(),
     const DealsView(),
     const BookmarksView(),
     const ProfileView(),
+    const MapScreenView(),
   ];
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -46,20 +64,19 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
   late StreamSubscription<String> connectWalletStreamStringListener;
 
   StreamSubscription<int>? redirectTabStreamListener = null;
-
+  StreamSubscription<String>? networkStreamListener = null;
+  StreamSubscription<List<GeoPoint>>? redirectToGoogleMapStreamListener = null;
 
   @override
   void initState() {
     NotificationCenter().subscribe(StrConst.openMenu, _openDrawer);
+    listenToNetwork();
     listenToRedirectTab();
+    listenToRedirectAndDirectionGoogleMap();
     //set orientation is portrait
     pageIndex = widget.pageIndex;
     SystemChrome.setPreferredOrientations(
         [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
-
-    _homeViewModel.getListBusiness();
-    _homeViewModel.getListPartners();
-    _homeViewModel.getListAmenities();
 
     super.initState();
     WidgetsBinding.instance.addObserver(this);
@@ -71,8 +88,7 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
   }
 
   void listenToRedirectTab() {
-    if (redirectTabStreamListener == null) {
-      redirectTabStreamListener = _homeViewModel.redirectTabStream.asBroadcastStream().listen((data) {
+    redirectTabStreamListener ??= _observableService.redirectTabStream.asBroadcastStream().listen((data) {
         print("listenToRedirectTab -> $data");
         Navigator.of(context).popUntil((route){
           return (route.isFirst);
@@ -81,11 +97,41 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
           pageIndex = data;
         });
       });
+  }
+
+  void listenToRedirectAndDirectionGoogleMap() {
+    try {
+      redirectToGoogleMapStreamListener ??= _observableService.listenToRedirectToGoogleMapStream.asBroadcastStream().listen((data) {
+        if (data.length == 2) {
+          FuncUlti.redirectAndDirection(
+              data[0],
+              data[1]
+          );
+        } else {
+          FuncUlti.redirectAndMoveToLocation(
+              data[0],
+              _whatTuduSiteContentDetailViewModel.siteContentDetail.title
+          );
+        }
+      });
+    } catch (e) {
+      print("listenToRedirectAndDirectionGoogleMap -> Exception: $e");
     }
+  }
+
+  void listenToNetwork() {
+    networkStreamListener ??= _observableService.networkStream.asBroadcastStream().listen((data) {
+      print("listenToNetwork -> $data");
+      _showAlert(data);
+    });
   }
 
   @override
   void dispose() {
+    print("dispose -> home_view");
+    redirectToGoogleMapStreamListener?.cancel();
+    networkStreamListener?.cancel();
+    redirectTabStreamListener?.cancel();
     super.dispose();
   }
 
@@ -363,7 +409,7 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                     children: [
                       Expanded(
                         child: Image.asset(
-                          pageIndex == 0
+                          (pageIndex == 0 || pageIndex == 5)
                               ? ImagePath.tab1stActiveIcon
                               : ImagePath.tab1stDeactiveIcon,
                           alignment: Alignment.center,
@@ -546,5 +592,15 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
   void _openDrawer() {
     print("open menu");
     _scaffoldKey.currentState?.openDrawer();
+  }
+
+
+  void _showAlert(String message) {
+    print("_showAlert $message");
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return ErrorAlert.alert(context, message);
+        });
   }
 }

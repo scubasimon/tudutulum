@@ -14,6 +14,9 @@ import 'package:tudu/views/common/alert.dart';
 import 'package:tudu/consts/urls/URLConst.dart';
 import 'package:tudu/models/error.dart';
 
+import '../../viewmodels/home_viewmodel.dart';
+import '../home/home_view.dart';
+
 class LoginView extends StatefulWidget {
 
   const LoginView({super.key});
@@ -28,6 +31,8 @@ class LoginView extends StatefulWidget {
 class _LoginStateView extends State<LoginView> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   late final AuthenticationViewModel _authenticationViewModel;
+  HomeViewModel _homeViewModel = HomeViewModel();
+
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   var _hidePassword = true;
@@ -304,6 +309,7 @@ class _LoginStateView extends State<LoginView> {
                     InkWell(
                       onTap: () {
                         // Navigator.of(context).pushReplacementNamed(URLConsts.home);
+                        _homeViewModel.redirectTab(0);
                         Navigator.of(context)
                             .pushNamedAndRemoveUntil(URLConsts.home, (Route<dynamic> route) => false);
                       },
@@ -367,7 +373,7 @@ class _LoginStateView extends State<LoginView> {
     _authenticationViewModel.signIn(auth)
         .then((value) {
       Navigator.of(context).pop();
-      return Navigator.of(context).pushReplacementNamed(URLConsts.home);
+      return Navigator.of(context).pushNamedAndRemoveUntil(URLConsts.home, (Route<dynamic> route) => false);
     })
         .catchError((error, stackTrace) {
       Navigator.of(context).pop();

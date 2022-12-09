@@ -6,23 +6,28 @@ import 'package:tudu/base/base_viewmodel.dart';
 import 'package:tudu/models/amenity.dart';
 
 import '../models/partner.dart';
+import '../models/site.dart';
 import '../repositories/home/home_repository.dart';
-import 'dart:async';
 import 'package:tudu/base/base_viewmodel.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'package:location/location.dart' as locationLib;
 
-class MapViewModel extends BaseViewModel {
+class MapScreenViewModel extends BaseViewModel {
 
-  static final MapViewModel _instance =
-  MapViewModel._internal();
+  static final MapScreenViewModel _instance =
+  MapScreenViewModel._internal();
 
-  factory MapViewModel() {
+  factory MapScreenViewModel() {
     return _instance;
   }
 
-  MapViewModel._internal();
+  MapScreenViewModel._internal();
+
+  List<Site> listSiteForMapView = [];
+
+  bool isGotoCurrent = false;
+  int mapFilterType = 0;
 
   late bool serviceEnabled;
   locationLib.Location location = locationLib.Location();
@@ -33,6 +38,18 @@ class MapViewModel extends BaseViewModel {
   @override
   FutureOr<void> init() {
 
+  }
+
+  void setInitMapInfo(
+      List<Site>? listSiteForMapViewInput,
+      bool isGoToCurrentPosition,
+      int mapFilterTypeInput,) {
+    if (listSiteForMapViewInput != null) {
+      listSiteForMapView = listSiteForMapViewInput.where((element) => true).toList();
+      isGotoCurrent = isGoToCurrentPosition;
+      mapFilterType = mapFilterTypeInput;
+      notifyListeners();
+    }
   }
 
   void setCurrentPosition(LatLng input) async {
