@@ -38,7 +38,8 @@ Future<void> main() async {
       options: DefaultFirebaseOptions.currentPlatform,
     );
 
-    PrefUtil.init();
+    await PrefUtil.init();
+    PrefUtil.setValue(StrConst.isDataBinded, false);
 
     // if (kDebugMode) {
     //   await _connectToFirebaseEmulator();

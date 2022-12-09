@@ -1,7 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:map_launcher/map_launcher.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:tudu/consts/color/Colors.dart';
 import 'package:tudu/consts/font/Fonts.dart';
@@ -10,6 +13,7 @@ import 'package:tudu/models/amenity.dart';
 import 'package:tudu/models/partner.dart';
 import 'package:tudu/utils/func_utils.dart';
 import 'package:tudu/viewmodels/what_tudu_site_content_detail_viewmodel.dart';
+import 'package:tudu/views/common/alert.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
 import 'package:tudu/utils/colors_const.dart';
 import 'package:tudu/consts/font/font_size_const.dart';
@@ -19,6 +23,10 @@ import 'package:tudu/generated/l10n.dart';
 import 'package:tudu/views/photo/photo_view.dart';
 import 'package:tudu/viewmodels/home_viewmodel.dart';
 import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
+import 'package:url_launcher/url_launcher_string.dart';
+
+import '../../services/observable/observable_serivce.dart';
+import '../../utils/permission_request.dart';
 
 class WhatTuduSiteContentDetailView extends StatefulWidget {
   const WhatTuduSiteContentDetailView({super.key});
@@ -30,6 +38,7 @@ class WhatTuduSiteContentDetailView extends StatefulWidget {
 class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView> {
   final WhatTuduSiteContentDetailViewModel _whatTuduSiteContentDetailViewModel = WhatTuduSiteContentDetailViewModel();
   final HomeViewModel _homeViewModel = HomeViewModel();
+  ObservableService _observableService = ObservableService();
 
   Offset _tapPosition = Offset.zero;
 
@@ -42,7 +51,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
     WidgetsBinding.instance.addPostFrameCallback((_) {});
   }
 
-  void _onRefresh() async{
+  void _onRefresh() async {
     setState(() {});
     _refreshController.refreshCompleted();
   }
@@ -87,9 +96,12 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                       ],
                     ),
                     onTap: () {
-                      Navigator.of(context).popUntil((route) {
-                        return (route.settings.name == StrConst.whatTuduScene || route.isFirst);
-                      });
+                      Navigator.of(context).pop();
+                      // Navigator.of(context).popUntil((route) {
+                      //   return (route.settings.name == StrConst.whatTuduScene ||
+                      //       route.settings.name == StrConst.mapScene ||
+                      //       route.isFirst);
+                      // });
                     },
                   ),
                   Container(
@@ -182,55 +194,58 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                     settings: const RouteSettings(name: StrConst.viewPhoto)));
           },
           child: Container(
-              alignment: Alignment.centerLeft,
+            alignment: Alignment.centerLeft,
+            width: MediaQuery.of(context).size.width,
+            child: CachedNetworkImage(
+              imageUrl: urlImage,
               width: MediaQuery.of(context).size.width,
-              child: CachedNetworkImage(
-                imageUrl: urlImage,
-                width: MediaQuery.of(context).size.width,
-                height: 300,
-                fit: BoxFit.cover,
-                imageBuilder: (context, imageProvider) => Container(
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: imageProvider,
-                        fit: BoxFit.cover),
-                  ),
+              height: 300,
+              fit: BoxFit.cover,
+              imageBuilder: (context, imageProvider) => Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
                 ),
-                placeholder: (context, url) => const CupertinoActivityIndicator(
-                  radius: 20,
-                  color: ColorStyle.primary,
-                ),
-                errorWidget: (context, url, error) => Icon(Icons.error),
               ),
+              placeholder: (context, url) => const CupertinoActivityIndicator(
+                radius: 20,
+                color: ColorStyle.primary,
+              ),
+              errorWidget: (context, url, error) => Icon(Icons.error),
+            ),
           ),
         ),
         (dealId != null)
             ? InkWell(
-          hoverColor: Colors.transparent,
-          focusColor: Colors.transparent,
-          splashColor: Colors.transparent,
-          onTap: () {
-            if (FirebaseAuth.instance.currentUser != null) {
-              // show
-            } else {
-              // show login. da co alert login nhung o nhanh khac. ko can lam. a se dien vao khi merge
-            }
-          },
-          child: Container(
-            height: 40,
-            width: 40,
-            margin: const EdgeInsets.only(top: 16, left: 16),
-            decoration: const BoxDecoration(
-              color: ColorStyle.tertiaryBackground,
-              borderRadius: BorderRadius.all(Radius.circular(10.0)),
-            ),
-            child: Image.asset(
-              ImagePath.tab1stActiveIcon,
-              width: 30,
-              fit: BoxFit.contain,
-            ),
-          ),
-        )
+                hoverColor: Colors.transparent,
+                focusColor: Colors.transparent,
+                splashColor: Colors.transparent,
+                onTap: () {
+                  if (FirebaseAuth.instance.currentUser != null) {
+                    // show
+                  } else {
+                    // show login. da co alert login nhung o nhanh khac. ko can lam. a se dien vao khi merge
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return ErrorAlert.alertLogin(context);
+                        });
+                  }
+                },
+                child: Container(
+                  height: 40,
+                  width: 40,
+                  margin: const EdgeInsets.only(top: 16, left: 16),
+                  decoration: const BoxDecoration(
+                    color: ColorStyle.tertiaryBackground,
+                    borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                  ),
+                  child: Image.asset(
+                    ImagePath.tab1stActiveIcon,
+                    width: 30,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              )
             : Container(),
       ],
     );
@@ -255,9 +270,18 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                     color: ColorStyle.darkLabel,
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(right: 8.0),
-                  child: Image.asset(ImagePath.mapIcon, fit: BoxFit.contain, height: 20.0),
+                InkWell(
+                  onTap: () {
+                    PermissionRequest.isResquestPermission = true;
+                    PermissionRequest().permissionServiceCall(
+                      context,
+                      _whatTuduSiteContentDetailViewModel.directionWithGoogleMap,
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: Image.asset(ImagePath.mapIcon, fit: BoxFit.contain, height: 20.0),
+                  ),
                 ),
               ],
             ),
@@ -556,9 +580,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
             fit: BoxFit.contain,
             imageBuilder: (context, imageProvider) => Container(
               decoration: BoxDecoration(
-                image: DecorationImage(
-                    image: imageProvider,
-                    fit: BoxFit.cover),
+                image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
               ),
             ),
             placeholder: (context, url) => const CupertinoActivityIndicator(
@@ -721,9 +743,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
               fit: BoxFit.contain,
               imageBuilder: (context, imageProvider) => Container(
                 decoration: BoxDecoration(
-                  image: DecorationImage(
-                      image: imageProvider,
-                      fit: BoxFit.cover),
+                  image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
                 ),
               ),
               placeholder: (context, url) => const CupertinoActivityIndicator(
@@ -798,7 +818,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
         child: Container(
           padding: const EdgeInsets.only(top: 4.0, right: 4.0, bottom: 4.0),
           child: Image.asset(
-            // "${_homeViewModel.getAmenityById(amenityId)?.icon}", // ICON DIDNT HAVE LINK YET
+              // "${_homeViewModel.getAmenityById(amenityId)?.icon}", // ICON DIDNT HAVE LINK YET
               ImagePath.yogaIcon, // FAKE ICON
               fit: BoxFit.contain,
               height: 25.0),

@@ -6,8 +6,8 @@ import 'package:tudu/base/base_viewmodel.dart';
 import 'package:tudu/models/amenity.dart';
 
 import '../models/partner.dart';
+import '../models/site.dart';
 import '../repositories/home/home_repository.dart';
-import 'dart:async';
 import 'package:tudu/base/base_viewmodel.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -24,7 +24,10 @@ class MapScreenViewModel extends BaseViewModel {
 
   MapScreenViewModel._internal();
 
+  List<Site> listSiteForMapView = [];
+
   bool isGotoCurrent = false;
+  int mapFilterType = 0;
 
   late bool serviceEnabled;
   locationLib.Location location = locationLib.Location();
@@ -35,6 +38,18 @@ class MapScreenViewModel extends BaseViewModel {
   @override
   FutureOr<void> init() {
 
+  }
+
+  void setInitMapInfo(
+      List<Site>? listSiteForMapViewInput,
+      bool isGoToCurrentPosition,
+      int mapFilterTypeInput,) {
+    if (listSiteForMapViewInput != null) {
+      listSiteForMapView = listSiteForMapViewInput.where((element) => true).toList();
+      isGotoCurrent = isGoToCurrentPosition;
+      mapFilterType = mapFilterTypeInput;
+      notifyListeners();
+    }
   }
 
   void setCurrentPosition(LatLng input) async {

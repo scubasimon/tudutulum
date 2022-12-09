@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:collection';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -7,7 +8,9 @@ import 'package:notification_center/notification_center.dart';
 import 'package:tudu/consts/color/Colors.dart';
 import 'package:tudu/consts/font/Fonts.dart';
 import 'package:tudu/consts/strings/str_const.dart';
+import 'package:tudu/utils/func_utils.dart';
 import 'package:tudu/viewmodels/home_viewmodel.dart';
+import 'package:tudu/viewmodels/what_tudu_site_content_detail_viewmodel.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
 import 'package:tudu/consts/font/font_size_const.dart';
 import 'package:tudu/views/map/map_screen_view.dart';
@@ -35,11 +38,19 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeView extends State<HomeView> with WidgetsBindingObserver {
-  final ObservableService _observableService = ObservableService();
-  final HomeViewModel _homeViewModel = HomeViewModel();
+  ObservableService _observableService = ObservableService();
+  HomeViewModel _homeViewModel = HomeViewModel();
+  WhatTuduSiteContentDetailViewModel _whatTuduSiteContentDetailViewModel = WhatTuduSiteContentDetailViewModel();
   int pageIndex = 0;
 
   final pages = [
+    // Navigator(
+    //   onGenerateRoute: (settings) {
+    //     Widget page = const WhatTuduView();
+    //     if (settings.name == 'MapScreenView') page = const MapScreenView();
+    //     return MaterialPageRoute(builder: (_) => page);
+    //   },
+    // ),
     const WhatTuduView(),
     const EventsView(),
     const DealsView(),
@@ -54,12 +65,14 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
 
   StreamSubscription<int>? redirectTabStreamListener;
   StreamSubscription<String>? networkStreamListener;
+  StreamSubscription<List<GeoPoint>>? redirectToGoogleMapStreamListener = null;
 
   @override
   void initState() {
     NotificationCenter().subscribe(StrConst.openMenu, _openDrawer);
     listenToNetwork();
     listenToRedirectTab();
+    listenToRedirectAndDirectionGoogleMap();
     //set orientation is portrait
     pageIndex = widget.pageIndex;
     SystemChrome.setPreferredOrientations(
@@ -86,6 +99,26 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
       });
   }
 
+  void listenToRedirectAndDirectionGoogleMap() {
+    try {
+      redirectToGoogleMapStreamListener ??= _observableService.listenToRedirectToGoogleMapStream.asBroadcastStream().listen((data) {
+        if (data.length == 2) {
+          FuncUlti.redirectAndDirection(
+              data[0],
+              data[1]
+          );
+        } else {
+          FuncUlti.redirectAndMoveToLocation(
+              data[0],
+              _whatTuduSiteContentDetailViewModel.siteContentDetail.title
+          );
+        }
+      });
+    } catch (e) {
+      print("listenToRedirectAndDirectionGoogleMap -> Exception: $e");
+    }
+  }
+
   void listenToNetwork() {
     networkStreamListener ??= _observableService.networkStream.asBroadcastStream().listen((data) {
       print("listenToNetwork -> $data");
@@ -96,7 +129,9 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
   @override
   void dispose() {
     print("dispose -> home_view");
+    redirectToGoogleMapStreamListener?.cancel();
     networkStreamListener?.cancel();
+    redirectTabStreamListener?.cancel();
     super.dispose();
   }
 

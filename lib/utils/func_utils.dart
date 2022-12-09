@@ -1,19 +1,20 @@
 import 'dart:io';
 import 'dart:math';
 
-import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:map_launcher/map_launcher.dart';
 import 'package:tudu/consts/strings/str_const.dart';
 
 class FuncUlti {
-  static void checkSoundOnOff(String sound) {
-    final assetsAudioPlayer = AssetsAudioPlayer();
-
-    // (PrefUtil.getValue(StrConst.SOUND_STATUS, false) as bool)
-    //     ? assetsAudioPlayer.open(Audio(sound))
-    //     : () {};
-
-    assetsAudioPlayer.open(Audio(sound));
-  }
+  // static void checkSoundOnOff(String sound) {
+  //   final assetsAudioPlayer = AssetsAudioPlayer();
+  //
+  //   // (PrefUtil.getValue(StrConst.SOUND_STATUS, false) as bool)
+  //   //     ? assetsAudioPlayer.open(Audio(sound))
+  //   //     : () {};
+  //
+  //   assetsAudioPlayer.open(Audio(sound));
+  // }
 
   static bool validateEmail(String email) {
     RegExp emailRegex = RegExp(StrConst.emailRegex);
@@ -108,6 +109,21 @@ class FuncUlti {
       return false;
     }
     return null;
+  }
+
+  static Future<void> redirectAndDirection(GeoPoint from, GeoPoint to) async {
+    final availableMaps = await MapLauncher.installedMaps;
+    await availableMaps.first.showDirections(
+        origin: Coords(from.latitude, from.longitude),
+        destination: Coords(to.latitude, to.longitude));
+  }
+
+  static Future<void> redirectAndMoveToLocation(GeoPoint position, String title) async {
+    final availableMaps = await MapLauncher.installedMaps;
+    await availableMaps.first.showMarker(
+        coords: Coords(position.latitude, position.longitude),
+        title: title,
+    );
   }
 }
 

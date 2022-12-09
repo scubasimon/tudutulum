@@ -73,5 +73,11 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSLocationUsageDescription</key>
+	<string>Allow Tudu access device&apos;s location to find out your nearest tulum.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Allow Tudu access device&apos;s location to find out your nearest tulum.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Allow Tudu access device&apos;s location to find out your nearest tulum.</string>
 </dict>
 </plist>

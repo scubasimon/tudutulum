@@ -35,6 +35,7 @@ class HomeViewModel extends BaseViewModel {
   int filterType = 0;
   int orderType = 0;
 
+
   List<Article> listArticles = [];
   List<Site> listSites = [];
   List<Partner> listPartners = [];
@@ -50,12 +51,11 @@ class HomeViewModel extends BaseViewModel {
   }
 
   String getBusinessStringById(int idInput) {
-    for (var element in listBusiness) {
-      if (element.businessid == idInput) {
-        return element.type;
-      }
+    if (idInput < listBusiness.length) {
+      return listBusiness[idInput].type;
+    } else {
+      return S.current.all_location;
     }
-    return S.current.all_location;
   }
 
   Business? getBusinessById(int idInput) {

@@ -2,12 +2,14 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:custom_marker/marker_icon.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart' as locationLib;
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -51,7 +53,7 @@ class _MapScreenView extends State<MapScreenView> {
 
   locationLib.Location location = locationLib.Location();
 
-  StreamSubscription<List<Article>?>? reloadMarkerSite;
+  StreamSubscription<List<Site>?>? reloadMarkerSite;
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -64,7 +66,6 @@ class _MapScreenView extends State<MapScreenView> {
 
   @override
   void initState() {
-    _addMarker();
     listenToDataFilter();
 
     super.initState();
@@ -102,8 +103,8 @@ class _MapScreenView extends State<MapScreenView> {
   }
 
   void listenToDataFilter() {
-    reloadMarkerSite ??= _observableService.listArticlesStream.asBroadcastStream().listen((data) {
-      _addMarker();
+    reloadMarkerSite ??= _observableService.mapProgressLoadingStream.asBroadcastStream().listen((data) {
+      _addMarker(data);
     });
   }
 
@@ -118,44 +119,33 @@ class _MapScreenView extends State<MapScreenView> {
     ));
   }
 
-  Future<void> _addMarker() async {
+  Future<void> _addMarker(List<Site> data) async {
     _showLoading();
     markers.clear();
 
-    List<Site>? listSite = (_observableService.listSitesController as BehaviorSubject<List<Site>?>).value;
-    if (listSite != null) {
-      if (listSite.isNotEmpty) {
-        for (var site in listSite) {
-
-          Uint8List bytes = (await NetworkAssetBundle(Uri.parse(site.images[0]))
-              .load(site.images[0]))
-              .buffer
-              .asUint8List();
-
-          final Marker marker = Marker(
-            markerId: MarkerId(site.title),
-            position: LatLng(site.locationLat, site.locationLon),
-            infoWindow: InfoWindow(title: "Title: ${site.title}", snippet: "Subtitle: ${site.subTitle}"),
-            icon: BitmapDescriptor.fromBytes(
-              bytes,
-              size: Size(24, 24),
-            ),
-            onTap: () {
-              print("ON TAP MARKER -> ${site.title}");
-              _whatTuduSiteContentDetailViewModel.setSiteContentDetailCover(site);
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const WhatTuduSiteContentDetailView(),
-                      settings: const RouteSettings(name: StrConst.whatTuduSiteContentDetailScene)));
-            }
-          );
-          markers.add(marker);
-        }
-      }
+    for (var site in data) {
+      final Marker marker = Marker(
+          markerId: MarkerId(site.title),
+          position: LatLng(site.locationLat, site.locationLon),
+          // infoWindow: InfoWindow(title: "Title: ${site.title}", snippet: "Subtitle: ${site.subTitle}"),
+          icon: await MarkerIcon.downloadResizePictureCircle(
+              site.images[0],
+              size: 150,
+              addBorder: true,
+              borderColor: Colors.white,
+              borderSize: 15),
+          onTap: () {
+            print("ON TAP MARKER -> ${site.title}");
+            _whatTuduSiteContentDetailViewModel.setSiteContentDetailCover(site);
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const WhatTuduSiteContentDetailView(),
+                    settings: const RouteSettings(name: StrConst.whatTuduSiteContentDetailScene)));
+          }
+      );
+      markers.add(marker);
     }
-
-    print("POPOPOPOP");
     Navigator.pop(context);
     setState(() {});
   }
@@ -195,7 +185,7 @@ class _MapScreenView extends State<MapScreenView> {
                     width: 12.0,
                   ),
                   Text(
-                    _homeViewModel.getBusinessStringById(_homeViewModel.filterType),
+                    _homeViewModel.getBusinessStringById(_mapScreenViewModel.mapFilterType),
                     style: const TextStyle(
                       color: ColorStyle.secondaryDarkLabel94,
                       fontSize: 16,
@@ -204,80 +194,6 @@ class _MapScreenView extends State<MapScreenView> {
                     ),
                   ),
                   const Spacer(),
-                  PullDownButton(
-                    itemBuilder: (context) => [
-                      PullDownMenuItem(
-                        title: S.current.alphabet,
-                        itemTheme: const PullDownMenuItemTheme(
-                          textStyle: TextStyle(
-                              fontFamily: FontStyles.sfProText,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 17,
-                              color: ColorStyle.menuLabel),
-                        ),
-                        enabled: _homeViewModel.orderType != 0,
-                        onTap: () {
-                          _whatTuduViewModel.getDataWithFilterSortSearch(
-                            (_homeViewModel.filterType < _homeViewModel.listBusiness.length)
-                                ? _homeViewModel.listBusiness[_homeViewModel.filterType]
-                                : null,
-                            FuncUlti.getSortTypeByInt(0), // Search with Alphabet => "title" = 0
-                            _homeViewModel.searchKeyword, // Search with Alphabet => "title" = 0
-                          );
-                          _homeViewModel.orderType = 0;
-                        },
-                      ),
-                      const PullDownMenuDivider(),
-                      PullDownMenuItem(
-                        title: S.current.distance,
-                        itemTheme: const PullDownMenuItemTheme(
-                          textStyle: TextStyle(
-                              fontFamily: FontStyles.sfProText,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 17,
-                              color: ColorStyle.menuLabel),
-                        ),
-                        enabled: _homeViewModel.orderType != 1,
-                        onTap: () {
-                          PermissionRequest.isResquestPermission = true;
-                          PermissionRequest().permissionServiceCall(
-                            context,
-                                () {
-                              /// IMPL logic
-                              _whatTuduViewModel.sortWithLocation();
-                              _homeViewModel.orderType = 1;
-                            },
-                          );
-                        },
-                      ),
-                    ],
-                    position: PullDownMenuPosition.automatic,
-                    buttonBuilder: (context, showMenu) => Container(
-                      padding: const EdgeInsets.only(left: 8, right: 8),
-                      child: InkWell(
-                        onTap: showMenu,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Expanded(child: Image.asset(ImagePath.sortIcon, fit: BoxFit.contain, width: 16.0)),
-                            Text(
-                              S.current.sort,
-                              style: const TextStyle(
-                                color: ColorStyle.primary,
-                                fontSize: 10,
-                                fontWeight: FontWeight.w500,
-                                fontFamily: FontStyles.raleway,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 12.0,
-                  ),
                   PullDownButton(
                     itemBuilder: (context) => List<PullDownMenuEntry>.generate(
                         _homeViewModel.listBusiness.length * 2 + 1,
@@ -292,18 +208,18 @@ class _MapScreenView extends State<MapScreenView> {
                                 color: ColorStyle.menuLabel),
                           ),
                           iconWidget: Image.asset(
-                            _homeViewModel.filterType != 3 ? ImagePath.mappinIcon : ImagePath.mappinDisableIcon,
+                            _mapScreenViewModel.mapFilterType != 3 ? ImagePath.mappinIcon : ImagePath.mappinDisableIcon,
                             width: 28,
                             height: 28,
                           ),
-                          enabled: _homeViewModel.filterType != ((counter) / 2).round(),
+                          enabled: _mapScreenViewModel.mapFilterType != ((counter) / 2).round(),
                           onTap: () {
-                            _whatTuduViewModel.getDataWithFilterSortSearch(
+                            _whatTuduViewModel.getDataWithFilterSortSearchForMap(
                               null, // Filter all business => businnesFilter = null
                               FuncUlti.getSortTypeByInt(_homeViewModel.orderType),
                               _homeViewModel.searchKeyword,
                             );
-                            _homeViewModel.filterType = ((counter) / 2).round();
+                            _mapScreenViewModel.mapFilterType = ((counter) / 2).round();
                           },
                         )
                             : (counter == _homeViewModel.listBusiness.length * 2 - 1)
@@ -325,14 +241,14 @@ class _MapScreenView extends State<MapScreenView> {
                             width: 28,
                             height: 28,
                           ),
-                          enabled: _homeViewModel.filterType != ((counter) / 2).round(),
+                          enabled: _mapScreenViewModel.mapFilterType != ((counter) / 2).round(),
                           onTap: () {
-                            _whatTuduViewModel.getDataWithFilterSortSearch(
+                            _whatTuduViewModel.getDataWithFilterSortSearchForMap(
                               _homeViewModel.listBusiness[((counter) / 2).round()], // get business
                               FuncUlti.getSortTypeByInt(_homeViewModel.orderType),
                               _homeViewModel.searchKeyword,
                             );
-                            _homeViewModel.filterType = ((counter) / 2).round();
+                            _mapScreenViewModel.mapFilterType = ((counter) / 2).round();
                           },
                         )
                             : const PullDownMenuDivider(),
@@ -388,7 +304,7 @@ class _MapScreenView extends State<MapScreenView> {
                 setState(() {
                   mapController = controller;
                   isMapCreated = true;
-                  _addMarker();
+                  _addMarker(_mapScreenViewModel.listSiteForMapView);
                 });
               },
               myLocationEnabled: true,
