@@ -6,10 +6,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:tudu/models/error.dart';
 import 'package:tudu/generated/l10n.dart';
-import 'package:tudu/services/observable/observable_serivce.dart';
 import 'package:tudu/utils/func_utils.dart';
-
-import '../../consts/strings/str_const.dart';
+import 'package:tudu/consts/strings/str_const.dart';
 
 abstract class FirebaseService {
   Future<void> createData(List<Map<String, dynamic>> data);
@@ -57,6 +55,8 @@ abstract class FirebaseService {
   Future<void> deleteAccount();
   
   Future<List<Map<String, dynamic>>> getDeals();
+  
+  Future<Map<String, dynamic>> getDeal(int id);
 }
 
 class FirebaseServiceImpl extends FirebaseService {
@@ -325,6 +325,20 @@ class FirebaseServiceImpl extends FirebaseService {
       return results.docs.map((e) => e.data()).toList();
     } catch (e) {
       throw CommonError.serverError;
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> getDeal(int id) async {
+    var results = await FirebaseFirestore
+        .instance
+        .collection("deals")
+        .where("dealsid", isEqualTo: id).get();
+    var data = results.docs.map((e) => e.data());
+    if (data.isEmpty) {
+      throw CommonError.serverError;
+    } else {
+      return data.first;
     }
   }
 }

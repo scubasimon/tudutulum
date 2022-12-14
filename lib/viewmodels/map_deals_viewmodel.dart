@@ -1,30 +1,31 @@
 import 'dart:async';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:tudu/base/base_viewmodel.dart';
+import 'package:tudu/repositories/home/home_repository.dart';
+import 'package:tudu/services/location/location_permission.dart';
+import 'package:tudu/models/business.dart';
+import 'package:tudu/models/param.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:tudu/models/deal.dart';
 import 'package:tudu/models/error.dart';
-import 'package:tudu/repositories/auth/auth_repository.dart';
-import 'package:tudu/models/user.dart';
 import 'package:tudu/repositories/deal/deal_repository.dart';
-import 'package:tudu/models/param.dart' as Param;
-import 'package:tudu/repositories/home/home_repository.dart';
-import 'package:tudu/services/location/location_permission.dart';
+import 'package:location/location.dart';
 
-import 'package:tudu/models/business.dart';
-
-class DealsViewModel extends BaseViewModel {
-
-  final AuthRepository _authRepository = AuthRepositoryImpl();
-  final DealRepository _dealRepository = DealRepositoryImpl();
+class MapDealsViewModel extends BaseViewModel {
   final PermissionLocation _permissionLocation = PermissionLocation();
   final HomeRepository _homeRepository = HomeRepositoryImpl();
+  final DealRepository _dealRepository = DealRepositoryImpl();
+  final Location _location = Location();
 
   List<Business> business = [];
 
-  final _param = BehaviorSubject<Param.Param>();
+  final _param = BehaviorSubject<Param>();
 
-  final _userLogin = BehaviorSubject<bool>();
-  Stream<bool> get userLoginStream => _userLogin.stream;
+  final _currentLocation = BehaviorSubject<LatLng>();
+  Stream<LatLng> get currentPosition => _currentLocation.stream;
+
+  final _isPermission = BehaviorSubject<bool>();
+  Stream<bool> get permission => _isPermission.stream;
 
   final _listDeals = BehaviorSubject<List<Deal>>();
   Stream<List<Deal>> get deals => _listDeals.stream;
@@ -37,63 +38,47 @@ class DealsViewModel extends BaseViewModel {
 
   @override
   FutureOr<void> init() async {
-    Profile? user;
-    _isLoading.sink.add(true);
-    try {
-      user = await _authRepository.getCurrentUser();
-    } catch (e) {
-      print(e);
-    }
-    _userLogin.sink.add(user != null);
-    if (user == null) {
-      return;
-    }
-
     var authorization = await _permissionLocation.permission();
+    _isPermission.add(authorization);
     if (!authorization) {
       _isLoading.add(false);
       _exception.add(LocationError.locationPermission);
       return;
     }
 
-    _param.add(Param.Param(refresh: true));
+    _isLoading.add(true);
+
+    var result = await _location.getLocation();
+    if (result.latitude != null && result.longitude != null) {
+      _currentLocation.add(LatLng(result.latitude!, result.longitude!));
+    }
+    _param.add(Param(refresh: true, order: null));
     _searchData();
+
+    print("get location");
+
   }
 
-  void searchWithParam({String? title, int? businessId, Param.Order? order}) {
+  void searchWithParam({int? businessId}) {
     var value = _param.valueOrNull;
 
     if (value == null) {
-      value = Param.Param(
-        title: title,
+      value = Param(
         businessId: businessId,
-        order: order ?? Param.Order.distance,
-        refresh: false,
+        refresh: true,
       );
     } else {
       value.refresh = false;
-      if (title != null) {
-        value.title = title;
-      }
       value.businessId = businessId;
-      if (order != null) {
-        value.order = order;
-      }
     }
     _param.sink.add(value);
-  }
-
-  void refresh() {
-    var value = _param.value;
-    value.refresh = true;
-    _param.add(value);
   }
 
   void _searchData() {
     _param.listen(_getData);
   }
 
-  Future<void> _getData(Param.Param param) async {
+  Future<void> _getData(Param param) async {
     if (param.refresh && !_isLoading.value) {
       _isLoading.add(true);
     }

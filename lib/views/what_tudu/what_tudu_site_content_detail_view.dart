@@ -26,7 +26,7 @@ import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
 import 'package:url_launcher/url_launcher_string.dart';
 
 import '../../services/observable/observable_serivce.dart';
-import '../../utils/permission_request.dart';
+import '../../services/location/permission_request.dart';
 
 class WhatTuduSiteContentDetailView extends StatefulWidget {
   const WhatTuduSiteContentDetailView({super.key});

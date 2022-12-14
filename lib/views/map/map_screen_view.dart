@@ -29,7 +29,7 @@ import '../../generated/l10n.dart';
 import '../../models/article.dart';
 import '../../models/site.dart';
 import '../../utils/func_utils.dart';
-import '../../utils/permission_request.dart';
+import '../../services/location/permission_request.dart';
 import '../../viewmodels/map_screen_viewmodel.dart';
 import '../../viewmodels/what_tudu_site_content_detail_viewmodel.dart';
 import '../what_tudu/what_tudu_site_content_detail_view.dart';
