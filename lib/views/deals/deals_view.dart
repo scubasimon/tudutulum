@@ -6,6 +6,8 @@ import 'package:pull_down_button/pull_down_button.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:tudu/consts/color/Colors.dart';
 import 'package:tudu/models/deal.dart';
+import 'package:tudu/models/error.dart';
+import 'package:tudu/models/param.dart';
 import 'package:tudu/views/common/alert.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
 import 'package:tudu/consts/font/font_size_const.dart';
@@ -14,6 +16,8 @@ import 'package:tudu/consts/images/ImagePath.dart';
 import 'package:tudu/consts/strings/str_const.dart';
 import 'package:tudu/consts/font/Fonts.dart';
 import 'package:tudu/generated/l10n.dart';
+import 'package:tudu/views/deals/deal_details_view.dart';
+import 'package:tudu/views/map/map_deal_view.dart';
 
 class DealsView extends StatefulWidget {
   const DealsView({super.key});
@@ -22,18 +26,23 @@ class DealsView extends StatefulWidget {
   State<StatefulWidget> createState() => _DealsView();
 }
 
-class _DealsView extends State<DealsView> {
+class _DealsView extends State<DealsView> with AutomaticKeepAliveClientMixin<DealsView> {
   final _dealsViewModel = DealsViewModel();
 
   final _scrollController = ScrollController();
   final _searchController = TextEditingController();
   final _refreshController = RefreshController(initialRefresh: false);
 
-  var _enableAllLocation = false;
+  var _order = Order.distance;
   bool _isAtTop = true;
+  int? _businessId;
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
+    super.initState();
     _dealsViewModel.userLoginStream.listen((event) {
       if (!event) {
         showDialog(context: context, builder: (context){
@@ -41,18 +50,16 @@ class _DealsView extends State<DealsView> {
         });
       }
     });
-
     _dealsViewModel.loading.listen((event) {
       if (event) {
         _showLoading();
       } else {
+        _refreshController.refreshCompleted();
         Navigator.of(context).pop();
       }
     });
-
     _scrollController.addListener(() {
-      print(_scrollController.offset);
-      if (_scrollController.position.pixels == 0.0) {
+      if (_scrollController.offset <= 0.0) {
         _isAtTop = true;
         setState(() {});
       } else {
@@ -63,14 +70,22 @@ class _DealsView extends State<DealsView> {
     _searchController.addListener(() {
       _dealsViewModel.searchWithParam(
         title: _searchController.text,
+        businessId: _businessId,
+        order: _order,
       );
     });
     _dealsViewModel.error.listen((event) {
-      showDialog(context: context, builder: (context){
-        return ErrorAlert.alert(context, event.message ?? S.current.failed);
-      });
+      if (event.code == LocationError.locationPermission.code) {
+        showDialog(context: context, builder: (context) {
+          return ErrorAlert.alertPermission(context, S.current.location_permission_message);
+        });
+      } else {
+        showDialog(context: context, builder: (context){
+          return ErrorAlert.alert(context, event.message ?? S.current.failed);
+        });
+      }
+
     });
-    super.initState();
   }
 
   @override
@@ -83,6 +98,7 @@ class _DealsView extends State<DealsView> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     List<Widget> array = [
       Container(
         height: 36.0,
@@ -101,108 +117,74 @@ class _DealsView extends State<DealsView> {
               },
             ),
             const Spacer(),
-            InkWell(
-              onTap: () {},
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Expanded(
-                      child: Image.asset(
-                          ImagePath.sortIcon,
-                          fit: BoxFit.contain,
-                          width: 16.0)
-                  ),
-                  Text(
-                    S.current.sort,
-                    style: const TextStyle(
-                      color: ColorStyle.primary,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w500,
-                      fontFamily: FontStyles.raleway,
+            PullDownButton(
+              itemBuilder: (context) => [
+                PullDownMenuItem(
+                  title: S.current.alphabet,
+                  itemTheme: const PullDownMenuItemTheme(
+                    textStyle: TextStyle(
+                        fontFamily: FontStyles.sfProText,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 17,
+                        color: ColorStyle.menuLabel
                     ),
                   ),
-                ],
+                  enabled: _order != Order.alphabet,
+                  onTap: () {
+                    _order = Order.alphabet;
+                    _dealsViewModel.searchWithParam(order: Order.alphabet, businessId: _businessId, title: _searchController.text);
+                  },
+                ),
+                const PullDownMenuDivider(),
+                PullDownMenuItem(
+                  title: S.current.distance,
+                  enabled: _order != Order.distance,
+                  itemTheme: const PullDownMenuItemTheme(
+                    textStyle: TextStyle(
+                        fontFamily: FontStyles.sfProText,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 17,
+                        color: ColorStyle.menuLabel
+                    ),
+                  ),
+                  onTap: () {
+                    _order = Order.distance;
+                    _dealsViewModel.searchWithParam(order: Order.distance, businessId: _businessId, title: _searchController.text);
+                  },
+                ),
+              ],
+              position: PullDownMenuPosition.automatic,
+              buttonBuilder: (context, showMenu) => Container(
+                padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                child: InkWell(
+                  onTap: showMenu,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                          child: Image.asset(
+                              ImagePath.sortIcon,
+                              fit: BoxFit.contain,
+                              width: 16.0)
+                      ),
+                      Text(
+                        S.current.sort,
+                        style: const TextStyle(
+                          color: ColorStyle.primary,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w500,
+                          fontFamily: FontStyles.raleway,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
             const SizedBox(width: 12.0,),
             PullDownButton(
-              itemBuilder: (context) => [
-                PullDownMenuItem(
-                  title: S.current.business_type,
-                  iconWidget: Image.asset(
-                    ImagePath.cenoteIcon,
-                    width: 28, height: 28,
-                  ),
-                  itemTheme: const PullDownMenuItemTheme(
-                    textStyle: TextStyle(
-                        fontFamily: FontStyles.sfProText,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 17,
-                        color: ColorStyle.menuLabel
-                    ),
-
-                  ),
-                  onTap: () {},
-                ),
-                const PullDownMenuDivider(),
-                PullDownMenuItem(
-                  title: S.current.beach_clubs,
-                  itemTheme: const PullDownMenuItemTheme(
-                    textStyle: TextStyle(
-                        fontFamily: FontStyles.sfProText,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 17,
-                        color: ColorStyle.menuLabel
-                    ),
-
-                  ),
-                  iconWidget: Image.asset(
-                    ImagePath.sunAndHorizonCircleIcon,
-                    width: 28, height: 28,
-                  ),
-                  onTap: () {},
-                ),
-                const PullDownMenuDivider(),
-                PullDownMenuItem(
-                  title: S.current.work_spots,
-                  itemTheme: const PullDownMenuItemTheme(
-                    textStyle: TextStyle(
-                        fontFamily: FontStyles.sfProText,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 17,
-                        color: ColorStyle.menuLabel
-                    ),
-
-                  ),
-                  iconWidget: Image.asset(
-                    ImagePath.desktopComputerIcon,
-                    width: 28, height: 28,
-                  ),
-                  onTap: () {},
-                ),
-                const PullDownMenuDivider.large(),
-                PullDownMenuItem(
-                  title: S.current.all_location,
-                  itemTheme: const PullDownMenuItemTheme(
-                    textStyle: TextStyle(
-                        fontFamily: FontStyles.sfProText,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 17,
-                        color: ColorStyle.menuLabel
-                    ),
-
-                  ),
-                  iconWidget: Image.asset(
-                    _enableAllLocation
-                        ? ImagePath.mappinIcon
-                        : ImagePath.mappinDisableIcon,
-                    width: 28, height: 28,
-                  ),
-                  enabled: _enableAllLocation,
-                  onTap: () {},
-                ),
-              ],
+              itemBuilder: _menuFilterItems,
               position: PullDownMenuPosition.automatic,
               buttonBuilder: (context, showMenu) => Container(
                 padding: const EdgeInsets.only(left: 8, right: 8),
@@ -235,7 +217,7 @@ class _DealsView extends State<DealsView> {
             ),
           ],
         ),
-      ),
+      )
     ];
     if (_isAtTop) {
       array.add(CupertinoSearchTextField(
@@ -273,17 +255,17 @@ class _DealsView extends State<DealsView> {
             ),
           ),
         ),
-        body: SmartRefresher(
-          enablePullDown: true,
-          enablePullUp: false,
-          header: const WaterDropHeader(),
-          controller: _refreshController,
-          onRefresh: _refresh,
-          child: StreamBuilder(
-            stream: _dealsViewModel.userLoginStream,
-            builder: (context, snapshot) {
-              if (snapshot.hasData && snapshot.data!) {
-                return ListView(
+        body: StreamBuilder(
+          stream: _dealsViewModel.userLoginStream,
+          builder: (context, snapshot) {
+            if (snapshot.hasData && snapshot.data!) {
+              return SmartRefresher(
+                enablePullDown: true,
+                enablePullUp: false,
+                header: const WaterDropHeader(),
+                controller: _refreshController,
+                onRefresh: _refresh,
+                child: ListView(
                   controller: _scrollController,
                   children: [
                     Padding(
@@ -291,11 +273,11 @@ class _DealsView extends State<DealsView> {
                       child: createDealsView(),
                     ),
                   ],
-                );
-              }
-              return Container();
-            },
-          ),
+                ),
+              );
+            }
+            return Container();
+          },
         ),
       ),
     );
@@ -326,7 +308,14 @@ class _DealsView extends State<DealsView> {
                 hoverColor: Colors.transparent,
                 focusColor: Colors.transparent,
                 splashColor: Colors.transparent,
-                onTap: () {},
+                onTap: () {
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => MapDealView(
+                        businessId: _businessId,
+                        business: _dealsViewModel.business,
+                      ))
+                  );
+                },
                 child: Column(
                   children: [
                     Image.asset(
@@ -359,6 +348,21 @@ class _DealsView extends State<DealsView> {
       stream: _dealsViewModel.deals,
       builder: (_, snapshot) {
         if (snapshot.hasData) {
+          if (snapshot.data!.isEmpty) {
+            return SizedBox(
+              height: MediaQuery.of(context).size.width,
+              child: Center(
+                child: Text(
+                  S.current.can_not_find_result,
+                  style: const TextStyle(
+                      color: ColorStyle.primary,
+                      fontSize: FontSizeConst.font20,
+                      fontWeight: FontWeight.w500,
+                      fontFamily: FontStyles.raleway),
+                ),
+              ),
+            );
+          }
           return ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -367,7 +371,13 @@ class _DealsView extends State<DealsView> {
                 return Stack(
                   children: [
                     InkWell(
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) => DealDetailView(
+                              deal: snapshot.data![index],
+                            ))
+                        );
+                      },
                       child: Container(
                           margin: const EdgeInsets.only(bottom: 8),
                           decoration: BoxDecoration(
@@ -439,17 +449,17 @@ class _DealsView extends State<DealsView> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  snapshot.data![index].title,
+                                  snapshot.data![index].titleShort,
                                   maxLines: 1,
                                   style: const TextStyle(
                                     color: ColorStyle.darkLabel,
-                                    fontFamily: FontStyles.mouser,
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: FontSizeConst.font12,
+                                    fontFamily: FontStyles.raleway,
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: FontSizeConst.font14,
                                   ),
                                 ),
                                 Text(
-                                  snapshot.data![index].titleShort,
+                                  snapshot.data![index].site.title,
                                   maxLines: 1,
                                   style: const TextStyle(
                                     fontFamily: FontStyles.raleway,
@@ -471,9 +481,10 @@ class _DealsView extends State<DealsView> {
                       child: Container(
                         alignment: Alignment.centerRight,
                         margin: const EdgeInsets.only(bottom: 24),
+                        height: 50,
+                        constraints: BoxConstraints(maxWidth: (MediaQuery.of(context).size.width - 48.0) * 0.3),
                         child: CachedNetworkImage(
                           imageUrl: snapshot.data![index].logo,
-                          height: 50,
                           fit: BoxFit.cover,
                         )
                       ),
@@ -490,6 +501,61 @@ class _DealsView extends State<DealsView> {
 
       },
     );
+  }
+
+  List<PullDownMenuEntry> _menuFilterItems(BuildContext context) {
+
+    List<PullDownMenuEntry> items = List.generate(_dealsViewModel.business.length * 2 - 1, (index) {
+      if (index % 2 == 0) {
+        var business = _dealsViewModel.business[index ~/ 2];
+        return PullDownMenuItem(
+          title: business.type,
+          enabled: _businessId != business.businessid,
+          itemTheme: const PullDownMenuItemTheme(
+            textStyle: TextStyle(
+                fontFamily: FontStyles.sfProText,
+                fontWeight: FontWeight.w500,
+                fontSize: 17,
+                color: ColorStyle.menuLabel
+            ),
+
+          ),
+          iconWidget: Image.asset(
+            ImagePath.cenoteIcon,
+            width: 28, height: 28,
+          ),
+          onTap: () {
+            _dealsViewModel.searchWithParam(businessId: business.businessid);
+            _businessId = business.businessid;
+          },
+        );
+      } else {
+        return const PullDownMenuDivider();
+      }
+    });
+    items.insert(items.length, const PullDownMenuDivider.large());
+    items.insert(items.length, PullDownMenuItem(
+      title: S.current.all_location,
+      enabled: _businessId != null,
+      itemTheme: const PullDownMenuItemTheme(
+        textStyle: TextStyle(
+            fontFamily: FontStyles.sfProText,
+            fontWeight: FontWeight.w500,
+            fontSize: 17,
+            color: ColorStyle.menuLabel
+        ),
+
+      ),
+      iconWidget: Image.asset(
+        _businessId == null ? ImagePath.mappinDisableIcon : ImagePath.mappinIcon,
+        width: 28, height: 28,
+      ),
+      onTap: () {
+        _dealsViewModel.searchWithParam(businessId: null, order: _order, title: _searchController.text);
+        _businessId = null;
+      },
+    ));
+    return items;
   }
 
   void _showLoading() {
@@ -511,11 +577,6 @@ class _DealsView extends State<DealsView> {
   }
 
   void _refresh() {
-    print("refresh");
-    _isAtTop = true;
-    setState(() {
-
-    });
-    _dealsViewModel.refresh().then((value) => _refreshController.refreshCompleted());
+    _dealsViewModel.refresh();
   }
 }

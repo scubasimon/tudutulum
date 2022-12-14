@@ -13,6 +13,10 @@ class CommonError {
     "E_101",
     message: S.current.server_error,
   );
+  static CustomError timeoutError = CustomError(
+    "E_102",
+    message: S.current.time_out_message,
+  );
 }
 
 // start with E_AUTH_
@@ -96,5 +100,11 @@ class AuthenticationError {
   static CustomError notLogin = CustomError(
     "E_AUTH_115",
     message: S.current.not_login_error,
+  );
+}
+
+class LocationError {
+  static CustomError locationPermission = CustomError(
+    "E_LOCATION_101"
   );
 }

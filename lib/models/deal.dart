@@ -1,12 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:intl/intl.dart';
+import 'package:tudu/models/site.dart';
 
 class Deal {
   late int dealsId;
   late bool active;
   String? description;
   List<String> images = [];
-  late int siteId;
+  late Site site;
   late DateTime startDate;
   late DateTime endDate;
   String? terms;
@@ -15,7 +15,7 @@ class Deal {
   late String logo;
   late List<int> businesses = [];
 
-  Deal(this.dealsId, this.active, this.description, this.images, this.siteId, this.startDate, this.endDate, this.terms, this.title, this.titleShort, this.logo);
+  Deal(this.dealsId, this.active, this.description, this.images, this.site, this.startDate, this.endDate, this.terms, this.title, this.titleShort, this.logo);
 
   Deal.from(Map<String, dynamic> data) {
     dealsId = data["dealsid"] as int? ?? 0;
@@ -31,5 +31,18 @@ class Deal {
     titleShort = data["titleshort"] as String? ?? "";
     logo = data["logo"] as String? ?? "";
     businesses = (data["business"] as List<dynamic>? ?? []).map((e) => e as int).toList();
+    var site = data["site"] as Map<String, dynamic>? ?? {};
+
+    this.site = Site(
+        active: true,
+        images: [],
+        siteId: site["siteid"] as int,
+        title: site["title"] as String,
+        subTitle: "",
+        business: [],
+        siteContent: SiteContent(),
+        locationLat: site["locationLat"] as double?,
+        locationLon: site["locationLon"] as double?,
+    );
   }
 }

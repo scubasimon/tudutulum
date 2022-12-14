@@ -20,7 +20,7 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'en';
 
-  static String m0(name) => "Hello \'${name}\'";
+  static String m0(name) => "Hello ${name}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -65,6 +65,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Current password must be not empty"),
         "deactivate_account_title":
             MessageLookupByLibrary.simpleMessage("Deactivate Account"),
+        "deal_available":
+            MessageLookupByLibrary.simpleMessage("This deal is available"),
         "deals": MessageLookupByLibrary.simpleMessage("Deals"),
         "delete_account":
             MessageLookupByLibrary.simpleMessage("Or deactivate your account"),
@@ -101,13 +103,17 @@ class MessageLookup extends MessageLookupByLibrary {
         "get_started": MessageLookupByLibrary.simpleMessage("Get Started"),
         "hello_name": m0,
         "here": MessageLookupByLibrary.simpleMessage("here"),
+        "issue": MessageLookupByLibrary.simpleMessage("There was an issue"),
         "local_fail": MessageLookupByLibrary.simpleMessage(
             "Please connect to the internet and or contact with admin"),
-        "login": MessageLookupByLibrary.simpleMessage("Login"),
-        "login_description": MessageLookupByLibrary.simpleMessage(
-            "Welcome back,\nPlease sign in"),
+        "location_permission_message": MessageLookupByLibrary.simpleMessage(
+            "The \'Tudu\' app has not granted permission to access location.\nPlease go to \'Settings\' to grant location access to the app"),
+        "login": MessageLookupByLibrary.simpleMessage("Welcome"),
+        "login_description":
+            MessageLookupByLibrary.simpleMessage("Please sign in below"),
         "login_message": MessageLookupByLibrary.simpleMessage(
-            "You are not logged in. please log in"),
+            "You must be signed in to access this page"),
+        "login_title": MessageLookupByLibrary.simpleMessage("Please sign-in"),
         "map": MessageLookupByLibrary.simpleMessage("Map"),
         "maybe_later": MessageLookupByLibrary.simpleMessage("Maybe later"),
         "mobile": MessageLookupByLibrary.simpleMessage("Mobile"),
@@ -150,6 +156,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Your local calendar"),
         "onboard_title_4":
             MessageLookupByLibrary.simpleMessage("Your exclusive savings"),
+        "open_setting": MessageLookupByLibrary.simpleMessage("Open Setting"),
         "open_times": MessageLookupByLibrary.simpleMessage("Opening times"),
         "password": MessageLookupByLibrary.simpleMessage("Password"),
         "password_empty_error":
@@ -162,6 +169,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "The password provided is too weak"),
         "please_report": MessageLookupByLibrary.simpleMessage(
             "Please report anything missing/inaccurate here"),
+        "preview_deal_message": MessageLookupByLibrary.simpleMessage(
+            "To view full term and conditions and to redeem this offer please visit the Deals tab"),
         "profile": MessageLookupByLibrary.simpleMessage("Profile"),
         "rate_us": MessageLookupByLibrary.simpleMessage("•  Please rate Us"),
         "receive_monthly_newsletter_email":
@@ -170,6 +179,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "receive_new_offer_notification_email":
             MessageLookupByLibrary.simpleMessage(
                 "Receive new offer notification emails"),
+        "redeem_here": MessageLookupByLibrary.simpleMessage("Redeem Here"),
+        "redeem_report_message": MessageLookupByLibrary.simpleMessage(
+            "Please let us know if you had any issues or if everything went smoothly"),
+        "redeem_report_title":
+            MessageLookupByLibrary.simpleMessage("Redeem Report"),
         "register_message": MessageLookupByLibrary.simpleMessage(
             "Please complete the short form below"),
         "repeat_new_password":
@@ -183,6 +197,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "save_changes": MessageLookupByLibrary.simpleMessage("Save Changes"),
         "search_placeholder": MessageLookupByLibrary.simpleMessage(
             "Search here or use the filter above"),
+        "select_contact_message":
+            MessageLookupByLibrary.simpleMessage("Please select contact"),
         "server_error": MessageLookupByLibrary.simpleMessage(
             "An error occurred, please try again"),
         "setting": MessageLookupByLibrary.simpleMessage("Settings"),
@@ -192,12 +208,16 @@ class MessageLookup extends MessageLookupByLibrary {
         "sign_out": MessageLookupByLibrary.simpleMessage("Sign out"),
         "skip": MessageLookupByLibrary.simpleMessage("Skip"),
         "sort": MessageLookupByLibrary.simpleMessage("Sort"),
+        "subscribe_redeem_offer": MessageLookupByLibrary.simpleMessage(
+            "Subscribe now to redeem this offer"),
+        "successful": MessageLookupByLibrary.simpleMessage("Successful!"),
         "term_and_conditions":
             MessageLookupByLibrary.simpleMessage("Term and Conditions"),
         "thanks_to_our_trusted_partner": MessageLookupByLibrary.simpleMessage(
             "With thanks to our trusted partner:"),
         "the_legal_stuff":
             MessageLookupByLibrary.simpleMessage("•  The Legal stuff"),
+        "time_out_message": MessageLookupByLibrary.simpleMessage("Timeout"),
         "transport_locally":
             MessageLookupByLibrary.simpleMessage("•  Transport Locally"),
         "travel_to_tulum":
