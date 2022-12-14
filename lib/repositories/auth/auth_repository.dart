@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:tudu/consts/number/number_const.dart';
 import 'package:tudu/models/auth.dart';
 import 'package:tudu/models/error.dart';
 import 'package:tudu/services/apple/sign_in.dart';
@@ -106,10 +109,21 @@ class AuthRepositoryImpl extends AuthRepository {
         break;
     }
 
-    if (userCredentials?.user == null && userCredentials?.additionalUserInfo == null) {
+    if (userCredentials.user == null && userCredentials.additionalUserInfo == null) {
       throw AuthenticationError.badCredentials({});
     }
-    if (await _firebaseService.userExists(userCredentials!.user!.uid)) {
+    bool userExist = false;
+    try {
+      userExist = await _firebaseService.userExists(userCredentials.user!.uid)
+          .timeout(const Duration(seconds: NumberConst.timeout));
+    } catch (e) {
+      if (e is TimeoutException) {
+        throw CommonError.serverError;
+      } else {
+        rethrow;
+      }
+    }
+    if (userExist) {
       return;
     } else {
       String? firstName, familyName;
@@ -134,14 +148,24 @@ class AuthRepositoryImpl extends AuthRepository {
         familyName: familyName,
         telephone: userCredentials.user!.phoneNumber,
       );
-      return _firebaseService
-          .addUser(userCredentials.user!.uid, user.toJson());
+      try {
+        return await _firebaseService
+            .addUser(userCredentials.user!.uid, user.toJson())
+            .timeout(const Duration(seconds: NumberConst.timeout));
+      } catch (e) {
+        if (e is TimeoutException) {
+          throw CommonError.serverError;
+        } else {
+          rethrow;
+        }
+      }
     }
   }
 
   @override
   Future<void> sendPasswordResetEmail(String email) async {
-    await _firebaseService.sendPasswordResetEmail(email);
+    await _firebaseService
+        .sendPasswordResetEmail(email);
   }
 
   @override
@@ -155,17 +179,39 @@ class AuthRepositoryImpl extends AuthRepository {
   }
 
   Future<bool> userChangedState() {
-    return _firebaseService.authChanged().then((value) => value != null);
+    return _firebaseService
+        .authChanged()
+        .then((value) => value != null);
   }
 
   @override
-  Future<void> changeEmail(String email) {
-    return _firebaseService.changeEmail(email);
+  Future<void> changeEmail(String email) async {
+    try {
+      return await _firebaseService
+          .changeEmail(email)
+          .timeout(const Duration(seconds: NumberConst.timeout));
+    } catch (e) {
+      if (e is TimeoutException) {
+        throw CommonError.serverError;
+      } else {
+        rethrow;
+      }
+    }
   }
 
   @override
-  Future<void> updateProfile(Profile profile) {
-    return _firebaseService.updateUser(profile.id, profile.toJson());
+  Future<void> updateProfile(Profile profile) async {
+    try {
+      return await _firebaseService
+          .updateUser(profile.id, profile.toJson())
+          .timeout(const Duration(seconds: NumberConst.timeout));
+    } catch (e) {
+      if (e is TimeoutException) {
+        throw CommonError.serverError;
+      } else {
+        rethrow;
+      }
+    }
   }
 
   @override
@@ -174,8 +220,18 @@ class AuthRepositoryImpl extends AuthRepository {
   }
 
   @override
-  Future<void> changePassword(String newPassword) {
-    return _firebaseService.changePassword(newPassword);
+  Future<void> changePassword(String newPassword) async {
+    try {
+      return await _firebaseService
+          .changePassword(newPassword)
+          .timeout(const Duration(seconds: NumberConst.timeout));
+    } catch (e) {
+      if (e is TimeoutException) {
+        throw CommonError.serverError;
+      } else {
+        rethrow;
+      }
+    }
   }
 
   @override

@@ -590,7 +590,6 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
   }
 
   void _openDrawer() {
-    print("open menu");
     _scaffoldKey.currentState?.openDrawer();
   }
 

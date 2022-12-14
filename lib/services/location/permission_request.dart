@@ -1,10 +1,6 @@
-import 'dart:io';
-
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import '../views/map/map_screen_view.dart';
-import 'audio_path.dart';
+import 'package:tudu/generated/l10n.dart';
 
 class PermissionRequest {
   static bool isResquestPermission = false;
@@ -23,7 +19,6 @@ class PermissionRequest {
   }
 
   permissionServiceCall(BuildContext context, Function callback) async {
-    print("permissionServiceCall -> $isResquestPermission");
     if (isResquestPermission) {
       isResquestPermission = false;
       await permissionServices(context, callback).then(
@@ -58,21 +53,22 @@ class PermissionRequest {
     showCupertinoModalPopup<void>(
       context: context,
       builder: (BuildContext context) => CupertinoAlertDialog(
-        title: Text('Allow "Tudu" to access device\'s location?'),
-        content: Text("App currently can access location only while you're using the app"),
+        title: Text(S.current.error),
+        content: Text(S.current.location_permission_message),
         actions: <CupertinoDialogAction>[
           CupertinoDialogAction(
             onPressed: () {
+
               Navigator.pop(context);
             },
-            child: Text("Cancel"),
+            child: Text(S.current.cancel),
           ),
           CupertinoDialogAction(
             onPressed: () {
               openAppSettings();
               Navigator.pop(context);
             },
-            child: Text("Open"),
+            child: Text(S.current.open_setting),
           )
         ],
       ),

@@ -180,20 +180,20 @@ class S {
     );
   }
 
-  /// `Login`
+  /// `Welcome`
   String get login {
     return Intl.message(
-      'Login',
+      'Welcome',
       name: 'login',
       desc: '',
       args: [],
     );
   }
 
-  /// `Welcome back,\nPlease sign in`
+  /// `Please sign in below`
   String get login_description {
     return Intl.message(
-      'Welcome back,\nPlease sign in',
+      'Please sign in below',
       name: 'login_description',
       desc: '',
       args: [],
@@ -900,10 +900,10 @@ class S {
     );
   }
 
-  /// `Hello '{name}'`
+  /// `Hello {name}`
   String hello_name(Object name) {
     return Intl.message(
-      'Hello \'$name\'',
+      'Hello $name',
       name: 'hello_name',
       desc: '',
       args: [name],
@@ -1170,10 +1170,10 @@ class S {
     );
   }
 
-  /// `You are not logged in. please log in`
+  /// `You must be signed in to access this page`
   String get login_message {
     return Intl.message(
-      'You are not logged in. please log in',
+      'You must be signed in to access this page',
       name: 'login_message',
       desc: '',
       args: [],
@@ -1265,6 +1265,136 @@ class S {
     return Intl.message(
       'Please report anything missing/inaccurate here',
       name: 'please_report',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please sign-in`
+  String get login_title {
+    return Intl.message(
+      'Please sign-in',
+      name: 'login_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Timeout`
+  String get time_out_message {
+    return Intl.message(
+      'Timeout',
+      name: 'time_out_message',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The 'Tudu' app has not granted permission to access location.\nPlease go to 'Settings' to grant location access to the app`
+  String get location_permission_message {
+    return Intl.message(
+      'The \'Tudu\' app has not granted permission to access location.\nPlease go to \'Settings\' to grant location access to the app',
+      name: 'location_permission_message',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Open Setting`
+  String get open_setting {
+    return Intl.message(
+      'Open Setting',
+      name: 'open_setting',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This deal is available`
+  String get deal_available {
+    return Intl.message(
+      'This deal is available',
+      name: 'deal_available',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Subscribe now to redeem this offer`
+  String get subscribe_redeem_offer {
+    return Intl.message(
+      'Subscribe now to redeem this offer',
+      name: 'subscribe_redeem_offer',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Redeem Here`
+  String get redeem_here {
+    return Intl.message(
+      'Redeem Here',
+      name: 'redeem_here',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Redeem Report`
+  String get redeem_report_title {
+    return Intl.message(
+      'Redeem Report',
+      name: 'redeem_report_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please let us know if you had any issues or if everything went smoothly`
+  String get redeem_report_message {
+    return Intl.message(
+      'Please let us know if you had any issues or if everything went smoothly',
+      name: 'redeem_report_message',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Successful!`
+  String get successful {
+    return Intl.message(
+      'Successful!',
+      name: 'successful',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `There was an issue`
+  String get issue {
+    return Intl.message(
+      'There was an issue',
+      name: 'issue',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please select contact`
+  String get select_contact_message {
+    return Intl.message(
+      'Please select contact',
+      name: 'select_contact_message',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `To view full term and conditions and to redeem this offer please visit the Deals tab`
+  String get preview_deal_message {
+    return Intl.message(
+      'To view full term and conditions and to redeem this offer please visit the Deals tab',
+      name: 'preview_deal_message',
       desc: '',
       args: [],
     );

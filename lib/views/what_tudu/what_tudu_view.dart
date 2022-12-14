@@ -26,7 +26,7 @@ import 'package:tudu/generated/l10n.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'package:tudu/models/site.dart';
-import 'package:tudu/utils/permission_request.dart';
+import 'package:tudu/services/location/permission_request.dart';
 import 'package:tudu/viewmodels/what_tudu_article_content_detail_viewmodel.dart';
 import 'package:tudu/views/common/alert.dart';
 import 'package:tudu/views/map/map_screen_view.dart';
@@ -78,7 +78,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver, Aut
     listenToLoading();
 
     _scrollController.addListener(() {
-      if (_scrollController.position.pixels == 0.0) {
+      if (_scrollController.offset <= 0.0) {
         isAtTop = true;
         setState(() {});
       } else {
@@ -263,6 +263,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver, Aut
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return ExitAppScope(
       child: Scaffold(
           appBar: AppBar(
@@ -296,7 +297,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver, Aut
                           },
                         ),
                         const Spacer(),
-                        PullDownButton(
+                        PullDownButton (
                           itemBuilder: (context) => [
                             PullDownMenuItem(
                               title: S.current.alphabet,
