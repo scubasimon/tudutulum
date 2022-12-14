@@ -53,7 +53,7 @@ class WhatTuduRepositoryImpl extends WhatTuduRepository {
     if (keywordSort != null) {
       if (keywordSort == StrConst.sortTitle) {
         // Sort with title
-        listSiteResult.sort((a, b) => a.title.compareTo(b.title));
+        listSiteResult.sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
       } else if (keywordSort == StrConst.sortDistance) {
         // Sort with distance ///TODO: IMPL LOGIC
         listSiteResult.sort((a, b) => a.title.compareTo(b.title));

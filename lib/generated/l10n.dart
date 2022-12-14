@@ -640,10 +640,10 @@ class S {
     );
   }
 
-  /// `All 'Location`
+  /// `All Tulum`
   String get all_location {
     return Intl.message(
-      'All \'Location',
+      'All Tulum',
       name: 'all_location',
       desc: '',
       args: [],
@@ -670,10 +670,10 @@ class S {
     );
   }
 
-  /// `Explore All Location`
+  /// `Explore All Tulum`
   String get explore_all_location {
     return Intl.message(
-      'Explore All Location',
+      'Explore All Tulum',
       name: 'explore_all_location',
       desc: '',
       args: [],
@@ -1190,10 +1190,10 @@ class S {
     );
   }
 
-  /// `Alphabet`
+  /// `Name`
   String get alphabet {
     return Intl.message(
-      'Alphabet',
+      'Name',
       name: 'alphabet',
       desc: '',
       args: [],

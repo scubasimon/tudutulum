@@ -36,12 +36,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "advisory": MessageLookupByLibrary.simpleMessage("Advisory"),
         "agree_message":
             MessageLookupByLibrary.simpleMessage("I agree with our"),
-        "all_location": MessageLookupByLibrary.simpleMessage("All \'Location"),
+        "all_location": MessageLookupByLibrary.simpleMessage("All Tulum"),
         "all_location_articles":
             MessageLookupByLibrary.simpleMessage("All Location Articles"),
         "all_tulum_article":
             MessageLookupByLibrary.simpleMessage("All Tulum Articles"),
-        "alphabet": MessageLookupByLibrary.simpleMessage("Alphabet"),
+        "alphabet": MessageLookupByLibrary.simpleMessage("Name"),
         "articles": MessageLookupByLibrary.simpleMessage(" Articles"),
         "back": MessageLookupByLibrary.simpleMessage("Back"),
         "beach_clubs": MessageLookupByLibrary.simpleMessage("Beach Clubs"),
@@ -83,7 +83,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Do you really want to exit?"),
         "explore": MessageLookupByLibrary.simpleMessage("Explore "),
         "explore_all_location":
-            MessageLookupByLibrary.simpleMessage("Explore All Location"),
+            MessageLookupByLibrary.simpleMessage("Explore All Tulum"),
         "explore_deals": MessageLookupByLibrary.simpleMessage("Explore Deals"),
         "failed": MessageLookupByLibrary.simpleMessage("Failed"),
         "family_name": MessageLookupByLibrary.simpleMessage("Family Name"),

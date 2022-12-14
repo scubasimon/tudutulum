@@ -35,7 +35,7 @@ class WhatTuduSiteContentDetailView extends StatefulWidget {
   State<StatefulWidget> createState() => _WhatTuduSiteContentDetailView();
 }
 
-class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView> {
+class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView> with WidgetsBindingObserver {
   final WhatTuduSiteContentDetailViewModel _whatTuduSiteContentDetailViewModel = WhatTuduSiteContentDetailViewModel();
   final HomeViewModel _homeViewModel = HomeViewModel();
   ObservableService _observableService = ObservableService();
@@ -44,11 +44,37 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
 
   final RefreshController _refreshController = RefreshController(initialRefresh: false);
 
+  List<GlobalKey> _textKey = [];
+  double currentTextSize = 0.0;
+
   @override
   void initState() {
+    _textKey.clear();
+    if (_whatTuduSiteContentDetailViewModel.siteContentDetail.siteContent.fees != null) {
+      for (int i = 0;
+          i < _whatTuduSiteContentDetailViewModel.siteContentDetail.siteContent.fees!["feeDetail"]!.length;
+          i++) {
+        _textKey.add(GlobalKey());
+      }
+    }
+
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {});
+    WidgetsBinding.instance.addObserver(this);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Action after build()
+      for (var key in _textKey) {
+        if (key.currentContext != null) {
+          if (key.currentContext!.size != null) {
+            if (key.currentContext!.size!.width > currentTextSize!) {
+              currentTextSize = key.currentContext!.size!.width;
+            }
+          }
+        }
+      }
+      setState(() {});
+    });
   }
 
   void _onRefresh() async {
@@ -175,8 +201,9 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
           margin: const EdgeInsets.only(left: 18, right: 18),
           color: ColorsConst.blackOpacity20,
         ),
-        getFooter(
+        getPartner(
             _homeViewModel.getPartnerById(_whatTuduSiteContentDetailViewModel.siteContentDetail.siteContent.partner)),
+        getReport(),
       ],
     );
   }
@@ -254,8 +281,11 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
   Widget getTitle(String? title, String? description) {
     if (title != null && description != null) {
       return Container(
+        alignment: Alignment.centerLeft,
         padding: const EdgeInsets.only(top: 20.0, left: 18, right: 18, bottom: 8),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
               height: 20,
@@ -294,7 +324,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
               description,
               style: const TextStyle(
                 color: ColorStyle.darkLabel,
-                fontWeight: FontWeight.w400,
+                fontWeight: FontWeight.w500,
                 fontSize: FontSizeConst.font12,
                 fontFamily: FontStyles.raleway,
                 height: 2,
@@ -311,6 +341,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
   Widget getMoreInformation(String? moreInformation) {
     if (moreInformation != null) {
       return Container(
+        alignment: Alignment.centerLeft,
         padding: const EdgeInsets.only(top: 20.0, left: 18, right: 18, bottom: 8),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -331,7 +362,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
               moreInformation,
               style: const TextStyle(
                 color: ColorStyle.darkLabel,
-                fontWeight: FontWeight.w400,
+                fontWeight: FontWeight.w500,
                 fontSize: FontSizeConst.font12,
                 fontFamily: FontStyles.raleway,
                 height: 2,
@@ -348,6 +379,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
   Widget getAdvisory(String? advisory) {
     if (advisory != null) {
       return Container(
+        alignment: Alignment.centerLeft,
         padding: const EdgeInsets.only(top: 20.0, left: 18, right: 18, bottom: 8),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -368,7 +400,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
               advisory,
               style: const TextStyle(
                 color: ColorStyle.darkLabel,
-                fontWeight: FontWeight.w400,
+                fontWeight: FontWeight.w500,
                 fontSize: FontSizeConst.font12,
                 fontFamily: FontStyles.raleway,
                 height: 2,
@@ -385,6 +417,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
   Widget getAmenityView(List<int>? amenities, List<String>? amenitiyDescriptions) {
     if (amenities != null && amenitiyDescriptions != null) {
       return Container(
+          alignment: Alignment.centerLeft,
           padding: const EdgeInsets.only(top: 8.0, left: 18, right: 18, bottom: 8),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -408,6 +441,8 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                 ),
               ),
               Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: amenitiyDescriptions.map((amenityDescrip) => getAmenityDescription(amenityDescrip)).toList(),
               )
             ],
@@ -420,6 +455,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
   Widget getOpenTimes(Map<String, String>? listOpenTimes) {
     if (listOpenTimes != null) {
       return Container(
+          alignment: Alignment.centerLeft,
           padding: const EdgeInsets.only(top: 8.0, left: 18, right: 18, bottom: 8),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -441,6 +477,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                 height: 8,
               ),
               ListView.builder(
+                padding: EdgeInsets.zero,
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: listOpenTimes.values.toList().length - 1,
@@ -458,7 +495,8 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
   Widget getFees(Map<String, List<String>>? fees) {
     if (fees != null) {
       return Container(
-          padding: const EdgeInsets.only(top: 8.0, left: 18, right: 18, bottom: 8),
+          alignment: Alignment.centerLeft,
+          padding: const EdgeInsets.only(left: 18, right: 18, bottom: 8),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -479,6 +517,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                 height: 8,
               ),
               ListView.builder(
+                padding: EdgeInsets.zero,
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: fees["feeDetail"]!.length,
@@ -486,30 +525,32 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                   return Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        flex: 1,
-                        child: Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: Text(
-                            fees["feeTitle"]![index],
-                            style: const TextStyle(
-                              color: ColorStyle.darkLabel,
-                              fontWeight: FontWeight.w400,
-                              fontSize: FontSizeConst.font12,
-                              fontFamily: FontStyles.raleway,
+                      SizedBox(
+                        width: (currentTextSize != 0.0) ? currentTextSize : MediaQuery.of(context).size.width,
+                        child: Wrap(
+                          children: [
+                            Text(
+                              key: _textKey[index],
+                              fees["feeTitle"]![index],
+                              style: const TextStyle(
+                                color: ColorStyle.darkLabel,
+                                fontWeight: FontWeight.w500,
+                                fontSize: FontSizeConst.font12,
+                                fontFamily: FontStyles.raleway,
+                              ),
                             ),
-                          ),
+                          ],
                         ),
                       ),
                       Expanded(
-                        flex: 4,
+                        // flex: 4,
                         child: Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
+                          padding: const EdgeInsets.only(left: 8, bottom: 8),
                           child: Text(
                             fees["feeDetail"]![index],
                             style: const TextStyle(
                               color: ColorStyle.darkLabel,
-                              fontWeight: FontWeight.w400,
+                              fontWeight: FontWeight.w500,
                               fontSize: FontSizeConst.font12,
                               fontFamily: FontStyles.raleway,
                             ),
@@ -530,7 +571,8 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
   Widget getCapacity(String? capacity) {
     if (capacity != null) {
       return Container(
-          padding: const EdgeInsets.only(top: 8.0, left: 18, right: 18, bottom: 8),
+          alignment: Alignment.centerLeft,
+          padding: const EdgeInsets.only(left: 18, right: 18, bottom: 8),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -555,7 +597,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                 capacity,
                 style: const TextStyle(
                   color: ColorStyle.darkLabel,
-                  fontWeight: FontWeight.w400,
+                  fontWeight: FontWeight.w500,
                   fontSize: FontSizeConst.font12,
                   fontFamily: FontStyles.raleway,
                 ),
@@ -570,6 +612,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
   Widget getEventsAndExpsView(List<String>? eventIcons, List<String>? eventLinks) {
     if (eventIcons != null && eventLinks != null) {
       return Container(
+          alignment: Alignment.centerLeft,
           padding: const EdgeInsets.only(top: 8.0, left: 18, right: 18, bottom: 8),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -629,6 +672,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
             // ),
           ),
           Container(
+              alignment: Alignment.centerLeft,
               padding: const EdgeInsets.only(top: 8.0, left: 18, right: 18, bottom: 8),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -640,7 +684,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                         style: const TextStyle(
                           color: ColorStyle.darkLabel,
                           fontSize: FontSizeConst.font12,
-                          fontWeight: FontWeight.w400,
+                          fontWeight: FontWeight.w500,
                           fontFamily: FontStyles.raleway,
                         )),
                   ),
@@ -658,37 +702,43 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                   ),
                   Row(
                     children: [
-                      InkWell(
+                      (getIntouch["phone"] != null) ? InkWell(
                         child: Container(
                           padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                          child: Image.asset(ImagePath.phoneIcon, fit: BoxFit.contain, height: 25.0),
+                          child: Image.asset(ImagePath.phoneIcon, fit: BoxFit.contain, height: 42.0),
                         ),
                         onTap: () {
                           UrlLauncher.launch("tel://${getIntouch["phone"].toString()}");
                         },
-                      ),
-                      InkWell(
+                      ) : Container(),
+                      (getIntouch["email"] != null) ? InkWell(
                         child: Container(
                           padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                          child: Image.asset(ImagePath.emailIcon, fit: BoxFit.contain, height: 25.0),
+                          child: Image.asset(ImagePath.emailIcon, fit: BoxFit.contain, height: 42.0),
                         ),
                         onTap: () {
                           UrlLauncher.launch("mailto:${getIntouch["email"].toString()}");
                         },
-                      ),
-                      InkWell(
+                      ) : Container(),
+                      (getIntouch["whatsapp"] != null) ? InkWell(
                         child: Container(
                           padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                          child: Image.asset(ImagePath.whatsAppIcon, fit: BoxFit.contain, height: 25.0),
+                          child: Image.asset(ImagePath.whatsAppIcon, fit: BoxFit.contain, height: 42.0),
                         ),
                         onTap: () {
                           UrlLauncher.launch("https://wa.me/${getIntouch["whatsapp"].toString()}?text=Hello");
                         },
-                      ),
-                      Container(
-                        padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                        child: Image.asset(ImagePath.internetIcon, fit: BoxFit.contain, height: 25.0),
-                      )
+                      ) : Container(),
+                      (getIntouch["website"] != null) ? InkWell(
+                        child: Container(
+                          padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
+                          child: Image.asset(ImagePath.internetIcon, fit: BoxFit.contain, height: 42.0),
+                        ),
+                        onTap: () {
+                          print("getIntouch[""] ${getIntouch["website"]}");
+                          FuncUlti.redirectToBrowserWithUrl("${getIntouch["website"]}");
+                        },
+                      ) : Container(),
                     ],
                   ),
                   const SizedBox(
@@ -700,16 +750,16 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                         style: const TextStyle(
                           color: ColorStyle.darkLabel,
                           fontSize: FontSizeConst.font12,
-                          fontWeight: FontWeight.w400,
+                          fontWeight: FontWeight.w500,
                           fontFamily: FontStyles.raleway,
                         )),
                   ),
                   Row(
                     children: [
-                      InkWell(
+                      (getIntouch["instagram"] != null) ? InkWell(
                         child: Container(
                           padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                          child: Image.asset(ImagePath.instagramIcon, fit: BoxFit.contain, height: 25.0),
+                          child: Image.asset(ImagePath.instagramIcon, fit: BoxFit.contain, height: 42.0),
                         ),
                         onTap: () {
                           UrlLauncher.launch(
@@ -717,11 +767,11 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                             universalLinksOnly: true,
                           );
                         },
-                      ),
-                      InkWell(
+                      ) : Container(),
+                      (getIntouch["facebook"] != null) ? InkWell(
                         child: Container(
                           padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                          child: Image.asset(ImagePath.facebookIcon, fit: BoxFit.contain, height: 25.0),
+                          child: Image.asset(ImagePath.facebookIcon, fit: BoxFit.contain, height: 42.0),
                         ),
                         onTap: () {
                           UrlLauncher.launch(
@@ -729,11 +779,11 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                             universalLinksOnly: true,
                           );
                         },
-                      ),
-                      InkWell(
+                      ) : Container(),
+                      (getIntouch["owl"] != null) ? InkWell(
                         child: Container(
                           padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                          child: Image.asset(ImagePath.owlIcon, fit: BoxFit.contain, height: 25.0),
+                          child: Image.asset(ImagePath.owlIcon, fit: BoxFit.contain, height: 42.0),
                         ),
                         onTap: () {
                           UrlLauncher.launch(
@@ -741,11 +791,11 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                             universalLinksOnly: true,
                           );
                         },
-                      ),
-                      InkWell(
+                      ) : Container(),
+                      (getIntouch["twitter"] != null) ? InkWell(
                         child: Container(
                           padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                          child: Image.asset(ImagePath.twitterIcon, fit: BoxFit.contain, height: 25.0),
+                          child: Image.asset(ImagePath.twitterIcon, fit: BoxFit.contain, height: 42.0),
                         ),
                         onTap: () {
                           UrlLauncher.launch(
@@ -753,7 +803,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                             universalLinksOnly: true,
                           );
                         },
-                      )
+                      ) : Container()
                     ],
                   ),
                 ],
@@ -765,82 +815,100 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
     }
   }
 
-  Widget getFooter(Partner? partner) {
+  Widget getPartner(Partner? partner) {
     if (partner != null) {
-      return Stack(
-        children: [
-          Positioned(
-            top: 10,
-            right: 20,
-            child: CachedNetworkImage(
-              imageUrl: partner.icon,
-              width: 48.0,
-              height: 48.0,
-              fit: BoxFit.contain,
-              imageBuilder: (context, imageProvider) => Container(
-                decoration: BoxDecoration(
-                  image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+      return InkWell(
+        onTap: () {
+          FuncUlti.redirectToBrowserWithUrl(partner.link);
+        },
+        child: Stack(
+          children: [
+            Positioned(
+              top: 10,
+              right: 20,
+              child: CachedNetworkImage(
+                imageUrl: partner.icon,
+                width: 48.0,
+                height: 48.0,
+                fit: BoxFit.contain,
+                imageBuilder: (context, imageProvider) => Container(
+                  decoration: BoxDecoration(
+                    image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                  ),
                 ),
+                placeholder: (context, url) => const CupertinoActivityIndicator(
+                  radius: 20,
+                  color: ColorStyle.primary,
+                ),
+                errorWidget: (context, url, error) => Icon(Icons.error),
               ),
-              placeholder: (context, url) => const CupertinoActivityIndicator(
-                radius: 20,
-                color: ColorStyle.primary,
-              ),
-              errorWidget: (context, url, error) => Icon(Icons.error),
+              // child: Image.network(
+              //   partner.icon,
+              //   fit: BoxFit.contain,
+              //   height: 48.0,
+              // ),
             ),
-            // child: Image.network(
-            //   partner.icon,
-            //   fit: BoxFit.contain,
-            //   height: 48.0,
-            // ),
-          ),
-          Container(
-              padding: const EdgeInsets.only(top: 8.0, left: 18, right: 18, bottom: 8),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    height: 20,
-                    alignment: Alignment.centerLeft,
-                    child: Text(S.current.thanks_to_our_trusted_partner,
-                        style: const TextStyle(
-                          color: ColorStyle.darkLabel,
-                          fontSize: FontSizeConst.font12,
-                          fontWeight: FontWeight.w400,
-                          fontFamily: FontStyles.raleway,
-                        )),
-                  ),
-                  Container(
-                    height: 20,
-                    alignment: Alignment.centerLeft,
-                    child: Text(partner.name,
-                        style: const TextStyle(
-                          fontFamily: FontStyles.mouser,
-                          fontSize: FontSizeConst.font12,
-                          fontWeight: FontWeight.w400,
-                          color: ColorStyle.darkLabel,
-                        )),
-                  ),
-                  Container(
-                    height: 20,
-                    margin: const EdgeInsets.only(top: 18, bottom: 80),
-                    alignment: Alignment.center,
-                    child: Text(S.current.please_report,
-                        style: const TextStyle(
-                          color: ColorStyle.darkLabel,
-                          fontSize: FontSizeConst.font12,
-                          fontWeight: FontWeight.w400,
-                          fontFamily: FontStyles.raleway,
-                        )),
-                  ),
-                ],
-              )),
-        ],
+            Container(
+                alignment: Alignment.centerLeft,
+                padding: const EdgeInsets.only(top: 8.0, left: 18, right: 18, bottom: 8),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      height: 20,
+                      alignment: Alignment.centerLeft,
+                      child: Text(S.current.thanks_to_our_trusted_partner,
+                          style: const TextStyle(
+                            color: ColorStyle.darkLabel,
+                            fontSize: FontSizeConst.font12,
+                            fontWeight: FontWeight.w500,
+                            fontFamily: FontStyles.raleway,
+                          )),
+                    ),
+                    Container(
+                      height: 20,
+                      alignment: Alignment.centerLeft,
+                      child: Text(partner.name,
+                          style: const TextStyle(
+                            fontFamily: FontStyles.mouser,
+                            fontSize: FontSizeConst.font12,
+                            fontWeight: FontWeight.w400,
+                            color: ColorStyle.darkLabel,
+                          )),
+                    ),
+                  ],
+                )),
+          ],
+        ),
       );
     } else {
       return Container();
     }
+  }
+
+  Widget getReport() {
+    return InkWell(
+      onTap: () {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return TwoButtonAlert.reportAlert(context, "+529842105598", "info@thetudu.app");
+            });
+      },
+      child: Container(
+        height: 20,
+        margin: const EdgeInsets.only(top: 18, bottom: 80),
+        alignment: Alignment.center,
+        child: Text(S.current.please_report,
+            style: const TextStyle(
+              color: ColorStyle.darkLabel,
+              fontSize: FontSizeConst.font12,
+              fontWeight: FontWeight.w500,
+              fontFamily: FontStyles.raleway,
+            )),
+      ),
+    );
   }
 
   Widget getAmenity(int? amenityId) {
@@ -848,14 +916,13 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
       return GestureDetector(
           onTapDown: (position) {
             _getTapPosition(position);
-            _showContextMenu(context, amenityId);
           },
           onLongPress: () => {_showContextMenu(context, amenityId)},
           onDoubleTap: () => {_showContextMenu(context, amenityId)},
           child: Container(
             padding: const EdgeInsets.only(top: 4.0, right: 4.0, bottom: 4.0),
             child: Image.asset(
-              // "${_homeViewModel.getAmenityById(amenityId)?.icon}", // ICON DIDNT HAVE LINK YET
+                // "${_homeViewModel.getAmenityById(amenityId)?.icon}", // ICON DIDNT HAVE LINK YET
                 ImagePath.yogaIcon, // FAKE ICON
                 fit: BoxFit.contain,
                 height: 25.0),
@@ -873,7 +940,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
           "• $amenityDescription",
           style: const TextStyle(
             color: ColorStyle.darkLabel,
-            fontWeight: FontWeight.w400,
+            fontWeight: FontWeight.w500,
             fontSize: FontSizeConst.font12,
             fontFamily: FontStyles.raleway,
             height: 2,
@@ -929,20 +996,77 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
         dayInWeek = "NaN";
         break;
     }
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Text(
-        (index < 7)
-            ? "${listOpenTimes[dayInWeek]} ${FuncUlti.getDayInWeekFromKeyword(dayInWeek)}"
-            : "${listOpenTimes["${dayInWeek}"]} ${listOpenTimes["${dayInWeek}Description"]}",
-        style: const TextStyle(
-          color: ColorStyle.darkLabel,
-          fontWeight: FontWeight.w400,
-          fontSize: FontSizeConst.font12,
-          fontFamily: FontStyles.raleway,
-        ),
-      ),
-    );
+    return getTextForOpeningTime(listOpenTimes, index, dayInWeek);
+  }
+
+  Widget getTextForOpeningTime(Map<String, String> listOpenTimes, int index, String dayInWeek) {
+    if (index < 7) {
+      if (listOpenTimes[dayInWeek] != null) {
+        return Row(
+          children: [
+            SizedBox(
+              width: 80,
+              child: Text(
+                "${listOpenTimes[dayInWeek]}",
+                style: const TextStyle(
+                  color: ColorStyle.darkLabel,
+                  fontWeight: FontWeight.w500,
+                  fontSize: FontSizeConst.font12,
+                  fontFamily: FontStyles.raleway,
+                ),
+              ),
+            ),
+            Expanded(
+              child: Container(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "${FuncUlti.getDayInWeekFromKeyword(dayInWeek)}",
+                  style: const TextStyle(
+                    color: ColorStyle.darkLabel,
+                    fontWeight: FontWeight.w500,
+                    fontSize: FontSizeConst.font12,
+                    fontFamily: FontStyles.raleway,
+                  ),
+                ),
+              ),
+            )
+          ],
+        );
+      } else {
+        return Container();
+      }
+    } else {
+      return Row(
+        children: [
+          SizedBox(
+            width: 80,
+            child: Text(
+              "${listOpenTimes["${dayInWeek}"]}",
+              style: const TextStyle(
+                color: ColorStyle.darkLabel,
+                fontWeight: FontWeight.w500,
+                fontSize: FontSizeConst.font12,
+                fontFamily: FontStyles.raleway,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Container(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "${listOpenTimes["${dayInWeek}Description"]}",
+                style: const TextStyle(
+                  color: ColorStyle.darkLabel,
+                  fontWeight: FontWeight.w500,
+                  fontSize: FontSizeConst.font12,
+                  fontFamily: FontStyles.raleway,
+                ),
+              ),
+            ),
+          )
+        ],
+      );
+    }
   }
 
   void _getTapPosition(TapDownDetails tapPosition) {
@@ -974,44 +1098,45 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
               )),
           items: [
             PopupMenuItem(
-              child: Container(
-                // color: ColorStyle.placeHolder,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: overlay.paintBounds.size.width,
-                      alignment: Alignment.center,
-                      // color: ColorStyle.placeHolder,
-                      child: Text(
-                        "${amenity.title}",
-                        style: const TextStyle(
-                          color: ColorStyle.darkLabel,
-                          fontWeight: FontWeight.w400,
-                          fontSize: FontSizeConst.font12,
-                          fontFamily: FontStyles.mouser,
-                          height: 2,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      width: overlay.paintBounds.size.width,
-                      alignment: Alignment.center,
-                      // color: ColorStyle.placeHolder,
-                      child: Text(
-                        "${amenity.description}",
-                        style: const TextStyle(
-                          color: ColorStyle.darkLabel,
-                          fontWeight: FontWeight.w400,
-                          fontSize: FontSizeConst.font12,
-                          fontFamily: FontStyles.sfProText,
-                          height: 2,
-                        ),
-                      ),
-                    )
-                  ],
-                ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  (amenity.title.isNotEmpty)
+                      ? Container(
+                          width: overlay.paintBounds.size.width,
+                          alignment: Alignment.center,
+                          // color: ColorStyle.placeHolder,
+                          child: Text(
+                            "${amenity.title}",
+                            style: const TextStyle(
+                              color: ColorStyle.darkLabel,
+                              fontWeight: FontWeight.bold,
+                              fontSize: FontSizeConst.font12,
+                              fontFamily: FontStyles.raleway,
+                              height: 1,
+                            ),
+                          ),
+                        )
+                      : Container(),
+                  (amenity.description.isNotEmpty)
+                      ? Container(
+                          width: overlay.paintBounds.size.width,
+                          alignment: Alignment.center,
+                          // color: ColorStyle.placeHolder,
+                          child: Text(
+                            "${amenity.description}",
+                            style: const TextStyle(
+                              color: ColorStyle.darkLabel,
+                              fontWeight: FontWeight.w400,
+                              fontSize: FontSizeConst.font12,
+                              fontFamily: FontStyles.raleway,
+                              height: 1,
+                            ),
+                          ),
+                        )
+                      : Container()
+                ],
               ),
             ),
           ]);

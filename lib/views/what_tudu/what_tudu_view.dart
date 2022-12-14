@@ -45,7 +45,8 @@ class WhatTuduView extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _WhatTuduView();
 }
-class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver, AutomaticKeepAliveClientMixin{
+
+class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver, AutomaticKeepAliveClientMixin {
   ObservableService _observableService = ObservableService();
   MapScreenViewModel _mapScreenViewModel = MapScreenViewModel();
   WhatTuduViewModel _whatTuduViewModel = WhatTuduViewModel();
@@ -124,10 +125,18 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver, Aut
       // Save data to local after get data from firestore have done
       saveDataToLocal();
 
+      // (_homeViewModel.filterType < _homeViewModel.listBusiness.length)
+      //     ? _homeViewModel.listBusiness[_homeViewModel.filterType]
+      //     : null, // Get current filterType
+    // FuncUlti.getSortTypeByInt(_homeViewModel.orderType), // Get current OrderType
+    // _searchController.text // Search text
+
       _whatTuduViewModel.getDataWithFilterSortSearch(
-        null, // On init, no business filter have not been chose
-        StrConst.sortTitle, // First init sort with Alphabet
-        null, // On init, no text have not been searched
+        (_homeViewModel.filterType < _homeViewModel.listBusiness.length)
+            ? _homeViewModel.listBusiness[_homeViewModel.filterType]
+            : null, // Get current filterType,
+        FuncUlti.getSortTypeByInt(_homeViewModel.orderType),
+        _searchController.text, // Search text
       );
       PrefUtil.setValue(StrConst.isDataBinded, true);
     } catch (e) {
@@ -375,7 +384,9 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver, Aut
                                             color: ColorStyle.menuLabel),
                                       ),
                                       iconWidget: Image.asset(
-                                        _homeViewModel.filterType != 3 ? ImagePath.mappinIcon : ImagePath.mappinDisableIcon,
+                                        _homeViewModel.filterType != 3
+                                            ? ImagePath.mappinIcon
+                                            : ImagePath.mappinDisableIcon,
                                         width: 28,
                                         height: 28,
                                       ),
@@ -511,7 +522,10 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver, Aut
     } else {
       return ListView(
         controller: _scrollController,
-        children: [createAllLocationArticlesView(), createExploreAllLocationView()],
+        children: [
+          (_searchController.text.isEmpty) ? createAllLocationArticlesView() : Container(),
+          createExploreAllLocationView()
+        ],
       );
     }
   }
@@ -533,7 +547,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver, Aut
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                padding: const EdgeInsets.only(top: 8, bottom: 8, left: 16, right: 16),
+                padding: const EdgeInsets.only(top: 8, bottom: 8, left: 24, right: 16),
                 alignment: Alignment.centerLeft,
                 child: Text(
                   getArticleTitleText(_homeViewModel.filterType),
@@ -645,7 +659,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver, Aut
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
-                padding: const EdgeInsets.only(top: 8, bottom: 8, left: 16, right: 16),
+                padding: const EdgeInsets.only(top: 8, bottom: 8, left: 24, right: 16),
                 alignment: Alignment.centerLeft,
                 child: Row(
                   children: [
@@ -670,12 +684,11 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver, Aut
                           context,
                           () {
                             _mapScreenViewModel.setInitMapInfo(
-                              (_observableService.listSitesController as BehaviorSubject<List<Site>?>).value,
-                              true,
-                              _homeViewModel.filterType
-                            );
+                                (_observableService.listSitesController as BehaviorSubject<List<Site>?>).value,
+                                true,
+                                _homeViewModel.filterType);
                             _homeViewModel.redirectTab(5); // Map tab
-                            },
+                          },
                         );
                       },
                       child: Column(
@@ -768,43 +781,54 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver, Aut
               getDealItemIfExist(data[index].dealId),
               Positioned(
                 bottom: 0,
-                child: Container(
-                  height: 50.0,
-                  width: 128.0,
-                  alignment: Alignment.centerLeft,
-                  margin: const EdgeInsets.only(bottom: 24, left: 16),
-                  decoration: BoxDecoration(
-                    gradient:
-                        LinearGradient(begin: FractionalOffset.centerLeft, end: FractionalOffset.centerRight, colors: [
-                      ColorStyle.secondaryBackground.withOpacity(0.8),
-                      ColorStyle.secondaryBackground.withOpacity(0.0),
-                    ], stops: const [
-                      0.2,
-                      1.0
-                    ]),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 16.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                child: IntrinsicWidth(
+                  child: Container(
+                    height: 50.0,
+                    constraints: BoxConstraints(
+                      maxWidth: MediaQuery.of(context).size.width - 110,
+                      minWidth: 130,
+                    ),
+                    alignment: Alignment.centerLeft,
+                    margin: const EdgeInsets.only(bottom: 24, left: 16),
+                    decoration: BoxDecoration(
+                      gradient:
+                          LinearGradient(begin: FractionalOffset.centerLeft, end: FractionalOffset.centerRight, colors: [
+                        ColorStyle.secondaryBackground.withOpacity(0.6),
+                        ColorStyle.secondaryBackground.withOpacity(0.0),
+                      ], stops: const [
+                        0.6,
+                        1.0
+                      ]),
+                    ),
+                    child: Wrap(
                       children: [
-                        Text(
-                          data[index].title,
-                          style: const TextStyle(
-                            color: ColorStyle.darkLabel,
-                            fontFamily: FontStyles.mouser,
-                            fontWeight: FontWeight.w400,
-                            fontSize: FontSizeConst.font12,
-                          ),
-                        ),
-                        Text(
-                          data[index].subTitle,
-                          style: const TextStyle(
-                            fontFamily: FontStyles.raleway,
-                            fontSize: FontSizeConst.font12,
-                            fontWeight: FontWeight.w400,
-                            color: ColorStyle.darkLabel,
+                        Padding(
+                          padding: const EdgeInsets.only(left: 16.0, right: 24),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                data[index].title,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  color: ColorStyle.darkLabel,
+                                  fontFamily: FontStyles.mouser,
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: FontSizeConst.font12,
+                                ),
+                              ),
+                              Text(
+                                data[index].subTitle,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontFamily: FontStyles.raleway,
+                                  fontSize: FontSizeConst.font12,
+                                  fontWeight: FontWeight.w400,
+                                  color: ColorStyle.darkLabel,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
@@ -822,7 +846,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver, Aut
       return Container(
         height: 40,
         width: 40,
-        margin: const EdgeInsets.only(top: 16, left: 24),
+        margin: const EdgeInsets.only(top: 8, left: 24),
         decoration: const BoxDecoration(
           color: ColorStyle.tertiaryBackground75,
           borderRadius: BorderRadius.all(Radius.circular(10.0)),

@@ -35,7 +35,6 @@ import '../../viewmodels/what_tudu_site_content_detail_viewmodel.dart';
 import '../what_tudu/what_tudu_site_content_detail_view.dart';
 
 class MapScreenView extends StatefulWidget {
-
   const MapScreenView({
     Key? key,
   }) : super(key: key);
@@ -72,7 +71,7 @@ class _MapScreenView extends State<MapScreenView> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       //init listen network connection
       await _mapScreenViewModel.checkLocationEnable(context);
-      if (_mapScreenViewModel.isGotoCurrent)  {
+      if (_mapScreenViewModel.isGotoCurrent) {
         await _mapScreenViewModel.getCurrentPosition();
         goToCurrentPosition();
       } else {
@@ -96,8 +95,7 @@ class _MapScreenView extends State<MapScreenView> {
     print("goToCurrentPosition -> ${_mapScreenViewModel.currentPosition?.longitude}");
     mapController?.animateCamera(CameraUpdate.newLatLngZoom(
       LatLng(
-          _mapScreenViewModel.currentPosition?.latitude ?? 21,
-          _mapScreenViewModel.currentPosition?.longitude ?? 105),
+          _mapScreenViewModel.currentPosition?.latitude ?? 21, _mapScreenViewModel.currentPosition?.longitude ?? 105),
       12.0,
     ));
   }
@@ -112,8 +110,7 @@ class _MapScreenView extends State<MapScreenView> {
     print("goToDestinationPosition -> ${_mapScreenViewModel.destinationPosition?.latitude}");
     print("goToDestinationPosition -> ${_mapScreenViewModel.destinationPosition?.longitude}");
     mapController?.animateCamera(CameraUpdate.newLatLngZoom(
-      LatLng(
-          _mapScreenViewModel.destinationPosition?.latitude ?? 21,
+      LatLng(_mapScreenViewModel.destinationPosition?.latitude ?? 21,
           _mapScreenViewModel.destinationPosition?.longitude ?? 105),
       12.0,
     ));
@@ -129,12 +126,8 @@ class _MapScreenView extends State<MapScreenView> {
             markerId: MarkerId(site.title),
             position: LatLng(site.locationLat!, site.locationLon!),
             // infoWindow: InfoWindow(title: "Title: ${site.title}", snippet: "Subtitle: ${site.subTitle}"),
-            icon: await MarkerIcon.downloadResizePictureCircle(
-                site.images[0],
-                size: 150,
-                addBorder: true,
-                borderColor: Colors.white,
-                borderSize: 15),
+            icon: await MarkerIcon.downloadResizePictureCircle(site.images[0],
+                size: 150, addBorder: true, borderColor: Colors.white, borderSize: 15),
             onTap: () {
               print("ON TAP MARKER -> ${site.title}");
               _whatTuduSiteContentDetailViewModel.setSiteContentDetailCover(site);
@@ -143,8 +136,7 @@ class _MapScreenView extends State<MapScreenView> {
                   MaterialPageRoute(
                       builder: (context) => const WhatTuduSiteContentDetailView(),
                       settings: const RouteSettings(name: StrConst.whatTuduSiteContentDetailScene)));
-            }
-        );
+            });
         markers.add(marker);
       }
     }
@@ -168,125 +160,126 @@ class _MapScreenView extends State<MapScreenView> {
             ),
             color: ColorStyle.navigation,
             child: Container(
-              height: 36.0,
-              alignment: Alignment.center,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  InkWell(
-                    child: Image.asset(
-                      ImagePath.humbergerIcon,
-                      width: 28,
-                      height: 28,
+                height: 36.0,
+                alignment: Alignment.center,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    InkWell(
+                      child: Image.asset(
+                        ImagePath.humbergerIcon,
+                        width: 28,
+                        height: 28,
+                      ),
+                      onTap: () {
+                        NotificationCenter().notify(StrConst.openMenu);
+                      },
                     ),
-                    onTap: () {
-                      NotificationCenter().notify(StrConst.openMenu);
-                    },
-                  ),
-                  const SizedBox(
-                    width: 12.0,
-                  ),
-                  Text(
-                    _homeViewModel.getBusinessStringById(_mapScreenViewModel.mapFilterType),
-                    style: const TextStyle(
-                      color: ColorStyle.secondaryDarkLabel94,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                      fontFamily: FontStyles.mouser,
+                    const SizedBox(
+                      width: 12.0,
                     ),
-                  ),
-                  const Spacer(),
-                  PullDownButton(
-                    itemBuilder: (context) => List<PullDownMenuEntry>.generate(
-                        _homeViewModel.listBusiness.length * 2 + 1,
-                            (counter) => (counter == _homeViewModel.listBusiness.length * 2)
-                            ? PullDownMenuItem(
-                          title: S.current.all_location,
-                          itemTheme: const PullDownMenuItemTheme(
-                            textStyle: TextStyle(
-                                fontFamily: FontStyles.sfProText,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 17,
-                                color: ColorStyle.menuLabel),
-                          ),
-                          iconWidget: Image.asset(
-                            _mapScreenViewModel.mapFilterType != 3 ? ImagePath.mappinIcon : ImagePath.mappinDisableIcon,
-                            width: 28,
-                            height: 28,
-                          ),
-                          enabled: _mapScreenViewModel.mapFilterType != ((counter) / 2).round(),
-                          onTap: () {
-                            _whatTuduViewModel.getDataWithFilterSortSearchForMap(
-                              null, // Filter all business => businnesFilter = null
-                              FuncUlti.getSortTypeByInt(_homeViewModel.orderType),
-                              _homeViewModel.searchKeyword,
-                            );
-                            _mapScreenViewModel.mapFilterType = ((counter) / 2).round();
-                          },
-                        )
-                            : (counter == _homeViewModel.listBusiness.length * 2 - 1)
-                            ? const PullDownMenuDivider.large()
-                            : (counter % 2 == 0)
-                            ? PullDownMenuItem(
-                          title: (counter % 2 == 0)
-                              ? _homeViewModel.listBusiness[((counter) / 2).round()].type
-                              : "",
-                          itemTheme: const PullDownMenuItemTheme(
-                            textStyle: TextStyle(
-                                fontFamily: FontStyles.sfProText,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 17,
-                                color: ColorStyle.menuLabel),
-                          ),
-                          iconWidget: Image.asset(
-                            ImagePath.cenoteIcon,
-                            width: 28,
-                            height: 28,
-                          ),
-                          enabled: _mapScreenViewModel.mapFilterType != ((counter) / 2).round(),
-                          onTap: () {
-                            _whatTuduViewModel.getDataWithFilterSortSearchForMap(
-                              _homeViewModel.listBusiness[((counter) / 2).round()], // get business
-                              FuncUlti.getSortTypeByInt(_homeViewModel.orderType),
-                              _homeViewModel.searchKeyword,
-                            );
-                            _mapScreenViewModel.mapFilterType = ((counter) / 2).round();
-                          },
-                        )
-                            : const PullDownMenuDivider(),
-                        growable: false),
-                    position: PullDownMenuPosition.automatic,
-                    buttonBuilder: (context, showMenu) => Container(
-                      padding: const EdgeInsets.only(left: 8, right: 8),
-                      child: InkWell(
-                        onTap: showMenu,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Expanded(
-                              child: Image.asset(
-                                ImagePath.filterIcon,
-                                fit: BoxFit.contain,
-                                width: 16,
+                    Text(
+                      _homeViewModel.getBusinessStringById(_mapScreenViewModel.mapFilterType),
+                      style: const TextStyle(
+                        color: ColorStyle.secondaryDarkLabel94,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                        fontFamily: FontStyles.mouser,
+                      ),
+                    ),
+                    const Spacer(),
+                    PullDownButton(
+                      itemBuilder: (context) => List<PullDownMenuEntry>.generate(
+                          _homeViewModel.listBusiness.length * 2 + 1,
+                          (counter) => (counter == _homeViewModel.listBusiness.length * 2)
+                              ? PullDownMenuItem(
+                                  title: S.current.all_location,
+                                  itemTheme: const PullDownMenuItemTheme(
+                                    textStyle: TextStyle(
+                                        fontFamily: FontStyles.sfProText,
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 17,
+                                        color: ColorStyle.menuLabel),
+                                  ),
+                                  iconWidget: Image.asset(
+                                    _mapScreenViewModel.mapFilterType != 3
+                                        ? ImagePath.mappinIcon
+                                        : ImagePath.mappinDisableIcon,
+                                    width: 28,
+                                    height: 28,
+                                  ),
+                                  enabled: _mapScreenViewModel.mapFilterType != ((counter) / 2).round(),
+                                  onTap: () {
+                                    _whatTuduViewModel.getDataWithFilterSortSearchForMap(
+                                      null, // Filter all business => businnesFilter = null
+                                      FuncUlti.getSortTypeByInt(_homeViewModel.orderType),
+                                      _homeViewModel.searchKeyword,
+                                    );
+                                    _mapScreenViewModel.mapFilterType = ((counter) / 2).round();
+                                  },
+                                )
+                              : (counter == _homeViewModel.listBusiness.length * 2 - 1)
+                                  ? const PullDownMenuDivider.large()
+                                  : (counter % 2 == 0)
+                                      ? PullDownMenuItem(
+                                          title: (counter % 2 == 0)
+                                              ? _homeViewModel.listBusiness[((counter) / 2).round()].type
+                                              : "",
+                                          itemTheme: const PullDownMenuItemTheme(
+                                            textStyle: TextStyle(
+                                                fontFamily: FontStyles.sfProText,
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: 17,
+                                                color: ColorStyle.menuLabel),
+                                          ),
+                                          iconWidget: Image.asset(
+                                            ImagePath.cenoteIcon,
+                                            width: 28,
+                                            height: 28,
+                                          ),
+                                          enabled: _mapScreenViewModel.mapFilterType != ((counter) / 2).round(),
+                                          onTap: () {
+                                            _whatTuduViewModel.getDataWithFilterSortSearchForMap(
+                                              _homeViewModel.listBusiness[((counter) / 2).round()], // get business
+                                              FuncUlti.getSortTypeByInt(_homeViewModel.orderType),
+                                              _homeViewModel.searchKeyword,
+                                            );
+                                            _mapScreenViewModel.mapFilterType = ((counter) / 2).round();
+                                          },
+                                        )
+                                      : const PullDownMenuDivider(),
+                          growable: false),
+                      position: PullDownMenuPosition.automatic,
+                      buttonBuilder: (context, showMenu) => Container(
+                        padding: const EdgeInsets.only(left: 8, right: 8),
+                        child: InkWell(
+                          onTap: showMenu,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: Image.asset(
+                                  ImagePath.filterIcon,
+                                  fit: BoxFit.contain,
+                                  width: 16,
+                                ),
                               ),
-                            ),
-                            Text(
-                              S.current.filter,
-                              style: const TextStyle(
-                                  color: ColorStyle.primary,
-                                  fontSize: FontSizeConst.font10,
-                                  fontWeight: FontWeight.w500,
-                                  fontFamily: FontStyles.raleway),
-                            ),
-                          ],
+                              Text(
+                                S.current.filter,
+                                style: const TextStyle(
+                                    color: ColorStyle.primary,
+                                    fontSize: FontSizeConst.font10,
+                                    fontWeight: FontWeight.w500,
+                                    fontFamily: FontStyles.raleway),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              )
-            ),
+                  ],
+                )),
           ),
         ),
         body: Stack(
@@ -313,6 +306,20 @@ class _MapScreenView extends State<MapScreenView> {
               myLocationButtonEnabled: false,
               markers: markers,
             ),
+            Positioned(
+              top: 15,
+              right: 15,
+              child: InkWell(
+                onTap: () {
+                  _homeViewModel.redirectTab(0);
+                },
+                child: Image.asset(
+                  ImagePath.closeIcon,
+                  width: 30,
+                  fit: BoxFit.contain,
+                ),
+              ),
+            )
           ],
         ),
       ),
