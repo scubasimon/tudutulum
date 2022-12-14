@@ -26,7 +26,7 @@ class DealsView extends StatefulWidget {
   State<StatefulWidget> createState() => _DealsView();
 }
 
-class _DealsView extends State<DealsView> with AutomaticKeepAliveClientMixin<DealsView> {
+class _DealsView extends State<DealsView> with AutomaticKeepAliveClientMixin<DealsView>, WidgetsBindingObserver {
   final _dealsViewModel = DealsViewModel();
 
   final _scrollController = ScrollController();
@@ -86,6 +86,12 @@ class _DealsView extends State<DealsView> with AutomaticKeepAliveClientMixin<Dea
       }
 
     });
+
+    // WidgetsBinding.instance.addObserver(this);
+    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    //
+    //   print(timeStamp);
+    // });
   }
 
   @override
@@ -120,7 +126,7 @@ class _DealsView extends State<DealsView> with AutomaticKeepAliveClientMixin<Dea
             PullDownButton(
               itemBuilder: (context) => [
                 PullDownMenuItem(
-                  title: S.current.alphabet,
+                  title: S.current.name,
                   itemTheme: const PullDownMenuItemTheme(
                     textStyle: TextStyle(
                         fontFamily: FontStyles.sfProText,
