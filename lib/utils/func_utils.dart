@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:map_launcher/map_launcher.dart';
 import 'package:tudu/consts/strings/str_const.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class FuncUlti {
   // static void checkSoundOnOff(String sound) {
@@ -19,7 +20,6 @@ class FuncUlti {
   static bool validateEmail(String email) {
     RegExp emailRegex = RegExp(StrConst.emailRegex);
     return emailRegex.hasMatch(email);
-
   }
 
   static List<int> getListIntFromListDynamic(List<dynamic> input) {
@@ -61,32 +61,44 @@ class FuncUlti {
 
   static String getDayInWeekFromKeyword(String input) {
     switch (input) {
-      case "mon": return "Monday";
-      case "tue": return "Tueday";
-      case "wed": return "Wedday";
-      case "fri": return "Friday";
-      case "thu": return "Thuday";
-      case "sat": return "Satday";
-      case "sun": return "Sunday";
-      case "other": return "Other";
-      default: return "NaN";
+      case "mon":
+        return "Monday";
+      case "tue":
+        return "Tueday";
+      case "wed":
+        return "Wedday";
+      case "fri":
+        return "Friday";
+      case "thu":
+        return "Thuday";
+      case "sat":
+        return "Satday";
+      case "sun":
+        return "Sunday";
+      case "other":
+        return "Other";
+      default:
+        return "NaN";
     }
   }
 
   static String getSortTypeByInt(int input) {
     switch (input) {
-      case 0: return "title"; // Alphabet
-      case 1: return "title"; // TODO: IMPL LOGIC FOR SORT WITH Distance
-      default: return "title"; // Alphabet
+      case 0:
+        return "title"; // Alphabet
+      case 1:
+        return "title"; // TODO: IMPL LOGIC FOR SORT WITH Distance
+      default:
+        return "title"; // Alphabet
     }
   }
 
   static void printLongLog(String input) {
     for (var i = 0; i < (input.length / 1000) - 2; i++) {
-      if ((i+1)*1000 < input.length) {
-        print(input.substring(i*1000 + (i+1)*1000));
+      if ((i + 1) * 1000 < input.length) {
+        print(input.substring(i * 1000 + (i + 1) * 1000));
       } else {
-        print(input.substring(i*1000 + input.length));
+        print(input.substring(i * 1000 + input.length));
       }
     }
   }
@@ -95,8 +107,7 @@ class FuncUlti {
     const _chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
     Random _rnd = Random();
 
-    return String.fromCharCodes(Iterable.generate(
-        length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
+    return String.fromCharCodes(Iterable.generate(length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
   }
 
   static Future<bool?> NetworkChecking() async {
@@ -112,18 +123,37 @@ class FuncUlti {
   }
 
   static Future<void> redirectAndDirection(GeoPoint from, GeoPoint to) async {
+    // final availableMaps = await MapLauncher.installedMaps;
+    // await availableMaps.first.showDirections(
+    //     origin: Coords(from.latitude, from.longitude),
+    //     destination: Coords(to.latitude, to.longitude));
+
     final availableMaps = await MapLauncher.installedMaps;
-    await availableMaps.first.showDirections(
-        origin: Coords(from.latitude, from.longitude),
-        destination: Coords(to.latitude, to.longitude));
+    await availableMaps.firstWhere((element) {
+      return element.mapName == "Google Maps";
+    }).showDirections(origin: Coords(from.latitude, from.longitude), destination: Coords(to.latitude, to.longitude));
   }
 
   static Future<void> redirectAndMoveToLocation(GeoPoint position, String title) async {
+    // final availableMaps = await MapLauncher.installedMaps;
+    // await availableMaps.first.showMarker(
+    //     coords: Coords(position.latitude, position.longitude),
+    //     title: title,
+    // );
+
     final availableMaps = await MapLauncher.installedMaps;
-    await availableMaps.first.showMarker(
-        coords: Coords(position.latitude, position.longitude),
-        title: title,
+    await availableMaps.firstWhere((element) {
+      return element.mapName == "Google Maps";
+    }).showMarker(
+      coords: Coords(position.latitude, position.longitude),
+      title: title,
     );
   }
-}
 
+  static Future<void> redirectToBrowserWithUrl(String url) async {
+    var uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    }
+  }
+}

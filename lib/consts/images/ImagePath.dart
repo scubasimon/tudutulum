@@ -26,6 +26,7 @@ class ImagePath {
   static const sortIcon = 'assets/icons/ic_sort.png';
   static const searchIcon = 'assets/icons/ic_search.png';
   static const leftArrowIcon = 'assets/icons/ic_left_arrow.png';
+  static const closeIcon = 'assets/icons/ic_close.png';
 
   static const markDeactiveIcon = 'assets/icons/ic_mark_deactive.png';
   static const mapIcon = 'assets/icons/ic_map.png';

@@ -23,6 +23,7 @@ import 'package:tudu/viewmodels/what_tudu_site_content_detail_viewmodel.dart';
 import 'package:tudu/viewmodels/what_tudu_viewmodel.dart';
 import 'package:tudu/views/home/home_view.dart';
 import 'package:tudu/views/onboard/onboard_view.dart';
+import 'consts/color/Colors.dart';
 import 'localization/app_localization.dart';
 import 'localization/language_constants.dart';
 import 'generated/l10n.dart';
@@ -141,6 +142,11 @@ class _MyAppState extends State<MyApp> {
         child: MaterialApp(
           theme: ThemeData(
             highlightColor: Colors.transparent,
+            textSelectionTheme: const TextSelectionThemeData(
+              cursorColor: ColorStyle.darkLabel,
+              selectionColor: ColorStyle.darkLabel,
+              selectionHandleColor: ColorStyle.darkLabel,
+            ),
           ),
           debugShowCheckedModeBanner: false,
           locale: _locale,
