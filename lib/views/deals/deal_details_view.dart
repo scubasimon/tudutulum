@@ -196,7 +196,7 @@ class _DealDetailView extends State<DealDetailView> {
                 final availableMaps = await MapLauncher.installedMaps;
                 print(availableMaps);
                 await availableMaps.firstWhere((element){
-                  return element.mapName == "Apple Maps";
+                  return element.mapName == "Google Maps";
                 }).showDirections(destination: Coords(deal.site.locationLat!, deal.site.locationLon!));
               },
               child: Image.asset(

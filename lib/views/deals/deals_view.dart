@@ -401,6 +401,16 @@ class _DealsView extends State<DealsView> with AutomaticKeepAliveClientMixin<Dea
                               width: MediaQuery.of(context).size.width,
                               height: 236,
                               fit: BoxFit.cover,
+                              imageBuilder: (context, imageProvider) => Container(
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                                ),
+                              ),
+                              placeholder: (context, url) => const CupertinoActivityIndicator(
+                                radius: 20,
+                                color: ColorStyle.primary,
+                              ),
+                              errorWidget: (context, url, error) => const Icon(Icons.error),
                             ),
                           )
                       ),
@@ -474,7 +484,6 @@ class _DealsView extends State<DealsView> with AutomaticKeepAliveClientMixin<Dea
                         ),
                       ),
                     ),
-
                     Positioned(
                       right: 16,
                       bottom: 0,
