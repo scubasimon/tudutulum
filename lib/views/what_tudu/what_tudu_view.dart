@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:localstore/localstore.dart';
@@ -31,7 +32,9 @@ import 'package:tudu/viewmodels/what_tudu_article_content_detail_viewmodel.dart'
 import 'package:tudu/views/common/alert.dart';
 import 'package:tudu/views/map/map_screen_view.dart';
 
+import '../../models/deal.dart';
 import '../../services/observable/observable_serivce.dart';
+import '../deals/deal_details_view.dart';
 
 enum DataLoadingType {
   LOADING,
@@ -844,18 +847,37 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver, Aut
 
   Widget getDealItemIfExist(int? dealId) {
     if (dealId != null) {
-      return Container(
-        height: 40,
-        width: 40,
-        margin: const EdgeInsets.only(top: 8, left: 24),
-        decoration: const BoxDecoration(
-          color: ColorStyle.tertiaryBackground75,
-          borderRadius: BorderRadius.all(Radius.circular(10.0)),
-        ),
-        child: Image.asset(
-          ImagePath.tab1stActiveIcon,
-          width: 30,
-          fit: BoxFit.contain,
+      return InkWell(
+        onTap: () {
+          if (FirebaseAuth.instance.currentUser != null) {
+            final dealData = Deal(dealId, false, "", [], Site(active: true, title: "", subTitle: "", siteId: 0, business: [], siteContent: SiteContent(), images: []), DateTime.now(), DateTime.now(), "", "", "", "");
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        DealDetailView(deal: dealData, preview: true),
+                    settings: const RouteSettings(name: StrConst.detalDetailView)));
+          } else {
+            showDialog(
+                context: context,
+                builder: (context) {
+                  return ErrorAlert.alertLogin(context);
+                });
+          }
+        },
+        child: Container(
+          height: 40,
+          width: 40,
+          margin: const EdgeInsets.only(top: 8, left: 24),
+          decoration: const BoxDecoration(
+            color: ColorStyle.tertiaryBackground75,
+            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+          ),
+          child: Image.asset(
+            ImagePath.tab1stActiveIcon,
+            width: 30,
+            fit: BoxFit.contain,
+          ),
         ),
       );
     } else {

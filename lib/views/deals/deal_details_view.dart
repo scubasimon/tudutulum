@@ -106,7 +106,7 @@ class _DealDetailView extends State<DealDetailView> {
                     StreamBuilder(
                       stream: _dealViewModel.deal,
                       builder: (context, snapshot) {
-                        if (snapshot.data != null) {
+                        if (snapshot.data != null && snapshot.data!.titleShort.isNotEmpty) {
                           return Center(
                             child: Text(
                               snapshot.data!.titleShort,
@@ -131,7 +131,7 @@ class _DealDetailView extends State<DealDetailView> {
         body: StreamBuilder(
           stream: _dealViewModel.deal,
           builder: (context, snapshot) {
-            if (snapshot.data == null) {
+            if (snapshot.data == null || snapshot.data!.titleShort.isEmpty) {
               return Container();
             } else {
               final deal = snapshot.data!;

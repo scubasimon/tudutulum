@@ -10,7 +10,9 @@ import 'package:tudu/consts/color/Colors.dart';
 import 'package:tudu/consts/font/Fonts.dart';
 import 'package:tudu/consts/images/ImagePath.dart';
 import 'package:tudu/models/amenity.dart';
+import 'package:tudu/models/deal.dart';
 import 'package:tudu/models/partner.dart';
+import 'package:tudu/models/site.dart';
 import 'package:tudu/utils/func_utils.dart';
 import 'package:tudu/viewmodels/what_tudu_site_content_detail_viewmodel.dart';
 import 'package:tudu/views/common/alert.dart';
@@ -19,6 +21,7 @@ import 'package:tudu/utils/colors_const.dart';
 import 'package:tudu/consts/font/font_size_const.dart';
 import 'package:tudu/consts/strings/str_const.dart';
 import 'package:tudu/generated/l10n.dart';
+import 'package:tudu/views/deals/deal_details_view.dart';
 
 import 'package:tudu/views/photo/photo_view.dart';
 import 'package:tudu/viewmodels/home_viewmodel.dart';
@@ -248,9 +251,14 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                 splashColor: Colors.transparent,
                 onTap: () {
                   if (FirebaseAuth.instance.currentUser != null) {
-                    // show
+                    final dealData = Deal(dealId, false, "", [], Site(active: true, title: "", subTitle: "", siteId: 0, business: [], siteContent: SiteContent(), images: []), DateTime.now(), DateTime.now(), "", "", "", "");
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                DealDetailView(deal: dealData, preview: true),
+                            settings: const RouteSettings(name: StrConst.detalDetailView)));
                   } else {
-                    // show login. da co alert login nhung o nhanh khac. ko can lam. a se dien vao khi merge
                     showDialog(
                         context: context,
                         builder: (context) {
