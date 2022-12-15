@@ -48,15 +48,14 @@ class MapDealsViewModel extends BaseViewModel {
 
     _isLoading.add(true);
 
-    var result = await _location.getLocation();
-    if (result.latitude != null && result.longitude != null) {
-      _currentLocation.add(LatLng(result.latitude!, result.longitude!));
-    }
+    // var result = await _location.getLocation();
+    // if (result.latitude != null && result.longitude != null) {
+    //   _currentLocation.add(LatLng(result.latitude!, result.longitude!));
+    // }
+    _currentLocation.add(const LatLng(20.214193,-87.453294));
     _param.add(Param(refresh: true, order: null));
     _searchData();
-
-    print("get location");
-
+    
   }
 
   void searchWithParam({int? businessId}) {

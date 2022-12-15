@@ -15,6 +15,7 @@ import 'package:tudu/consts/font/font_size_const.dart';
 import 'package:tudu/models/error.dart';
 import 'package:tudu/views/common/alert.dart';
 import 'package:tudu/models/deal.dart';
+import 'package:tudu/views/deals/deal_details_view.dart';
 
 class MapDealView extends StatefulWidget {
   final int? businessId;
@@ -86,27 +87,30 @@ class _MapDealView extends State<MapDealView> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     InkWell(
-                      child: Image.asset(
-                        ImagePath.chevronLeftIcon,
-                        width: 28,
-                        height: 28,
-                      ),
                       onTap: () {
-                        Navigator.of(context).pop(true);
+                        Navigator.of(context).pop();
                       },
-                    ),
-                    const SizedBox(
-                      width: 12.0,
-                    ),
-                    Text(
-                      _businessId == null
-                          ? S.current.all_location
-                          : _mapDealsViewModel.business.firstWhere((element) => element.businessid == _businessId).type,
-                      style: const TextStyle(
-                        color: ColorStyle.primary,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
-                        fontFamily: FontStyles.mouser,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Image.asset(
+                            ImagePath.leftArrowIcon,
+                            fit: BoxFit.contain,
+                            height: 20,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: Text(
+                              S.current.back,
+                              style: const TextStyle(
+                                color: ColorStyle.primary,
+                                fontSize: FontSizeConst.font16,
+                                fontWeight: FontWeight.w400,
+                                fontFamily: FontStyles.mouser,
+                              ),
+                            ),
+                          )
+                        ],
                       ),
                     ),
                     const Spacer(),
@@ -258,7 +262,7 @@ class _MapDealView extends State<MapDealView> {
         .where((element) => element.site.locationLat != null && element.site.locationLon != null)
         .map((e) async {
           final marker = Marker(
-            markerId: MarkerId(e.site.title),
+            markerId: MarkerId("${e.dealsId}"),
             position: LatLng(e.site.locationLat!, e.site.locationLon!),
               icon: await MarkerIcon.downloadResizePictureCircle(
               e.images[0],
@@ -267,7 +271,9 @@ class _MapDealView extends State<MapDealView> {
               borderColor: Colors.white,
               borderSize: 15),
             onTap: () {
-
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => DealDetailView(deal: e))
+              );
             }
           );
           return marker;

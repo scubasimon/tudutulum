@@ -10,6 +10,9 @@ class DealViewModel extends BaseViewModel {
   final deal = BehaviorSubject<Deal>();
   final DealRepository _dealRepository = DealRepositoryImpl();
 
+  final _redeem = BehaviorSubject<bool>();
+  Stream<bool> get isRedeem => _redeem;
+
   final _isLoading = BehaviorSubject<bool>();
   Stream<bool> get loading => _isLoading.stream;
 
@@ -21,25 +24,64 @@ class DealViewModel extends BaseViewModel {
     deal
         .where((event) => event.titleShort.isEmpty)
         .listen((event) async {
-          await _loadData(event.dealsId);
+          _isLoading.add(true);
+          try {
+            await _loadData(event.dealsId);
+            _isLoading.add(false);
+          } catch (e) {
+            _isLoading.add(false);
+            _exception.add(e as CustomError);
+          }
+    });
+    deal.elementAt(0).then((event) async {
+      try {
+        await _loadRedeem(event.dealsId);
+      } catch (e) {
+        print(e);
+        _redeem.add(false);
+      }
     });
   }
 
-  Future<void> refresh() {
-    return _loadData(deal.value.dealsId);
-  }
-
-
-  Future<void> _loadData(int dealId) async {
+  void redeem() async {
     _isLoading.add(true);
     try {
-      var result = await _dealRepository.getDeal(dealId);
-      deal.add(result);
+      await _dealRepository
+          .redeem(deal.value.dealsId);
+      _redeem.add(true);
       _isLoading.add(false);
     } catch (e) {
       _isLoading.add(false);
       _exception.add(e as CustomError);
     }
+  }
+
+  Future<void> refresh() async {
+    _isLoading.add(true);
+    try {
+      await _loadRedeem(deal.value.dealsId);
+    } catch (e) {
+      print(e);
+      _redeem.add(false);
+    }
+    try {
+      await _loadData(deal.value.dealsId);
+      _isLoading.add(false);
+    } catch (e) {
+      _isLoading.add(false);
+      _exception.add(e as CustomError);
+    }
+  }
+
+  Future<void> _loadData(int dealId) async {
+    var result = await _dealRepository.getDeal(dealId);
+    deal.add(result);
+  }
+
+  Future<void> _loadRedeem(int dealId) async {
+    var result = await _dealRepository.redeemExist(dealId);
+    print(result);
+    _redeem.add(result);
   }
 
 }

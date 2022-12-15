@@ -20,7 +20,9 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'en';
 
-  static String m0(name) => "Hello ${name}";
+  static String m0(name) => "${name} is not installed";
+
+  static String m1(name) => "Hello ${name}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -42,6 +44,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "all_tulum_article":
             MessageLookupByLibrary.simpleMessage("All Tulum Articles"),
         "alphabet": MessageLookupByLibrary.simpleMessage("Name"),
+        "app_not_installed": m0,
         "articles": MessageLookupByLibrary.simpleMessage(" Articles"),
         "back": MessageLookupByLibrary.simpleMessage("Back"),
         "beach_clubs": MessageLookupByLibrary.simpleMessage("Beach Clubs"),
@@ -66,7 +69,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "deactivate_account_title":
             MessageLookupByLibrary.simpleMessage("Deactivate Account"),
         "deal_available":
-            MessageLookupByLibrary.simpleMessage("This deal is available"),
+            MessageLookupByLibrary.simpleMessage("This deal is available at"),
+        "deal_redeemed":
+            MessageLookupByLibrary.simpleMessage("This deal has been redeemed"),
         "deals": MessageLookupByLibrary.simpleMessage("Deals"),
         "delete_account":
             MessageLookupByLibrary.simpleMessage("Or deactivate your account"),
@@ -101,7 +106,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "get_in_touch_with":
             MessageLookupByLibrary.simpleMessage("Get in touch directly with:"),
         "get_started": MessageLookupByLibrary.simpleMessage("Get Started"),
-        "hello_name": m0,
+        "hello_name": m1,
         "here": MessageLookupByLibrary.simpleMessage("here"),
         "issue": MessageLookupByLibrary.simpleMessage("There was an issue"),
         "local_fail": MessageLookupByLibrary.simpleMessage(
@@ -199,6 +204,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Search here or use the filter above"),
         "select_contact_message":
             MessageLookupByLibrary.simpleMessage("Please select contact"),
+        "select_navigation_app":
+            MessageLookupByLibrary.simpleMessage("Please select app"),
         "server_error": MessageLookupByLibrary.simpleMessage(
             "An error occurred, please try again"),
         "setting": MessageLookupByLibrary.simpleMessage("Settings"),

@@ -13,6 +13,7 @@ import 'package:tudu/consts/font/Fonts.dart';
 import 'package:tudu/generated/l10n.dart';
 import 'package:tudu/models/deal.dart';
 import 'package:tudu/views/common/alert.dart';
+import 'package:tudu/views/what_tudu/what_tudu_site_content_detail_view.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DealDetailView extends StatefulWidget {
@@ -26,14 +27,12 @@ class DealDetailView extends StatefulWidget {
   State<StatefulWidget> createState() {
     return _DealDetailView();
   }
-
 }
 
 class _DealDetailView extends State<DealDetailView> {
 
   final _dealViewModel = DealViewModel();
   final _refreshController = RefreshController(initialRefresh: false);
-
 
   @override
   void initState() {
@@ -42,7 +41,6 @@ class _DealDetailView extends State<DealDetailView> {
       showDialog(context: context, builder: (context){
         return ErrorAlert.alert(context, event.message ?? S.current.failed);
       });
-
     });
     _dealViewModel.loading.listen((event) {
       if (event) {
@@ -72,36 +70,36 @@ class _DealDetailView extends State<DealDetailView> {
             color: ColorStyle.navigation,
             child: Container(
                 height: 36.0,
-                alignment: Alignment.center,
+                alignment: Alignment.centerLeft,
                 child: Stack(
+                  alignment: AlignmentDirectional.centerStart,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        InkWell(
-                          child: Image.asset(
-                            ImagePath.chevronLeftIcon,
-                            width: 32,
-                            height: 32,
+                    InkWell(
+                      onTap: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Image.asset(
+                            ImagePath.leftArrowIcon,
+                            fit: BoxFit.contain,
+                            height: 20,
                           ),
-                          onTap: () {
-                            Navigator.of(context).pop(true);
-                          },
-                        ),
-                        const SizedBox(
-                          width: 12.0,
-                        ),
-                        Text(
-                          S.current.back,
-                          style: const TextStyle(
-                            color: ColorStyle.primary,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
-                            fontFamily: FontStyles.mouser,
-                          ),
-                        ),
-                      ],
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: Text(
+                              S.current.back,
+                              style: const TextStyle(
+                                color: ColorStyle.primary,
+                                fontSize: FontSizeConst.font16,
+                                fontWeight: FontWeight.w400,
+                                fontFamily: FontStyles.mouser,
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                     StreamBuilder(
                       stream: _dealViewModel.deal,
@@ -192,13 +190,7 @@ class _DealDetailView extends State<DealDetailView> {
             ),
             const Spacer(),
             InkWell(
-              onTap: () async {
-                final availableMaps = await MapLauncher.installedMaps;
-                print(availableMaps);
-                await availableMaps.firstWhere((element){
-                  return element.mapName == "Google Maps";
-                }).showDirections(destination: Coords(deal.site.locationLat!, deal.site.locationLon!));
-              },
+              onTap: () { _openNavigationApp(deal); },
               child: Image.asset(
                 ImagePath.mapIcon,
                 width: 28,
@@ -292,14 +284,21 @@ class _DealDetailView extends State<DealDetailView> {
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 4, left: 16, right: 16),
-                  child: Text(
-                    deal.site.title,
-                    style: const TextStyle(
-                      color: ColorStyle.darkLabel,
-                      fontFamily: FontStyles.mouser,
-                      fontSize: 11,
-                      fontWeight: FontWeight.normal,
+                  child: InkWell(
+                    child: Text(
+                      deal.site.title,
+                      style: const TextStyle(
+                        color: ColorStyle.darkLabel,
+                        fontFamily: FontStyles.mouser,
+                        fontSize: 11,
+                        fontWeight: FontWeight.normal,
+                      ),
                     ),
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => const WhatTuduSiteContentDetailView())
+                      );
+                    },
                   ),
                 ),
               ],
@@ -323,26 +322,55 @@ class _DealDetailView extends State<DealDetailView> {
         ),
         Padding(
           padding: const EdgeInsets.only(top: 12, left: 16, bottom: 16, right: 16),
-          child: InkWell(
-            onTap: _showReport,
-            child: Container(
-              height: 56,
-              decoration: BoxDecoration(
-                color: ColorStyle.primary,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Center(
-                child: Text(
-                  S.current.redeem_here,
-                  style: const TextStyle(
-                    color: ColorStyle.lightLabel,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 17,
-                    fontFamily: FontStyles.sfProText,
-                  ),
-                ),
-              ),
-            ),
+          child: StreamBuilder(
+            stream: _dealViewModel.isRedeem,
+            builder: (context, snapshot) {
+              if (snapshot.data != null) {
+                if (!snapshot.data!) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 24),
+                    child: InkWell(
+                      onTap: _showReport,
+                      child: Container(
+                        height: 56,
+                        decoration: BoxDecoration(
+                          color: ColorStyle.primary,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Center(
+                          child: Text(
+                            S.current.redeem_here,
+                            style: const TextStyle(
+                              color: ColorStyle.lightLabel,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 17,
+                              fontFamily: FontStyles.sfProText,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                } else {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 24.0),
+                    child: Center(
+                      child: Text(
+                        S.current.deal_redeemed,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.normal,
+                            color: ColorStyle.darkLabel,
+                            fontFamily: FontStyles.mouser,
+                            fontSize: 12
+                        ),
+                      ),
+                    ),
+                  );
+                }
+              } else {
+                return Container();
+              }
+            },
           ),
         ),
       ]);
@@ -373,10 +401,10 @@ class _DealDetailView extends State<DealDetailView> {
   }
 
   void _showReport() {
-    showDialog(context: context, builder: (context) => _alert());
+    showDialog(context: context, builder: (context) => _alertReport());
   }
 
-  Widget _alert() {
+  Widget _alertReport() {
     if (Platform.isAndroid) {
       var cancelAction = TextButton(
         onPressed: () {
@@ -388,6 +416,7 @@ class _DealDetailView extends State<DealDetailView> {
       var successful = TextButton(
         onPressed: () {
           Navigator.of(context).pop();
+          _dealViewModel.redeem();
         },
         child: Text(S.current.successful),
       );
@@ -395,7 +424,7 @@ class _DealDetailView extends State<DealDetailView> {
       var issue = TextButton(
         onPressed: () {
           Navigator.of(context).pop();
-          showDialog(context: context, builder: (context) => _sheet());
+          showDialog(context: context, builder: (context) => _sheetContact());
         },
         child: Text(S.current.issue),
       );
@@ -419,6 +448,7 @@ class _DealDetailView extends State<DealDetailView> {
             child: Text(S.current.successful),
             onPressed: () {
               Navigator.of(context).pop();
+              _dealViewModel.redeem();
             },
           ),
           CupertinoDialogAction(
@@ -426,7 +456,7 @@ class _DealDetailView extends State<DealDetailView> {
             child: Text(S.current.issue),
             onPressed: () {
               Navigator.of(context).pop();
-              showCupertinoModalPopup(context: context, builder: (context) => _sheet());
+              showCupertinoModalPopup(context: context, builder: (context) => _sheetContact());
             },
           ),
           CupertinoDialogAction(
@@ -441,7 +471,7 @@ class _DealDetailView extends State<DealDetailView> {
     }
   }
 
-  Widget _sheet() {
+  Widget _sheetContact() {
     if (Platform.isAndroid) {
       var cancelAction = TextButton(
         onPressed: () {
@@ -451,18 +481,17 @@ class _DealDetailView extends State<DealDetailView> {
       );
 
       var email = TextButton(
-        onPressed: () async {
+        onPressed: () {
           Navigator.of(context).pop();
-          await launchUrl(Uri.parse("mailto:info@thetudu.app"));
-
+          _openMail("info@thetudu.app");
         },
         child: Text(S.current.email),
       );
 
       var whatsapp = TextButton(
-        onPressed: () async {
+        onPressed: () {
           Navigator.of(context).pop();
-          await launchUrl(Uri.parse("whatsapp://send?phone=+529842105598"));
+          _openWhatsapp("+529842105598");
         },
         child: const Text("Whatsapp"),
       );
@@ -481,17 +510,17 @@ class _DealDetailView extends State<DealDetailView> {
         actions: [
           CupertinoActionSheetAction(
             isDefaultAction: true,
-            onPressed: () async {
+            onPressed: () {
               Navigator.of(context).pop();
-              await launchUrl(Uri.parse("whatsapp://send?phone=+529842105598"));
+              _openWhatsapp("+529842105598");
             },
             child: const Text("Whatsapp"),
           ),
           CupertinoActionSheetAction(
             isDefaultAction: true,
-            onPressed: () async {
+            onPressed: () {
               Navigator.of(context).pop();
-              await launchUrl(Uri.parse("mailto:info@thetudu.app"));
+              _openMail("info@thetudu.app");
             },
             child: Text(S.current.email),
           ),
@@ -507,4 +536,72 @@ class _DealDetailView extends State<DealDetailView> {
     }
   }
 
+  void _openNavigationApp(Deal deal) {
+    if (Platform.isAndroid) {
+      _openMap("Google Maps", deal);
+    } else {
+      showCupertinoModalPopup(context: context, builder: (context) => _sheetNavigation(deal));
+    }
+  }
+
+  Widget _sheetNavigation(Deal deal) {
+    return CupertinoActionSheet(
+      message: Text(S.current.select_navigation_app),
+      actions: [
+        CupertinoActionSheetAction(
+          isDefaultAction: true,
+          onPressed: () async {
+            Navigator.of(context).pop();
+            _openMap("Apple Maps", deal);
+          },
+          child: const Text("Apple Map"),
+        ),
+        CupertinoActionSheetAction(
+          isDefaultAction: true,
+          onPressed: () async {
+            Navigator.of(context).pop();
+            _openMap("Google Maps", deal);
+          },
+          child: const Text("Google Map"),
+        ),
+        CupertinoActionSheetAction(
+          isDestructiveAction: true,
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Text(S.current.cancel),
+        )
+      ],
+    );
+  }
+
+  void _openMap(String name, Deal deal) async {
+    try {
+      final availableMaps = await MapLauncher.installedMaps;
+      await availableMaps.firstWhere((element){
+        return element.mapName == name;
+      }).showDirections(destination: Coords(deal.site.locationLat!, deal.site.locationLon!));
+    } catch (e) {
+      print(e);
+      showDialog(context: context, builder: (context) => ErrorAlert.alert(context, S.current.app_not_installed(name)));
+    }
+  }
+
+  void _openMail(String mail) async {
+    final url = Uri.parse("mailto:$mail");
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      showDialog(context: context, builder: (context) => ErrorAlert.alert(context, S.current.app_not_installed("Mail")));
+    }
+  }
+
+  void _openWhatsapp(String phone) async {
+    final url = Uri.parse("whatsapp://send?phone=$phone");
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      showDialog(context: context, builder: (context) => ErrorAlert.alert(context, S.current.app_not_installed("Whatsapp")));
+    }
+  }
 }

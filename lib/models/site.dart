@@ -1,16 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../utils/func_utils.dart';
+
 class Site {
-  int siteId;
-  bool active;
-  List<String> images;
+  late int siteId;
+  late bool active;
+  late List<String> images;
   int? dealId;
-  String title;
-  String subTitle;
-  List<int> business;
+  late String title;
+  late String subTitle;
+  List<int> business = [];
   double? locationLat;
   double? locationLon;
-  SiteContent siteContent;
+  late SiteContent siteContent;
   double? rating;
 
   Site(
@@ -48,6 +50,48 @@ class Site {
     }
 
     return result;
+  }
+
+  Site.from(Map<String, dynamic> data) {
+    images = FuncUlti.getListStringFromListDynamic(data["image"]);
+    active = data["active"];
+    siteId = data["siteid"];
+    dealId = (data["dealId"] != null) ? data["dealId"] : null;
+    title = data["title"] as String;
+    subTitle = data["subTitle"] as String;
+    business = FuncUlti.getListIntFromListDynamic(data["business"]);
+    locationLat = (data["locationLat"] != null) ? data["locationLat"]: null;
+    locationLon = (data["locationLon"] != null) ? data["locationLon"]: null;
+    rating = (data["rating"] != null) ? data["rating"] : null;
+    siteContent = SiteContent(
+    title: (data["contentTitle"] != null) ? data["contentTitle"] : null,
+    description: (data["contentDescription"] != null) ? data["contentDescription"] : null,
+    moreInformation: (data["moreInformation"] != null) ? data["moreInformation"] : null,
+    advisory: (data["advisory"] != null) ? data["advisory"] : null,
+    amenities: (data["amenities"] != null)
+    ? FuncUlti.getListIntFromListDynamic(data["amenities"])
+        : null,
+    amentityDescriptions: (data["amentityDescriptions"] != null)
+    ? FuncUlti.getListStringFromListDynamic(data["amentityDescriptions"])
+        : null,
+    openingTimes: (data["openingTimes"] != null)
+    ? FuncUlti.getMapStringStringFromStringDynamic(data["openingTimes"])
+        : null,
+    fees:
+    (data["fees"] != null) ? FuncUlti.getMapStringListFromStringDynamic(data["fees"]) : null,
+    capacity: (data["capacity"] != null) ? data["capacity"] : data["capacity"],
+    eventIcons: (data["eventIcons"] != null)
+    ? FuncUlti.getListStringFromListDynamic(data["eventIcons"])
+        : null,
+    eventLinks: (data["eventLinks"] != null)
+    ? FuncUlti.getListStringFromListDynamic(data["eventLinks"])
+        : null,
+    getIntouch: (data["getIntouch"] != null)
+    ? FuncUlti.getMapStringStringFromStringDynamic(data["getIntouch"])
+        : null,
+    logo: (data["logo"] != null) ? data["logo"] : null,
+    partner: (data["partner"] != null) ? data["partner"] : null,
+    );
   }
 }
 

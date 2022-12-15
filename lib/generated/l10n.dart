@@ -1310,10 +1310,10 @@ class S {
     );
   }
 
-  /// `This deal is available`
+  /// `This deal is available at`
   String get deal_available {
     return Intl.message(
-      'This deal is available',
+      'This deal is available at',
       name: 'deal_available',
       desc: '',
       args: [],
@@ -1395,6 +1395,36 @@ class S {
     return Intl.message(
       'To view full term and conditions and to redeem this offer please visit the Deals tab',
       name: 'preview_deal_message',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please select app`
+  String get select_navigation_app {
+    return Intl.message(
+      'Please select app',
+      name: 'select_navigation_app',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{name} is not installed`
+  String app_not_installed(Object name) {
+    return Intl.message(
+      '$name is not installed',
+      name: 'app_not_installed',
+      desc: '',
+      args: [name],
+    );
+  }
+
+  /// `This deal has been redeemed`
+  String get deal_redeemed {
+    return Intl.message(
+      'This deal has been redeemed',
+      name: 'deal_redeemed',
       desc: '',
       args: [],
     );

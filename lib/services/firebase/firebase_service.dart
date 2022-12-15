@@ -57,6 +57,12 @@ abstract class FirebaseService {
   Future<List<Map<String, dynamic>>> getDeals();
   
   Future<Map<String, dynamic>> getDeal(int id);
+
+  Future<void> redeem(int dealId, String userId, DateTime time);
+
+  Future<Map<String, dynamic>> getRedeem(int dealId, String userId);
+
+  Future<Map<String, dynamic>> getSite(int siteId);
 }
 
 class FirebaseServiceImpl extends FirebaseService {
@@ -330,15 +336,85 @@ class FirebaseServiceImpl extends FirebaseService {
 
   @override
   Future<Map<String, dynamic>> getDeal(int id) async {
-    var results = await FirebaseFirestore
-        .instance
-        .collection("deals")
-        .where("dealsid", isEqualTo: id).get();
-    var data = results.docs.map((e) => e.data());
-    if (data.isEmpty) {
+    try {
+      var results = await FirebaseFirestore
+          .instance
+          .collection("deals")
+          .where("dealsid", isEqualTo: id).get(); 
+      var data = results.docs.map((e) => e.data());
+      if (data.isEmpty) {
+        throw CommonError.serverError;
+      } else {
+        return data.first;
+      }
+    } catch (e) {
+      if (e is CustomError) {
+        rethrow;
+      } else {
+        throw CommonError.serverError;
+      }
+    }
+  }
+
+  @override
+  Future<void> redeem(int dealId, String userId, DateTime time) async {
+    try {
+      FirebaseFirestore
+          .instance
+          .collection("dealsSuccessful")
+          .add({
+        "dealsid": dealId,
+        "userIdentifier": userId,
+        "timestamp": time
+      });
+    } catch (e) {
+      print(e);
       throw CommonError.serverError;
-    } else {
-      return data.first;
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> getRedeem(int dealId, String userId) async {
+    try {
+      var results = await FirebaseFirestore
+          .instance
+          .collection("dealsSuccessful")
+          .where("dealsid", isEqualTo: dealId)
+          .where("userIdentifier", isEqualTo: userId).get();
+      var data = results.docs.map((e) => e.data());
+      if (data.isEmpty) {
+        throw CommonError.serverError;
+      } else {
+        return data.first;
+      }
+    } catch (e) {
+      if (e is CustomError) {
+        rethrow;
+      } else {
+        throw CommonError.serverError;
+      }
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> getSite(int siteId) async {
+    try {
+      var results = await FirebaseFirestore
+          .instance
+          .collection("sites")
+          .where("siteid", isEqualTo: siteId).get();
+      var data = results.docs.map((e) => e.data());
+      if (data.isEmpty) {
+        throw CommonError.serverError;
+      } else {
+        return data.first;
+      }
+    } catch (e) {
+      if (e is CustomError) {
+        rethrow;
+      } else {
+        throw CommonError.serverError;
+      }
     }
   }
 }

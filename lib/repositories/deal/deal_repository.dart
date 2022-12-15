@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:tudu/consts/number/number_const.dart';
 import 'package:tudu/models/deal.dart';
@@ -8,11 +9,16 @@ import 'package:tudu/models/param.dart' as p;
 import 'package:tudu/services/firebase/firebase_service.dart';
 import 'package:location/location.dart';
 import 'package:tudu/services/location/location_permission.dart';
+import 'package:tudu/models/site.dart';
 
 abstract class DealRepository {
   Future<List<Deal>> getDeals(p.Param param);
 
   Future<Deal> getDeal(int id);
+
+  Future<void> redeem(int dealId);
+
+  Future<bool> redeemExist(int dealId);
 }
 
 class DealRepositoryImpl extends DealRepository {
@@ -21,7 +27,7 @@ class DealRepositoryImpl extends DealRepository {
   List<Deal> _results = [];
   final Location _location = Location();
   LocationData? _currentLocation;
-  PermissionLocation _permissionLocation = PermissionLocation();
+  final PermissionLocation _permissionLocation = PermissionLocation();
 
   @override
   Future<List<Deal>> getDeals(p.Param param) async {
@@ -29,6 +35,11 @@ class DealRepositoryImpl extends DealRepository {
       try {
         _results = (await _firebaseService.getDeals().timeout(const Duration(seconds: NumberConst.timeout)))
             .map((e) => Deal.from(e)).toList();
+        for (var result in _results) {
+          var siteData = await _firebaseService.getSite(result.site.siteId);
+          result.site = Site.from(siteData);
+        }
+        print(_results.length);
       } catch (e) {
         if (e is TimeoutException) {
           throw CommonError.serverError;
@@ -37,7 +48,6 @@ class DealRepositoryImpl extends DealRepository {
         }
       }
     }
-    print("result: ${_results.length}");
     var results = _results.where((element) {
       if (param.title == null) {
         return true;
@@ -76,7 +86,48 @@ class DealRepositoryImpl extends DealRepository {
     try {
       var result = await _firebaseService.getDeal(id)
           .timeout(const Duration(seconds: NumberConst.timeout));
-      return Deal.from(result);
+      var deal = Deal.from(result);
+      var siteData = await _firebaseService.getSite(deal.dealsId);
+      deal.site = Site.from(siteData);
+      return deal;
+    } catch (e) {
+      if (e is TimeoutException) {
+        throw CommonError.serverError;
+      } else {
+        rethrow;
+      }
+    }
+  }
+
+  @override
+  Future<void> redeem(int dealId) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      throw AuthenticationError.notLogin;
+    }
+    try {
+      await _firebaseService.redeem(dealId, user.uid, DateTime.now())
+          .timeout(const Duration(seconds: NumberConst.timeout));
+    } catch (e) {
+      if (e is TimeoutException) {
+        throw CommonError.serverError;
+      } else {
+        rethrow;
+      }
+    }
+  }
+
+  @override
+  Future<bool> redeemExist(int dealId) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      throw AuthenticationError.notLogin;
+    }
+    try {
+      var result = await _firebaseService.getRedeem(dealId, user.uid)
+          .timeout(const Duration(seconds: NumberConst.timeout));
+      print(result);
+      return result.isNotEmpty;
     } catch (e) {
       if (e is TimeoutException) {
         throw CommonError.serverError;
@@ -88,7 +139,7 @@ class DealRepositoryImpl extends DealRepository {
 
   void _sortAlphabet(List<Deal> data) {
     data.sort((a, b) {
-      return a.titleShort.compareTo(b.titleShort);
+      return a.site.title.compareTo(b.site.title);
     });
   }
 
@@ -98,9 +149,7 @@ class DealRepositoryImpl extends DealRepository {
         throw LocationError.locationPermission;
       }
 
-      print("get location");
       _currentLocation = await _location.getLocation();
-      print(_currentLocation);
     }
 
     if (_currentLocation?.latitude != null && _currentLocation?.longitude != null) {

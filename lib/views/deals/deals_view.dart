@@ -36,6 +36,7 @@ class _DealsView extends State<DealsView> with AutomaticKeepAliveClientMixin<Dea
   var _order = Order.distance;
   bool _isAtTop = true;
   int? _businessId;
+  var _enableRefresh = true;
 
   @override
   bool get wantKeepAlive => true;
@@ -68,6 +69,10 @@ class _DealsView extends State<DealsView> with AutomaticKeepAliveClientMixin<Dea
       }
     });
     _searchController.addListener(() {
+      setState(() {
+        _enableRefresh = false;
+      });
+
       _dealsViewModel.searchWithParam(
         title: _searchController.text,
         businessId: _businessId,
@@ -228,6 +233,11 @@ class _DealsView extends State<DealsView> with AutomaticKeepAliveClientMixin<Dea
     if (_isAtTop) {
       array.add(CupertinoSearchTextField(
         controller: _searchController,
+        onSubmitted: (value) {
+          setState(() {
+            _enableRefresh = true;
+          });
+        },
         style: const TextStyle(
             color: ColorStyle.darkLabel,
             fontFamily: FontStyles.sfProText,
@@ -266,7 +276,7 @@ class _DealsView extends State<DealsView> with AutomaticKeepAliveClientMixin<Dea
           builder: (context, snapshot) {
             if (snapshot.hasData && snapshot.data!) {
               return SmartRefresher(
-                enablePullDown: true,
+                enablePullDown: _enableRefresh,
                 enablePullUp: false,
                 header: const WaterDropHeader(),
                 controller: _refreshController,
@@ -419,22 +429,6 @@ class _DealsView extends State<DealsView> with AutomaticKeepAliveClientMixin<Dea
                               errorWidget: (context, url, error) => const Icon(Icons.error),
                             ),
                           )
-                      ),
-                    ),
-                    Container(
-                      height: 40,
-                      width: 40,
-                      margin: const EdgeInsets.only(top: 16, left: 16),
-                      decoration: const BoxDecoration(
-                        color: ColorStyle.tertiaryBackground75,
-                        borderRadius: BorderRadius.all(
-                            Radius.circular(10.0)
-                        ),
-                      ),
-                      child: Image.asset(
-                        ImagePath.tab1stActiveIcon,
-                        width: 30,
-                        fit: BoxFit.contain,
                       ),
                     ),
                     Positioned(
