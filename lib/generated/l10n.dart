@@ -1579,6 +1579,56 @@ class S {
       args: [],
     );
   }
+
+  /// `Choose your plan`
+  String get choose_your_plan {
+    return Intl.message(
+      'Choose your plan',
+      name: 'choose_your_plan',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Discover offer deals`
+  String get discover_offer_deals {
+    return Intl.message(
+      'Discover offer deals',
+      name: 'discover_offer_deals',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The option to hide ads`
+  String get option_hide_ads {
+    return Intl.message(
+      'The option to hide ads',
+      name: 'option_hide_ads',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The total amount for the subscription period will be charged to your iTunes Account. Unless you turn off auto-renewal at least 24 hours before the end of the subscription period, the subscription will renew automatically for the same price, and your iTunes Account will be charged according. You can manage the subscription and turn off automatic renewal in the Account Settings for your Apple at any time.`
+  String get subscription_description {
+    return Intl.message(
+      'The total amount for the subscription period will be charged to your iTunes Account. Unless you turn off auto-renewal at least 24 hours before the end of the subscription period, the subscription will renew automatically for the same price, and your iTunes Account will be charged according. You can manage the subscription and turn off automatic renewal in the Account Settings for your Apple at any time.',
+      name: 'subscription_description',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Restore Purchase`
+  String get restore_purchase {
+    return Intl.message(
+      'Restore Purchase',
+      name: 'restore_purchase',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

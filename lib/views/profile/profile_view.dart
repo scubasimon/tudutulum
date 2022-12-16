@@ -12,6 +12,8 @@ import 'package:tudu/generated/l10n.dart';
 import 'package:tudu/views/common/alert.dart';
 import 'dart:io';
 
+import 'package:tudu/views/subscription/subscription_plan_view.dart';
+
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
 
@@ -119,6 +121,16 @@ class _ProfileView extends State<ProfileView> {
               fontFamily: FontStyles.sfProText,
               fontWeight: FontWeight.w700,
             ),
+          ),
+          InkWell(
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const SubscriptionPlanView()
+                )
+              );
+            },
+            child: Text("Payment"),
           ),
           StreamBuilder(
             stream: _profileViewModel.profile,

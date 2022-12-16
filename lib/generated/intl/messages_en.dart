@@ -57,6 +57,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "capacity": MessageLookupByLibrary.simpleMessage("Capacity"),
         "change_password":
             MessageLookupByLibrary.simpleMessage("Change Password"),
+        "choose_your_plan":
+            MessageLookupByLibrary.simpleMessage("Choose your plan"),
         "clear_saved_data":
             MessageLookupByLibrary.simpleMessage("Clear Saved Data"),
         "clear_saved_data_info": MessageLookupByLibrary.simpleMessage(
@@ -85,6 +87,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "delete_account":
             MessageLookupByLibrary.simpleMessage("Or deactivate your account"),
         "delete_now": MessageLookupByLibrary.simpleMessage("Delete Now"),
+        "discover_offer_deals":
+            MessageLookupByLibrary.simpleMessage("Discover offer deals"),
         "distance": MessageLookupByLibrary.simpleMessage("Distance"),
         "email": MessageLookupByLibrary.simpleMessage("Email"),
         "email_empty_error":
@@ -178,6 +182,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Your exclusive savings"),
         "open_setting": MessageLookupByLibrary.simpleMessage("Open Setting"),
         "open_times": MessageLookupByLibrary.simpleMessage("Opening times"),
+        "option_hide_ads":
+            MessageLookupByLibrary.simpleMessage("The option to hide ads"),
         "password": MessageLookupByLibrary.simpleMessage("Password"),
         "password_empty_error":
             MessageLookupByLibrary.simpleMessage("Password must be not empty"),
@@ -222,6 +228,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "*Email and password are required"),
         "reset_password_message": MessageLookupByLibrary.simpleMessage(
             "Password reset link has been sent successfully"),
+        "restore_purchase":
+            MessageLookupByLibrary.simpleMessage("Restore Purchase"),
         "save_changes": MessageLookupByLibrary.simpleMessage("Save Changes"),
         "search_placeholder": MessageLookupByLibrary.simpleMessage(
             "Search here or use the filter above"),
@@ -242,6 +250,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "sort": MessageLookupByLibrary.simpleMessage("Sort"),
         "subscribe_redeem_offer": MessageLookupByLibrary.simpleMessage(
             "Subscribe now to redeem this offer"),
+        "subscription_description": MessageLookupByLibrary.simpleMessage(
+            "The total amount for the subscription period will be charged to your iTunes Account. Unless you turn off auto-renewal at least 24 hours before the end of the subscription period, the subscription will renew automatically for the same price, and your iTunes Account will be charged according. You can manage the subscription and turn off automatic renewal in the Account Settings for your Apple at any time."),
         "successful": MessageLookupByLibrary.simpleMessage("Successful!"),
         "term_and_conditions":
             MessageLookupByLibrary.simpleMessage("Term and Conditions"),
