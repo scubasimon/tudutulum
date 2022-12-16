@@ -95,10 +95,10 @@ class MapDealsViewModel extends BaseViewModel {
       if (param.refresh) {
         _isLoading.add(false);
       }
-      if ( e is String) {
-        _exception.add(CommonError.serverError);
+      if ( e is CustomError) {
+        _exception.add(e);
       } else {
-        _exception.sink.add(e as CustomError);
+        _exception.sink.add(CommonError.serverError);
       }
     }
   }

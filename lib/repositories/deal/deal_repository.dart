@@ -163,7 +163,6 @@ class DealRepositoryImpl extends DealRepository {
 
   Future<bool> _checkLocation() async {
     return await _permissionLocation.permission();
-     return await _location.serviceEnabled();
   }
 
   double _getDistance(GeoPoint currentLocation, GeoPoint point) {

@@ -57,6 +57,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "capacity": MessageLookupByLibrary.simpleMessage("Capacity"),
         "change_password":
             MessageLookupByLibrary.simpleMessage("Change Password"),
+        "clear_saved_data":
+            MessageLookupByLibrary.simpleMessage("Clear Saved Data"),
+        "clear_saved_data_info": MessageLookupByLibrary.simpleMessage(
+            "Delete all images cached locally on your device t free up space"),
         "coming_soon": MessageLookupByLibrary.simpleMessage("•  Coming soon"),
         "confirm_delete_account_message": MessageLookupByLibrary.simpleMessage(
             "Your account information will be completely removed from our system.\n\nYou will no longer be able to redeem any offers unless you sign up again.\n\nIf you are a subscriber, please ensure you also unsubscribe through Google Play/Appstore."),
@@ -66,6 +70,11 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Current Password"),
         "current_password_empty_error": MessageLookupByLibrary.simpleMessage(
             "Current password must be not empty"),
+        "dark_mode": MessageLookupByLibrary.simpleMessage("Dark mode"),
+        "dark_mode_disable_info": MessageLookupByLibrary.simpleMessage(
+            "Disable this setting if you you\'ld to continue using the app in light mode"),
+        "dark_mode_enable_info": MessageLookupByLibrary.simpleMessage(
+            "Enable this setting if you\'ld like to continue to using app in dark mode"),
         "deactivate_account_title":
             MessageLookupByLibrary.simpleMessage("Deactivate Account"),
         "deal_available":
@@ -108,6 +117,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "get_started": MessageLookupByLibrary.simpleMessage("Get Started"),
         "hello_name": m1,
         "here": MessageLookupByLibrary.simpleMessage("here"),
+        "hide_ads": MessageLookupByLibrary.simpleMessage("Hide ads"),
+        "hide_ads_info": MessageLookupByLibrary.simpleMessage(
+            "In App Purchase option (also available with subscription)"),
+        "hide_articles": MessageLookupByLibrary.simpleMessage("Hide articles"),
+        "hide_articles_info": MessageLookupByLibrary.simpleMessage(
+            "Enable this setting to hide the articles from the directory screen"),
         "issue": MessageLookupByLibrary.simpleMessage("There was an issue"),
         "local_fail": MessageLookupByLibrary.simpleMessage(
             "Please connect to the internet and or contact with admin"),
@@ -174,9 +189,17 @@ class MessageLookup extends MessageLookupByLibrary {
             "The password provided is too weak"),
         "please_report": MessageLookupByLibrary.simpleMessage(
             "Please report anything missing/inaccurate here"),
+        "preferences": MessageLookupByLibrary.simpleMessage("Preferences"),
         "preview_deal_message": MessageLookupByLibrary.simpleMessage(
             "To view full term and conditions and to redeem this offer please visit the Deals tab"),
         "profile": MessageLookupByLibrary.simpleMessage("Profile"),
+        "push_notification":
+            MessageLookupByLibrary.simpleMessage("Push notifications"),
+        "push_notification_available_offer":
+            MessageLookupByLibrary.simpleMessage(
+                "When I am near to an available offer"),
+        "push_notification_new_offer": MessageLookupByLibrary.simpleMessage(
+            "When new offers become available"),
         "rate_us": MessageLookupByLibrary.simpleMessage("•  Please rate Us"),
         "receive_monthly_newsletter_email":
             MessageLookupByLibrary.simpleMessage(
@@ -209,6 +232,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "server_error": MessageLookupByLibrary.simpleMessage(
             "An error occurred, please try again"),
         "setting": MessageLookupByLibrary.simpleMessage("Settings"),
+        "show_articles_info": MessageLookupByLibrary.simpleMessage(
+            "Disable this setting to show the articles from the directory screen"),
         "sign_in": MessageLookupByLibrary.simpleMessage("Sign In"),
         "sign_in_other":
             MessageLookupByLibrary.simpleMessage("Or sign up/in with"),
@@ -245,6 +270,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "yes": MessageLookupByLibrary.simpleMessage("Yes"),
         "you_can_expect":
             MessageLookupByLibrary.simpleMessage("You can expect..."),
-        "your_account": MessageLookupByLibrary.simpleMessage("Your Account")
+        "your_account": MessageLookupByLibrary.simpleMessage("Your Account"),
+        "your_bookmarks": MessageLookupByLibrary.simpleMessage("Your Bookmarks")
       };
 }

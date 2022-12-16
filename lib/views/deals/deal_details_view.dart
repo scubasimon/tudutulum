@@ -322,57 +322,29 @@ class _DealDetailView extends State<DealDetailView> {
         ),
         Padding(
           padding: const EdgeInsets.only(top: 12, left: 16, bottom: 16, right: 16),
-          child: StreamBuilder(
-            stream: _dealViewModel.isRedeem,
-            builder: (context, snapshot) {
-              if (snapshot.data != null) {
-                if (!snapshot.data!) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 24),
-                    child: InkWell(
-                      onTap: _showReport,
-                      child: Container(
-                        height: 56,
-                        decoration: BoxDecoration(
-                          color: ColorStyle.primary,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Center(
-                          child: Text(
-                            S.current.redeem_here,
-                            style: const TextStyle(
-                              color: ColorStyle.lightLabel,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 17,
-                              fontFamily: FontStyles.sfProText,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                } else {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 24.0),
-                    child: Center(
-                      child: Text(
-                        S.current.deal_redeemed,
-                        style: const TextStyle(
-                            fontWeight: FontWeight.normal,
-                            color: ColorStyle.darkLabel,
-                            fontFamily: FontStyles.mouser,
-                            fontSize: 12
-                        ),
-                      ),
-                    ),
-                  );
-                }
-              } else {
-                return Container();
-              }
-            },
+          child: InkWell(
+            onTap: _showReport,
+            child: Container(
+              height: 56,
+              decoration: BoxDecoration(
+                color: ColorStyle.primary,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Center(
+                child: Text(
+                  S.current.redeem_here,
+                  style: const TextStyle(
+                    color: ColorStyle.lightLabel,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 17,
+                    fontFamily: FontStyles.sfProText,
+                  ),
+                ),
+              ),
+            ),
           ),
         ),
+        const SizedBox(height: 16,),
       ]);
     }
     return items;

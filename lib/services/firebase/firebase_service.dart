@@ -63,6 +63,14 @@ abstract class FirebaseService {
   Future<Map<String, dynamic>> getRedeem(int dealId, String userId);
 
   Future<Map<String, dynamic>> getSite(int siteId);
+
+  Future<void> bookmark(int siteId, String userId, DateTime time);
+
+  Future<void> unBookmark(int siteId, String userId);
+
+  Future<List<Map<String, dynamic>>> bookmarks(String userId);
+
+  Future<Map<String, dynamic>> bookmarkDetail(int siteId, String userId);
 }
 
 class FirebaseServiceImpl extends FirebaseService {
@@ -403,6 +411,77 @@ class FirebaseServiceImpl extends FirebaseService {
           .instance
           .collection("sites")
           .where("siteid", isEqualTo: siteId).get();
+      var data = results.docs.map((e) => e.data());
+      if (data.isEmpty) {
+        throw CommonError.serverError;
+      } else {
+        return data.first;
+      }
+    } catch (e) {
+      if (e is CustomError) {
+        rethrow;
+      } else {
+        throw CommonError.serverError;
+      }
+    }
+  }
+
+  @override
+  Future<void> bookmark(int siteId, String userId, DateTime time) async {
+    try {
+      FirebaseFirestore
+          .instance
+          .collection("bookmarks")
+          .add({
+        "siteid": siteId,
+        "userIdentifier": userId,
+        "timestamp": time
+      });
+    } catch (e) {
+      print(e);
+      throw CommonError.serverError;
+    }
+  }
+
+  @override
+  Future<void> unBookmark(int siteId, String userId) async {
+    try {
+      var results = await FirebaseFirestore
+          .instance
+          .collection("bookmarks")
+          .where("siteid", isEqualTo: siteId)
+          .where("userIdentifier", isEqualTo: userId).get();
+      for (var result in results.docs) {
+        await result.reference.delete();
+      }
+    } catch (e) {
+      throw CommonError.serverError;
+    }
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>> bookmarks(String userId) async {
+    try {
+      var results = await FirebaseFirestore
+          .instance
+          .collection("bookmarks")
+          .where("userIdentifier", isEqualTo: userId)
+          .get();
+      return results.docs.map((e) => e.data()).toList();
+    } catch (e) {
+      throw CommonError.serverError;
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> bookmarkDetail(int siteId, String userId) async {
+    try {
+      var results = await FirebaseFirestore
+          .instance
+          .collection("bookmarks")
+          .where("siteid", isEqualTo: siteId)
+          .where("userIdentifier", isEqualTo: userId)
+          .get();
       var data = results.docs.map((e) => e.data());
       if (data.isEmpty) {
         throw CommonError.serverError;

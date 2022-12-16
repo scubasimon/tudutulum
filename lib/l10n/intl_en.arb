@@ -136,5 +136,20 @@
   "preview_deal_message": "To view full term and conditions and to redeem this offer please visit the Deals tab",
   "select_navigation_app": "Please select app",
   "app_not_installed": "{name} is not installed",
-  "deal_redeemed": "This deal has been redeemed"
+  "deal_redeemed": "This deal has been redeemed",
+  "your_bookmarks": "Your Bookmarks",
+  "push_notification": "Push notifications",
+  "push_notification_new_offer": "When new offers become available",
+  "push_notification_available_offer": "When I am near to an available offer",
+  "preferences": "Preferences",
+  "dark_mode": "Dark mode",
+  "dark_mode_enable_info": "Enable this setting if you'ld like to continue to using app in dark mode",
+  "dark_mode_disable_info": "Disable this setting if you you'ld to continue using the app in light mode",
+  "hide_articles": "Hide articles",
+  "hide_articles_info": "Enable this setting to hide the articles from the directory screen",
+  "show_articles_info": "Disable this setting to show the articles from the directory screen",
+  "clear_saved_data": "Clear Saved Data",
+  "clear_saved_data_info": "Delete all images cached locally on your device t free up space",
+  "hide_ads": "Hide ads",
+  "hide_ads_info": "In App Purchase option (also available with subscription)"
 }

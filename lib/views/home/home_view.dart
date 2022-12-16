@@ -14,6 +14,7 @@ import 'package:tudu/viewmodels/what_tudu_site_content_detail_viewmodel.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
 import 'package:tudu/consts/font/font_size_const.dart';
 import 'package:tudu/views/map/map_screen_view.dart';
+import 'package:tudu/views/setting/setting_view.dart';
 import 'package:tudu/views/what_tudu/what_tudu_view.dart';
 import 'package:tudu/views/events/events_view.dart';
 import 'package:tudu/views/deals/deals_view.dart';
@@ -329,7 +330,12 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                   Padding(
                     padding: const EdgeInsets.only(top: 24, bottom: 24, left: 12),
                     child: InkWell(
-                      onTap: () {},
+                      onTap: () {
+                        _scaffoldKey.currentState?.closeDrawer();
+                        Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) => const SettingView())
+                        );
+                      },
                       child: Row(
                         children: [
                           Image.asset(
