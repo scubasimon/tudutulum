@@ -12,6 +12,7 @@ import 'package:tudu/consts/urls/URLConst.dart';
 import 'package:tudu/firebase_options.dart';
 import 'package:tudu/viewmodels/authentication_viewmodel.dart';
 import 'package:tudu/viewmodels/map_screen_viewmodel.dart';
+import 'package:tudu/viewmodels/setting_viewmodel.dart';
 import 'package:tudu/viewmodels/what_tudu_article_content_detail_viewmodel.dart';
 import 'package:tudu/views/login/login_view.dart';
 import 'package:flutter/services.dart';
@@ -64,6 +65,9 @@ Future<void> main() async {
           ),
           ChangeNotifierProvider(
             create: (_) => MapScreenViewModel(),
+          ),
+          ChangeNotifierProvider(
+            create: (_) => SettingViewModel(),
           )
         ],
         child: Builder(builder: (context) {
@@ -134,11 +138,15 @@ class _MyAppState extends State<MyApp> {
     Provider.of<WhatTuduArticleContentDetailViewModel>(context, listen: true);
     Provider.of<WhatTuduSiteContentDetailViewModel>(context, listen: true);
     Provider.of<MapScreenViewModel>(context, listen: true);
+    Provider.of<SettingViewModel>(context, listen: true);
     if (_locale == null) {
       return const Center(child: CircularProgressIndicator());
     } else {
       return MultiProvider(
-        providers: [ChangeNotifierProvider(create: (context) => AuthenticationViewModel())],
+        providers: [
+          ChangeNotifierProvider(create: (context) => AuthenticationViewModel()),
+          ChangeNotifierProvider(create: (context) => SettingViewModel()),
+        ],
         child: MaterialApp(
           theme: ThemeData(
             highlightColor: Colors.transparent,

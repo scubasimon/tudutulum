@@ -49,4 +49,5 @@ class ImagePath {
   static const pinMapIcon = "assets/icons/ic_pin_map.png";
   static const humbergerIcon = "assets/icons/ic_humberger.png";
   static const settingIcon = "assets/icons/ic_setting.png";
+  static const removeIcon = "assets/icons/ic_remove.png";
 }

@@ -18,4 +18,11 @@ class StrConst {
   static const String sortDistance = "distance";
 
   static const String isDataBinded = "isDataBinded";
+
+  static const String newOffer = "new_offer";
+  static const String availableOffer = "available_offer";
+  static const String darkMode = "dark_mode";
+  static const String hideArticles = "hide_articles";
+  static const String hideAds = "hide_ads";
+
 }

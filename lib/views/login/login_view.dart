@@ -245,7 +245,7 @@ class _LoginStateView extends State<LoginView> {
                           borderRadius: BorderRadius.all(Radius.circular(12)),
                         ),
                         child: Text(
-                          S.current.login,
+                          S.current.sign_in,
                           style: const TextStyle(
                               color: ColorStyle.lightLabel,
                               backgroundColor: ColorStyle.primary,
