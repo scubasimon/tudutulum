@@ -1,46 +1,47 @@
 import 'package:custom_marker/marker_icon.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:tudu/models/site.dart';
+import 'package:tudu/viewmodels/bookmarks_viewmodel.dart';
+import 'package:tudu/models/business.dart';
+import 'package:flutter/material.dart';
 import 'package:pull_down_button/pull_down_button.dart';
-import 'package:tudu/viewmodels/map_deals_viewmodel.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
 import 'package:tudu/consts/color/Colors.dart';
 import 'package:tudu/consts/images/ImagePath.dart';
 import 'package:tudu/consts/font/Fonts.dart';
 import 'package:tudu/generated/l10n.dart';
-import 'package:tudu/models/business.dart';
 import 'package:tudu/consts/font/font_size_const.dart';
 import 'package:tudu/models/error.dart';
 import 'package:tudu/views/common/alert.dart';
-import 'package:tudu/models/deal.dart';
-import 'package:tudu/views/deals/deal_details_view.dart';
+import 'package:tudu/viewmodels/what_tudu_site_content_detail_viewmodel.dart';
+import 'package:tudu/consts/strings/str_const.dart';
+import 'package:tudu/views/what_tudu/what_tudu_site_content_detail_view.dart';
 
-class MapDealView extends StatefulWidget {
+class MapBookmarkView extends StatefulWidget {
   final int? businessId;
   final List<Business> business;
 
-  const MapDealView({super.key, this.businessId, this.business = const []});
+  const MapBookmarkView({super.key, this.businessId, this.business = const []});
 
   @override
   State<StatefulWidget> createState() {
-    return _MapDealView();
+    return _MapBookmarkView();
   }
-  
+
 }
 
-class _MapDealView extends State<MapDealView> {
-  final MapDealsViewModel _mapDealsViewModel = MapDealsViewModel();
-
+class _MapBookmarkView extends State<MapBookmarkView> {
+  final _bookmarkViewModel = BookmarksViewModel(isSort: false);
+  final _whatTuduSiteContentDetailViewModel = WhatTuduSiteContentDetailViewModel();
   final Set<Marker> _markers = {};
   int? _businessId;
 
   @override
   void initState() {
     _businessId = widget.businessId;
-    _mapDealsViewModel.business = widget.business;
-    _mapDealsViewModel.error.listen((event) {
+    _bookmarkViewModel.business = widget.business;
+    _bookmarkViewModel.error.listen((event) {
       if (event.code == LocationError.locationPermission.code) {
         showDialog(context: context, builder: (context) {
           return ErrorAlert.alertPermission(context, S.current.location_permission_message);
@@ -52,14 +53,14 @@ class _MapDealView extends State<MapDealView> {
       }
 
     });
-    _mapDealsViewModel.loading.listen((event) {
+    _bookmarkViewModel.loading.listen((event) {
       if (event) {
         _showLoading();
       } else {
         Navigator.of(context).pop();
       }
     });
-    _mapDealsViewModel.deals.listen((event) {
+    _bookmarkViewModel.sites.listen((event) {
       _addMarkers(event);
     });
     super.initState();
@@ -152,11 +153,11 @@ class _MapDealView extends State<MapDealView> {
           ),
         ),
         body: StreamBuilder(
-          stream: _mapDealsViewModel.permission,
+          stream: _bookmarkViewModel.permission,
           builder: (context, snapshot) {
             if (snapshot.hasData && snapshot.data!) {
               return StreamBuilder(
-                stream: _mapDealsViewModel.currentPosition,
+                stream: _bookmarkViewModel.currentPosition,
                 builder: (context, snp) {
                   if (snp.data != null) {
                     return GoogleMap(
@@ -184,9 +185,9 @@ class _MapDealView extends State<MapDealView> {
 
   List<PullDownMenuEntry> _menuFilterItems(BuildContext context) {
 
-    List<PullDownMenuEntry> items = List.generate(_mapDealsViewModel.business.length * 2 - 1, (index) {
+    List<PullDownMenuEntry> items = List.generate(_bookmarkViewModel.business.length * 2 - 1, (index) {
       if (index % 2 == 0) {
-        var business =_mapDealsViewModel.business[index ~/ 2];
+        var business =_bookmarkViewModel.business[index ~/ 2];
         return PullDownMenuItem(
           title: business.type,
           enabled: _businessId != business.businessid,
@@ -204,7 +205,7 @@ class _MapDealView extends State<MapDealView> {
             width: 28, height: 28,
           ),
           onTap: () {
-            _mapDealsViewModel.searchWithParam(businessId: business.businessid);
+            _bookmarkViewModel.searchWithParam(businessId: business.businessid);
             _businessId = business.businessid;
             setState(() {});
           },
@@ -231,7 +232,7 @@ class _MapDealView extends State<MapDealView> {
         width: 28, height: 28,
       ),
       onTap: () {
-        _mapDealsViewModel.searchWithParam(businessId: null);
+        _bookmarkViewModel.searchWithParam(businessId: null);
         _businessId = null;
       },
     ));
@@ -256,30 +257,34 @@ class _MapDealView extends State<MapDealView> {
     );
   }
 
-  void _addMarkers(List<Deal> data) {
+  void _addMarkers(List<Site> data) {
     _markers.clear();
     data
-        .where((element) => element.site.locationLat != null && element.site.locationLon != null)
+        .where((element) => element.locationLat != null && element.locationLon != null)
         .map((e) async {
-          final marker = Marker(
-            markerId: MarkerId("${e.dealsId}"),
-            position: LatLng(e.site.locationLat!, e.site.locationLon!),
-              icon: await MarkerIcon.downloadResizePictureCircle(
+      final marker = Marker(
+          markerId: MarkerId("${e.siteId}"),
+          position: LatLng(e.locationLat!, e.locationLon!),
+          icon: await MarkerIcon.downloadResizePictureCircle(
               e.images[0],
               size: 150,
               addBorder: true,
               borderColor: Colors.white,
               borderSize: 15),
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => DealDetailView(deal: e))
-              );
-            }
-          );
-          return marker;
-        }).forEach((element) async {
-          _markers.add(await element);
-          setState(() {});
-        });
+          onTap: () {
+            _whatTuduSiteContentDetailViewModel.setSiteContentDetailCover(e);
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const WhatTuduSiteContentDetailView(),
+                    settings: const RouteSettings(name: StrConst.whatTuduSiteContentDetailScene)));
+          }
+      );
+      return marker;
+    }).forEach((element) async {
+      _markers.add(await element);
+      setState(() {});
+    });
   }
+
 }

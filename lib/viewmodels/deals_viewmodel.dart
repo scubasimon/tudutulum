@@ -1,20 +1,16 @@
 import 'dart:async';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tudu/base/base_viewmodel.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:tudu/models/deal.dart';
 import 'package:tudu/models/error.dart';
-import 'package:tudu/repositories/auth/auth_repository.dart';
-import 'package:tudu/models/user.dart';
 import 'package:tudu/repositories/deal/deal_repository.dart';
 import 'package:tudu/models/param.dart' as Param;
 import 'package:tudu/repositories/home/home_repository.dart';
 import 'package:tudu/services/location/location_permission.dart';
-
 import 'package:tudu/models/business.dart';
 
 class DealsViewModel extends BaseViewModel {
-
-  final AuthRepository _authRepository = AuthRepositoryImpl();
   final DealRepository _dealRepository = DealRepositoryImpl();
   final PermissionLocation _permissionLocation = PermissionLocation();
   final HomeRepository _homeRepository = HomeRepositoryImpl();
@@ -37,17 +33,8 @@ class DealsViewModel extends BaseViewModel {
 
   @override
   FutureOr<void> init() async {
-    Profile? user;
+    _userLogin.sink.add(FirebaseAuth.instance.currentUser != null);
     _isLoading.sink.add(true);
-    try {
-      user = await _authRepository.getCurrentUser();
-    } catch (e) {
-      print(e);
-    }
-    _userLogin.sink.add(user != null);
-    if (user == null) {
-      return;
-    }
 
     var authorization = await _permissionLocation.permission();
     if (!authorization) {
@@ -102,6 +89,7 @@ class DealsViewModel extends BaseViewModel {
         business = await _homeRepository.getListBusinesses();
       }
       var results = await _dealRepository.getDeals(param);
+      print(results);
       _listDeals.sink.add(results);
       if (param.refresh) {
         param.refresh = false;
@@ -111,10 +99,10 @@ class DealsViewModel extends BaseViewModel {
       if (param.refresh) {
         _isLoading.add(false);
       }
-      if ( e is String) {
-        _exception.add(CommonError.serverError);
+      if (e is CustomError) {
+        _exception.sink.add(e);
       } else {
-        _exception.sink.add(e as CustomError);
+        _exception.add(CommonError.serverError);
       }
     }
   }

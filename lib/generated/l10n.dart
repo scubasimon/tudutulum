@@ -1310,10 +1310,10 @@ class S {
     );
   }
 
-  /// `This deal is available`
+  /// `This deal is available at`
   String get deal_available {
     return Intl.message(
-      'This deal is available',
+      'This deal is available at',
       name: 'deal_available',
       desc: '',
       args: [],
@@ -1395,6 +1395,186 @@ class S {
     return Intl.message(
       'To view full term and conditions and to redeem this offer please visit the Deals tab',
       name: 'preview_deal_message',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please select app`
+  String get select_navigation_app {
+    return Intl.message(
+      'Please select app',
+      name: 'select_navigation_app',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{name} is not installed`
+  String app_not_installed(Object name) {
+    return Intl.message(
+      '$name is not installed',
+      name: 'app_not_installed',
+      desc: '',
+      args: [name],
+    );
+  }
+
+  /// `This deal has been redeemed`
+  String get deal_redeemed {
+    return Intl.message(
+      'This deal has been redeemed',
+      name: 'deal_redeemed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your Bookmarks`
+  String get your_bookmarks {
+    return Intl.message(
+      'Your Bookmarks',
+      name: 'your_bookmarks',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Push notifications`
+  String get push_notification {
+    return Intl.message(
+      'Push notifications',
+      name: 'push_notification',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `When new offers become available`
+  String get push_notification_new_offer {
+    return Intl.message(
+      'When new offers become available',
+      name: 'push_notification_new_offer',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `When I am near to an available offer`
+  String get push_notification_available_offer {
+    return Intl.message(
+      'When I am near to an available offer',
+      name: 'push_notification_available_offer',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Preferences`
+  String get preferences {
+    return Intl.message(
+      'Preferences',
+      name: 'preferences',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Dark mode`
+  String get dark_mode {
+    return Intl.message(
+      'Dark mode',
+      name: 'dark_mode',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enable this setting if you'ld like to continue to using app in dark mode`
+  String get dark_mode_enable_info {
+    return Intl.message(
+      'Enable this setting if you\'ld like to continue to using app in dark mode',
+      name: 'dark_mode_enable_info',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Disable this setting if you you'ld to continue using the app in light mode`
+  String get dark_mode_disable_info {
+    return Intl.message(
+      'Disable this setting if you you\'ld to continue using the app in light mode',
+      name: 'dark_mode_disable_info',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Hide articles`
+  String get hide_articles {
+    return Intl.message(
+      'Hide articles',
+      name: 'hide_articles',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enable this setting to hide the articles from the directory screen`
+  String get hide_articles_info {
+    return Intl.message(
+      'Enable this setting to hide the articles from the directory screen',
+      name: 'hide_articles_info',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Disable this setting to show the articles from the directory screen`
+  String get show_articles_info {
+    return Intl.message(
+      'Disable this setting to show the articles from the directory screen',
+      name: 'show_articles_info',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Clear Saved Data`
+  String get clear_saved_data {
+    return Intl.message(
+      'Clear Saved Data',
+      name: 'clear_saved_data',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Delete all images cached locally on your device t free up space`
+  String get clear_saved_data_info {
+    return Intl.message(
+      'Delete all images cached locally on your device t free up space',
+      name: 'clear_saved_data_info',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Hide ads`
+  String get hide_ads {
+    return Intl.message(
+      'Hide ads',
+      name: 'hide_ads',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `In App Purchase option (also available with subscription)`
+  String get hide_ads_info {
+    return Intl.message(
+      'In App Purchase option (also available with subscription)',
+      name: 'hide_ads_info',
       desc: '',
       args: [],
     );

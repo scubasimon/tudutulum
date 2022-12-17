@@ -48,15 +48,14 @@ class MapDealsViewModel extends BaseViewModel {
 
     _isLoading.add(true);
 
-    var result = await _location.getLocation();
-    if (result.latitude != null && result.longitude != null) {
-      _currentLocation.add(LatLng(result.latitude!, result.longitude!));
-    }
+    // var result = await _location.getLocation();
+    // if (result.latitude != null && result.longitude != null) {
+    //   _currentLocation.add(LatLng(result.latitude!, result.longitude!));
+    // }
+    _currentLocation.add(const LatLng(20.214193,-87.453294));
     _param.add(Param(refresh: true, order: null));
     _searchData();
-
-    print("get location");
-
+    
   }
 
   void searchWithParam({int? businessId}) {
@@ -96,10 +95,10 @@ class MapDealsViewModel extends BaseViewModel {
       if (param.refresh) {
         _isLoading.add(false);
       }
-      if ( e is String) {
-        _exception.add(CommonError.serverError);
+      if ( e is CustomError) {
+        _exception.add(e);
       } else {
-        _exception.sink.add(e as CustomError);
+        _exception.sink.add(CommonError.serverError);
       }
     }
   }
