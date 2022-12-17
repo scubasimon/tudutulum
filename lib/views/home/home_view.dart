@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:collection';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -103,15 +104,19 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
     try {
       redirectToGoogleMapStreamListener ??= _observableService.listenToRedirectToGoogleMapStream.asBroadcastStream().listen((data) {
         if (data.length == 2) {
+          _showLoading();
           FuncUlti.redirectAndDirection(
               data[0],
               data[1]
           );
+          Navigator.of(context).pop();
         } else {
+          _showLoading();
           FuncUlti.redirectAndMoveToLocation(
               data[0],
               _whatTuduSiteContentDetailViewModel.siteContentDetail.title
           );
+          Navigator.of(context).pop();
         }
       });
     } catch (e) {
@@ -593,13 +598,28 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
     _scaffoldKey.currentState?.openDrawer();
   }
 
-
   void _showAlert(String message) {
     print("_showAlert $message");
     showDialog(
         context: context,
         builder: (BuildContext context) {
           return ErrorAlert.alert(context, message);
+        });
+  }
+
+  void _showLoading() {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return Container(
+              decoration: const BoxDecoration(),
+              child: const Center(
+                child: CupertinoActivityIndicator(
+                  radius: 20,
+                  color: ColorStyle.primary,
+                ),
+              ));
         });
   }
 }

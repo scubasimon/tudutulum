@@ -80,6 +80,8 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver, Aut
     listenToZeroDataFilter();
     listenToLoading();
 
+    isAtTop = false;
+
     _scrollController.addListener(() {
       if (_scrollController.offset <= 0.0) {
         isAtTop = true;
@@ -131,8 +133,8 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver, Aut
       // (_homeViewModel.filterType < _homeViewModel.listBusiness.length)
       //     ? _homeViewModel.listBusiness[_homeViewModel.filterType]
       //     : null, // Get current filterType
-    // FuncUlti.getSortTypeByInt(_homeViewModel.orderType), // Get current OrderType
-    // _searchController.text // Search text
+      // FuncUlti.getSortTypeByInt(_homeViewModel.orderType), // Get current OrderType
+      // _searchController.text // Search text
 
       _whatTuduViewModel.getDataWithFilterSortSearch(
         (_homeViewModel.filterType < _homeViewModel.listBusiness.length)
@@ -817,9 +819,9 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver, Aut
                                 overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
                                   color: ColorStyle.darkLabel,
-                                  fontFamily: FontStyles.mouser,
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: FontSizeConst.font12,
+                                  fontFamily: FontStyles.raleway,
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: FontSizeConst.font14,
                                 ),
                               ),
                               Text(

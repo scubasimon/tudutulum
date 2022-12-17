@@ -64,15 +64,15 @@ class FuncUlti {
       case "mon":
         return "Monday";
       case "tue":
-        return "Tueday";
+        return "Tuesday";
       case "wed":
-        return "Wedday";
+        return "Wednesday";
       case "fri":
         return "Friday";
       case "thu":
-        return "Thuday";
+        return "Thursday";
       case "sat":
-        return "Satday";
+        return "Saturday";
       case "sun":
         return "Sunday";
       case "other":
@@ -122,16 +122,27 @@ class FuncUlti {
     return null;
   }
 
-  static Future<void> redirectAndDirection(GeoPoint from, GeoPoint to) async {
+  static Future<bool> redirectAndDirection(GeoPoint from, GeoPoint to) async {
     // final availableMaps = await MapLauncher.installedMaps;
     // await availableMaps.first.showDirections(
     //     origin: Coords(from.latitude, from.longitude),
     //     destination: Coords(to.latitude, to.longitude));
 
     final availableMaps = await MapLauncher.installedMaps;
-    await availableMaps.firstWhere((element) {
-      return element.mapName == "Google Maps";
-    }).showDirections(origin: Coords(from.latitude, from.longitude), destination: Coords(to.latitude, to.longitude));
+    try {
+      await availableMaps.firstWhere((element) {
+        return element.mapName == "Google Maps";
+      }).showDirections(origin: Coords(from.latitude, from.longitude), destination: Coords(to.latitude, to.longitude));
+      return true;
+    } catch (e) {
+      print("redirectAndDirection $e");
+      print("redirectAndDirection -> Open installed (Apple) Map");
+      final availableMaps = await MapLauncher.installedMaps;
+      await availableMaps.first.showDirections(
+          origin: Coords(from.latitude, from.longitude),
+          destination: Coords(to.latitude, to.longitude));
+      return true;
+    }
   }
 
   static Future<void> redirectAndMoveToLocation(GeoPoint position, String title) async {
@@ -142,12 +153,22 @@ class FuncUlti {
     // );
 
     final availableMaps = await MapLauncher.installedMaps;
-    await availableMaps.firstWhere((element) {
-      return element.mapName == "Google Maps";
-    }).showMarker(
-      coords: Coords(position.latitude, position.longitude),
-      title: title,
-    );
+    try {
+      await availableMaps.firstWhere((element) {
+        return element.mapName == "Google Maps";
+      }).showMarker(
+        coords: Coords(position.latitude, position.longitude),
+        title: title,
+      );
+    } catch (e) {
+      print("redirectAndDirection $e");
+      print("redirectAndDirection -> Open installed (Apple) Map");
+      final availableMaps = await MapLauncher.installedMaps;
+      await availableMaps.first.showMarker(
+          coords: Coords(position.latitude, position.longitude),
+          title: title,
+      );
+    }
   }
 
   static Future<void> redirectToBrowserWithUrl(String url) async {

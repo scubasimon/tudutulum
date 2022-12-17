@@ -1,7 +1,8 @@
 class StrConst {
   static const mapScene = "MapScene";
   static const whatTuduScene = "WhatTuduScreen";
-  static const whatTuduSiteContentDetailScene = "WhatTuduSiteContentDetail";
+  static const whatTuduSiteContentDetailScene = "ehatTuduSiteContentDetail";
+  static const eventContentDetailScene = "eventSiteContentDetail";
   static const viewPhoto = "ViewPhoto";
   static const detalDetailView = "DetalDetailView";
 

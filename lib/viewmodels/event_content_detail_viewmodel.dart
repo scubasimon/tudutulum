@@ -4,23 +4,24 @@ import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart';
 import 'package:tudu/base/base_viewmodel.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:tudu/models/event.dart';
 
 import '../models/site.dart';
 import '../services/observable/observable_serivce.dart';
 import 'package:location/location.dart' as locationLib;
 
-class WhatTuduSiteContentDetailViewModel extends BaseViewModel {
-  static final WhatTuduSiteContentDetailViewModel _instance = WhatTuduSiteContentDetailViewModel._internal();
+class EventContentDetailViewModel extends BaseViewModel {
+  static final EventContentDetailViewModel _instance = EventContentDetailViewModel._internal();
 
   ObservableService _observableService = ObservableService();
 
-  factory WhatTuduSiteContentDetailViewModel() {
+  factory EventContentDetailViewModel() {
     return _instance;
   }
 
-  WhatTuduSiteContentDetailViewModel._internal();
+  EventContentDetailViewModel._internal();
 
-  late Site siteContentDetail;
+  late Event eventContentDetail;
 
   late bool serviceEnabled;
   locationLib.Location location = locationLib.Location();
@@ -28,12 +29,12 @@ class WhatTuduSiteContentDetailViewModel extends BaseViewModel {
   @override
   FutureOr<void> init() {}
 
-  void setSiteContentDetailCover(Site input) {
-    siteContentDetail = input;
+  void setEventContentDetailCover(Event input) {
+    eventContentDetail = input;
     notifyListeners();
   }
 
-  void directionWithGoogleMap() async {
+  /*void directionWithGoogleMap() async {
     await checkLocationEnable();
     var currentPosition = await location.getLocation();
     if (currentPosition.latitude != null &&
@@ -80,5 +81,5 @@ class WhatTuduSiteContentDetailViewModel extends BaseViewModel {
   void handlerLocationPermissionChanged() {
     // ACTION ON PERMISSION CHANGED
     print("handlerLocationPermissionChanged -> ACTION NOT IMPL YET");
-  }
+  }*/
 }

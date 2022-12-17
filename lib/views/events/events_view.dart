@@ -10,6 +10,9 @@ import 'package:tudu/consts/strings/str_language_key.dart';
 
 import 'package:tudu/consts/images/ImagePath.dart';
 
+import '../../consts/strings/str_const.dart';
+import 'event_content_detail_view.dart';
+
 class EventsView extends StatefulWidget {
   const EventsView({super.key});
 
@@ -221,18 +224,11 @@ class _EventsView extends State<EventsView> {
               itemBuilder: (BuildContext context, int index) {
                 return InkWell(
                   onTap: () {
-                    // TODO: IMPL EVENT DETAIL
-                    showToast(
-                        "EVENT DETAIL NOT IMPL YET",
-                        context: context,
-                        duration: Duration(seconds: 3),
-                        axis: Axis.horizontal,
-                        alignment: Alignment.center,
-                        position: StyledToastPosition.bottom,
-                        textStyle: const TextStyle(
-                            fontWeight: FontWeight.w400,
-                            color: ColorsConst.white,
-                            fontSize: FontSizeConst.font12));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => EventContentDetailView(),
+                            settings: const RouteSettings(name: StrConst.eventContentDetailScene)));
                   },
                   child: Container(
                     padding: const EdgeInsets.all(8.0),
