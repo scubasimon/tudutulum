@@ -28,6 +28,7 @@ abstract class HomeRepository {
   Future<List<Partner>> getLocalListPartners();
   Future<List<Amenity>> getLocalListAmenities();
   Future<List<Business>> getLocalListBusinesses();
+  Future<List<EventType>> getLocalListEventTypes();
 
   Future<List<Article>> getLocalListArticles();
   Future<List<Site>> getLocalListSites();
@@ -273,6 +274,23 @@ class HomeRepositoryImpl extends HomeRepository {
   }
 
   @override
+  Future<List<EventType>> getLocalListEventTypes() async {
+    List<EventType> listEventTypeResult = [];
+    var listEventType = await _localDatabaseService.getEventTypes();
+    if (listEventType != null) {
+      for (var remoteEventType in listEventType) {
+        listEventTypeResult.add(EventType(
+          eventId: remoteEventType["eventid"],
+          icon: remoteEventType["icon"],
+          locationId: remoteEventType["locationid"],
+          type: remoteEventType["type"],
+        ));
+      }
+    }
+    return listEventTypeResult;
+  }
+
+  @override
   Future<List<Article>> getLocalListArticles() async {
     List<Article> listArticles = [];
     var listRemoteArticles = await _localDatabaseService.getArticles();
@@ -364,8 +382,8 @@ class HomeRepositoryImpl extends HomeRepository {
             cost: remoteEvent["cost"],
             currency: remoteEvent["currency"],
             moreInfo: remoteEvent["moreinfo"],
-            dateend: remoteEvent["dateend"],
-            datestart: remoteEvent["datestart"],
+            dateend: Timestamp.fromDate(DateTime.fromMillisecondsSinceEpoch(remoteEvent["dateend"])),
+            datestart: Timestamp.fromDate(DateTime.fromMillisecondsSinceEpoch(remoteEvent["datestart"])),
             booking: (remoteEvent["booking"] != null) ? remoteEvent["booking"] : null,
             primaryType: remoteEvent["primarytype"],
             eventTypes: (remoteEvent["eventtypes"] != null) ? FuncUlti.getListIntFromListDynamic(remoteEvent["eventtypes"]) : null,

@@ -168,9 +168,11 @@ class HomeViewModel extends BaseViewModel {
     await getLocalListBusinesses();
     await getLocalListPartners();
     await getLocalListAmenities();
+    await getLocalListEventTypes();
 
     await getLocalListArticles();
     await getLocalListSites();
+    await getLocalListEvents();
 
     _observableService.whatTuduProgressLoadingController.sink.add(false);
   }
@@ -269,6 +271,11 @@ class HomeViewModel extends BaseViewModel {
     notifyListeners();
   }
 
+  Future<void> getLocalListEventTypes() async {
+    listEventTypes = await _homeRepository.getLocalListEventTypes();
+    notifyListeners();
+  }
+
   Future<void> getLocalListBusinesses() async {
     listBusiness = await _homeRepository.getLocalListBusinesses();
     notifyListeners();
@@ -282,6 +289,12 @@ class HomeViewModel extends BaseViewModel {
 
   Future<void> getLocalListSites() async {
     listSites = await _homeRepository.getLocalListSites();
+    _observableService.listSitesController.sink.add(listSites);
+    notifyListeners();
+  }
+
+  Future<void> getLocalListEvents() async {
+    listEvents = await _homeRepository.getLocalListEvents();
     _observableService.listSitesController.sink.add(listSites);
     notifyListeners();
   }

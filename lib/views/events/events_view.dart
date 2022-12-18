@@ -462,7 +462,6 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
     return StreamBuilder<List<Event>?>(
       stream: _observableService.listEventsStream,
       builder: (_, snapshot) {
-        print("listEventsStream ${snapshot.data}");
         if (!snapshot.hasData) {
           return const Center(
             child: CircularProgressIndicator(),
