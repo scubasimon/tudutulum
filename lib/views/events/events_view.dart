@@ -443,7 +443,7 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
             padding: EdgeInsets.only(left: 16, right: 16),
             alignment: Alignment.centerLeft,
             child: Text(
-              "November", // TODO: IMPL LOGIC FOR SHOWING WITH MONTH - (MAYBE YEAR)
+              "December", // TODO: IMPL LOGIC FOR SHOWING WITH MONTH - (MAYBE YEAR)
               style: const TextStyle(
                 color: ColorStyle.darkLabel,
                 fontFamily: FontStyles.raleway,
@@ -487,21 +487,24 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
                       padding: const EdgeInsets.all(16.0),
                       child: Row(
                         children: [
-                          CachedNetworkImage(
-                            imageUrl: _homeViewModel.getEventTypeByType(snapshot.data![index].primaryType)!.icon,
-                            width: 22.0,
-                            height: 22.0,
-                            fit: BoxFit.contain,
-                            imageBuilder: (context, imageProvider) => Container(
-                              decoration: BoxDecoration(
-                                image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                          Container(
+                            margin: EdgeInsets.only(right: 16),
+                            child: CachedNetworkImage(
+                              imageUrl: _homeViewModel.getEventTypeByType(snapshot.data![index].primaryType)!.icon,
+                              width: 22.0,
+                              height: 22.0,
+                              fit: BoxFit.contain,
+                              imageBuilder: (context, imageProvider) => Container(
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                                ),
                               ),
+                              placeholder: (context, url) => const CupertinoActivityIndicator(
+                                radius: 20,
+                                color: ColorStyle.primary,
+                              ),
+                              errorWidget: (context, url, error) => Icon(Icons.error),
                             ),
-                            placeholder: (context, url) => const CupertinoActivityIndicator(
-                              radius: 20,
-                              color: ColorStyle.primary,
-                            ),
-                            errorWidget: (context, url, error) => Icon(Icons.error),
                           ),
                           Expanded(
                             flex: 1,
@@ -563,10 +566,9 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
                               ],
                             ),
                           ),
-                          Expanded(
-                            flex: 1,
-                            child:
-                            (snapshot.data![index].cost == "Free" || snapshot.data![index].cost == "0")
+                          Container(
+                            margin: EdgeInsets.only(left: 16, right: 16),
+                            child: (snapshot.data![index].cost == "Free" || snapshot.data![index].cost == "0")
                                 ? Text(
                                 snapshot.data![index].cost,
                                 maxLines: 1,
@@ -577,31 +579,31 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
                                   fontWeight: FontWeight.w600,
                                 ))
                                 : Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                        snapshot.data![index].cost,
-                                        maxLines: 1,
-                                        style: const TextStyle(
-                                          color: ColorStyle.darkLabel,
-                                          fontFamily: FontStyles.raleway,
-                                          fontSize: FontSizeConst.font12,
-                                          fontWeight: FontWeight.w600,
-                                        )
-                                    ),
-                                    Text(
-                                        snapshot.data![index].currency,
-                                        maxLines: 1,
-                                        style: const TextStyle(
-                                          color: ColorStyle.darkLabel,
-                                          fontFamily: FontStyles.raleway,
-                                          fontSize: FontSizeConst.font12,
-                                          fontWeight: FontWeight.w400,
-                                        )
-                                    ),
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                    snapshot.data![index].cost,
+                                    maxLines: 1,
+                                    style: const TextStyle(
+                                      color: ColorStyle.darkLabel,
+                                      fontFamily: FontStyles.raleway,
+                                      fontSize: FontSizeConst.font12,
+                                      fontWeight: FontWeight.w600,
+                                    )
+                                ),
+                                Text(
+                                    snapshot.data![index].currency,
+                                    maxLines: 1,
+                                    style: const TextStyle(
+                                      color: ColorStyle.darkLabel,
+                                      fontFamily: FontStyles.raleway,
+                                      fontSize: FontSizeConst.font12,
+                                      fontWeight: FontWeight.w400,
+                                    )
+                                ),
                               ],
-                            ),
+                            )
                           ),
                           (snapshot.data![index].repeating == true)
                               ? Image.asset(

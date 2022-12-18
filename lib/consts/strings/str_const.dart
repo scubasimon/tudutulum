@@ -20,6 +20,7 @@ class StrConst {
 
   static const String isWhatTuduDataBinded = "isWhatTuduDataBinded";
   static const String isEventDataBinded = "isEventDataBinded";
+  static const String isDarkModeNew = "isDarkModeNew";
 
   static const String newOffer = "new_offer";
   static const String availableOffer = "available_offer";

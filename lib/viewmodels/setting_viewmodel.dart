@@ -1,8 +1,12 @@
 import 'dart:async';
 
+import 'package:flutter/material.dart';
+import 'package:localstore/localstore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tudu/base/base_viewmodel.dart';
 import 'package:tudu/consts/strings/str_const.dart';
+
+import '../views/common/alert.dart';
 
 class SettingViewModel extends BaseViewModel {
   late SharedPreferences _instance;
@@ -69,8 +73,19 @@ class SettingViewModel extends BaseViewModel {
     await _instance.setBool(StrConst.hideAds, value);
   }
 
-  void clearData() {
+  void clearData(BuildContext context) {
+    Localstore.instance.collection("businesses").delete();
+    Localstore.instance.collection("amenities").delete();
+    Localstore.instance.collection("partners").delete();
+    Localstore.instance.collection("eventtypes").delete();
+    Localstore.instance.collection("articles").delete();
+    Localstore.instance.collection("sites").delete();
+    Localstore.instance.collection("events").delete();
+    Localstore.instance.collection("deals").delete();
 
+    showDialog(context: context, builder: (context) {
+      return NotificationAlert.alert(context, "Your data has been deleted");
+    });
   }
 
 }
