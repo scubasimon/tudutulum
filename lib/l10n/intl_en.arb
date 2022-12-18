@@ -151,5 +151,16 @@
   "clear_saved_data": "Clear Saved Data",
   "clear_saved_data_info": "Delete all images cached locally on your device t free up space",
   "hide_ads": "Hide ads",
-  "hide_ads_info": "In App Purchase option (also available with subscription)"
+  "hide_ads_info": "In App Purchase option (also available with subscription)",
+  "choose_your_plan": "Choose your plan",
+  "discover_offer_deals": "Discover offer deals",
+  "option_hide_ads": "The option to hide ads",
+  "subscription_description": "The total amount for the subscription period will be charged to your iTunes Account. Unless you turn off auto-renewal at least 24 hours before the end of the subscription period, the subscription will renew automatically for the same price, and your iTunes Account will be charged according. You can manage the subscription and turn off automatic renewal in the Account Settings for your Apple at any time.",
+  "restore_purchase": "Restore Purchase",
+  "purchase_success": "Payment success",
+  "purchase_failed": "Payment failed",
+  "account_type": "{type} account",
+  "pro": "Pro",
+  "free": "Free",
+  "change_plan": "Change Plan"
 }

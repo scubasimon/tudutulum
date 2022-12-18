@@ -18,6 +18,7 @@ import 'package:tudu/consts/font/Fonts.dart';
 import 'package:tudu/generated/l10n.dart';
 import 'package:tudu/views/deals/deal_details_view.dart';
 import 'package:tudu/views/map/map_deal_view.dart';
+import 'package:tudu/views/subscription/subscription_plan_view.dart';
 
 class DealsView extends StatefulWidget {
   const DealsView({super.key});
@@ -43,7 +44,6 @@ class _DealsView extends State<DealsView> with AutomaticKeepAliveClientMixin<Dea
 
   @override
   void initState() {
-    super.initState();
     _dealsViewModel.userLoginStream.listen((event) {
       if (!event) {
         showDialog(context: context, builder: (context){
@@ -91,6 +91,18 @@ class _DealsView extends State<DealsView> with AutomaticKeepAliveClientMixin<Dea
       }
 
     });
+    _dealsViewModel.subscription.listen((event) {
+      if (!event) {
+        Navigator.of(context).push(
+            MaterialPageRoute(
+                builder: (context) => const SubscriptionPlanView(dismissWhenCompleted: true,)
+            )
+        );
+      }
+    });
+
+    super.initState();
+
 
     // WidgetsBinding.instance.addObserver(this);
     // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -128,103 +140,121 @@ class _DealsView extends State<DealsView> with AutomaticKeepAliveClientMixin<Dea
               },
             ),
             const Spacer(),
-            PullDownButton(
-              itemBuilder: (context) => [
-                PullDownMenuItem(
-                  title: S.current.name,
-                  itemTheme: const PullDownMenuItemTheme(
-                    textStyle: TextStyle(
-                        fontFamily: FontStyles.sfProText,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 17,
-                        color: ColorStyle.menuLabel
-                    ),
-                  ),
-                  enabled: _order != Order.alphabet,
-                  onTap: () {
-                    _order = Order.alphabet;
-                    _dealsViewModel.searchWithParam(order: Order.alphabet, businessId: _businessId, title: _searchController.text);
-                  },
-                ),
-                const PullDownMenuDivider(),
-                PullDownMenuItem(
-                  title: S.current.distance,
-                  enabled: _order != Order.distance,
-                  itemTheme: const PullDownMenuItemTheme(
-                    textStyle: TextStyle(
-                        fontFamily: FontStyles.sfProText,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 17,
-                        color: ColorStyle.menuLabel
-                    ),
-                  ),
-                  onTap: () {
-                    _order = Order.distance;
-                    _dealsViewModel.searchWithParam(order: Order.distance, businessId: _businessId, title: _searchController.text);
-                  },
-                ),
-              ],
-              position: PullDownMenuPosition.automatic,
-              buttonBuilder: (context, showMenu) => Container(
-                padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-                child: InkWell(
-                  onTap: showMenu,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Expanded(
-                          child: Image.asset(
-                              ImagePath.sortIcon,
-                              fit: BoxFit.contain,
-                              width: 16.0)
-                      ),
-                      Text(
-                        S.current.sort,
-                        style: const TextStyle(
-                          color: ColorStyle.primary,
-                          fontSize: 10,
-                          fontWeight: FontWeight.w500,
-                          fontFamily: FontStyles.raleway,
+            StreamBuilder(
+              stream: _dealsViewModel.subscription,
+              builder: (context, snapshot) {
+                if (snapshot.hasData && snapshot.data!) {
+                  return PullDownButton(
+                    itemBuilder: (context) => [
+                      PullDownMenuItem(
+                        title: S.current.name,
+                        itemTheme: const PullDownMenuItemTheme(
+                          textStyle: TextStyle(
+                              fontFamily: FontStyles.sfProText,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 17,
+                              color: ColorStyle.menuLabel
+                          ),
                         ),
+                        enabled: _order != Order.alphabet,
+                        onTap: () {
+                          _order = Order.alphabet;
+                          _dealsViewModel.searchWithParam(order: Order.alphabet, businessId: _businessId, title: _searchController.text);
+                        },
+                      ),
+                      const PullDownMenuDivider(),
+                      PullDownMenuItem(
+                        title: S.current.distance,
+                        enabled: _order != Order.distance,
+                        itemTheme: const PullDownMenuItemTheme(
+                          textStyle: TextStyle(
+                              fontFamily: FontStyles.sfProText,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 17,
+                              color: ColorStyle.menuLabel
+                          ),
+                        ),
+                        onTap: () {
+                          _order = Order.distance;
+                          _dealsViewModel.searchWithParam(order: Order.distance, businessId: _businessId, title: _searchController.text);
+                        },
                       ),
                     ],
-                  ),
-                ),
-              ),
+                    position: PullDownMenuPosition.automatic,
+                    buttonBuilder: (context, showMenu) => Container(
+                      padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                      child: InkWell(
+                        onTap: showMenu,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                                child: Image.asset(
+                                    ImagePath.sortIcon,
+                                    fit: BoxFit.contain,
+                                    width: 16.0)
+                            ),
+                            Text(
+                              S.current.sort,
+                              style: const TextStyle(
+                                color: ColorStyle.primary,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w500,
+                                fontFamily: FontStyles.raleway,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                } else {
+                  return Container();
+                }
+              },
             ),
             const SizedBox(width: 12.0,),
-            PullDownButton(
-              itemBuilder: _menuFilterItems,
-              position: PullDownMenuPosition.automatic,
-              buttonBuilder: (context, showMenu) => Container(
-                padding: const EdgeInsets.only(left: 8, right: 8),
-                child: InkWell(
-                  onTap: showMenu,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: Image.asset(
-                          ImagePath.filterIcon,
-                          fit: BoxFit.contain,
-                          width: 16,
+            StreamBuilder(
+              stream: _dealsViewModel.subscription,
+              builder: (context, snapshot) {
+                if (snapshot.hasData && snapshot.data!) {
+                  return PullDownButton(
+                    itemBuilder: _menuFilterItems,
+                    position: PullDownMenuPosition.automatic,
+                    buttonBuilder: (context, showMenu) => Container(
+                      padding: const EdgeInsets.only(left: 8, right: 8),
+                      child: InkWell(
+                        onTap: showMenu,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Image.asset(
+                                ImagePath.filterIcon,
+                                fit: BoxFit.contain,
+                                width: 16,
+                              ),
+                            ),
+                            Text(
+                              S.current.filter,
+                              style: const TextStyle(
+                                  color: ColorStyle.primary,
+                                  fontSize: FontSizeConst.font10,
+                                  fontWeight: FontWeight.w500,
+                                  fontFamily: FontStyles.raleway
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      Text(
-                        S.current.filter,
-                        style: const TextStyle(
-                            color: ColorStyle.primary,
-                            fontSize: FontSizeConst.font10,
-                            fontWeight: FontWeight.w500,
-                            fontFamily: FontStyles.raleway
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+                    ),
+                  );
+                } else {
+                  return Container();
+                }
+              },
             ),
           ],
         ),
@@ -275,21 +305,30 @@ class _DealsView extends State<DealsView> with AutomaticKeepAliveClientMixin<Dea
           stream: _dealsViewModel.userLoginStream,
           builder: (context, snapshot) {
             if (snapshot.hasData && snapshot.data!) {
-              return SmartRefresher(
-                enablePullDown: _enableRefresh,
-                enablePullUp: false,
-                header: const WaterDropHeader(),
-                controller: _refreshController,
-                onRefresh: _refresh,
-                child: ListView(
-                  controller: _scrollController,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
-                      child: createDealsView(),
-                    ),
-                  ],
-                ),
+              return StreamBuilder(
+                stream: _dealsViewModel.subscription,
+                builder: (context, snp) {
+                  if (snp.hasData && snp.data!) {
+                    return SmartRefresher(
+                      enablePullDown: _enableRefresh,
+                      enablePullUp: false,
+                      header: const WaterDropHeader(),
+                      controller: _refreshController,
+                      onRefresh: _refresh,
+                      child: ListView(
+                        controller: _scrollController,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
+                            child: createDealsView(),
+                          ),
+                        ],
+                      ),
+                    );
+                  } else {
+                    return Container();
+                  }
+                },
               );
             }
             return Container();

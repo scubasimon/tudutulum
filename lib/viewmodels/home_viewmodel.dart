@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:localstore/localstore.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:tudu/base/base_viewmodel.dart';
 import 'package:tudu/models/amenity.dart';
 import 'package:tudu/models/business.dart';
@@ -43,7 +45,16 @@ class HomeViewModel extends BaseViewModel {
   List<Business> listBusiness = [];
 
   @override
-  FutureOr<void> init() {}
+  FutureOr<void> init() async {
+    if (FirebaseAuth.instance.currentUser != null) {
+      try {
+        await Purchases.logIn(FirebaseAuth.instance.currentUser!.uid);
+      } catch (e) {
+        print(e);
+      }
+    }
+
+  }
 
   void redirectTab(int tabIndex) {
     _observableService.redirectTabController.sink.add(tabIndex);
