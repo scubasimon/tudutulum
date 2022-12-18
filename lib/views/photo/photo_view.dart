@@ -90,7 +90,8 @@ class _PhotoViewUtil extends State<PhotoViewUtil> with WidgetsBindingObserver {
                 return true;
               },
               child: PageView.builder(
-                // physics: const NeverScrollableScrollPhysics(),
+                pageSnapping: false,
+                physics: const PageOverscrollPhysics(velocityPerOverscroll: 1000),
                 controller: controller,
                 itemBuilder: (context, i) {
                   return GestureDetector(
@@ -186,4 +187,47 @@ class _PhotoViewUtil extends State<PhotoViewUtil> with WidgetsBindingObserver {
           ],
         ));
   }
+}
+
+class PageOverscrollPhysics extends ScrollPhysics {
+  final double velocityPerOverscroll;
+
+  const PageOverscrollPhysics({
+    ScrollPhysics? parent,
+    this.velocityPerOverscroll = 1000,
+  }) : super(parent: parent);
+
+  @override
+  PageOverscrollPhysics applyTo(ScrollPhysics? ancestor) {
+    return PageOverscrollPhysics(
+      parent: buildParent(ancestor)!,
+    );
+  }
+
+  double _getTargetPixels(ScrollMetrics position, double velocity) {
+    double page = position.pixels / position.viewportDimension;
+    page += velocity / velocityPerOverscroll;
+    double pixels = page.roundToDouble() * position.viewportDimension;
+    return pixels;
+  }
+
+  @override
+  Simulation? createBallisticSimulation(
+      ScrollMetrics position, double velocity) {
+    // If we're out of range and not headed back in range, defer to the parent
+    // ballistics, which should put us back in range at a page boundary.
+    if ((velocity <= 0.0 && position.pixels <= position.minScrollExtent) ||
+        (velocity >= 0.0 && position.pixels >= position.maxScrollExtent)) {
+      return super.createBallisticSimulation(position, velocity);
+    }
+    final double target = _getTargetPixels(position, velocity);
+    if (target != position.pixels) {
+      return ScrollSpringSimulation(spring, position.pixels, target, velocity,
+          tolerance: tolerance);
+    }
+    return null;
+  }
+
+  @override
+  bool get allowImplicitScrolling => false;
 }
