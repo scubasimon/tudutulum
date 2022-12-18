@@ -1,4 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tudu/models/business.dart';
+import 'package:tudu/models/event.dart';
+import 'package:tudu/models/event_type.dart';
 import 'package:tudu/services/local_datatabase/local_database_service.dart';
 import 'package:tudu/utils/func_utils.dart';
 
@@ -15,9 +18,11 @@ abstract class HomeRepository {
   Future<List<Partner>> getListPartners();
   Future<List<Amenity>> getListAmenities();
   Future<List<Business>> getListBusinesses();
+  Future<List<EventType>> getListEventTypes();
 
   Future<List<Article>> getListArticles();
   Future<List<Site>> getListSites();
+  Future<List<Event>> getListEvents();
 
   /// Action with local database
   Future<List<Partner>> getLocalListPartners();
@@ -26,6 +31,7 @@ abstract class HomeRepository {
 
   Future<List<Article>> getLocalListArticles();
   Future<List<Site>> getLocalListSites();
+  Future<List<Event>> getLocalListEvents();
 }
 
 class HomeRepositoryImpl extends HomeRepository {
@@ -89,6 +95,23 @@ class HomeRepositoryImpl extends HomeRepository {
   }
 
   @override
+  Future<List<EventType>> getListEventTypes() async {
+    List<EventType> listEventType = [];
+    var listRemoteEventType = await _firebaseService.getEventTypes();
+    if (listRemoteEventType != null) {
+      for (var remoteEventType in listRemoteEventType) {
+        listEventType.add(EventType(
+          eventId: remoteEventType["eventid"],
+          icon: remoteEventType["icon"],
+          locationId: remoteEventType["locationid"],
+          type: remoteEventType["type"],
+        ));
+      }
+    }
+    return listEventType;
+  }
+
+  @override
   Future<List<Article>> getListArticles() async {
     List<Article> listArticles = [];
     var listRemoteArticles = await _firebaseService.getArticles();
@@ -122,8 +145,8 @@ class HomeRepositoryImpl extends HomeRepository {
             title: remoteSite["title"],
             subTitle: remoteSite["subTitle"],
             business: FuncUlti.getListIntFromListDynamic(remoteSite["business"]),
-            locationLat: (remoteSite["locationLat"] != null) ? remoteSite["locationLat"]: null,
-            locationLon: (remoteSite["locationLon"] != null) ? remoteSite["locationLon"]: null,
+            locationLat: (remoteSite["locationLat"] != null) ? remoteSite["locationLat"] : null,
+            locationLon: (remoteSite["locationLon"] != null) ? remoteSite["locationLon"] : null,
             rating: (remoteSite["rating"] != null) ? remoteSite["rating"] : null,
             siteContent: SiteContent(
               title: (remoteSite["contentTitle"] != null) ? remoteSite["contentTitle"] : null,
@@ -140,7 +163,7 @@ class HomeRepositoryImpl extends HomeRepository {
                   ? FuncUlti.getMapStringStringFromStringDynamic(remoteSite["openingTimes"])
                   : null,
               fees:
-              (remoteSite["fees"] != null) ? FuncUlti.getMapStringListFromStringDynamic(remoteSite["fees"]) : null,
+                  (remoteSite["fees"] != null) ? FuncUlti.getMapStringListFromStringDynamic(remoteSite["fees"]) : null,
               capacity: (remoteSite["capacity"] != null) ? remoteSite["capacity"] : remoteSite["capacity"],
               eventIcons: (remoteSite["eventIcons"] != null)
                   ? FuncUlti.getListStringFromListDynamic(remoteSite["eventIcons"])
@@ -159,6 +182,43 @@ class HomeRepositoryImpl extends HomeRepository {
       }
     }
     return listSites;
+  }
+
+  @override
+  Future<List<Event>> getListEvents() async {
+    List<Event> listEvents = [];
+    var listRemoteEvents = await _firebaseService.getEvents();
+    if (listRemoteEvents != null) {
+      for (var remoteEvent in listRemoteEvents) {
+        if (remoteEvent["active"]) {
+          listEvents.add(Event(
+            eventid: remoteEvent["eventid"],
+            active: remoteEvent["active"],
+            image: (remoteEvent["image"] != null) ? remoteEvent["image"] : null,
+            title: remoteEvent["title"],
+            description: remoteEvent["description"],
+            eventDescriptions: (remoteEvent["tableDescriptions"] != null)
+                ? FuncUlti.getListStringFromListDynamic(remoteEvent["tableDescriptions"])
+                : null,
+            cost: remoteEvent["cost"],
+            currency: remoteEvent["currency"],
+            moreInfo: remoteEvent["moreinfo"],
+            dateend: remoteEvent["dateend"],
+            datestart: remoteEvent["datestart"],
+            booking: (remoteEvent["booking"] != null) ? remoteEvent["booking"] : null,
+            primaryType: remoteEvent["primarytype"],
+            eventTypes: (remoteEvent["eventtypes"] != null) ? FuncUlti.getListIntFromListDynamic(remoteEvent["eventtypes"]) : null,
+            listEventDayInWeek: getListEventDayInWeek(remoteEvent.data()),
+            repeating: (remoteEvent["repeating"] != null) ? remoteEvent["repeating"] : null,
+            contacts: (remoteEvent["contacts"] != null) ? getListEventContact(remoteEvent["contacts"]) : null,
+            locationLat: (remoteEvent["locationLat"] != null) ? remoteEvent["locationLat"] : null,
+            locationLon: (remoteEvent["locationLon"] != null) ? remoteEvent["locationLon"] : null,
+            sites: (remoteEvent["sites"] != null) ? FuncUlti.getListIntFromListDynamic(remoteEvent["sites"]) : null,
+          ));
+        }
+      }
+    }
+    return listEvents;
   }
 
   /// Action with local database
@@ -283,5 +343,74 @@ class HomeRepositoryImpl extends HomeRepository {
       }
     }
     return listSites;
+  }
+
+  @override
+  Future<List<Event>> getLocalListEvents() async {
+    List<Event> listEvents = [];
+    var listRemoteEvents = await _localDatabaseService.getEvents();
+    if (listRemoteEvents != null) {
+      for (var remoteEvent in listRemoteEvents) {
+        if (remoteEvent["active"]) {
+          listEvents.add(Event(
+            eventid: remoteEvent["eventid"],
+            active: remoteEvent["active"],
+            image: (remoteEvent["image"] != null) ? remoteEvent["image"] : null,
+            title: remoteEvent["title"],
+            description: remoteEvent["description"],
+            eventDescriptions: (remoteEvent["eventDescription"] != null)
+                ? FuncUlti.getListStringFromListDynamic(remoteEvent["tableDescriptions"])
+                : null,
+            cost: remoteEvent["cost"],
+            currency: remoteEvent["currency"],
+            moreInfo: remoteEvent["moreinfo"],
+            dateend: remoteEvent["dateend"],
+            datestart: remoteEvent["datestart"],
+            booking: (remoteEvent["booking"] != null) ? remoteEvent["booking"] : null,
+            primaryType: remoteEvent["primarytype"],
+            eventTypes: (remoteEvent["eventtypes"] != null) ? FuncUlti.getListIntFromListDynamic(remoteEvent["eventtypes"]) : null,
+            listEventDayInWeek: getListEventDayInWeek(remoteEvent),
+            repeating: (remoteEvent["repeating"] != null) ? remoteEvent["repeating"] : null,
+            contacts: (remoteEvent["contacts"] != null) ? getListEventContact(remoteEvent["contacts"]) : null,
+            locationLat: (remoteEvent["locationLat"] != null) ? remoteEvent["locationLat"] : null,
+            locationLon: (remoteEvent["locationLon"] != null) ? remoteEvent["locationLon"] : null,
+            sites: (remoteEvent["sites"] != null) ? FuncUlti.getListIntFromListDynamic(remoteEvent["sites"]) : null,
+          ));
+        }
+      }
+    }
+    return listEvents;
+  }
+
+  Map<String, String>? getListEventContact(Map<String, dynamic> remoteEvent) {
+    Map<String, String> result = {};
+    result["whatsapp"] = remoteEvent["whatsapp"];
+    result["website"] = remoteEvent["website"];
+    result["telephone"] = remoteEvent["telephone"];
+    result["instagram"] = remoteEvent["instagram"];
+    result["google"] = remoteEvent["google"];
+    result["facebook"] = remoteEvent["facebook"];
+    result["email"] = remoteEvent["email"];
+    if (result.keys.isNotEmpty) {
+      return result;
+    } else {
+      return null;
+    }
+  }
+
+  Map<String, bool>? getListEventDayInWeek(Map<String, dynamic> remoteEvent) {
+    Map<String, bool> result = {};
+    result["monday"] = (remoteEvent["monday"] != null) ? remoteEvent["monday"] : false;
+    result["tuesday"] = (remoteEvent["tuesday"] != null) ? remoteEvent["tuesday"] : false;
+    result["wednesday"] = (remoteEvent["wednesday"] != null) ? remoteEvent["wednesday"] : false;
+    result["thursday"] = (remoteEvent["thursday"] != null) ? remoteEvent["thursday"] : false;
+    result["friday"] = (remoteEvent["friday"] != null) ? remoteEvent["friday"] : false;
+    result["saturday"] = (remoteEvent["saturday"] != null) ? remoteEvent["saturday"] : false;
+    result["sunday"] = (remoteEvent["sunday"] != null) ? remoteEvent["sunday"] : false;
+    if (result.keys.isNotEmpty) {
+      return result;
+    } else {
+      return null;
+    }
   }
 }

@@ -14,6 +14,7 @@ import 'package:tudu/models/deal.dart';
 import 'package:tudu/models/partner.dart';
 import 'package:tudu/models/site.dart';
 import 'package:tudu/utils/func_utils.dart';
+import 'package:tudu/viewmodels/events_viewmodel.dart';
 import 'package:tudu/viewmodels/what_tudu_site_content_detail_viewmodel.dart';
 import 'package:tudu/views/common/alert.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
@@ -30,6 +31,7 @@ import 'package:url_launcher/url_launcher_string.dart';
 
 import '../../services/observable/observable_serivce.dart';
 import '../../services/location/permission_request.dart';
+import '../../viewmodels/event_content_detail_viewmodel.dart';
 
 class WhatTuduSiteContentDetailView extends StatefulWidget {
   const WhatTuduSiteContentDetailView({super.key});
@@ -41,6 +43,7 @@ class WhatTuduSiteContentDetailView extends StatefulWidget {
 class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView> with WidgetsBindingObserver {
   final WhatTuduSiteContentDetailViewModel _whatTuduSiteContentDetailViewModel = WhatTuduSiteContentDetailViewModel();
   final HomeViewModel _homeViewModel = HomeViewModel();
+  final EventsViewModel _eventsViewModel = EventsViewModel();
   ObservableService _observableService = ObservableService();
 
   Offset _tapPosition = Offset.zero;
@@ -187,6 +190,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
         getEventsAndExpsView(
           _whatTuduSiteContentDetailViewModel.siteContentDetail.siteContent.eventIcons,
           _whatTuduSiteContentDetailViewModel.siteContentDetail.siteContent.eventLinks,
+          _whatTuduSiteContentDetailViewModel.siteContentDetail.siteId,
         ),
         Container(
           height: 0.5,
@@ -617,7 +621,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
     }
   }
 
-  Widget getEventsAndExpsView(List<String>? eventIcons, List<String>? eventLinks) {
+  Widget getEventsAndExpsView(List<String>? eventIcons, List<String>? eventLinks, int siteId) {
     if (eventIcons != null && eventLinks != null) {
       return Container(
           alignment: Alignment.centerLeft,
@@ -640,7 +644,12 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
               Container(
                 alignment: Alignment.topLeft,
                 child: Wrap(
-                  children: eventIcons.map((eventIcon) => getEventsAndExps(eventIcons.indexOf(eventIcon))).toList(),
+                  children: [
+                    getFirstEventsAndExps(siteId),
+                    Wrap(
+                      children: eventIcons.map((eventIcon) => getEventsAndExps(eventIcons.indexOf(eventIcon))).toList(),
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -960,16 +969,36 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
     }
   }
 
+  Widget getFirstEventsAndExps(int siteId) {
+    bool isHaveEvent = false;
+    for (var event in _homeViewModel.listEvents) {
+      if (event.sites != null) {
+        if (event.sites!.contains(siteId) && event.datestart.millisecondsSinceEpoch > DateTime.now().millisecondsSinceEpoch) {
+          isHaveEvent = true;
+        }
+      }
+    }
+
+    if (isHaveEvent) {
+      return InkWell(
+        onTap: () {
+          _eventsViewModel.setEvetRedirectedFromSite(siteId);
+          _homeViewModel.redirectTab(1);
+        },
+        child: Container(
+          padding: const EdgeInsets.only(top: 4.0, right: 4.0, bottom: 4.0),
+          child: Image.asset(ImagePath.calendarIcon, fit: BoxFit.contain, height: 25.0),
+        ),
+      );
+    } else {
+      return Container();
+    }
+  }
+
   Widget getEventsAndExps(int eventIndex) {
-    // TODO: IMPL LOGIC FOR EVENT AND EXP CLICK
-    return InkWell(
-      onTap: () {
-        _homeViewModel.redirectTab(1);
-      },
-      child: Container(
-        padding: const EdgeInsets.only(top: 4.0, right: 4.0, bottom: 4.0),
-        child: Image.asset(ImagePath.yogaIcon, fit: BoxFit.contain, height: 25.0),
-      ),
+    return Container(
+      padding: const EdgeInsets.only(top: 4.0, right: 4.0, bottom: 4.0),
+      child: Image.asset(ImagePath.yogaIcon, fit: BoxFit.contain, height: 25.0),
     );
   }
 

@@ -1,6 +1,12 @@
 import 'dart:async';
 import 'package:tudu/base/base_viewmodel.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:tudu/models/event.dart';
+
+import '../models/event_type.dart';
+import '../repositories/event/event_repository.dart';
+import '../services/observable/observable_serivce.dart';
+import 'home_viewmodel.dart';
 
 class EventsViewModel extends BaseViewModel {
   static final EventsViewModel _instance =
@@ -12,141 +18,42 @@ class EventsViewModel extends BaseViewModel {
 
   EventsViewModel._internal();
 
-  final StreamController<List<EventData>> _listEventsController = BehaviorSubject<List<EventData>>();
-  Stream<List<EventData>> get listEventsStream => _listEventsController.stream;
+  final EventRepository _eventRepository = EventRepositoryImpl();
+  HomeViewModel _homeViewModel = HomeViewModel();
+  ObservableService _observableService = ObservableService();
+
+  int? fromSite;
 
   @override
   FutureOr<void> init() {
-
   }
 
-  void showData() {
-    _listEventsController.sink.add(
-        [
-          EventData(
-            date: 'Daily',
-            timestart: '19:00',
-            event: 'Temazcalli Ceremony',
-            eventSite: 'Casa Nawal Alkal',
-            cost: '\$200',
-            currency: 'MXN'
-          ),
-          EventData(
-              date: 'Daily',
-              timestart: '19:00',
-              event: 'Temazcalli Ceremony',
-              eventSite: 'Casa Nawal Alkal',
-              cost: '\$300',
-              currency: 'MXN'
-          ),
-          EventData(
-              date: 'Daily',
-              timestart: '19:00',
-              event: 'Temazcalli Ceremony',
-              eventSite: 'Casa Nawal Alkal',
-              cost: '\$400',
-              currency: 'MXN'
-          ),
-          EventData(
-              date: 'Daily',
-              timestart: '19:00',
-              event: 'Temazcalli Ceremony',
-              eventSite: 'Casa Nawal Alkal',
-              cost: '\$500',
-              currency: 'MXN'
-          ),
-          EventData(
-              date: 'Daily',
-              timestart: '19:00',
-              event: 'Temazcalli Ceremony',
-              eventSite: 'Casa Nawal Alkal',
-              cost: '\$600',
-              currency: 'MXN'
-          ),
-          EventData(
-              date: 'Daily',
-              timestart: '19:00',
-              event: 'Temazcalli Ceremony',
-              eventSite: 'Casa Nawal Alkal',
-              cost: '\$700',
-              currency: 'MXN'
-          ),
-          EventData(
-              date: 'Daily',
-              timestart: '19:00',
-              event: 'Temazcalli Ceremony',
-              eventSite: 'Casa Nawal Alkal',
-              cost: '\$700',
-              currency: 'MXN'
-          ),
-          EventData(
-              date: 'Daily',
-              timestart: '19:00',
-              event: 'Temazcalli Ceremony',
-              eventSite: 'Casa Nawal Alkal',
-              cost: '\$700',
-              currency: 'MXN'
-          ),
-          EventData(
-              date: 'Daily',
-              timestart: '19:00',
-              event: 'Temazcalli Ceremony',
-              eventSite: 'Casa Nawal Alkal',
-              cost: '\$700',
-              currency: 'MXN'
-          ),
-          EventData(
-              date: 'Daily',
-              timestart: '19:00',
-              event: 'Temazcalli Ceremony',
-              eventSite: 'Casa Nawal Alkal',
-              cost: '\$700',
-              currency: 'MXN'
-          ),
-          EventData(
-              date: 'Daily',
-              timestart: '19:00',
-              event: 'Temazcalli Ceremony',
-              eventSite: 'Casa Nawal Alkal',
-              cost: '\$700',
-              currency: 'MXN'
-          ),
-          EventData(
-              date: 'Daily',
-              timestart: '19:00',
-              event: 'Temazcalli Ceremony',
-              eventSite: 'Casa Nawal Alkal',
-              cost: '\$700',
-              currency: 'MXN'
-          ),
-          EventData(
-              date: 'Daily',
-              timestart: '19:00',
-              event: 'Temazcalli Ceremony',
-              eventSite: 'Casa Nawal Alkal',
-              cost: '\$700',
-              currency: 'MXN'
-          )
-        ]
-    );
+  void setEvetRedirectedFromSite(int input) {
+    fromSite = input;
     notifyListeners();
   }
-}
 
-class EventData {
-  String date;
-  String timestart;
-  String event;
-  String eventSite;
-  String cost;
-  String currency;
+  void getDataWithFilterSortSearch(
+      EventType? evenTypeFilter,
+      String? keywordSort,
+      String? keywordSearch) {
+    try {
+      print("getDataWithFilterSortSearch -> evenTypeFilter ${evenTypeFilter?.eventId}");
+      print("getDataWithFilterSortSearch -> keywordSort $keywordSort");
+      print("getDataWithFilterSortSearch -> keywordSearch $keywordSearch");
 
-  EventData({
-    required this.date,
-    required this.timestart,
-    required this.event,
-    required this.eventSite,
-    required this.cost,
-    required this.currency
-  });
+      List<Event> listSitesResult = _eventRepository.getEventsWithFilterSortSearch(
+        _homeViewModel.listEvents,
+        (evenTypeFilter != null) ? evenTypeFilter.eventId : -1,
+        keywordSort,
+        keywordSearch,
+      );
+
+      print("getDataWithFilterSortSearch -> listSitesResult ${listSitesResult}");
+
+      _observableService.listEventsController.sink.add(listSitesResult);
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

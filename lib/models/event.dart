@@ -6,16 +6,21 @@ class Event {
   String? image;
   String title;
   String description;
+  List<String>? eventDescriptions;
   String cost;
   String currency;
+  String moreInfo;
   Timestamp dateend;
   Timestamp datestart;
   String? booking;
   String primaryType;
   List<int>? eventTypes;
+  Map<String, bool>? listEventDayInWeek;
+  bool? repeating;
   Map<String, String>? contacts;
   double? locationLat;
   double? locationLon;
+  List<int>? sites;
 
 
   Event(
@@ -25,16 +30,21 @@ class Event {
         this.image,
         required this.title,
         required this.description,
+        this.eventDescriptions,
         required this.cost,
         required this.currency,
+        required this.moreInfo,
         required this.dateend,
         required this.datestart,
         this.booking,
         required this.primaryType,
         this.eventTypes,
+        this.listEventDayInWeek,
+        this.repeating,
         this.contacts,
         this.locationLat,
         this.locationLon,
+        this.sites,
       });
 
   Map<String, dynamic> toJson() {
@@ -44,16 +54,21 @@ class Event {
       "image": image,
       "title": title,
       "description": description,
+      "tableDescriptions": eventDescriptions,
       "cost": cost,
       "currency": currency,
-      "dateend": dateend,
-      "datestart": datestart,
+      "moreinfo": moreInfo,
+      "dateend": dateend.toString(),
+      "datestart": datestart.toString(),
       "booking": booking,
-      "primaryType": primaryType,
-      "eventTypes": eventTypes,
+      "primarytype": primaryType,
+      "eventtypes": eventTypes,
+      "listEventDayInWeek": listEventDayInWeek,
+      "repeating": repeating,
       "contacts": contacts,
       "locationLat": locationLat,
       "locationLon": locationLon,
+      "sites": sites,
     };
 
     return result;

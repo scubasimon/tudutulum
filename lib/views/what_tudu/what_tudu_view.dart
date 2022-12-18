@@ -49,7 +49,7 @@ class WhatTuduView extends StatefulWidget {
   State<StatefulWidget> createState() => _WhatTuduView();
 }
 
-class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver, AutomaticKeepAliveClientMixin {
+class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
   ObservableService _observableService = ObservableService();
   MapScreenViewModel _mapScreenViewModel = MapScreenViewModel();
   WhatTuduViewModel _whatTuduViewModel = WhatTuduViewModel();
@@ -93,13 +93,13 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver, Aut
     });
 
     _searchController.addListener(() {
-      if (_searchController.text != _homeViewModel.searchKeyword) {
-        _homeViewModel.searchKeyword = _searchController.text;
+      if (_searchController.text != _homeViewModel.whatTuduSearchKeyword) {
+        _homeViewModel.whatTuduSearchKeyword = _searchController.text;
         _whatTuduViewModel.getDataWithFilterSortSearch(
-            (_homeViewModel.filterType < _homeViewModel.listBusiness.length)
-                ? _homeViewModel.listBusiness[_homeViewModel.filterType]
+            (_homeViewModel.whatTuduBussinessFilterType < _homeViewModel.listBusiness.length)
+                ? _homeViewModel.listBusiness[_homeViewModel.whatTuduBussinessFilterType]
                 : null, // Get current filterType
-            FuncUlti.getSortTypeByInt(_homeViewModel.orderType), // Get current OrderType
+            FuncUlti.getSortTypeByInt(_homeViewModel.whatTuduOrderType), // Get current OrderType
             _searchController.text // Search text
             );
       }
@@ -113,94 +113,79 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver, Aut
     WidgetsBinding.instance.addObserver(this);
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if ((PrefUtil.getValue(StrConst.isDataBinded, true) as bool == false)) {
-        await loadRemoteData();
+      if ((PrefUtil.getValue(StrConst.isWhatTuduDataBinded, true) as bool == false)) {
+        await loadRemoteData(true);
       }
     });
   }
 
-  Future<void> loadRemoteData() async {
+  Future<void> loadRemoteData(bool isLoadOnInit) async {
     try {
       print("loadRemoteData -> start");
       // Get data from firestore
       await _homeViewModel.getDataFromFireStore();
 
-      _homeViewModel.filterType = _homeViewModel.listBusiness.length;
-
       // Save data to local after get data from firestore have done
-      saveDataToLocal();
+      _homeViewModel.saveDataToLocal();
 
-      // (_homeViewModel.filterType < _homeViewModel.listBusiness.length)
-      //     ? _homeViewModel.listBusiness[_homeViewModel.filterType]
-      //     : null, // Get current filterType
-      // FuncUlti.getSortTypeByInt(_homeViewModel.orderType), // Get current OrderType
-      // _searchController.text // Search text
+      // Filter and Sort
+      if (isLoadOnInit) {
+        _homeViewModel.whatTuduBussinessFilterType = _homeViewModel.listBusiness.length;
 
-      _whatTuduViewModel.getDataWithFilterSortSearch(
-        (_homeViewModel.filterType < _homeViewModel.listBusiness.length)
-            ? _homeViewModel.listBusiness[_homeViewModel.filterType]
-            : null, // Get current filterType,
-        FuncUlti.getSortTypeByInt(_homeViewModel.orderType),
-        _searchController.text, // Search text
-      );
-      PrefUtil.setValue(StrConst.isDataBinded, true);
+        _whatTuduViewModel.getDataWithFilterSortSearch(
+          null, // On init, no business filter have not been chose
+          StrConst.sortTitle, // First init sort with Alphabet
+          null, // On init, no text have not been searched
+        );
+      } else {
+        _whatTuduViewModel.getDataWithFilterSortSearch(
+          (_homeViewModel.whatTuduBussinessFilterType < _homeViewModel.listBusiness.length)
+              ? _homeViewModel.listBusiness[_homeViewModel.whatTuduBussinessFilterType]
+              : null, // Get current filterType,
+          FuncUlti.getSortTypeByInt(_homeViewModel.whatTuduOrderType),
+          _searchController.text, // Search text
+        );
+      }
+
+      // Prevent to reload data on every time open What tudu
+      PrefUtil.setValue(StrConst.isWhatTuduDataBinded, true);
     } catch (e) {
       print("loadRemoteData: $e");
       // If network has prob -> Load data from local
-      await loadLocalData();
+      await loadLocalData(isLoadOnInit);
     }
   }
 
-  Future<void> loadLocalData() async {
+  Future<void> loadLocalData(bool isLoadOnInit) async {
     try {
       print("loadLocalData -> start");
       // Get data from local
       _homeViewModel.getDataFromLocalDatabase();
 
-      _homeViewModel.filterType = _homeViewModel.listBusiness.length;
+      // Filter and Sort
+      if (isLoadOnInit) {
+        _homeViewModel.whatTuduBussinessFilterType = _homeViewModel.listBusiness.length;
 
-      _whatTuduViewModel.getDataWithFilterSortSearch(
-        null, // On init, no business filter have not been chose
-        StrConst.sortTitle, // First init sort with Alphabet
-        null, // On init, no text have not been searched
-      );
+        _whatTuduViewModel.getDataWithFilterSortSearch(
+          null, // On init, no business filter have not been chose
+          StrConst.sortTitle, // First init sort with Alphabet
+          null, // On init, no text have not been searched
+        );
+      } else {
+        _whatTuduViewModel.getDataWithFilterSortSearch(
+          (_homeViewModel.whatTuduBussinessFilterType < _homeViewModel.listBusiness.length)
+              ? _homeViewModel.listBusiness[_homeViewModel.whatTuduBussinessFilterType]
+              : null, // Get current filterType,
+          FuncUlti.getSortTypeByInt(_homeViewModel.whatTuduOrderType),
+          _searchController.text, // Search text
+        );
+      }
 
-      PrefUtil.setValue(StrConst.isDataBinded, true);
+      // Prevent to reload data on every time open What tudu
+      PrefUtil.setValue(StrConst.isWhatTuduDataBinded, true);
     } catch (e) {
       _observableService.whatTuduProgressLoadingController.sink.add(false);
       _observableService.networkController.sink.add(e.toString());
-    }
-  }
-
-  void saveDataToLocal() {
-    if (_homeViewModel.listBusiness.isNotEmpty) {
-      for (var business in _homeViewModel.listBusiness) {
-        Localstore.instance.collection('businesses').doc(business.businessid.toString()).set(business.toJson());
-      }
-    }
-
-    if (_homeViewModel.listAmenites.isNotEmpty) {
-      for (var amenites in _homeViewModel.listAmenites) {
-        Localstore.instance.collection('amenities').doc(amenites.amenityId.toString()).set(amenites.toJson());
-      }
-    }
-
-    if (_homeViewModel.listPartners.isNotEmpty) {
-      for (var partner in _homeViewModel.listPartners) {
-        Localstore.instance.collection('partners').doc(partner.partnerId.toString()).set(partner.toJson());
-      }
-    }
-
-    if (_homeViewModel.listArticles.isNotEmpty) {
-      for (var article in _homeViewModel.listArticles) {
-        Localstore.instance.collection('articles').doc(article.articleId.toString()).set(article.toJson());
-      }
-    }
-
-    if (_homeViewModel.listSites.isNotEmpty) {
-      for (var site in _homeViewModel.listSites) {
-        Localstore.instance.collection('sites').doc(site.siteId.toString()).set(site.toJson());
-      }
     }
   }
 
@@ -256,7 +241,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver, Aut
 
   void _onRefresh() async {
     try {
-      await loadRemoteData();
+      await loadRemoteData(false);
 
       _refreshController.refreshCompleted();
       setState(() {});
@@ -268,7 +253,6 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver, Aut
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     return ExitAppScope(
       child: Scaffold(
           appBar: AppBar(
@@ -313,16 +297,16 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver, Aut
                                     fontSize: 17,
                                     color: ColorStyle.menuLabel),
                               ),
-                              enabled: _homeViewModel.orderType != 0,
+                              enabled: _homeViewModel.whatTuduOrderType != 0,
                               onTap: () {
                                 _whatTuduViewModel.getDataWithFilterSortSearch(
-                                  (_homeViewModel.filterType < _homeViewModel.listBusiness.length)
-                                      ? _homeViewModel.listBusiness[_homeViewModel.filterType]
+                                  (_homeViewModel.whatTuduBussinessFilterType < _homeViewModel.listBusiness.length)
+                                      ? _homeViewModel.listBusiness[_homeViewModel.whatTuduBussinessFilterType]
                                       : null,
                                   FuncUlti.getSortTypeByInt(0), // Search with Alphabet => "title" = 0
                                   _searchController.text, // Search with Alphabet => "title" = 0
                                 );
-                                _homeViewModel.orderType = 0;
+                                _homeViewModel.changeOrderType(0);
                               },
                             ),
                             const PullDownMenuDivider(),
@@ -335,7 +319,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver, Aut
                                     fontSize: 17,
                                     color: ColorStyle.menuLabel),
                               ),
-                              enabled: _homeViewModel.orderType != 1,
+                              enabled: _homeViewModel.whatTuduOrderType != 1,
                               onTap: () {
                                 PermissionRequest.isResquestPermission = true;
                                 PermissionRequest().permissionServiceCall(
@@ -343,7 +327,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver, Aut
                                   () {
                                     /// IMPL logic
                                     _whatTuduViewModel.sortWithLocation();
-                                    _homeViewModel.orderType = 1;
+                                    _homeViewModel.changeOrderType(1);
                                   },
                                 );
                               },
@@ -390,20 +374,20 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver, Aut
                                             color: ColorStyle.menuLabel),
                                       ),
                                       iconWidget: Image.asset(
-                                        _homeViewModel.filterType != 3
+                                        _homeViewModel.whatTuduBussinessFilterType != _homeViewModel.listBusiness.length
                                             ? ImagePath.mappinIcon
                                             : ImagePath.mappinDisableIcon,
                                         width: 28,
                                         height: 28,
                                       ),
-                                      enabled: _homeViewModel.filterType != ((counter) / 2).round(),
+                                      enabled: _homeViewModel.whatTuduBussinessFilterType != ((counter) / 2).round(),
                                       onTap: () {
                                         _whatTuduViewModel.getDataWithFilterSortSearch(
                                           null, // Filter all business => businnesFilter = null
-                                          FuncUlti.getSortTypeByInt(_homeViewModel.orderType),
+                                          FuncUlti.getSortTypeByInt(_homeViewModel.whatTuduOrderType),
                                           _searchController.text,
                                         );
-                                        _homeViewModel.filterType = ((counter) / 2).round();
+                                        _homeViewModel.whatTuduBussinessFilterType = ((counter) / 2).round();
                                       },
                                     )
                                   : (counter == _homeViewModel.listBusiness.length * 2 - 1)
@@ -425,14 +409,14 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver, Aut
                                                 width: 28,
                                                 height: 28,
                                               ),
-                                              enabled: _homeViewModel.filterType != ((counter) / 2).round(),
+                                              enabled: _homeViewModel.whatTuduBussinessFilterType != ((counter) / 2).round(),
                                               onTap: () {
                                                 _whatTuduViewModel.getDataWithFilterSortSearch(
                                                   _homeViewModel.listBusiness[((counter) / 2).round()], // get business
-                                                  FuncUlti.getSortTypeByInt(_homeViewModel.orderType),
+                                                  FuncUlti.getSortTypeByInt(_homeViewModel.whatTuduOrderType),
                                                   _searchController.text,
                                                 );
-                                                _homeViewModel.filterType = ((counter) / 2).round();
+                                                _homeViewModel.whatTuduBussinessFilterType = ((counter) / 2).round();
                                               },
                                             )
                                           : const PullDownMenuDivider(),
@@ -556,7 +540,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver, Aut
                 padding: const EdgeInsets.only(top: 8, bottom: 8, left: 24, right: 16),
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  getArticleTitleText(_homeViewModel.filterType),
+                  getArticleTitleText(_homeViewModel.whatTuduBussinessFilterType),
                   style: const TextStyle(
                       color: ColorStyle.darkLabel,
                       fontSize: FontSizeConst.font16,
@@ -670,7 +654,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver, Aut
                 child: Row(
                   children: [
                     Text(
-                      getSiteTitleText(_homeViewModel.filterType),
+                      getSiteTitleText(_homeViewModel.whatTuduBussinessFilterType),
                       style: const TextStyle(
                         color: ColorStyle.darkLabel,
                         fontSize: FontSizeConst.font16,
@@ -692,7 +676,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver, Aut
                             _mapScreenViewModel.setInitMapInfo(
                                 (_observableService.listSitesController as BehaviorSubject<List<Site>?>).value,
                                 true,
-                                _homeViewModel.filterType);
+                                _homeViewModel.whatTuduBussinessFilterType);
                             _homeViewModel.redirectTab(5); // Map tab
                           },
                         );

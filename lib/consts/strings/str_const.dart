@@ -18,7 +18,8 @@ class StrConst {
   static const String sortTitle = "title";
   static const String sortDistance = "distance";
 
-  static const String isDataBinded = "isDataBinded";
+  static const String isWhatTuduDataBinded = "isWhatTuduDataBinded";
+  static const String isEventDataBinded = "isEventDataBinded";
 
   static const String newOffer = "new_offer";
   static const String availableOffer = "available_offer";

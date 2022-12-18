@@ -119,9 +119,10 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
                     padding: const EdgeInsets.only(left: 8, right: 8),
                     child: InkWell(
                       child: Image.asset(
-                        ImagePath.markDeactiveIcon,
+                        ImagePath.takeToPurchaseIcon,
                         fit: BoxFit.contain,
-                        width: 16.0,
+                        width: 32.0,
+                        height: 26.0,
                       ),
                       onTap: () {},
                     ),
@@ -152,41 +153,32 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
         getCover(
           _eventContentDetailViewModel.eventContentDetail.image,
         ),
-        // getTitle(
-        //   _whatTuduSiteContentDetailViewModel.siteContentDetail.siteContent.title,
-        //   _whatTuduSiteContentDetailViewModel.siteContentDetail.siteContent.description,
-        // ),
-        // getMoreInformation(_whatTuduSiteContentDetailViewModel.siteContentDetail.siteContent.moreInformation),
-        // getAdvisory(_whatTuduSiteContentDetailViewModel.siteContentDetail.siteContent.advisory),
-        // getAmenityView(
-        //   _whatTuduSiteContentDetailViewModel.siteContentDetail.siteContent.amenities,
-        //   _whatTuduSiteContentDetailViewModel.siteContentDetail.siteContent.amentityDescriptions,
-        // ),
-        // getOpenTimes(_whatTuduSiteContentDetailViewModel.siteContentDetail.siteContent.openingTimes),
-        // getFees(_whatTuduSiteContentDetailViewModel.siteContentDetail.siteContent.fees),
-        // getCapacity(_whatTuduSiteContentDetailViewModel.siteContentDetail.siteContent.capacity),
-        // getEventsAndExpsView(
-        //   _whatTuduSiteContentDetailViewModel.siteContentDetail.siteContent.eventIcons,
-        //   _whatTuduSiteContentDetailViewModel.siteContentDetail.siteContent.eventLinks,
-        // ),
-        // Container(
-        //   height: 0.5,
-        //   width: MediaQuery.of(context).size.width,
-        //   margin: const EdgeInsets.only(left: 18, right: 18),
-        //   color: ColorsConst.blackOpacity20,
-        // ),
-        // getIntouch(
-        //   _whatTuduSiteContentDetailViewModel.siteContentDetail.siteContent.getIntouch,
-        //   _whatTuduSiteContentDetailViewModel.siteContentDetail.siteContent.logo,
-        // ),
-        // Container(
-        //   height: 0.5,
-        //   width: MediaQuery.of(context).size.width,
-        //   margin: const EdgeInsets.only(left: 18, right: 18),
-        //   color: ColorsConst.blackOpacity20,
-        // ),
-        // getPartner(
-        //     _homeViewModel.getPartnerById(_whatTuduSiteContentDetailViewModel.siteContentDetail.siteContent.partner)),
+        getTitle(
+          _eventContentDetailViewModel.eventContentDetail.title,
+          _eventContentDetailViewModel.eventContentDetail.description,
+        ),
+        getEventDescription(_eventContentDetailViewModel.eventContentDetail.eventDescriptions),
+        getPrice(
+          _eventContentDetailViewModel.eventContentDetail.cost,
+          _eventContentDetailViewModel.eventContentDetail.currency,
+        ),
+        getFurtherInformation(_eventContentDetailViewModel.eventContentDetail.moreInfo),
+        Container(
+          height: 0.5,
+          width: MediaQuery.of(context).size.width,
+          margin: const EdgeInsets.only(top: 16, left: 18, right: 18, bottom: 16),
+          color: ColorsConst.blackOpacity20,
+        ),
+        getContact(
+          _eventContentDetailViewModel.eventContentDetail.contacts,
+          _eventContentDetailViewModel.eventContentDetail.sites,
+        ),
+        Container(
+          height: 0.5,
+          width: MediaQuery.of(context).size.width,
+          margin: const EdgeInsets.only(top: 16, left: 18, right: 18),
+          color: ColorsConst.blackOpacity20,
+        ),
         getReport(),
       ],
     );
@@ -283,11 +275,41 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
     }
   }
 
-  Widget getMoreInformation(String? moreInformation) {
+  Widget getEventDescription(List<String>? eventDescrip) {
+    if (eventDescrip != null) {
+      return Container(
+        alignment: Alignment.centerLeft,
+        padding: const EdgeInsets.only(left: 18, right: 18, bottom: 18),
+        child: ListView.builder(
+          padding: EdgeInsets.zero,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: eventDescrip.length,
+          itemBuilder: (BuildContext context, int index) {
+            return
+              Text(
+                eventDescrip[index],
+                style: const TextStyle(
+                  color: ColorStyle.darkLabel,
+                  fontWeight: FontWeight.w400,
+                  fontSize: FontSizeConst.font12,
+                  fontFamily: FontStyles.raleway,
+                  height: 2,
+                ),
+              );
+          },
+        ),
+      );
+    } else {
+      return Container();
+    }
+  }
+
+  Widget getFurtherInformation(String? moreInformation) {
     if (moreInformation != null) {
       return Container(
         alignment: Alignment.centerLeft,
-        padding: const EdgeInsets.only(top: 20.0, left: 18, right: 18, bottom: 8),
+        padding: const EdgeInsets.only(top: 10.0, left: 18, right: 18, bottom: 8),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -295,7 +317,7 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
             SizedBox(
                 height: 20,
                 child: Text(
-                  S.current.more_information,
+                  S.current.further_information,
                   style: const TextStyle(
                     color: ColorStyle.darkLabel,
                     fontFamily: FontStyles.mouser,
@@ -321,199 +343,8 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
     }
   }
 
-  Widget getAdvisory(String? advisory) {
-    if (advisory != null) {
-      return Container(
-        alignment: Alignment.centerLeft,
-        padding: const EdgeInsets.only(top: 20.0, left: 18, right: 18, bottom: 8),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-                height: 20,
-                child: Text(
-                  S.current.advisory,
-                  style: const TextStyle(
-                    color: ColorStyle.darkLabel,
-                    fontFamily: FontStyles.mouser,
-                    fontSize: FontSizeConst.font12,
-                    fontWeight: FontWeight.w400,
-                  ),
-                )),
-            Text(
-              advisory,
-              style: const TextStyle(
-                color: ColorStyle.darkLabel,
-                fontWeight: FontWeight.w500,
-                fontSize: FontSizeConst.font12,
-                fontFamily: FontStyles.raleway,
-                height: 2,
-              ),
-            ),
-          ],
-        ),
-      );
-    } else {
-      return Container();
-    }
-  }
-
-  Widget getAmenityView(List<int>? amenities, List<String>? amenitiyDescriptions) {
-    if (amenities != null && amenitiyDescriptions != null) {
-      return Container(
-          alignment: Alignment.centerLeft,
-          padding: const EdgeInsets.only(top: 8.0, left: 18, right: 18, bottom: 8),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                  height: 20,
-                  child: Text(
-                    S.current.you_can_expect,
-                    style: const TextStyle(
-                      fontFamily: FontStyles.mouser,
-                      fontSize: FontSizeConst.font12,
-                      fontWeight: FontWeight.w400,
-                      color: ColorStyle.darkLabel,
-                    ),
-                  )),
-              Container(
-                alignment: Alignment.topLeft,
-                child: Wrap(
-                  children: amenities.map((amenity) => getAmenity(amenity)).toList(),
-                ),
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: amenitiyDescriptions.map((amenityDescrip) => getAmenityDescription(amenityDescrip)).toList(),
-              )
-            ],
-          ));
-    } else {
-      return Container();
-    }
-  }
-
-  Widget getOpenTimes(Map<String, String>? listOpenTimes) {
-    if (listOpenTimes != null) {
-      return Container(
-          alignment: Alignment.centerLeft,
-          padding: const EdgeInsets.only(top: 8.0, left: 18, right: 18, bottom: 8),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                height: 20,
-                child: Text(
-                  S.current.open_times,
-                  style: const TextStyle(
-                    fontFamily: FontStyles.mouser,
-                    fontSize: FontSizeConst.font12,
-                    fontWeight: FontWeight.w400,
-                    color: ColorStyle.darkLabel,
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 8,
-              ),
-              ListView.builder(
-                padding: EdgeInsets.zero,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: listOpenTimes.values.toList().length - 1,
-                itemBuilder: (BuildContext context, int index) {
-                  return getOpeningTime(listOpenTimes, index);
-                },
-              )
-            ],
-          ));
-    } else {
-      return Container();
-    }
-  }
-
-  Widget getFees(Map<String, List<String>>? fees) {
-    if (fees != null) {
-      return Container(
-          alignment: Alignment.centerLeft,
-          padding: const EdgeInsets.only(left: 18, right: 18, bottom: 8),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                height: 20,
-                child: Text(
-                  S.current.fees,
-                  style: const TextStyle(
-                    fontFamily: FontStyles.mouser,
-                    fontSize: FontSizeConst.font12,
-                    fontWeight: FontWeight.w400,
-                    color: ColorStyle.darkLabel,
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 8,
-              ),
-              ListView.builder(
-                padding: EdgeInsets.zero,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: fees["feeDetail"]!.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        width: (currentTextSize != 0.0) ? currentTextSize : MediaQuery.of(context).size.width,
-                        child: Wrap(
-                          children: [
-                            Text(
-                              fees["feeTitle"]![index],
-                              style: const TextStyle(
-                                color: ColorStyle.darkLabel,
-                                fontWeight: FontWeight.w500,
-                                fontSize: FontSizeConst.font12,
-                                fontFamily: FontStyles.raleway,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        // flex: 4,
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 8, bottom: 8),
-                          child: Text(
-                            fees["feeDetail"]![index],
-                            style: const TextStyle(
-                              color: ColorStyle.darkLabel,
-                              fontWeight: FontWeight.w500,
-                              fontSize: FontSizeConst.font12,
-                              fontFamily: FontStyles.raleway,
-                            ),
-                          ),
-                        ),
-                      )
-                    ],
-                  );
-                },
-              )
-            ],
-          ));
-    } else {
-      return Container();
-    }
-  }
-
-  Widget getCapacity(String? capacity) {
-    if (capacity != null) {
+  Widget getPrice(String? cost, String? currentcy) {
+    if (currentcy != null && cost != null ) {
       return Container(
           alignment: Alignment.centerLeft,
           padding: const EdgeInsets.only(left: 18, right: 18, bottom: 8),
@@ -525,7 +356,7 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
               SizedBox(
                 height: 20,
                 child: Text(
-                  S.current.capacity,
+                  S.current.price,
                   style: const TextStyle(
                     fontFamily: FontStyles.mouser,
                     fontSize: FontSizeConst.font12,
@@ -538,10 +369,10 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
                 width: 12,
               ),
               Text(
-                capacity,
+                "$cost $currentcy",
                 style: const TextStyle(
                   color: ColorStyle.darkLabel,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w400,
                   fontSize: FontSizeConst.font12,
                   fontFamily: FontStyles.raleway,
                 ),
@@ -553,68 +384,10 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
     }
   }
 
-  Widget getEventsAndExpsView(List<String>? eventIcons, List<String>? eventLinks) {
-    if (eventIcons != null && eventLinks != null) {
-      return Container(
-          alignment: Alignment.centerLeft,
-          padding: const EdgeInsets.only(top: 8.0, left: 18, right: 18, bottom: 8),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                  height: 20,
-                  child: Text(
-                    S.current.events_and_experiences,
-                    style: const TextStyle(
-                      fontFamily: FontStyles.mouser,
-                      fontSize: FontSizeConst.font12,
-                      fontWeight: FontWeight.w400,
-                      color: ColorStyle.darkLabel,
-                    ),
-                  )),
-              Container(
-                alignment: Alignment.topLeft,
-                child: Wrap(
-                  children: eventIcons.map((eventIcon) => getEventsAndExps(eventIcons.indexOf(eventIcon))).toList(),
-                ),
-              ),
-            ],
-          ));
-    } else {
-      return Container();
-    }
-  }
-
-  Widget getIntouch(Map<String, String>? getIntouch, String? logo) {
-    if (getIntouch != null && logo != null) {
+  Widget getContact(Map<String, String>? getContact, List<int>? sites) {
+    if (getContact != null) {
       return Stack(
         children: [
-          Positioned(
-            top: 10,
-            right: 20,
-            child: CachedNetworkImage(
-              imageUrl: logo,
-              width: 48.0,
-              height: 48.0,
-              fit: BoxFit.contain,
-              imageBuilder: (context, imageProvider) => Container(
-                decoration: BoxDecoration(
-                  image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
-                ),
-              ),
-              placeholder: (context, url) => const CupertinoActivityIndicator(
-                radius: 20,
-                color: ColorStyle.primary,
-              ),
-              errorWidget: (context, url, error) => Icon(Icons.error),
-            ),
-            // child: Image.network(
-            //   logo,
-            //   fit: BoxFit.contain,
-            //   height: 48.0,
-            // ),
-          ),
           Container(
               alignment: Alignment.centerLeft,
               padding: const EdgeInsets.only(top: 8.0, left: 18, right: 18, bottom: 8),
@@ -624,7 +397,8 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
                 children: [
                   SizedBox(
                     height: 20,
-                    child: Text(S.current.get_in_touch_with,
+                    child: Text(
+                        S.current.venue_contact,
                         style: const TextStyle(
                           color: ColorStyle.darkLabel,
                           fontSize: FontSizeConst.font12,
@@ -632,118 +406,95 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
                           fontFamily: FontStyles.raleway,
                         )),
                   ),
-                  SizedBox(
-                    height: 20,
-                    child: Text(
-                      getIntouch["title"].toString(),
-                      style: const TextStyle(
-                        fontFamily: FontStyles.mouser,
-                        fontSize: FontSizeConst.font12,
-                        fontWeight: FontWeight.w400,
-                        color: ColorStyle.darkLabel,
-                      ),
+                  (sites != null) ? Container(
+                    alignment: Alignment.topLeft,
+                    child: Wrap(
+                      children: sites.map((site) => getSites(site)).toList(),
                     ),
-                  ),
+                  ) : Container(),
                   Row(
                     children: [
-                      (getIntouch["phone"] != null) ? InkWell(
+                      (getContact["phone"] != null) ? InkWell(
                         child: Container(
                           padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
                           child: Image.asset(ImagePath.phoneIcon, fit: BoxFit.contain, height: 42.0),
                         ),
                         onTap: () {
-                          UrlLauncher.launch("tel://${getIntouch["phone"].toString()}");
+                          UrlLauncher.launch("tel://${getContact["phone"].toString()}");
                         },
                       ) : Container(),
-                      (getIntouch["email"] != null) ? InkWell(
+                      (getContact["email"] != null) ? InkWell(
                         child: Container(
                           padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
                           child: Image.asset(ImagePath.emailIcon, fit: BoxFit.contain, height: 42.0),
                         ),
                         onTap: () {
-                          UrlLauncher.launch("mailto:${getIntouch["email"].toString()}");
+                          UrlLauncher.launch("mailto:${getContact["email"].toString()}");
                         },
                       ) : Container(),
-                      (getIntouch["whatsapp"] != null) ? InkWell(
+                      (getContact["whatsapp"] != null) ? InkWell(
                         child: Container(
                           padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
                           child: Image.asset(ImagePath.whatsAppIcon, fit: BoxFit.contain, height: 42.0),
                         ),
                         onTap: () {
-                          UrlLauncher.launch("https://wa.me/${getIntouch["whatsapp"].toString()}?text=Hello");
+                          UrlLauncher.launch("https://wa.me/${getContact["whatsapp"].toString()}?text=Hello");
                         },
                       ) : Container(),
-                      (getIntouch["website"] != null) ? InkWell(
+                      (getContact["website"] != null) ? InkWell(
                         child: Container(
                           padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
                           child: Image.asset(ImagePath.internetIcon, fit: BoxFit.contain, height: 42.0),
                         ),
                         onTap: () {
-                          print("getIntouch[""] ${getIntouch["website"]}");
-                          FuncUlti.redirectToBrowserWithUrl("${getIntouch["website"]}");
+                          print("getIntouch[""] ${getContact["website"]}");
+                          FuncUlti.redirectToBrowserWithUrl("${getContact["website"]}");
                         },
                       ) : Container(),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  SizedBox(
-                    height: 20,
-                    child: Text(S.current.follow_title,
-                        style: const TextStyle(
-                          color: ColorStyle.darkLabel,
-                          fontSize: FontSizeConst.font12,
-                          fontWeight: FontWeight.w500,
-                          fontFamily: FontStyles.raleway,
-                        )),
-                  ),
-                  Row(
-                    children: [
-                      (getIntouch["instagram"] != null) ? InkWell(
+                      (getContact["instagram"] != null) ? InkWell(
                         child: Container(
                           padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
                           child: Image.asset(ImagePath.instagramIcon, fit: BoxFit.contain, height: 42.0),
                         ),
                         onTap: () {
                           UrlLauncher.launch(
-                            getIntouch["instagram"].toString(),
+                            getContact["instagram"].toString(),
                             universalLinksOnly: true,
                           );
                         },
                       ) : Container(),
-                      (getIntouch["facebook"] != null) ? InkWell(
+                      (getContact["facebook"] != null) ? InkWell(
                         child: Container(
                           padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
                           child: Image.asset(ImagePath.facebookIcon, fit: BoxFit.contain, height: 42.0),
                         ),
                         onTap: () {
                           UrlLauncher.launch(
-                            getIntouch["facebook"].toString(),
+                            getContact["facebook"].toString(),
                             universalLinksOnly: true,
                           );
                         },
                       ) : Container(),
-                      (getIntouch["owl"] != null) ? InkWell(
+                      (getContact["owl"] != null) ? InkWell(
                         child: Container(
                           padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
                           child: Image.asset(ImagePath.owlIcon, fit: BoxFit.contain, height: 42.0),
                         ),
                         onTap: () {
                           UrlLauncher.launch(
-                            getIntouch["owl"].toString(),
+                            getContact["owl"].toString(),
                             universalLinksOnly: true,
                           );
                         },
                       ) : Container(),
-                      (getIntouch["twitter"] != null) ? InkWell(
+                      (getContact["twitter"] != null) ? InkWell(
                         child: Container(
                           padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
                           child: Image.asset(ImagePath.twitterIcon, fit: BoxFit.contain, height: 42.0),
                         ),
                         onTap: () {
                           UrlLauncher.launch(
-                            getIntouch["twitter"].toString(),
+                            getContact["twitter"].toString(),
                             universalLinksOnly: true,
                           );
                         },
@@ -753,78 +504,6 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
                 ],
               )),
         ],
-      );
-    } else {
-      return Container();
-    }
-  }
-
-  Widget getPartner(Partner? partner) {
-    if (partner != null) {
-      return InkWell(
-        onTap: () {
-          FuncUlti.redirectToBrowserWithUrl(partner.link);
-        },
-        child: Stack(
-          children: [
-            Positioned(
-              top: 10,
-              right: 20,
-              child: CachedNetworkImage(
-                imageUrl: partner.icon,
-                width: 48.0,
-                height: 48.0,
-                fit: BoxFit.contain,
-                imageBuilder: (context, imageProvider) => Container(
-                  decoration: BoxDecoration(
-                    image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
-                  ),
-                ),
-                placeholder: (context, url) => const CupertinoActivityIndicator(
-                  radius: 20,
-                  color: ColorStyle.primary,
-                ),
-                errorWidget: (context, url, error) => Icon(Icons.error),
-              ),
-              // child: Image.network(
-              //   partner.icon,
-              //   fit: BoxFit.contain,
-              //   height: 48.0,
-              // ),
-            ),
-            Container(
-                alignment: Alignment.centerLeft,
-                padding: const EdgeInsets.only(top: 8.0, left: 18, right: 18, bottom: 8),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      height: 20,
-                      alignment: Alignment.centerLeft,
-                      child: Text(S.current.thanks_to_our_trusted_partner,
-                          style: const TextStyle(
-                            color: ColorStyle.darkLabel,
-                            fontSize: FontSizeConst.font12,
-                            fontWeight: FontWeight.w500,
-                            fontFamily: FontStyles.raleway,
-                          )),
-                    ),
-                    Container(
-                      height: 20,
-                      alignment: Alignment.centerLeft,
-                      child: Text(partner.name,
-                          style: const TextStyle(
-                            fontFamily: FontStyles.mouser,
-                            fontSize: FontSizeConst.font12,
-                            fontWeight: FontWeight.w400,
-                            color: ColorStyle.darkLabel,
-                          )),
-                    ),
-                  ],
-                )),
-          ],
-        ),
       );
     } else {
       return Container();
@@ -855,40 +534,12 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
     );
   }
 
-  Widget getAmenity(int? amenityId) {
-    if (amenityId != null) {
-      return GestureDetector(
-          onTapDown: (position) {
-            _getTapPosition(position);
-          },
-          onLongPress: () => {_showContextMenu(context, amenityId)},
-          onDoubleTap: () => {_showContextMenu(context, amenityId)},
-          child: Container(
-            padding: const EdgeInsets.only(top: 4.0, right: 4.0, bottom: 4.0),
-            child: Image.asset(
-                // "${_homeViewModel.getAmenityById(amenityId)?.icon}", // ICON DIDNT HAVE LINK YET
-                ImagePath.yogaIcon, // FAKE ICON
-                fit: BoxFit.contain,
-                height: 25.0),
-          ));
-    } else {
-      return Container();
-    }
-  }
-
-  Widget getAmenityDescription(String? amenityDescription) {
-    if (amenityDescription != null) {
-      return Padding(
-        padding: const EdgeInsets.only(left: 8.0),
+  Widget getSites(int siteIndex) {
+    if (_homeViewModel.getSiteById(siteIndex) != null) {
+      return Container(
+        padding: const EdgeInsets.only(top: 4.0, right: 4.0, bottom: 4.0),
         child: Text(
-          "• $amenityDescription",
-          style: const TextStyle(
-            color: ColorStyle.darkLabel,
-            fontWeight: FontWeight.w500,
-            fontSize: FontSizeConst.font12,
-            fontFamily: FontStyles.raleway,
-            height: 2,
-          ),
+            "${_homeViewModel.getSiteById(siteIndex)!.title} / "
         ),
       );
     } else {
@@ -896,194 +547,4 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
     }
   }
 
-  Widget getEventsAndExps(int eventIndex) {
-    // TODO: IMPL LOGIC FOR EVENT AND EXP CLICK
-    return InkWell(
-      onTap: () {
-        _homeViewModel.redirectTab(1);
-      },
-      child: Container(
-        padding: const EdgeInsets.only(top: 4.0, right: 4.0, bottom: 4.0),
-        child: Image.asset(ImagePath.yogaIcon, fit: BoxFit.contain, height: 25.0),
-      ),
-    );
-  }
-
-  Widget getOpeningTime(Map<String, String> listOpenTimes, int index) {
-    var dayInWeek = "";
-    switch (index) {
-      case 0:
-        dayInWeek = "mon";
-        break;
-      case 1:
-        dayInWeek = "tue";
-        break;
-      case 2:
-        dayInWeek = "wed";
-        break;
-      case 3:
-        dayInWeek = "thu";
-        break;
-      case 4:
-        dayInWeek = "fri";
-        break;
-      case 5:
-        dayInWeek = "sat";
-        break;
-      case 6:
-        dayInWeek = "sun";
-        break;
-      case 7:
-        dayInWeek = "otherTime";
-        break;
-      default:
-        dayInWeek = "NaN";
-        break;
-    }
-    return getTextForOpeningTime(listOpenTimes, index, dayInWeek);
-  }
-
-  Widget getTextForOpeningTime(Map<String, String> listOpenTimes, int index, String dayInWeek) {
-    if (index < 7) {
-      if (listOpenTimes[dayInWeek] != null) {
-        return Row(
-          children: [
-            SizedBox(
-              width: 80,
-              child: Text(
-                "${listOpenTimes[dayInWeek]}",
-                style: const TextStyle(
-                  color: ColorStyle.darkLabel,
-                  fontWeight: FontWeight.w500,
-                  fontSize: FontSizeConst.font12,
-                  fontFamily: FontStyles.raleway,
-                ),
-              ),
-            ),
-            Expanded(
-              child: Container(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "${FuncUlti.getDayInWeekFromKeyword(dayInWeek)}",
-                  style: const TextStyle(
-                    color: ColorStyle.darkLabel,
-                    fontWeight: FontWeight.w500,
-                    fontSize: FontSizeConst.font12,
-                    fontFamily: FontStyles.raleway,
-                  ),
-                ),
-              ),
-            )
-          ],
-        );
-      } else {
-        return Container();
-      }
-    } else {
-      return Row(
-        children: [
-          SizedBox(
-            width: 80,
-            child: Text(
-              "${listOpenTimes["${dayInWeek}"]}",
-              style: const TextStyle(
-                color: ColorStyle.darkLabel,
-                fontWeight: FontWeight.w500,
-                fontSize: FontSizeConst.font12,
-                fontFamily: FontStyles.raleway,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Container(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                "${listOpenTimes["${dayInWeek}Description"]}",
-                style: const TextStyle(
-                  color: ColorStyle.darkLabel,
-                  fontWeight: FontWeight.w500,
-                  fontSize: FontSizeConst.font12,
-                  fontFamily: FontStyles.raleway,
-                ),
-              ),
-            ),
-          )
-        ],
-      );
-    }
-  }
-
-  void _getTapPosition(TapDownDetails tapPosition) {
-    final RenderBox referenceBox = context.findRenderObject() as RenderBox;
-    setState(() {
-      _tapPosition = referenceBox.globalToLocal(tapPosition.globalPosition);
-      print(_tapPosition);
-    });
-  }
-
-  void _showContextMenu(BuildContext context, int amenityId) async {
-    Amenity? amenity = _homeViewModel.getAmenityById(amenityId);
-    if (amenity != null) {
-      final RenderObject? overlay = Overlay.of(context)?.context.findRenderObject();
-      await showMenu(
-          context: context,
-          position: RelativeRect.fromRect(
-              Rect.fromLTWH(
-                _tapPosition.dx,
-                _tapPosition.dy,
-                0,
-                0,
-              ),
-              Rect.fromLTWH(
-                0,
-                0,
-                overlay!.paintBounds.size.width,
-                overlay.paintBounds.size.height,
-              )),
-          items: [
-            PopupMenuItem(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  (amenity.title.isNotEmpty)
-                      ? Container(
-                          width: overlay.paintBounds.size.width,
-                          alignment: Alignment.center,
-                          // color: ColorStyle.placeHolder,
-                          child: Text(
-                            "${amenity.title}",
-                            style: const TextStyle(
-                              color: ColorStyle.darkLabel,
-                              fontWeight: FontWeight.bold,
-                              fontSize: FontSizeConst.font12,
-                              fontFamily: FontStyles.raleway,
-                              height: 1,
-                            ),
-                          ),
-                        )
-                      : Container(),
-                  (amenity.description.isNotEmpty)
-                      ? Container(
-                          width: overlay.paintBounds.size.width,
-                          alignment: Alignment.center,
-                          // color: ColorStyle.placeHolder,
-                          child: Text(
-                            "${amenity.description}",
-                            style: const TextStyle(
-                              color: ColorStyle.darkLabel,
-                              fontWeight: FontWeight.w400,
-                              fontSize: FontSizeConst.font12,
-                              fontFamily: FontStyles.raleway,
-                              height: 1,
-                            ),
-                          ),
-                        )
-                      : Container()
-                ],
-              ),
-            ),
-          ]);
-    }
-  }
 }

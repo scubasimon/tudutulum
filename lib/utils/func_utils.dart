@@ -87,7 +87,7 @@ class FuncUlti {
       case 0:
         return "title"; // Alphabet
       case 1:
-        return "title"; // TODO: IMPL LOGIC FOR SORT WITH Distance
+        return "distance"; // Distance
       default:
         return "title"; // Alphabet
     }

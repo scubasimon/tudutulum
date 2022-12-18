@@ -24,10 +24,13 @@ class EventContentDetailViewModel extends BaseViewModel {
   late Event eventContentDetail;
 
   late bool serviceEnabled;
+
   locationLib.Location location = locationLib.Location();
 
   @override
-  FutureOr<void> init() {}
+  FutureOr<void> init() {
+
+  }
 
   void setEventContentDetailCover(Event input) {
     eventContentDetail = input;

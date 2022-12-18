@@ -41,7 +41,8 @@ Future<void> main() async {
     );
 
     await PrefUtil.init();
-    PrefUtil.setValue(StrConst.isDataBinded, false);
+    PrefUtil.setValue(StrConst.isWhatTuduDataBinded, false);
+    PrefUtil.setValue(StrConst.isEventDataBinded, false);
 
     // if (kDebugMode) {
     //   await _connectToFirebaseEmulator();

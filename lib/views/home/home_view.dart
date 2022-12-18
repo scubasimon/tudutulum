@@ -10,6 +10,7 @@ import 'package:tudu/consts/color/Colors.dart';
 import 'package:tudu/consts/font/Fonts.dart';
 import 'package:tudu/consts/strings/str_const.dart';
 import 'package:tudu/utils/func_utils.dart';
+import 'package:tudu/viewmodels/events_viewmodel.dart';
 import 'package:tudu/viewmodels/home_viewmodel.dart';
 import 'package:tudu/viewmodels/what_tudu_site_content_detail_viewmodel.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
@@ -42,6 +43,7 @@ class HomeView extends StatefulWidget {
 class _HomeView extends State<HomeView> with WidgetsBindingObserver {
   ObservableService _observableService = ObservableService();
   HomeViewModel _homeViewModel = HomeViewModel();
+  EventsViewModel _eventsViewModel = EventsViewModel();
   WhatTuduSiteContentDetailViewModel _whatTuduSiteContentDetailViewModel = WhatTuduSiteContentDetailViewModel();
   int pageIndex = 0;
 
@@ -442,6 +444,7 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                   ),
                   onTap: () {
                     setState(() {
+                      _eventsViewModel.fromSite = null;
                       pageIndex = 0;
                     });
                   },
@@ -479,6 +482,7 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                   ),
                   onTap: () {
                     setState(() {
+                      _eventsViewModel.fromSite = null;
                       pageIndex = 1;
                     });
                   },
@@ -516,6 +520,7 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                   ),
                   onTap: () {
                     setState(() {
+                      _eventsViewModel.fromSite = null;
                       pageIndex = 2;
                     });
                   },
@@ -553,6 +558,7 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                   ),
                   onTap: () {
                     setState(() {
+                      _eventsViewModel.fromSite = null;
                       pageIndex = 3;
                     });
                   },
@@ -590,6 +596,7 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                   ),
                   onTap: () {
                     setState(() {
+                      _eventsViewModel.fromSite = null;
                       pageIndex = 4;
                     });
                   },

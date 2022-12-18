@@ -17,6 +17,8 @@ abstract class LocalDatabaseService {
 
   Future<List<Map<String, dynamic>>?> getSites();
 
+  Future<List<Map<String, dynamic>>?> getEvents();
+
   Future<List<Map<String, dynamic>>?> getPartners();
 
   Future<List<Map<String, dynamic>>?> getAmenities();
@@ -56,6 +58,23 @@ class LocalDatabaseServiceImpl extends LocalDatabaseService {
     List<Map<String, dynamic>> listResult = [];
     while (keepFetching) {
       final listSitesResult = await Localstore.instance.collection("sites").doc(i.toString()).get();
+      if (listSitesResult != null) {
+        listResult.add(listSitesResult);
+        i++;
+      } else {
+        keepFetching = false;
+      }
+    }
+    return listResult;
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>?> getEvents() async {
+    int i = 0;
+    bool keepFetching = true;
+    List<Map<String, dynamic>> listResult = [];
+    while (keepFetching) {
+      final listSitesResult = await Localstore.instance.collection("events").doc(i.toString()).get();
       if (listSitesResult != null) {
         listResult.add(listSitesResult);
         i++;

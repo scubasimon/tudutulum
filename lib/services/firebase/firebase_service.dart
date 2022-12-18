@@ -38,11 +38,15 @@ abstract class FirebaseService {
 
   Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getSites();
 
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getEvents();
+
   Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getPartners();
 
   Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getAmenities();
 
   Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getBusinesses();
+
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getEventTypes();
 
   Future<void> changeEmail(String email);
 
@@ -84,8 +88,10 @@ class FirebaseServiceImpl extends FirebaseService {
   @override
   Future<void> createData(List<Map<String, dynamic>> data) async {
     try {
+      print("createData ${data.length.toString()}");
       for (var element in data) {
-        await FirebaseFirestore.instance.collection("sites").doc(element["siteid"].toString()).set(element);
+        print("createData ${element["eventid"].toString()}");
+        await FirebaseFirestore.instance.collection("events").doc(element["eventid"].toString()).set(element);
       }
     } catch (e) {
       print(e);
@@ -300,6 +306,18 @@ class FirebaseServiceImpl extends FirebaseService {
   }
 
   @override
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getEvents() async {
+    bool? netWork = await FuncUlti.NetworkChecking();
+    if (netWork == true) {
+      var listSiteResult =
+          await FirebaseFirestore.instance.collection("events").orderBy(StrConst.sortTitle, descending: false).get();
+      return listSiteResult.docs;
+    } else {
+      throw S.current.network_fail;
+    }
+  }
+
+  @override
   Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getPartners() async {
     bool? netWork = await FuncUlti.NetworkChecking();
     if (netWork == true) {
@@ -326,6 +344,17 @@ class FirebaseServiceImpl extends FirebaseService {
     bool? netWork = await FuncUlti.NetworkChecking();
     if (netWork == true) {
       final listSite = await FirebaseFirestore.instance.collection("businesses").get();
+      return listSite.docs;
+    } else {
+      throw S.current.network_fail;
+    }
+  }
+
+  @override
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>?> getEventTypes() async {
+    bool? netWork = await FuncUlti.NetworkChecking();
+    if (netWork == true) {
+      final listSite = await FirebaseFirestore.instance.collection("eventtypes").get();
       return listSite.docs;
     } else {
       throw S.current.network_fail;

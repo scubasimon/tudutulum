@@ -212,8 +212,8 @@ class _MapScreenView extends State<MapScreenView> {
                                   onTap: () {
                                     _whatTuduViewModel.getDataWithFilterSortSearchForMap(
                                       null, // Filter all business => businnesFilter = null
-                                      FuncUlti.getSortTypeByInt(_homeViewModel.orderType),
-                                      _homeViewModel.searchKeyword,
+                                      FuncUlti.getSortTypeByInt(_homeViewModel.whatTuduOrderType),
+                                      _homeViewModel.whatTuduSearchKeyword,
                                     );
                                     _mapScreenViewModel.mapFilterType = ((counter) / 2).round();
                                   },
@@ -241,8 +241,8 @@ class _MapScreenView extends State<MapScreenView> {
                                           onTap: () {
                                             _whatTuduViewModel.getDataWithFilterSortSearchForMap(
                                               _homeViewModel.listBusiness[((counter) / 2).round()], // get business
-                                              FuncUlti.getSortTypeByInt(_homeViewModel.orderType),
-                                              _homeViewModel.searchKeyword,
+                                              FuncUlti.getSortTypeByInt(_homeViewModel.whatTuduOrderType),
+                                              _homeViewModel.whatTuduSearchKeyword,
                                             );
                                             _mapScreenViewModel.mapFilterType = ((counter) / 2).round();
                                           },
