@@ -85,25 +85,34 @@ class _PhotoViewUtil extends State<PhotoViewUtil> with WidgetsBindingObserver {
     return Scaffold(
         body: Stack(
           children: [
-            PageView(
-              physics: const NeverScrollableScrollPhysics(),
-              controller: controller,
-              children: widget.banner
-                  .map((item) => PhotoView(
-                imageProvider: CachedNetworkImageProvider(
-                    item,
-                ),
-                loadingBuilder: (context, event) => Center(
-                  child: Container(
-                    width: 20.0,
-                    height: 20.0,
-                    child: const CupertinoActivityIndicator(
-                      radius: 20,
-                      color: ColorStyle.primary,
+            WillPopScope(
+              onWillPop: () async {
+                return true;
+              },
+              child: PageView.builder(
+                // physics: const NeverScrollableScrollPhysics(),
+                controller: controller,
+                itemBuilder: (context, i) {
+                  return GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    child: PhotoView(
+                      imageProvider: CachedNetworkImageProvider(
+                        widget.banner[i % widget.banner.length],
+                      ),
+                      loadingBuilder: (context, event) => const Center(
+                        child: SizedBox(
+                          width: 20.0,
+                          height: 20.0,
+                          child: CupertinoActivityIndicator(
+                            radius: 20,
+                            color: ColorStyle.primary,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              )).toList(),
+                  );
+                },
+              ),
             ),
             Positioned(
               left: 40,
@@ -147,24 +156,6 @@ class _PhotoViewUtil extends State<PhotoViewUtil> with WidgetsBindingObserver {
                         alignment: Alignment.center,
                         child: Image.asset(ImagePath.leftArrowIcon, fit: BoxFit.contain, height: 20.0)
                     )
-                ),
-              ),
-            ),
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 30 + MediaQuery.of(context).padding.bottom,
-              child: Container(
-                alignment: Alignment.center,
-                height: 40,
-                child: Text(
-                  "${currentItem+1}/${widget.banner.length}",
-                  style: const TextStyle(
-                    fontFamily: FontStyles.raleway,
-                    fontSize: FontSizeConst.font18,
-                    fontWeight: FontWeight.w400,
-                    color: ColorStyle.lightLabel,
-                  ),
                 ),
               ),
             ),
