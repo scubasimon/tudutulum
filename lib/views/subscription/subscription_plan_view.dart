@@ -1,7 +1,8 @@
+import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:notification_center/notification_center.dart';
 import 'package:tudu/consts/urls/URLConst.dart';
-import 'package:tudu/models/subscription.dart';
 import 'package:tudu/viewmodels/subscription_viewmodel.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
 import 'package:tudu/consts/color/Colors.dart';
@@ -10,9 +11,13 @@ import 'package:tudu/consts/font/Fonts.dart';
 import 'package:tudu/consts/font/font_size_const.dart';
 import 'package:tudu/generated/l10n.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:tudu/views/common/alert.dart';
+import 'package:tudu/services/observable/observable_serivce.dart';
+import 'package:tudu/consts/strings/str_const.dart';
 
 class SubscriptionPlanView extends StatefulWidget {
-  const SubscriptionPlanView({super.key});
+  final bool dismissWhenCompleted;
+  const SubscriptionPlanView({super.key, this.dismissWhenCompleted = false});
 
   @override
   State<StatefulWidget> createState() {
@@ -24,10 +29,41 @@ class SubscriptionPlanView extends StatefulWidget {
 class _SubscriptionPlanView extends State<SubscriptionPlanView> {
 
   final _subscriptionViewModel = SubscriptionViewModel();
+  ObservableService _observableService = ObservableService();
+
+  @override
+  void initState() {
+    _subscriptionViewModel.loading.listen((event) {
+      if (event) {
+        _showLoading();
+      } else {
+        Navigator.of(context).pop();
+      }
+    });
+
+    _subscriptionViewModel.error.listen((event) {
+      var message = event.message != null ? event.message! : S.current.failed;
+      _showAlertError(message);
+    });
+    _subscriptionViewModel.subscriptionSuccess.listen((event) {
+      if (event) {
+        if (widget.dismissWhenCompleted) {
+          showDialog(context: context, builder: (context) => _alert(context, S.current.purchase_success));
+        } else {
+          NotificationCenter().notify(StrConst.purchaseSuccess);
+          showDialog(context: context, builder: (context) => NotificationAlert.alert(context, S.current.purchase_success));
+        }
+      } else {
+        _showAlertError(S.current.purchase_failed);
+      }
+    });
+    super.initState();
+
+
+  }
 
   @override
   Widget build(BuildContext context) {
-
     return ExitAppScope(
       child: Scaffold(
         appBar: AppBar(
@@ -51,6 +87,9 @@ class _SubscriptionPlanView extends State<SubscriptionPlanView> {
                   InkWell(
                     onTap: () {
                       Navigator.of(context).pop();
+                      if (widget.dismissWhenCompleted) {
+                        _observableService.redirectTabController.add(0);
+                      }
                     },
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -99,25 +138,6 @@ class _SubscriptionPlanView extends State<SubscriptionPlanView> {
                       fontWeight: FontWeight.w700,
                       fontSize: 34
                   ),
-                ),
-              ),
-              const SizedBox(height: 16,),
-              Text(
-                "• ${S.current.discover_offer_deals}",
-                style: const TextStyle(
-                  color: ColorStyle.tertiaryDarkLabel60,
-                  fontFamily: FontStyles.raleway,
-                  fontSize: FontSizeConst.font14,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              Text(
-                "• ${S.current.option_hide_ads}",
-                style: const TextStyle(
-                  color: ColorStyle.tertiaryDarkLabel60,
-                  fontFamily: FontStyles.raleway,
-                  fontSize: FontSizeConst.font14,
-                  fontWeight: FontWeight.w600,
                 ),
               ),
               const SizedBox(height: 48,),
@@ -169,7 +189,7 @@ class _SubscriptionPlanView extends State<SubscriptionPlanView> {
                                   ),
                                   const Spacer(),
                                   Text(
-                                    "\$${element.price}",
+                                    element.priceString,
                                     style: TextStyle(
                                         color: element.selection
                                             ? ColorStyle.lightLabel
@@ -212,6 +232,7 @@ class _SubscriptionPlanView extends State<SubscriptionPlanView> {
               ),
               const SizedBox(height: 48,),
               InkWell(
+                onTap: _subscriptionViewModel.restore,
                 child: Center(
                   child: Text(
                     S.current.restore_purchase,
@@ -249,4 +270,63 @@ class _SubscriptionPlanView extends State<SubscriptionPlanView> {
     );
   }
 
+  void _showLoading() {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return Container(
+              decoration: const BoxDecoration(),
+              child: const Center(
+                child: CupertinoActivityIndicator(
+                  radius: 20,
+                  color: ColorStyle.primary,
+                ),
+              )
+          );
+        }
+    );
+  }
+
+  void _showAlertError(String message) {
+    showDialog(context: context, builder: (BuildContext context) {
+      return ErrorAlert.alert(context, message);
+    });
+  }
+
+  Widget _alert(BuildContext context, String message) {
+    if (Platform.isAndroid) {
+      var okAction = TextButton(
+        onPressed: () {
+          Navigator.of(context).pop();
+          Navigator.of(context).pop();
+          NotificationCenter().notify(StrConst.purchaseSuccess);
+        },
+        child: Text(S.current.ok),
+      );
+      return AlertDialog(
+        title: Text(S.current.notification),
+        content: Text(message),
+        actions: [
+          okAction,
+        ],
+      );
+    } else {
+      return CupertinoAlertDialog(
+        title: Text(S.current.notification),
+        content: Text(message),
+        actions: [
+          CupertinoDialogAction(
+            isDefaultAction: true,
+            child: Text(S.current.ok),
+            onPressed: () {
+              Navigator.of(context).pop();
+              Navigator.of(context).pop();
+              NotificationCenter().notify(StrConst.purchaseSuccess);
+            },
+          )
+        ],
+      );
+    }
+  }
 }

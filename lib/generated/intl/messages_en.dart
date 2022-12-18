@@ -20,9 +20,11 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'en';
 
-  static String m0(name) => "${name} is not installed";
+  static String m0(type) => "${type} account";
 
-  static String m1(name) => "Hello ${name}";
+  static String m1(name) => "${name} is not installed";
+
+  static String m2(name) => "Hello ${name}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -35,6 +37,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Incorrect email or password"),
         "account_not_exist":
             MessageLookupByLibrary.simpleMessage("Don\'t have an account?"),
+        "account_type": m0,
         "advisory": MessageLookupByLibrary.simpleMessage("Advisory"),
         "agree_message":
             MessageLookupByLibrary.simpleMessage("I agree with our"),
@@ -44,7 +47,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "all_tulum_article":
             MessageLookupByLibrary.simpleMessage("All Tulum Articles"),
         "alphabet": MessageLookupByLibrary.simpleMessage("Name"),
-        "app_not_installed": m0,
+        "app_not_installed": m1,
         "articles": MessageLookupByLibrary.simpleMessage(" Articles"),
         "back": MessageLookupByLibrary.simpleMessage("Back"),
         "beach_clubs": MessageLookupByLibrary.simpleMessage("Beach Clubs"),
@@ -57,6 +60,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "capacity": MessageLookupByLibrary.simpleMessage("Capacity"),
         "change_password":
             MessageLookupByLibrary.simpleMessage("Change Password"),
+        "change_plan": MessageLookupByLibrary.simpleMessage("Change Plan"),
         "choose_your_plan":
             MessageLookupByLibrary.simpleMessage("Choose your plan"),
         "clear_saved_data":
@@ -116,10 +120,11 @@ class MessageLookup extends MessageLookupByLibrary {
             "•  Follow us to see our latest deals"),
         "forgot_password":
             MessageLookupByLibrary.simpleMessage("Forgot password?"),
+        "free": MessageLookupByLibrary.simpleMessage("Free"),
         "get_in_touch_with":
             MessageLookupByLibrary.simpleMessage("Get in touch directly with:"),
         "get_started": MessageLookupByLibrary.simpleMessage("Get Started"),
-        "hello_name": m1,
+        "hello_name": m2,
         "here": MessageLookupByLibrary.simpleMessage("here"),
         "hide_ads": MessageLookupByLibrary.simpleMessage("Hide ads"),
         "hide_ads_info": MessageLookupByLibrary.simpleMessage(
@@ -198,7 +203,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "preferences": MessageLookupByLibrary.simpleMessage("Preferences"),
         "preview_deal_message": MessageLookupByLibrary.simpleMessage(
             "To view full term and conditions and to redeem this offer please visit the Deals tab"),
+        "pro": MessageLookupByLibrary.simpleMessage("Pro"),
         "profile": MessageLookupByLibrary.simpleMessage("Profile"),
+        "purchase_failed":
+            MessageLookupByLibrary.simpleMessage("Payment failed"),
+        "purchase_success":
+            MessageLookupByLibrary.simpleMessage("Payment success"),
         "push_notification":
             MessageLookupByLibrary.simpleMessage("Push notifications"),
         "push_notification_available_offer":

@@ -24,5 +24,6 @@ class StrConst {
   static const String darkMode = "dark_mode";
   static const String hideArticles = "hide_articles";
   static const String hideAds = "hide_ads";
+  static const String purchaseSuccess = "purchase_success";
 
 }

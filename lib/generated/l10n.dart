@@ -1629,6 +1629,66 @@ class S {
       args: [],
     );
   }
+
+  /// `Payment success`
+  String get purchase_success {
+    return Intl.message(
+      'Payment success',
+      name: 'purchase_success',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Payment failed`
+  String get purchase_failed {
+    return Intl.message(
+      'Payment failed',
+      name: 'purchase_failed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{type} account`
+  String account_type(Object type) {
+    return Intl.message(
+      '$type account',
+      name: 'account_type',
+      desc: '',
+      args: [type],
+    );
+  }
+
+  /// `Pro`
+  String get pro {
+    return Intl.message(
+      'Pro',
+      name: 'pro',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Free`
+  String get free {
+    return Intl.message(
+      'Free',
+      name: 'free',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Change Plan`
+  String get change_plan {
+    return Intl.message(
+      'Change Plan',
+      name: 'change_plan',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
