@@ -12,6 +12,8 @@ import 'package:tudu/generated/l10n.dart';
 import 'package:tudu/views/common/alert.dart';
 import 'dart:io';
 
+import 'package:tudu/views/subscription/subscription_plan_view.dart';
+
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
 
@@ -149,8 +151,49 @@ class _ProfileView extends State<ProfileView> {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Row(
+          children: [
+            StreamBuilder(
+              stream: _profileViewModel.subscription,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return Text(
+                    snapshot.data!,
+                    style: const TextStyle(
+                      color: ColorStyle.tertiaryDarkLabel60,
+                      fontFamily: FontStyles.sfProText,
+                      fontSize: FontSizeConst.font17,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  );
+                } else {
+                  return Container();
+                }
+              },
+            ),
+            const Spacer(),
+            InkWell(
+              onTap: () {
+                Navigator.of(context).push(
+                    MaterialPageRoute(
+                        builder: (context) => const SubscriptionPlanView()
+                    )
+                );
+              },
+              child: Text(
+                S.current.change_plan,
+                style: const TextStyle(
+                  color: ColorStyle.primary,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: FontStyles.sfProText,
+                  fontSize: FontSizeConst.font17,
+                ),
+              ),
+            ),
+          ],
+        ),
         Padding(
-          padding: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.only(bottom: 12, top: 12),
           child: Text(
             S.current.update_details,
             style: const TextStyle(

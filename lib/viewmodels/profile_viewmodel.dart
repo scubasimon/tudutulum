@@ -1,10 +1,14 @@
 import 'dart:async';
+import 'package:notification_center/notification_center.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:tudu/base/base_viewmodel.dart';
+import 'package:tudu/consts/strings/str_const.dart';
 import 'package:tudu/models/error.dart';
 import 'package:tudu/models/user.dart';
 import 'package:tudu/repositories/auth/auth_repository.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:tudu/utils/func_utils.dart';
+import 'package:tudu/generated/l10n.dart';
 
 class ProfileViewModel extends BaseViewModel {
 
@@ -13,11 +17,13 @@ class ProfileViewModel extends BaseViewModel {
   final StreamController<CustomError> _error = BehaviorSubject<CustomError>();
   final StreamController<bool> _loading = BehaviorSubject();
   final StreamController<void> _updateSuccessful = BehaviorSubject();
+  final _subscription = BehaviorSubject<String>();
 
   Stream<Profile> get profile => _profile.stream;
   Stream<CustomError> get error => _error.stream;
   Stream<bool> get loading => _loading.stream;
   Stream<void> get updateSuccessful => _updateSuccessful.stream;
+  Stream<String> get subscription => _subscription;
 
   ProfileViewModel(): super();
 
@@ -34,6 +40,21 @@ class ProfileViewModel extends BaseViewModel {
       CustomError error = e as CustomError;
       _error.sink.add(error);
     }
+
+    try {
+      var customerInfo = await Purchases.getCustomerInfo();
+      final active = customerInfo.entitlements.all["Pro"]?.isActive == true;
+      if (active) {
+        _subscription.add(S.current.account_type(S.current.pro));
+      } else {
+        _subscription.add(S.current.account_type(S.current.free));
+      }
+    } catch (e) {
+      print(e);
+      _subscription.add(S.current.account_type(S.current.free));
+    }
+
+    NotificationCenter().subscribe(StrConst.purchaseSuccess, _updateAccount);
   }
 
   Future<void> signOut() async {
@@ -141,5 +162,9 @@ class ProfileViewModel extends BaseViewModel {
         await _authRepository.changeEmail(email);
       }
     }
+  }
+
+  _updateAccount() {
+    _subscription.add(S.current.account_type(S.current.pro));
   }
 }

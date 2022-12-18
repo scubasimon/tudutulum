@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:tudu/consts/number/number_const.dart';
 import 'package:tudu/models/auth.dart';
@@ -51,6 +52,13 @@ class AuthRepositoryImpl extends AuthRepository {
 
     if (userCredentials.user == null && userCredentials.additionalUserInfo == null) {
       throw AuthenticationError.badCredentials({});
+    }
+
+    try {
+      await Purchases.logIn(userCredentials.user!.uid);
+    } catch (e) {
+      print(e);
+      throw CommonError.serverError;
     }
 
     String? firstName, familyName;
@@ -123,6 +131,14 @@ class AuthRepositoryImpl extends AuthRepository {
         rethrow;
       }
     }
+
+    try {
+      await Purchases.logIn(userCredentials.user!.uid);
+    } catch (e) {
+      print(e);
+      throw CommonError.serverError;
+    }
+
     if (userExist) {
       return;
     } else {
@@ -215,8 +231,9 @@ class AuthRepositoryImpl extends AuthRepository {
   }
 
   @override
-  Future<void> signOut() {
-    return _firebaseService.signOut();
+  Future<void> signOut() async {
+    await _firebaseService.signOut();
+    await Purchases.logOut();
   }
 
   @override

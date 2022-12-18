@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:notification_center/notification_center.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:tudu/base/base_viewmodel.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:tudu/consts/strings/str_const.dart';
 import 'package:tudu/models/deal.dart';
 import 'package:tudu/models/error.dart';
 import 'package:tudu/repositories/deal/deal_repository.dart';
@@ -19,6 +22,9 @@ class DealsViewModel extends BaseViewModel {
 
   final _param = BehaviorSubject<Param.Param>();
 
+  final _subscription = BehaviorSubject<bool>();
+  Stream<bool> get subscription => _subscription;
+
   final _userLogin = BehaviorSubject<bool>();
   Stream<bool> get userLoginStream => _userLogin.stream;
 
@@ -34,8 +40,7 @@ class DealsViewModel extends BaseViewModel {
   @override
   FutureOr<void> init() async {
     _userLogin.sink.add(FirebaseAuth.instance.currentUser != null);
-    _isLoading.sink.add(true);
-
+    NotificationCenter().subscribe(StrConst.purchaseSuccess, _purchaseSuccess);
     var authorization = await _permissionLocation.permission();
     if (!authorization) {
       _isLoading.add(false);
@@ -43,11 +48,30 @@ class DealsViewModel extends BaseViewModel {
       return;
     }
 
-    _param.add(Param.Param(refresh: true));
+    bool active = false;
+    try {
+      final customerInfo = await Purchases.getCustomerInfo();
+      active = customerInfo.entitlements.all["Pro"]?.isActive == true;
+    } catch (e) {
+      print(e);
+      active = false;
+    }
+    _subscription.add(active);
+    if (!active) {
+      _searchData();
+      return;
+    }
+
+    _isLoading.sink.add(true);
     _searchData();
+
+    _param.add(Param.Param(refresh: true));
   }
 
   void searchWithParam({String? title, int? businessId, Param.Order? order}) {
+    if (_subscription.valueOrNull == false) {
+      return;
+    }
     var value = _param.valueOrNull;
 
     if (value == null) {
@@ -74,6 +98,12 @@ class DealsViewModel extends BaseViewModel {
     var value = _param.value;
     value.refresh = true;
     _param.add(value);
+  }
+
+  _purchaseSuccess() {
+    _subscription.add(true);
+    _isLoading.sink.add(true);
+    _param.add(Param.Param(refresh: true));
   }
 
   void _searchData() {

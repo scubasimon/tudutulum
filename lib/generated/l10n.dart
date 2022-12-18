@@ -1580,6 +1580,116 @@ class S {
     );
   }
 
+  /// `Choose your plan`
+  String get choose_your_plan {
+    return Intl.message(
+      'Choose your plan',
+      name: 'choose_your_plan',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Discover offer deals`
+  String get discover_offer_deals {
+    return Intl.message(
+      'Discover offer deals',
+      name: 'discover_offer_deals',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The option to hide ads`
+  String get option_hide_ads {
+    return Intl.message(
+      'The option to hide ads',
+      name: 'option_hide_ads',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The total amount for the subscription period will be charged to your iTunes Account. Unless you turn off auto-renewal at least 24 hours before the end of the subscription period, the subscription will renew automatically for the same price, and your iTunes Account will be charged according. You can manage the subscription and turn off automatic renewal in the Account Settings for your Apple at any time.`
+  String get subscription_description {
+    return Intl.message(
+      'The total amount for the subscription period will be charged to your iTunes Account. Unless you turn off auto-renewal at least 24 hours before the end of the subscription period, the subscription will renew automatically for the same price, and your iTunes Account will be charged according. You can manage the subscription and turn off automatic renewal in the Account Settings for your Apple at any time.',
+      name: 'subscription_description',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Restore Purchase`
+  String get restore_purchase {
+    return Intl.message(
+      'Restore Purchase',
+      name: 'restore_purchase',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Payment success`
+  String get purchase_success {
+    return Intl.message(
+      'Payment success',
+      name: 'purchase_success',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Payment failed`
+  String get purchase_failed {
+    return Intl.message(
+      'Payment failed',
+      name: 'purchase_failed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{type} account`
+  String account_type(Object type) {
+    return Intl.message(
+      '$type account',
+      name: 'account_type',
+      desc: '',
+      args: [type],
+    );
+  }
+
+  /// `Pro`
+  String get pro {
+    return Intl.message(
+      'Pro',
+      name: 'pro',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Free`
+  String get free {
+    return Intl.message(
+      'Free',
+      name: 'free',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Change Plan`
+  String get change_plan {
+    return Intl.message(
+      'Change Plan',
+      name: 'change_plan',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Explore Events`
   String get explopre_events {
     return Intl.message(

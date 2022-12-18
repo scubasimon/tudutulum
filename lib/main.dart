@@ -48,6 +48,8 @@ Future<void> main() async {
     //   await _connectToFirebaseEmulator();
     // }
 
+    await initPurchase();
+
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]).then((_) {
       SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(statusBarColor: Colors.transparent));
       runApp(MultiProvider(
@@ -89,6 +91,17 @@ Future _connectToFirebaseEmulator() async {
   );
 
   await FirebaseAuth.instance.useAuthEmulator(localHostString, 9099);
+}
+
+Future initPurchase() async {
+  PurchasesConfiguration configuration;
+  Purchases.setDebugLogsEnabled(true);
+  if (Platform.isAndroid) {
+    configuration = PurchasesConfiguration("appl_CPoQEtilwBpuWuWaHLkymHMzaTw");
+  } else {
+    configuration = PurchasesConfiguration("appl_CPoQEtilwBpuWuWaHLkymHMzaTw");
+  }
+  await Purchases.configure(configuration);
 }
 
 class MyApp extends StatefulWidget {
