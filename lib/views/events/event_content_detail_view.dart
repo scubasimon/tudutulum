@@ -124,7 +124,10 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
                         width: 32.0,
                         height: 26.0,
                       ),
-                      onTap: () {},
+                      onTap: () {
+                        print("booking ${_eventContentDetailViewModel.eventContentDetail.booking}");
+                        FuncUlti.redirectToBrowserWithUrl("${_eventContentDetailViewModel.eventContentDetail.booking}");
+                      },
                     ),
                   ),
                 ],
@@ -240,11 +243,11 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
                   ),
                   InkWell(
                     onTap: () {
-                      // PermissionRequest.isResquestPermission = true;
-                      // PermissionRequest().permissionServiceCall(
-                      //   context,
-                      //   _eventContentDetailViewModel.directionWithGoogleMap,
-                      // );
+                      PermissionRequest.isResquestPermission = true;
+                      PermissionRequest().permissionServiceCall(
+                        context,
+                        _eventContentDetailViewModel.directionWithGoogleMap,
+                      );
                     },
                     child: Padding(
                       padding: const EdgeInsets.only(right: 8.0),

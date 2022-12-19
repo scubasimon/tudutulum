@@ -37,21 +37,21 @@ class EventContentDetailViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  /*void directionWithGoogleMap() async {
+  void directionWithGoogleMap() async {
     await checkLocationEnable();
     var currentPosition = await location.getLocation();
     if (currentPosition.latitude != null &&
         currentPosition.longitude != null &&
-        siteContentDetail.locationLat != null &&
-        siteContentDetail.locationLon != null) {
+        eventContentDetail.locationLat != null &&
+        eventContentDetail.locationLon != null) {
       List<GeoPoint> fromTo = [
-        GeoPoint(siteContentDetail.locationLat!, siteContentDetail.locationLon!),
+        GeoPoint(eventContentDetail.locationLat!, eventContentDetail.locationLon!),
         GeoPoint(currentPosition.latitude!, currentPosition.longitude!),
       ];
       _observableService.listenToRedirectToGoogleMapController.sink.add(fromTo);
     } else {
       List<GeoPoint> position = [
-        GeoPoint(siteContentDetail.locationLat!, siteContentDetail.locationLon!),
+        GeoPoint(eventContentDetail.locationLat!, eventContentDetail.locationLon!),
       ];
       _observableService.listenToRedirectToGoogleMapController.sink.add(position);
     }
@@ -84,5 +84,5 @@ class EventContentDetailViewModel extends BaseViewModel {
   void handlerLocationPermissionChanged() {
     // ACTION ON PERMISSION CHANGED
     print("handlerLocationPermissionChanged -> ACTION NOT IMPL YET");
-  }*/
+  }
 }
