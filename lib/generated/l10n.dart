@@ -1690,6 +1690,46 @@ class S {
     );
   }
 
+  /// `New Deals`
+  String get deal_added_title {
+    return Intl.message(
+      'New Deals',
+      name: 'deal_added_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `New savings have been added within the Deals tab`
+  String get deal_added_body {
+    return Intl.message(
+      'New savings have been added within the Deals tab',
+      name: 'deal_added_body',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Deals`
+  String get deal_near_by_title {
+    return Intl.message(
+      'Deals',
+      name: 'deal_near_by_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `There is a deal nearby for Tudu family. You could be saving money!`
+  String get deal_near_by_body {
+    return Intl.message(
+      'There is a deal nearby for Tudu family. You could be saving money!',
+      name: 'deal_near_by_body',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Explore Events`
   String get explopre_events {
     return Intl.message(

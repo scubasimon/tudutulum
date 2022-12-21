@@ -4,6 +4,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart';
 import 'package:tudu/base/base_viewmodel.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:tudu/models/error.dart';
+import 'package:tudu/repositories/bookmark/bookmark_repository.dart';
 
 import '../models/site.dart';
 import '../services/observable/observable_serivce.dart';
@@ -13,6 +15,14 @@ class WhatTuduSiteContentDetailViewModel extends BaseViewModel {
   static final WhatTuduSiteContentDetailViewModel _instance = WhatTuduSiteContentDetailViewModel._internal();
 
   ObservableService _observableService = ObservableService();
+  final _isBookmark = BehaviorSubject<bool>.seeded(false);
+  Stream<bool> get isBookmark => _isBookmark;
+
+  final _isLoading = BehaviorSubject<bool>();
+  Stream<bool> get loading => _isLoading;
+
+  final _error = BehaviorSubject<CustomError>();
+  Stream<CustomError> get error => _error;
 
   factory WhatTuduSiteContentDetailViewModel() {
     return _instance;
@@ -25,12 +35,45 @@ class WhatTuduSiteContentDetailViewModel extends BaseViewModel {
   late bool serviceEnabled;
   locationLib.Location location = locationLib.Location();
 
+  final BookmarkRepository _bookmarkRepository = BookmarkRepositoryImpl();
+
   @override
-  FutureOr<void> init() {}
+  FutureOr<void> init() {
+    
+  }
 
   void setSiteContentDetailCover(Site input) {
     siteContentDetail = input;
+    _bookmarkRepository.isBookmark(input.siteId).then((value){
+      print(value);
+      _isBookmark.add(value);
+    });
     notifyListeners();
+  }
+
+  void bookmarkAction() async {
+    _isLoading.add(true);
+    if (_isBookmark.value) {
+      try {
+        _isBookmark.add(false);
+        await _bookmarkRepository.unBookmark(siteContentDetail.siteId);
+        _isLoading.add(false);
+      } catch (e) {
+        _isBookmark.add(true);
+        _isLoading.add(false);
+        _error.add(e as CustomError);
+      }
+    } else {
+      try {
+        _isBookmark.add(true);
+        await _bookmarkRepository.bookmark(siteContentDetail.siteId);
+        _isLoading.add(false);
+      } catch (e) {
+        _isBookmark.add(false);
+        _isLoading.add(false);
+        _error.add(e as CustomError);
+      }
+    }
   }
 
   void directionWithGoogleMap() async {

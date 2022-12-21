@@ -83,8 +83,14 @@ class MessageLookup extends MessageLookupByLibrary {
             "Enable this setting if you\'ld like to continue to using app in dark mode"),
         "deactivate_account_title":
             MessageLookupByLibrary.simpleMessage("Deactivate Account"),
+        "deal_added_body": MessageLookupByLibrary.simpleMessage(
+            "New savings have been added within the Deals tab"),
+        "deal_added_title": MessageLookupByLibrary.simpleMessage("New Deals"),
         "deal_available":
             MessageLookupByLibrary.simpleMessage("This deal is available at"),
+        "deal_near_by_body": MessageLookupByLibrary.simpleMessage(
+            "There is a deal nearby for Tudu family. You could be saving money!"),
+        "deal_near_by_title": MessageLookupByLibrary.simpleMessage("Deals"),
         "deal_redeemed":
             MessageLookupByLibrary.simpleMessage("This deal has been redeemed"),
         "deals": MessageLookupByLibrary.simpleMessage("Deals"),

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io' show Platform;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -6,11 +7,15 @@ import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tudu/consts/urls/URLConst.dart';
 import 'package:tudu/firebase_options.dart';
+import 'package:tudu/models/param.dart' as p;
+import 'package:tudu/repositories/deal/deal_repository.dart';
+import 'package:tudu/services/notification/notification.dart';
 import 'package:tudu/viewmodels/authentication_viewmodel.dart';
 import 'package:tudu/viewmodels/map_screen_viewmodel.dart';
 import 'package:tudu/viewmodels/setting_viewmodel.dart';
@@ -30,11 +35,13 @@ import 'localization/app_localization.dart';
 import 'localization/language_constants.dart';
 import 'generated/l10n.dart';
 import 'package:localstore/localstore.dart';
+import 'package:background_location_tracker/background_location_tracker.dart' as BackgroundLocation;
 
 Future<void> main() async {
   await S.load(const Locale.fromSubtags(languageCode: 'en')); // mimic localization delegate init
 
   runZonedGuarded<Future<void>>(() async {
+
     WidgetsFlutterBinding.ensureInitialized();
 
     await Firebase.initializeApp(
@@ -50,6 +57,23 @@ Future<void> main() async {
     // }
 
     await initPurchase();
+
+    await BackgroundLocation.BackgroundLocationTrackerManager.initialize(
+      backgroundCallback,
+      config: const BackgroundLocation.BackgroundLocationTrackerConfig(
+        loggingEnabled: true,
+        androidConfig: BackgroundLocation.AndroidConfig(
+          notificationIcon: 'explore',
+          trackingInterval: Duration(seconds: 4),
+          distanceFilterMeters: null,
+        ),
+        iOSConfig: BackgroundLocation.IOSConfig(
+          activityType: BackgroundLocation.ActivityType.FITNESS,
+          distanceFilterMeters: null,
+          restartAfterKill: true,
+        ),
+      ),
+    );
 
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]).then((_) {
       SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(statusBarColor: Colors.transparent));
@@ -92,6 +116,52 @@ Future _connectToFirebaseEmulator() async {
   );
 
   await FirebaseAuth.instance.useAuthEmulator(localHostString, 9099);
+}
+
+@pragma('vm:entry-point')
+void backgroundCallback() {
+  BackgroundLocation.BackgroundLocationTrackerManager.handleBackgroundUpdated((data) async {
+    await PrefUtil.init();
+    final lastTime = PrefUtil.getValue(StrConst.lastTime, 0) as int;
+    if (lastTime != 0 && DateTime.now().millisecondsSinceEpoch - lastTime < 60000) {
+      return;
+    }
+
+    PrefUtil.setValue(StrConst.lastTime, DateTime.now().millisecondsSinceEpoch);
+    final currentString = PrefUtil.getValue(StrConst.lastLocation, "") as String;
+    if (currentString.isNotEmpty) {
+      var map = json.decode(currentString) as Map<String, dynamic>;
+      var lat = map["lat"] as double;
+      var lon = map["lon"] as double;
+      final distance = Geolocator.distanceBetween(lat, lon, data.lat, data.lon);
+      if (distance <= 1000) {
+        return;
+      } else {
+        PrefUtil.preferences.remove(StrConst.lastLocation);
+      }
+
+    }
+
+    await S.load(const Locale.fromSubtags(languageCode: 'en'));
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+
+     try {
+       var result = await DealRepositoryImpl()
+           .getDeals(p.Param(refresh: true, order: p.Order.distance), filterDistance: 1000);
+       if (result.isNotEmpty) {
+         final lastDeal = result.last;
+         final lastLocation = json.encode({"lat": lastDeal.site.locationLat!, "lon": lastDeal.site.locationLon!});
+         PrefUtil.setValue(StrConst.lastLocation, lastLocation);
+         await NotificationServiceImpl().initializePlatform();
+         await NotificationServiceImpl().showLocalNotification(id: 0, title: S.current.deal_near_by_title, body: S.current.deal_near_by_body);
+       }
+
+     } catch (e) {
+       print(e);
+     }
+  });
 }
 
 Future initPurchase() async {

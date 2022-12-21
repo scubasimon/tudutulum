@@ -23,4 +23,20 @@ class PermissionLocation {
     }
     return false;
   }
+
+  Future<bool> permissionAlways() async {
+    Map<Permission, PermissionStatus> statuses = await [Permission.location].request();
+    if (statuses[Permission.locationAlways] != null) {
+      if (statuses[Permission.locationAlways]!.isPermanentlyDenied) {
+        return false;
+      } else {
+        if (statuses[Permission.locationAlways]!.isDenied || statuses[Permission.location]!.isRestricted) {
+          return false;
+        } else {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
 }

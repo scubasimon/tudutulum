@@ -367,6 +367,7 @@ class FirebaseServiceImpl extends FirebaseService {
       var results = await FirebaseFirestore.instance.collection("deals").get();
       return results.docs.map((e) => e.data()).toList();
     } catch (e) {
+      print(e);
       throw CommonError.serverError;
     }
   }

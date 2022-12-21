@@ -1,17 +1,21 @@
 import 'dart:async';
-import 'dart:collection';
+import 'package:background_location_tracker/background_location_tracker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:in_app_review/in_app_review.dart';
 import 'package:notification_center/notification_center.dart';
 import 'package:tudu/consts/color/Colors.dart';
 import 'package:tudu/consts/font/Fonts.dart';
 import 'package:tudu/consts/strings/str_const.dart';
+import 'package:tudu/consts/urls/URLConst.dart';
 import 'package:tudu/utils/func_utils.dart';
 import 'package:tudu/viewmodels/events_viewmodel.dart';
+import 'package:tudu/utils/pref_util.dart';
 import 'package:tudu/viewmodels/home_viewmodel.dart';
+import 'package:tudu/viewmodels/offer_viewmodel.dart';
 import 'package:tudu/viewmodels/what_tudu_site_content_detail_viewmodel.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
 import 'package:tudu/consts/font/font_size_const.dart';
@@ -24,6 +28,7 @@ import 'package:tudu/views/bookmarks/bookmarks_view.dart';
 import 'package:tudu/views/profile/profile_view.dart';
 import 'package:tudu/consts/images/ImagePath.dart';
 import 'package:tudu/generated/l10n.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../services/observable/observable_serivce.dart';
 import '../common/alert.dart';
@@ -45,6 +50,7 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
   HomeViewModel _homeViewModel = HomeViewModel();
   EventsViewModel _eventsViewModel = EventsViewModel();
   WhatTuduSiteContentDetailViewModel _whatTuduSiteContentDetailViewModel = WhatTuduSiteContentDetailViewModel();
+  final OfferViewModel _offerViewModel = OfferViewModel();
   int pageIndex = 0;
 
   final pages = [
@@ -82,6 +88,7 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
     SystemChrome.setPreferredOrientations(
         [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
+
     super.initState();
     WidgetsBinding.instance.addObserver(this);
 
@@ -89,7 +96,11 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
       // Action after build()
     });
 
+
+
   }
+
+
 
   void listenToRedirectTab() {
     redirectTabStreamListener ??= _observableService.redirectTabStream.asBroadcastStream().listen((data) {
@@ -147,12 +158,27 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     switch (state) {
       case AppLifecycleState.resumed:
+        try {
+          BackgroundLocationTrackerManager.stopTracking();
+        } catch (e) {
+          print(e);
+        }
         break;
       case AppLifecycleState.inactive:
         break;
       case AppLifecycleState.paused:
+        final value = PrefUtil.getValue(StrConst.availableOffer, false) as bool;
+        if (!value) {
+          return;
+        }
+        try {
+          BackgroundLocationTrackerManager.startTracking();
+        } catch (e) {
+          print(e);
+        }
         break;
       case AppLifecycleState.detached:
+        print("detached");
         break;
     }
   }
@@ -265,7 +291,9 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                     children: [
                       const SizedBox(width: 12,),
                       InkWell(
-                        onTap: () {},
+                        onTap: () async {
+                          await launchUrl(Uri.parse(URLConsts.instagram));
+                        },
                         child: Image.asset(
                           ImagePath.instagramIcon,
                           width: 24, height: 24,
@@ -273,7 +301,9 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                       ),
                       const SizedBox(width: 12,),
                       InkWell(
-                        onTap: () {},
+                        onTap: () async {
+                          await launchUrl(Uri.parse(URLConsts.facebook));
+                        },
                         child: Image.asset(
                           ImagePath.facebookIcon,
                           width: 24, height: 24,
@@ -319,8 +349,12 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                                 Icons.star,
                                 color: ColorStyle.tertiary,
                               ),
-                              onRatingUpdate: (double value) {
-
+                              onRatingUpdate: (double value) async {
+                                final inAppReview = InAppReview.instance;
+                                // inAppReview.openStoreListing();
+                                if (await inAppReview.isAvailable()) {
+                                  await inAppReview.requestReview();
+                                }
                               },
                             ),
                           ),

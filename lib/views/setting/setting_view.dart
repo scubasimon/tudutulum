@@ -290,39 +290,6 @@ class _SettingView extends State<SettingView> {
                       ),
                     ),
                   ),
-                  Row(
-                    children: [
-                      Text(
-                        S.current.hide_ads,
-                        style: const TextStyle(
-                          fontSize: FontSizeConst.font14,
-                          fontWeight: FontWeight.w400,
-                          fontFamily: FontStyles.raleway,
-                          color: ColorStyle.darkLabel,
-                        ),
-                      ),
-                      const Spacer(),
-                      CupertinoSwitch(
-                        value: model.hideAds,
-                        activeColor: ColorStyle.primary,
-                        onChanged: (value) {
-                          setState(() {
-                            model.setHideAds(value);
-                          });
-                        },
-                      )
-                    ],
-                  ),
-                  Text(
-                    S.current.hide_ads_info,
-                    style: const TextStyle(
-                      fontSize: FontSizeConst.font10,
-                      fontWeight: FontWeight.w600,
-                      fontFamily: FontStyles.raleway,
-                      color: ColorStyle.darkLabel,
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
                 ],
               );
             },

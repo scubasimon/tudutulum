@@ -136,16 +136,21 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                       // });
                     },
                   ),
-                  Container(
-                    padding: const EdgeInsets.only(left: 8, right: 8),
-                    child: InkWell(
-                      child: Image.asset(
-                        ImagePath.markDeactiveIcon,
-                        fit: BoxFit.contain,
-                        width: 16.0,
-                      ),
-                      onTap: () {},
-                    ),
+                  StreamBuilder(
+                    stream: _whatTuduSiteContentDetailViewModel.isBookmark,
+                    builder: (context, snapshot) {
+                      return Container(
+                        padding: const EdgeInsets.only(left: 8, right: 8),
+                        child: InkWell(
+                          onTap: _whatTuduSiteContentDetailViewModel.bookmarkAction,
+                          child: Image.asset(
+                            (snapshot.hasData && snapshot.data!) ? ImagePath.tab4thActiveIcon: ImagePath.markDeactiveIcon,
+                            fit: BoxFit.contain,
+                            width: 16.0,
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
@@ -1178,5 +1183,23 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
             ),
           ]);
     }
+  }
+
+  void _showLoading() {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return Container(
+              decoration: const BoxDecoration(),
+              child: const Center(
+                child: CupertinoActivityIndicator(
+                  radius: 20,
+                  color: ColorStyle.primary,
+                ),
+              )
+          );
+        }
+    );
   }
 }
