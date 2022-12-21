@@ -85,25 +85,35 @@ class _PhotoViewUtil extends State<PhotoViewUtil> with WidgetsBindingObserver {
     return Scaffold(
         body: Stack(
           children: [
-            PageView(
-              physics: const NeverScrollableScrollPhysics(),
-              controller: controller,
-              children: widget.banner
-                  .map((item) => PhotoView(
-                imageProvider: CachedNetworkImageProvider(
-                    item,
-                ),
-                loadingBuilder: (context, event) => Center(
-                  child: Container(
-                    width: 20.0,
-                    height: 20.0,
-                    child: const CupertinoActivityIndicator(
-                      radius: 20,
-                      color: ColorStyle.primary,
+            WillPopScope(
+              onWillPop: () async {
+                return true;
+              },
+              child: PageView.builder(
+                pageSnapping: false,
+                physics: const PageOverscrollPhysics(velocityPerOverscroll: 1000),
+                controller: controller,
+                itemBuilder: (context, i) {
+                  return GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    child: PhotoView(
+                      imageProvider: CachedNetworkImageProvider(
+                        widget.banner[i % widget.banner.length],
+                      ),
+                      loadingBuilder: (context, event) => const Center(
+                        child: SizedBox(
+                          width: 20.0,
+                          height: 20.0,
+                          child: CupertinoActivityIndicator(
+                            radius: 20,
+                            color: ColorStyle.primary,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              )).toList(),
+                  );
+                },
+              ),
             ),
             Positioned(
               left: 40,
@@ -151,24 +161,6 @@ class _PhotoViewUtil extends State<PhotoViewUtil> with WidgetsBindingObserver {
               ),
             ),
             Positioned(
-              left: 0,
-              right: 0,
-              bottom: 30 + MediaQuery.of(context).padding.bottom,
-              child: Container(
-                alignment: Alignment.center,
-                height: 40,
-                child: Text(
-                  "${currentItem+1}/${widget.banner.length}",
-                  style: const TextStyle(
-                    fontFamily: FontStyles.raleway,
-                    fontSize: FontSizeConst.font18,
-                    fontWeight: FontWeight.w400,
-                    color: ColorStyle.lightLabel,
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
               left: 20,
               top: 30 + MediaQuery.of(context).padding.top,
               child: InkWell(
@@ -195,4 +187,47 @@ class _PhotoViewUtil extends State<PhotoViewUtil> with WidgetsBindingObserver {
           ],
         ));
   }
+}
+
+class PageOverscrollPhysics extends ScrollPhysics {
+  final double velocityPerOverscroll;
+
+  const PageOverscrollPhysics({
+    ScrollPhysics? parent,
+    this.velocityPerOverscroll = 1000,
+  }) : super(parent: parent);
+
+  @override
+  PageOverscrollPhysics applyTo(ScrollPhysics? ancestor) {
+    return PageOverscrollPhysics(
+      parent: buildParent(ancestor)!,
+    );
+  }
+
+  double _getTargetPixels(ScrollMetrics position, double velocity) {
+    double page = position.pixels / position.viewportDimension;
+    page += velocity / velocityPerOverscroll;
+    double pixels = page.roundToDouble() * position.viewportDimension;
+    return pixels;
+  }
+
+  @override
+  Simulation? createBallisticSimulation(
+      ScrollMetrics position, double velocity) {
+    // If we're out of range and not headed back in range, defer to the parent
+    // ballistics, which should put us back in range at a page boundary.
+    if ((velocity <= 0.0 && position.pixels <= position.minScrollExtent) ||
+        (velocity >= 0.0 && position.pixels >= position.maxScrollExtent)) {
+      return super.createBallisticSimulation(position, velocity);
+    }
+    final double target = _getTargetPixels(position, velocity);
+    if (target != position.pixels) {
+      return ScrollSpringSimulation(spring, position.pixels, target, velocity,
+          tolerance: tolerance);
+    }
+    return null;
+  }
+
+  @override
+  bool get allowImplicitScrolling => false;
 }

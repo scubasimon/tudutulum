@@ -1,7 +1,8 @@
 class StrConst {
   static const mapScene = "MapScene";
   static const whatTuduScene = "WhatTuduScreen";
-  static const whatTuduSiteContentDetailScene = "WhatTuduSiteContentDetail";
+  static const whatTuduSiteContentDetailScene = "ehatTuduSiteContentDetail";
+  static const eventContentDetailScene = "eventSiteContentDetail";
   static const viewPhoto = "ViewPhoto";
   static const detalDetailView = "DetalDetailView";
 
@@ -17,7 +18,9 @@ class StrConst {
   static const String sortTitle = "title";
   static const String sortDistance = "distance";
 
-  static const String isDataBinded = "isDataBinded";
+  static const String isWhatTuduDataBinded = "isWhatTuduDataBinded";
+  static const String isEventDataBinded = "isEventDataBinded";
+  static const String isDarkModeNew = "isDarkModeNew";
 
   static const String newOffer = "new_offer";
   static const String availableOffer = "available_offer";

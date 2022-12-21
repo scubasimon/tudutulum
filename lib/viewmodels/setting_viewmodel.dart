@@ -1,9 +1,13 @@
 import 'dart:async';
 
 import 'package:notification_center/notification_center.dart';
+import 'package:flutter/material.dart';
+import 'package:localstore/localstore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tudu/base/base_viewmodel.dart';
 import 'package:tudu/consts/strings/str_const.dart';
+
+import '../views/common/alert.dart';
 
 class SettingViewModel extends BaseViewModel {
   late SharedPreferences _instance;
@@ -70,8 +74,36 @@ class SettingViewModel extends BaseViewModel {
     await _instance.setBool(StrConst.hideAds, value);
   }
 
-  void clearData() {
+  Future<void> clearData(BuildContext context) async {
+    await removeData();
 
+    showDialog(context: context, builder: (context) {
+      return NotificationAlert.alert(context, "Your data has been deleted");
+    });
   }
 
+  Future<void> removeData() async {
+    removeDataOneByOne("businesses");
+    removeDataOneByOne("amenities");
+    removeDataOneByOne("partners");
+    removeDataOneByOne("eventtypes");
+    removeDataOneByOne("articles");
+    removeDataOneByOne("sites");
+    removeDataOneByOne("events");
+    removeDataOneByOne("deals");
+  }
+
+  Future<void> removeDataOneByOne(String collectionName) async {
+    int i = 0;
+    bool keepFetching = true;
+    while (keepFetching) {
+      final listSitesResult = await Localstore.instance.collection(collectionName).doc(i.toString()).get();
+      if (listSitesResult != null) {
+        Localstore.instance.collection(collectionName).doc(i.toString()).delete();
+        i++;
+      } else {
+        keepFetching = false;
+      }
+    }
+  }
 }

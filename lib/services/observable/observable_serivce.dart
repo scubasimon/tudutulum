@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:tudu/models/event.dart';
 
 import '../../models/article.dart';
 import '../../models/site.dart';
@@ -28,6 +29,9 @@ class ObservableService {
 
   final StreamController<List<Site>?> listSitesController = BehaviorSubject<List<Site>?>();
   Stream<List<Site>?> get listSitesStream => listSitesController.stream;
+
+  final StreamController<List<Event>?> listEventsController = BehaviorSubject<List<Event>?>();
+  Stream<List<Event>?> get listEventsStream => listEventsController.stream;
 
   final StreamController<String> networkController = BehaviorSubject<String>();
   Stream<String> get networkStream => networkController.stream;

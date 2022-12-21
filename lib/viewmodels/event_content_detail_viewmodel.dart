@@ -4,32 +4,36 @@ import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart';
 import 'package:tudu/base/base_viewmodel.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:tudu/models/event.dart';
 
 import '../models/site.dart';
 import '../services/observable/observable_serivce.dart';
 import 'package:location/location.dart' as locationLib;
 
-class WhatTuduSiteContentDetailViewModel extends BaseViewModel {
-  static final WhatTuduSiteContentDetailViewModel _instance = WhatTuduSiteContentDetailViewModel._internal();
+class EventContentDetailViewModel extends BaseViewModel {
+  static final EventContentDetailViewModel _instance = EventContentDetailViewModel._internal();
 
   ObservableService _observableService = ObservableService();
 
-  factory WhatTuduSiteContentDetailViewModel() {
+  factory EventContentDetailViewModel() {
     return _instance;
   }
 
-  WhatTuduSiteContentDetailViewModel._internal();
+  EventContentDetailViewModel._internal();
 
-  late Site siteContentDetail;
+  late Event eventContentDetail;
 
   late bool serviceEnabled;
+
   locationLib.Location location = locationLib.Location();
 
   @override
-  FutureOr<void> init() {}
+  FutureOr<void> init() {
 
-  void setSiteContentDetailCover(Site input) {
-    siteContentDetail = input;
+  }
+
+  void setEventContentDetailCover(Event input) {
+    eventContentDetail = input;
     notifyListeners();
   }
 
@@ -38,16 +42,16 @@ class WhatTuduSiteContentDetailViewModel extends BaseViewModel {
     var currentPosition = await location.getLocation();
     if (currentPosition.latitude != null &&
         currentPosition.longitude != null &&
-        siteContentDetail.locationLat != null &&
-        siteContentDetail.locationLon != null) {
+        eventContentDetail.locationLat != null &&
+        eventContentDetail.locationLon != null) {
       List<GeoPoint> fromTo = [
-        GeoPoint(siteContentDetail.locationLat!, siteContentDetail.locationLon!),
+        GeoPoint(eventContentDetail.locationLat!, eventContentDetail.locationLon!),
         GeoPoint(currentPosition.latitude!, currentPosition.longitude!),
       ];
       _observableService.listenToRedirectToGoogleMapController.sink.add(fromTo);
     } else {
       List<GeoPoint> position = [
-        GeoPoint(siteContentDetail.locationLat!, siteContentDetail.locationLon!),
+        GeoPoint(eventContentDetail.locationLat!, eventContentDetail.locationLon!),
       ];
       _observableService.listenToRedirectToGoogleMapController.sink.add(position);
     }

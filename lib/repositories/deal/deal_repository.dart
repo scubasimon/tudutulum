@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:localstore/localstore.dart';
 import 'package:tudu/consts/number/number_const.dart';
 import 'package:tudu/models/deal.dart';
 import 'package:tudu/models/error.dart';
@@ -10,6 +11,8 @@ import 'package:tudu/services/firebase/firebase_service.dart';
 import 'package:location/location.dart';
 import 'package:tudu/services/location/location_permission.dart';
 import 'package:tudu/models/site.dart';
+
+import '../../services/local_datatabase/local_database_service.dart';
 
 abstract class DealRepository {
   Future<List<Deal>> getDeals(p.Param param, {double? filterDistance});
@@ -24,6 +27,8 @@ abstract class DealRepository {
 class DealRepositoryImpl extends DealRepository {
 
   final FirebaseService _firebaseService = FirebaseServiceImpl();
+  final LocalDatabaseService _localDatabaseService = LocalDatabaseServiceImpl();
+
   List<Deal> _results = [];
   final Location _location = Location();
   LocationData? _currentLocation;
@@ -39,14 +44,30 @@ class DealRepositoryImpl extends DealRepository {
           var siteData = await _firebaseService.getSite(result.site.siteId);
           result.site = Site.from(siteData);
         }
+        print(_results.length);
+
+        // Save to local
+        for (var deal in _results) {
+          Localstore.instance.collection('deals').doc(_results.indexOf(deal).toString()).set(deal.toJson());
+        }
+
       } catch (e) {
         if (e is TimeoutException) {
           throw CommonError.serverError;
         } else {
-          rethrow;
+          // LOAD FROM LOCAL
+          print("LOADDING DEAL LOCAL");
+          _results = await _localDatabaseService.getDeals();
+          for (var result in _results) {
+            var siteData = await _firebaseService.getSite(result.site.siteId);
+            result.site = Site.from(siteData);
+          }
+          print(_results.length);
+          // rethrow;
         }
       }
     }
+
     var results = _results.where((element) {
       if (param.title == null) {
         return true;

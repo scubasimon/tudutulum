@@ -3,6 +3,7 @@ import 'dart:io' show Platform;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -40,7 +41,7 @@ Future<void> main() async {
   await S.load(const Locale.fromSubtags(languageCode: 'en')); // mimic localization delegate init
 
   runZonedGuarded<Future<void>>(() async {
-    
+
     WidgetsFlutterBinding.ensureInitialized();
 
     await Firebase.initializeApp(
@@ -48,8 +49,9 @@ Future<void> main() async {
     );
 
     await PrefUtil.init();
+    PrefUtil.setValue(StrConst.isWhatTuduDataBinded, false);
+    PrefUtil.setValue(StrConst.isEventDataBinded, false);
     PrefUtil.setValue(StrConst.isDataBinded, false);
-    print(PrefUtil.getValue("location", 0.0));
 
     // if (kDebugMode) {
     //   await _connectToFirebaseEmulator();
@@ -240,6 +242,11 @@ class _MyAppState extends State<MyApp> {
               selectionHandleColor: ColorStyle.darkLabel,
             ),
           ),
+          // theme: FlexThemeData.dark(scheme: FlexScheme.mandyRed),
+          // // The Mandy red, dark theme.
+          // darkTheme: FlexThemeData.light(scheme: FlexScheme.mandyRed),
+          // // Use dark or light theme based on system setting.
+          // themeMode: ThemeMode.system,
           debugShowCheckedModeBanner: false,
           locale: _locale,
           supportedLocales: const [
