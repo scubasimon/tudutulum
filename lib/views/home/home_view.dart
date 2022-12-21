@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:collection';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -9,6 +10,7 @@ import 'package:tudu/consts/color/Colors.dart';
 import 'package:tudu/consts/font/Fonts.dart';
 import 'package:tudu/consts/strings/str_const.dart';
 import 'package:tudu/utils/func_utils.dart';
+import 'package:tudu/viewmodels/events_viewmodel.dart';
 import 'package:tudu/viewmodels/home_viewmodel.dart';
 import 'package:tudu/viewmodels/what_tudu_site_content_detail_viewmodel.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
@@ -41,6 +43,7 @@ class HomeView extends StatefulWidget {
 class _HomeView extends State<HomeView> with WidgetsBindingObserver {
   ObservableService _observableService = ObservableService();
   HomeViewModel _homeViewModel = HomeViewModel();
+  EventsViewModel _eventsViewModel = EventsViewModel();
   WhatTuduSiteContentDetailViewModel _whatTuduSiteContentDetailViewModel = WhatTuduSiteContentDetailViewModel();
   int pageIndex = 0;
 
@@ -104,15 +107,19 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
     try {
       redirectToGoogleMapStreamListener ??= _observableService.listenToRedirectToGoogleMapStream.asBroadcastStream().listen((data) {
         if (data.length == 2) {
+          _showLoading();
           FuncUlti.redirectAndDirection(
               data[0],
               data[1]
           );
+          Navigator.of(context).pop();
         } else {
+          _showLoading();
           FuncUlti.redirectAndMoveToLocation(
               data[0],
               _whatTuduSiteContentDetailViewModel.siteContentDetail.title
           );
+          Navigator.of(context).pop();
         }
       });
     } catch (e) {
@@ -437,6 +444,7 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                   ),
                   onTap: () {
                     setState(() {
+                      _eventsViewModel.fromSite = null;
                       pageIndex = 0;
                     });
                   },
@@ -474,6 +482,7 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                   ),
                   onTap: () {
                     setState(() {
+                      _eventsViewModel.fromSite = null;
                       pageIndex = 1;
                     });
                   },
@@ -511,6 +520,7 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                   ),
                   onTap: () {
                     setState(() {
+                      _eventsViewModel.fromSite = null;
                       pageIndex = 2;
                     });
                   },
@@ -548,6 +558,7 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                   ),
                   onTap: () {
                     setState(() {
+                      _eventsViewModel.fromSite = null;
                       pageIndex = 3;
                     });
                   },
@@ -585,6 +596,7 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                   ),
                   onTap: () {
                     setState(() {
+                      _eventsViewModel.fromSite = null;
                       pageIndex = 4;
                     });
                   },
@@ -599,13 +611,28 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
     _scaffoldKey.currentState?.openDrawer();
   }
 
-
   void _showAlert(String message) {
     print("_showAlert $message");
     showDialog(
         context: context,
         builder: (BuildContext context) {
           return ErrorAlert.alert(context, message);
+        });
+  }
+
+  void _showLoading() {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return Container(
+              decoration: const BoxDecoration(),
+              child: const Center(
+                child: CupertinoActivityIndicator(
+                  radius: 20,
+                  color: ColorStyle.primary,
+                ),
+              ));
         });
   }
 }

@@ -9,6 +9,9 @@ import 'package:tudu/consts/font/font_size_const.dart';
 import 'package:tudu/consts/images/ImagePath.dart';
 import 'package:tudu/generated/l10n.dart';
 
+import '../../consts/strings/str_const.dart';
+import '../../utils/pref_util.dart';
+
 class SettingView extends StatefulWidget {
   const SettingView({super.key});
 
@@ -194,6 +197,7 @@ class _SettingView extends State<SettingView> {
                         onChanged: (value) {
                           setState(() {
                             model.setDarkMode(value);
+                            PrefUtil.setValue(StrConst.isDarkModeNew, value);
                           });
                         },
                       )
@@ -262,7 +266,9 @@ class _SettingView extends State<SettingView> {
                       ),
                       const Spacer(),
                       InkWell(
-                        onTap: model.clearData,
+                        onTap: () {
+                          model.clearData(context);
+                        },
                         child: Image.asset(
                           ImagePath.removeIcon,
                           height: 20,

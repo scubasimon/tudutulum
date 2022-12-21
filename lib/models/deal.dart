@@ -45,4 +45,23 @@ class Deal {
         locationLon: site["locationLon"] as double?,
     );
   }
+
+  Map<String, dynamic> toJson() {
+    Map<String, int> siteMap = {"siteId": site.siteId};
+    Map<String, dynamic> result = {
+      "dealsid": dealsId,
+      "active": active,
+      "description": description,
+      "images": images,
+      "startdate": startDate.millisecondsSinceEpoch,
+      "enddate": endDate.millisecondsSinceEpoch,
+      "terms": terms,
+      "title": title,
+      "titleShort": titleShort,
+      "logo": logo,
+      "businesses": businesses,
+      "site": siteMap,
+    };
+    return result;
+  }
 }

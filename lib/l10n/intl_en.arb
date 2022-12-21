@@ -162,5 +162,9 @@
   "account_type": "{type} account",
   "pro": "Pro",
   "free": "Free",
-  "change_plan": "Change Plan"
+  "change_plan": "Change Plan",
+  "explopre_events": "Explore Events",
+  "price": "Price",
+  "further_information": "Further Information",
+  "venue_contact": "Venue Contact:"
 }

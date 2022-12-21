@@ -27,6 +27,9 @@ class ImagePath {
   static const searchIcon = 'assets/icons/ic_search.png';
   static const leftArrowIcon = 'assets/icons/ic_left_arrow.png';
   static const closeIcon = 'assets/icons/ic_close.png';
+  static const eventRepeatIcon = 'assets/icons/ic_event_repeat.png';
+  static const eventNotRepeatIcon = 'assets/icons/ic_event_not_repeat.png';
+  static const takeToPurchaseIcon = 'assets/icons/ic_take_to_purchase.png';
 
   static const markDeactiveIcon = 'assets/icons/ic_mark_deactive.png';
   static const mapIcon = 'assets/icons/ic_map.png';

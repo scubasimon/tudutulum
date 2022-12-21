@@ -58,7 +58,7 @@ class _MapScreenView extends State<MapScreenView> {
 
   GoogleMapController? mapController; //controller for Google map
 
-  CameraPosition initCameraPosition = CameraPosition(target: LatLng(21.0278, 105.8342), zoom: 15.0);
+  CameraPosition initCameraPosition = CameraPosition(target: LatLng(20.214193, -87.453294), zoom: 15.0);
 
   bool isMapCreated = false;
   final Set<Marker> markers = {};
@@ -95,7 +95,7 @@ class _MapScreenView extends State<MapScreenView> {
     print("goToCurrentPosition -> ${_mapScreenViewModel.currentPosition?.longitude}");
     mapController?.animateCamera(CameraUpdate.newLatLngZoom(
       LatLng(
-          _mapScreenViewModel.currentPosition?.latitude ?? 21, _mapScreenViewModel.currentPosition?.longitude ?? 105),
+          _mapScreenViewModel.currentPosition?.latitude ?? 20.214193, _mapScreenViewModel.currentPosition?.longitude ?? -87.453294),
       12.0,
     ));
   }
@@ -110,8 +110,8 @@ class _MapScreenView extends State<MapScreenView> {
     print("goToDestinationPosition -> ${_mapScreenViewModel.destinationPosition?.latitude}");
     print("goToDestinationPosition -> ${_mapScreenViewModel.destinationPosition?.longitude}");
     mapController?.animateCamera(CameraUpdate.newLatLngZoom(
-      LatLng(_mapScreenViewModel.destinationPosition?.latitude ?? 21,
-          _mapScreenViewModel.destinationPosition?.longitude ?? 105),
+      LatLng(_mapScreenViewModel.destinationPosition?.latitude ?? 20.214193,
+          _mapScreenViewModel.destinationPosition?.longitude ?? -87.453294),
       12.0,
     ));
   }
@@ -212,8 +212,8 @@ class _MapScreenView extends State<MapScreenView> {
                                   onTap: () {
                                     _whatTuduViewModel.getDataWithFilterSortSearchForMap(
                                       null, // Filter all business => businnesFilter = null
-                                      FuncUlti.getSortTypeByInt(_homeViewModel.orderType),
-                                      _homeViewModel.searchKeyword,
+                                      FuncUlti.getSortTypeByInt(_homeViewModel.whatTuduOrderType),
+                                      _homeViewModel.whatTuduSearchKeyword,
                                     );
                                     _mapScreenViewModel.mapFilterType = ((counter) / 2).round();
                                   },
@@ -241,8 +241,8 @@ class _MapScreenView extends State<MapScreenView> {
                                           onTap: () {
                                             _whatTuduViewModel.getDataWithFilterSortSearchForMap(
                                               _homeViewModel.listBusiness[((counter) / 2).round()], // get business
-                                              FuncUlti.getSortTypeByInt(_homeViewModel.orderType),
-                                              _homeViewModel.searchKeyword,
+                                              FuncUlti.getSortTypeByInt(_homeViewModel.whatTuduOrderType),
+                                              _homeViewModel.whatTuduSearchKeyword,
                                             );
                                             _mapScreenViewModel.mapFilterType = ((counter) / 2).round();
                                           },

@@ -47,11 +47,11 @@ class WhatTuduViewModel extends BaseViewModel {
       String? keywordSearch) {
     try {
       _observableService.whatTuduProgressLoadingController.sink.add(true);
-      List<Article> listArticlesResult = _whatTuduRepository.getArticlesWithFilterSortSearch(
+      /*List<Article> listArticlesResult = _whatTuduRepository.getArticlesWithFilterSortSearch(
         _homeViewModel.listArticles,
         (businessFilter != null) ? businessFilter.businessid : -1,
         keywordSearch,
-      );
+      );*/
       List<Site> listSitesResult = _whatTuduRepository.getSitesWithFilterSortSearch(
         _homeViewModel.listSites,
         (businessFilter != null) ? businessFilter.businessid : -1,
@@ -59,7 +59,7 @@ class WhatTuduViewModel extends BaseViewModel {
         keywordSearch,
       );
 
-      _observableService.listArticlesController.sink.add(listArticlesResult);
+      // _observableService.listArticlesController.sink.add(listArticlesResult);
       _observableService.listSitesController.sink.add(listSitesResult);
       _observableService.whatTuduProgressLoadingController.sink.add(false);
     } catch (e) {

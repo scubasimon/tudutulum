@@ -120,6 +120,7 @@ class DealsViewModel extends BaseViewModel {
       }
       var results = await _dealRepository.getDeals(param);
       print(results);
+
       _listDeals.sink.add(results);
       if (param.refresh) {
         param.refresh = false;

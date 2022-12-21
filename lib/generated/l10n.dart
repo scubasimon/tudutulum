@@ -1689,6 +1689,46 @@ class S {
       args: [],
     );
   }
+
+  /// `Explore Events`
+  String get explopre_events {
+    return Intl.message(
+      'Explore Events',
+      name: 'explopre_events',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Price`
+  String get price {
+    return Intl.message(
+      'Price',
+      name: 'price',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Further Information`
+  String get further_information {
+    return Intl.message(
+      'Further Information',
+      name: 'further_information',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Venue Contact:`
+  String get venue_contact {
+    return Intl.message(
+      'Venue Contact:',
+      name: 'venue_contact',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

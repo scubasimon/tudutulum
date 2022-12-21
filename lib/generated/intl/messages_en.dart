@@ -105,6 +105,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Events and Experiences"),
         "exit_app_message":
             MessageLookupByLibrary.simpleMessage("Do you really want to exit?"),
+        "explopre_events":
+            MessageLookupByLibrary.simpleMessage("Explore Events"),
         "explore": MessageLookupByLibrary.simpleMessage("Explore "),
         "explore_all_location":
             MessageLookupByLibrary.simpleMessage("Explore All Tulum"),
@@ -121,6 +123,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "forgot_password":
             MessageLookupByLibrary.simpleMessage("Forgot password?"),
         "free": MessageLookupByLibrary.simpleMessage("Free"),
+        "further_information":
+            MessageLookupByLibrary.simpleMessage("Further Information"),
         "get_in_touch_with":
             MessageLookupByLibrary.simpleMessage("Get in touch directly with:"),
         "get_started": MessageLookupByLibrary.simpleMessage("Get Started"),
@@ -203,6 +207,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "preferences": MessageLookupByLibrary.simpleMessage("Preferences"),
         "preview_deal_message": MessageLookupByLibrary.simpleMessage(
             "To view full term and conditions and to redeem this offer please visit the Deals tab"),
+        "price": MessageLookupByLibrary.simpleMessage("Price"),
         "pro": MessageLookupByLibrary.simpleMessage("Pro"),
         "profile": MessageLookupByLibrary.simpleMessage("Profile"),
         "purchase_failed":
@@ -284,6 +289,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "User not approve. Please try again"),
         "user_not_existed_error":
             MessageLookupByLibrary.simpleMessage("User not found"),
+        "venue_contact": MessageLookupByLibrary.simpleMessage("Venue Contact:"),
         "warning": MessageLookupByLibrary.simpleMessage("Warning"),
         "what_tudu": MessageLookupByLibrary.simpleMessage("What tudu?"),
         "work_spots": MessageLookupByLibrary.simpleMessage("Workspots"),
