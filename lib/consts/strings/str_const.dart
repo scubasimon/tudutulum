@@ -25,5 +25,8 @@ class StrConst {
   static const String hideArticles = "hide_articles";
   static const String hideAds = "hide_ads";
   static const String purchaseSuccess = "purchase_success";
+  static const String dateNotification = "date_notification";
+  static const String lastLocation = "last_location";
+  static const String lastTime = "last_time";
 
 }

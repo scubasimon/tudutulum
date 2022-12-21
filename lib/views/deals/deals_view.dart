@@ -534,6 +534,12 @@ class _DealsView extends State<DealsView> with AutomaticKeepAliveClientMixin<Dea
                         child: CachedNetworkImage(
                           imageUrl: snapshot.data![index].logo,
                           fit: BoxFit.cover,
+                          imageBuilder: (context, imageProvider) => Container(
+                            decoration: BoxDecoration(
+                              image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                            ),
+                          ),
+                          errorWidget: (context, url, error) => const Icon(Icons.error),
                         )
                       ),
                     )

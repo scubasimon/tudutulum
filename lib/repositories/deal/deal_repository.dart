@@ -12,7 +12,7 @@ import 'package:tudu/services/location/location_permission.dart';
 import 'package:tudu/models/site.dart';
 
 abstract class DealRepository {
-  Future<List<Deal>> getDeals(p.Param param);
+  Future<List<Deal>> getDeals(p.Param param, {double? filterDistance});
 
   Future<Deal> getDeal(int id);
 
@@ -30,7 +30,7 @@ class DealRepositoryImpl extends DealRepository {
   final PermissionLocation _permissionLocation = PermissionLocation();
 
   @override
-  Future<List<Deal>> getDeals(p.Param param) async {
+  Future<List<Deal>> getDeals(p.Param param, {double? filterDistance}) async {
     if (_results.isEmpty || param.refresh) {
       try {
         _results = (await _firebaseService.getDeals().timeout(const Duration(seconds: NumberConst.timeout)))
@@ -39,7 +39,6 @@ class DealRepositoryImpl extends DealRepository {
           var siteData = await _firebaseService.getSite(result.site.siteId);
           result.site = Site.from(siteData);
         }
-        print(_results.length);
       } catch (e) {
         if (e is TimeoutException) {
           throw CommonError.serverError;
@@ -77,6 +76,12 @@ class DealRepositoryImpl extends DealRepository {
           await _sortDistance(results);
           break;
       }
+    }
+    if (filterDistance != null && _currentLocation?.latitude != null && _currentLocation?.longitude != null) {
+      results = results.where((element) {
+        var distance = _getDistance(GeoPoint(_currentLocation!.latitude!, _currentLocation!.longitude!), GeoPoint(element.site.locationLat!, element.site.locationLon!));
+        return distance <= filterDistance;
+      }).toList();
     }
     return results;
   }

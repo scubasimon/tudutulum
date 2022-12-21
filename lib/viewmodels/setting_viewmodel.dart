@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:notification_center/notification_center.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tudu/base/base_viewmodel.dart';
 import 'package:tudu/consts/strings/str_const.dart';
@@ -24,7 +25,6 @@ class SettingViewModel extends BaseViewModel {
   FutureOr<void> init() async {
     _instance = await SharedPreferences.getInstance();
     _enableNewOffer = _instance.getBool(StrConst.newOffer) ?? false;
-    print(_instance.getBool(StrConst.newOffer));
     _enableAvailableOffer = _instance.getBool(StrConst.availableOffer) ?? false;
     _enableDarkMode = _instance.getBool(StrConst.darkMode) ?? false;
     _hideArticles = _instance.getBool(StrConst.hideArticles) ?? false;
@@ -45,6 +45,7 @@ class SettingViewModel extends BaseViewModel {
     _enableNewOffer = value;
     await _instance.setBool(StrConst.newOffer, value);
     _isPushNotification = _enableAvailableOffer || _enableNewOffer;
+    NotificationCenter().notify(StrConst.newOffer, data: value);
 
   }
 
