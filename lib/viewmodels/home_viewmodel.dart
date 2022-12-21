@@ -180,43 +180,50 @@ class HomeViewModel extends BaseViewModel {
   void saveDataToLocal() {
     if (listBusiness.isNotEmpty) {
       for (var business in listBusiness) {
-        Localstore.instance.collection('businesses').doc(business.businessid.toString()).set(business.toJson());
+        // Localstore.instance.collection('businesses').doc(business.businessid.toString()).set(business.toJson());
+        Localstore.instance.collection('businesses').doc(listBusiness.indexOf(business).toString()).set(business.toJson());
       }
     }
 
     if (listAmenites.isNotEmpty) {
       for (var amenites in listAmenites) {
-        Localstore.instance.collection('amenities').doc(amenites.amenityId.toString()).set(amenites.toJson());
+        // Localstore.instance.collection('amenities').doc(amenites.amenityId.toString()).set(amenites.toJson());
+        Localstore.instance.collection('amenities').doc(listAmenites.indexOf(amenites).toString()).set(amenites.toJson());
       }
     }
 
     if (listPartners.isNotEmpty) {
       for (var partner in listPartners) {
-        Localstore.instance.collection('partners').doc(partner.partnerId.toString()).set(partner.toJson());
+        // Localstore.instance.collection('partners').doc(partner.partnerId.toString()).set(partner.toJson());
+        Localstore.instance.collection('partners').doc(listPartners.indexOf(partner).toString()).set(partner.toJson());
       }
     }
 
     if (listEventTypes.isNotEmpty) {
       for (var eventType in listEventTypes) {
-        Localstore.instance.collection('eventtypes').doc(eventType.eventId.toString()).set(eventType.toJson());
+        // Localstore.instance.collection('eventtypes').doc(eventType.eventId.toString()).set(eventType.toJson());
+        Localstore.instance.collection('eventtypes').doc(listEventTypes.indexOf(eventType).toString()).set(eventType.toJson());
       }
     }
 
     if (listArticles.isNotEmpty) {
       for (var article in listArticles) {
-        Localstore.instance.collection('articles').doc(article.articleId.toString()).set(article.toJson());
+        // Localstore.instance.collection('articles').doc(article.articleId.toString()).set(article.toJson());
+        Localstore.instance.collection('articles').doc(listArticles.indexOf(article).toString()).set(article.toJson());
       }
     }
 
     if (listSites.isNotEmpty) {
       for (var site in listSites) {
-        Localstore.instance.collection('sites').doc(site.siteId.toString()).set(site.toJson());
+        // Localstore.instance.collection('sites').doc(site.siteId.toString()).set(site.toJson());
+        Localstore.instance.collection('sites').doc(listSites.indexOf(site).toString()).set(site.toJson());
       }
     }
 
     if (listEvents.isNotEmpty) {
       for (var event in listEvents) {
-        Localstore.instance.collection('events').doc(event.eventid.toString()).set(event.toJson());
+        // Localstore.instance.collection('events').doc(event.eventid.toString()).set(event.toJson());
+        Localstore.instance.collection('events').doc(listEvents.indexOf(event).toString()).set(event.toJson());
       }
     }
   }

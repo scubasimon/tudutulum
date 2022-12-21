@@ -73,19 +73,36 @@ class SettingViewModel extends BaseViewModel {
     await _instance.setBool(StrConst.hideAds, value);
   }
 
-  void clearData(BuildContext context) {
-    Localstore.instance.collection("businesses").delete();
-    Localstore.instance.collection("amenities").delete();
-    Localstore.instance.collection("partners").delete();
-    Localstore.instance.collection("eventtypes").delete();
-    Localstore.instance.collection("articles").delete();
-    Localstore.instance.collection("sites").delete();
-    Localstore.instance.collection("events").delete();
-    Localstore.instance.collection("deals").delete();
+  Future<void> clearData(BuildContext context) async {
+    await removeData();
 
     showDialog(context: context, builder: (context) {
       return NotificationAlert.alert(context, "Your data has been deleted");
     });
   }
 
+  Future<void> removeData() async {
+    removeDataOneByOne("businesses");
+    removeDataOneByOne("amenities");
+    removeDataOneByOne("partners");
+    removeDataOneByOne("eventtypes");
+    removeDataOneByOne("articles");
+    removeDataOneByOne("sites");
+    removeDataOneByOne("events");
+    removeDataOneByOne("deals");
+  }
+
+  Future<void> removeDataOneByOne(String collectionName) async {
+    int i = 0;
+    bool keepFetching = true;
+    while (keepFetching) {
+      final listSitesResult = await Localstore.instance.collection(collectionName).doc(i.toString()).get();
+      if (listSitesResult != null) {
+        Localstore.instance.collection(collectionName).doc(i.toString()).delete();
+        i++;
+      } else {
+        keepFetching = false;
+      }
+    }
+  }
 }

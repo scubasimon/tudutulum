@@ -2,6 +2,7 @@ import 'dart:io' show Platform;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -170,6 +171,11 @@ class _MyAppState extends State<MyApp> {
               selectionHandleColor: ColorStyle.darkLabel,
             ),
           ),
+          // theme: FlexThemeData.dark(scheme: FlexScheme.mandyRed),
+          // // The Mandy red, dark theme.
+          // darkTheme: FlexThemeData.light(scheme: FlexScheme.mandyRed),
+          // // Use dark or light theme based on system setting.
+          // themeMode: ThemeMode.system,
           debugShowCheckedModeBanner: false,
           locale: _locale,
           supportedLocales: const [
