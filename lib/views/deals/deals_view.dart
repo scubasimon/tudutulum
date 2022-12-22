@@ -268,8 +268,8 @@ class _DealsView extends State<DealsView> with AutomaticKeepAliveClientMixin<Dea
             _enableRefresh = true;
           });
         },
-        style: const TextStyle(
-            color: ColorStyle.darkLabel,
+        style: TextStyle(
+            color: ColorStyle.getDarkLabel(),
             fontFamily: FontStyles.sfProText,
             fontSize: FontSizeConst.font17,
             fontWeight: FontWeight.w400
@@ -301,38 +301,41 @@ class _DealsView extends State<DealsView> with AutomaticKeepAliveClientMixin<Dea
             ),
           ),
         ),
-        body: StreamBuilder(
-          stream: _dealsViewModel.userLoginStream,
-          builder: (context, snapshot) {
-            if (snapshot.hasData && snapshot.data!) {
-              return StreamBuilder(
-                stream: _dealsViewModel.subscription,
-                builder: (context, snp) {
-                  if (snp.hasData && snp.data!) {
-                    return SmartRefresher(
-                      enablePullDown: _enableRefresh,
-                      enablePullUp: false,
-                      header: const WaterDropHeader(),
-                      controller: _refreshController,
-                      onRefresh: _refresh,
-                      child: ListView(
-                        controller: _scrollController,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
-                            child: createDealsView(),
-                          ),
-                        ],
-                      ),
-                    );
-                  } else {
-                    return Container();
-                  }
-                },
-              );
-            }
-            return Container();
-          },
+        body: Container(
+          color: ColorStyle.getSystemBackground(),
+          child: StreamBuilder(
+            stream: _dealsViewModel.userLoginStream,
+            builder: (context, snapshot) {
+              if (snapshot.hasData && snapshot.data!) {
+                return StreamBuilder(
+                  stream: _dealsViewModel.subscription,
+                  builder: (context, snp) {
+                    if (snp.hasData && snp.data!) {
+                      return SmartRefresher(
+                        enablePullDown: _enableRefresh,
+                        enablePullUp: false,
+                        header: const WaterDropHeader(),
+                        controller: _refreshController,
+                        onRefresh: _refresh,
+                        child: ListView(
+                          controller: _scrollController,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
+                              child: createDealsView(),
+                            ),
+                          ],
+                        ),
+                      );
+                    } else {
+                      return Container();
+                    }
+                  },
+                );
+              }
+              return Container();
+            },
+          ),
         ),
       ),
     );
@@ -351,8 +354,8 @@ class _DealsView extends State<DealsView> with AutomaticKeepAliveClientMixin<Dea
             children: [
               Text(
                 S.current.explore_deals,
-                style: const TextStyle(
-                  color: ColorStyle.darkLabel,
+                style: TextStyle(
+                  color: ColorStyle.getDarkLabel(),
                   fontSize: FontSizeConst.font16,
                   fontFamily: FontStyles.mouser,
                   fontWeight: FontWeight.w400,
@@ -486,8 +489,8 @@ class _DealsView extends State<DealsView> with AutomaticKeepAliveClientMixin<Dea
                                   begin: FractionalOffset.centerLeft,
                                   end: FractionalOffset.centerRight,
                                   colors: [
-                                    ColorStyle.systemBackground.withOpacity(0.8),
-                                    ColorStyle.systemBackground.withOpacity(0.0),
+                                    ColorStyle.getSystemBackground().withOpacity(0.8),
+                                    ColorStyle.getSystemBackground().withOpacity(0.0),
                                   ],
                                   stops: const [0.2, 1.0]
                               )),
@@ -500,8 +503,8 @@ class _DealsView extends State<DealsView> with AutomaticKeepAliveClientMixin<Dea
                                 Text(
                                   snapshot.data![index].titleShort,
                                   maxLines: 1,
-                                  style: const TextStyle(
-                                    color: ColorStyle.darkLabel,
+                                  style: TextStyle(
+                                    color: ColorStyle.getDarkLabel(),
                                     fontFamily: FontStyles.raleway,
                                     fontWeight: FontWeight.w800,
                                     fontSize: FontSizeConst.font14,
@@ -510,11 +513,11 @@ class _DealsView extends State<DealsView> with AutomaticKeepAliveClientMixin<Dea
                                 Text(
                                   snapshot.data![index].site.title,
                                   maxLines: 1,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontFamily: FontStyles.raleway,
                                     fontSize: FontSizeConst.font12,
                                     fontWeight: FontWeight.w400,
-                                    color: ColorStyle.darkLabel,
+                                    color: ColorStyle.getDarkLabel(),
                                   ),
                                 ),
                               ],
@@ -549,7 +552,7 @@ class _DealsView extends State<DealsView> with AutomaticKeepAliveClientMixin<Dea
               });
         } else {
           return Container(
-            color: ColorStyle.systemBackground,
+            color: ColorStyle.getSystemBackground(),
           );
         }
 

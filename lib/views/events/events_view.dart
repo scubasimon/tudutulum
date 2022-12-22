@@ -385,8 +385,8 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
                 (isAtTop)
                     ? CupertinoSearchTextField(
                   controller: _searchController,
-                  style: const TextStyle(
-                      color: ColorStyle.darkLabel,
+                  style: TextStyle(
+                      color: ColorStyle.getDarkLabel(),
                       fontFamily: FontStyles.sfProText,
                       fontSize: FontSizeConst.font17,
                       fontWeight: FontWeight.w400),
@@ -410,6 +410,7 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
             controller: _refreshController,
             onRefresh: _onRefresh,
             child: Container(
+              color: ColorStyle.getSystemBackground(),
               child: ListView(
                 controller: _scrollController,
                 children: <Widget>[createExploreEventsView()],
@@ -431,8 +432,8 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
             child: Text(
               S.current.explopre_events,
               // "Explore Events",
-              style: const TextStyle(
-                color: ColorStyle.darkLabel,
+              style: TextStyle(
+                color: ColorStyle.getDarkLabel(),
                 fontFamily: FontStyles.mouser,
                 fontSize: FontSizeConst.font16,
                 fontWeight: FontWeight.w400,
@@ -444,8 +445,8 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
             alignment: Alignment.centerLeft,
             child: Text(
               "December", // TODO: IMPL LOGIC FOR SHOWING WITH MONTH - (MAYBE YEAR)
-              style: const TextStyle(
-                color: ColorStyle.darkLabel,
+              style: TextStyle(
+                color: ColorStyle.getDarkLabel(),
                 fontFamily: FontStyles.raleway,
                 fontSize: FontSizeConst.font12,
                 fontWeight: FontWeight.w700,
@@ -517,8 +518,8 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
                                     .format(DateTime.fromMicrosecondsSinceEpoch(
                                         snapshot.data![index].datestart.millisecondsSinceEpoch*1000))
                                     .toString(),
-                                    style: const TextStyle(
-                                      color: ColorStyle.darkLabel,
+                                    style: TextStyle(
+                                      color: ColorStyle.getDarkLabel(),
                                       fontFamily: FontStyles.raleway,
                                       fontSize: FontSizeConst.font12,
                                       fontWeight: FontWeight.w600,
@@ -528,8 +529,8 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
                                     .format(DateTime.fromMicrosecondsSinceEpoch(
                                         snapshot.data![index].datestart.millisecondsSinceEpoch*1000))
                                     .toString(),
-                                style: const TextStyle(
-                                  color: ColorStyle.darkLabel,
+                                style: TextStyle(
+                                  color: ColorStyle.getDarkLabel(),
                                   fontFamily: FontStyles.raleway,
                                   fontSize: FontSizeConst.font12,
                                   fontWeight: FontWeight.w400,
@@ -546,8 +547,8 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
                                 Text(
                                     snapshot.data![index].title,
                                     overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      color: ColorStyle.darkLabel,
+                                    style: TextStyle(
+                                      color: ColorStyle.getDarkLabel(),
                                       fontFamily: FontStyles.raleway,
                                       fontSize: FontSizeConst.font12,
                                       fontWeight: FontWeight.w600,
@@ -556,8 +557,8 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
                                 Text(
                                     snapshot.data![index].description,
                                     overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      color: ColorStyle.darkLabel,
+                                    style: TextStyle(
+                                      color: ColorStyle.getDarkLabel(),
                                       fontFamily: FontStyles.raleway,
                                       fontSize: FontSizeConst.font12,
                                       fontWeight: FontWeight.w400,
@@ -572,8 +573,8 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
                                 ? Text(
                                 snapshot.data![index].cost,
                                 maxLines: 1,
-                                style: const TextStyle(
-                                  color: ColorStyle.darkLabel,
+                                style: TextStyle(
+                                  color: ColorStyle.getDarkLabel(),
                                   fontFamily: FontStyles.raleway,
                                   fontSize: FontSizeConst.font12,
                                   fontWeight: FontWeight.w600,
@@ -585,8 +586,8 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
                                 Text(
                                     snapshot.data![index].cost,
                                     maxLines: 1,
-                                    style: const TextStyle(
-                                      color: ColorStyle.darkLabel,
+                                    style: TextStyle(
+                                      color: ColorStyle.getDarkLabel(),
                                       fontFamily: FontStyles.raleway,
                                       fontSize: FontSizeConst.font12,
                                       fontWeight: FontWeight.w600,
@@ -595,8 +596,8 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
                                 Text(
                                     snapshot.data![index].currency,
                                     maxLines: 1,
-                                    style: const TextStyle(
-                                      color: ColorStyle.darkLabel,
+                                    style: TextStyle(
+                                      color: ColorStyle.getDarkLabel(),
                                       fontFamily: FontStyles.raleway,
                                       fontSize: FontSizeConst.font12,
                                       fontWeight: FontWeight.w400,

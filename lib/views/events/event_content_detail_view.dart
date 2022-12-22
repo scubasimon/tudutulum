@@ -234,11 +234,11 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: FontStyles.mouser,
                       fontSize: FontSizeConst.font12,
                       fontWeight: FontWeight.w400,
-                      color: ColorStyle.darkLabel,
+                      color: ColorStyle.getDarkLabel(),
                     ),
                   ),
                   InkWell(
@@ -262,8 +262,8 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
             ),
             Text(
               description,
-              style: const TextStyle(
-                color: ColorStyle.darkLabel,
+              style: TextStyle(
+                color: ColorStyle.getDarkLabel(),
                 fontWeight: FontWeight.w500,
                 fontSize: FontSizeConst.font12,
                 fontFamily: FontStyles.raleway,
@@ -292,8 +292,8 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
             return
               Text(
                 eventDescrip[index],
-                style: const TextStyle(
-                  color: ColorStyle.darkLabel,
+                style: TextStyle(
+                  color: ColorStyle.getDarkLabel(),
                   fontWeight: FontWeight.w400,
                   fontSize: FontSizeConst.font12,
                   fontFamily: FontStyles.raleway,
@@ -321,8 +321,8 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
                 height: 20,
                 child: Text(
                   S.current.further_information,
-                  style: const TextStyle(
-                    color: ColorStyle.darkLabel,
+                  style: TextStyle(
+                    color: ColorStyle.getDarkLabel(),
                     fontFamily: FontStyles.mouser,
                     fontSize: FontSizeConst.font12,
                     fontWeight: FontWeight.w400,
@@ -330,8 +330,8 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
                 )),
             Text(
               moreInformation,
-              style: const TextStyle(
-                color: ColorStyle.darkLabel,
+              style: TextStyle(
+                color: ColorStyle.getDarkLabel(),
                 fontWeight: FontWeight.w500,
                 fontSize: FontSizeConst.font12,
                 fontFamily: FontStyles.raleway,
@@ -360,11 +360,11 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
                 height: 20,
                 child: Text(
                   S.current.price,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: FontStyles.mouser,
                     fontSize: FontSizeConst.font12,
                     fontWeight: FontWeight.w400,
-                    color: ColorStyle.darkLabel,
+                    color: ColorStyle.getDarkLabel(),
                   ),
                 ),
               ),
@@ -373,8 +373,8 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
               ),
               Text(
                 "$cost $currentcy",
-                style: const TextStyle(
-                  color: ColorStyle.darkLabel,
+                style: TextStyle(
+                  color: ColorStyle.getDarkLabel(),
                   fontWeight: FontWeight.w400,
                   fontSize: FontSizeConst.font12,
                   fontFamily: FontStyles.raleway,
@@ -402,8 +402,8 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
                     height: 20,
                     child: Text(
                         S.current.venue_contact,
-                        style: const TextStyle(
-                          color: ColorStyle.darkLabel,
+                        style: TextStyle(
+                          color: ColorStyle.getDarkLabel(),
                           fontSize: FontSizeConst.font12,
                           fontWeight: FontWeight.w500,
                           fontFamily: FontStyles.raleway,
@@ -527,8 +527,8 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
         margin: const EdgeInsets.only(top: 18, bottom: 80),
         alignment: Alignment.center,
         child: Text(S.current.please_report,
-            style: const TextStyle(
-              color: ColorStyle.darkLabel,
+            style: TextStyle(
+              color: ColorStyle.getDarkLabel(),
               fontSize: FontSizeConst.font12,
               fontWeight: FontWeight.w500,
               fontFamily: FontStyles.raleway,

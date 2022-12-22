@@ -282,45 +282,48 @@ class _MapScreenView extends State<MapScreenView> {
                 )),
           ),
         ),
-        body: Stack(
-          key: _scaffoldKey,
-          alignment: Alignment.topCenter,
-          children: [
-            GoogleMap(
-              zoomGesturesEnabled: true,
-              //enable Zoom in, out on map
-              zoomControlsEnabled: false,
-              initialCameraPosition: initCameraPosition,
-              // polylines: polyline,
-              mapType: MapType.normal,
-              //map type
-              onMapCreated: (controller) {
-                //method called when map is created
-                setState(() {
-                  mapController = controller;
-                  isMapCreated = true;
-                  _addMarker(_mapScreenViewModel.listSiteForMapView);
-                });
-              },
-              myLocationEnabled: true,
-              myLocationButtonEnabled: false,
-              markers: markers,
-            ),
-            Positioned(
-              top: 15,
-              right: 15,
-              child: InkWell(
-                onTap: () {
-                  _homeViewModel.redirectTab(0);
+        body: Container(
+          color: ColorStyle.getSystemBackground(),
+          child: Stack(
+            key: _scaffoldKey,
+            alignment: Alignment.topCenter,
+            children: [
+              GoogleMap(
+                zoomGesturesEnabled: true,
+                //enable Zoom in, out on map
+                zoomControlsEnabled: false,
+                initialCameraPosition: initCameraPosition,
+                // polylines: polyline,
+                mapType: MapType.normal,
+                //map type
+                onMapCreated: (controller) {
+                  //method called when map is created
+                  setState(() {
+                    mapController = controller;
+                    isMapCreated = true;
+                    _addMarker(_mapScreenViewModel.listSiteForMapView);
+                  });
                 },
-                child: Image.asset(
-                  ImagePath.closeIcon,
-                  width: 30,
-                  fit: BoxFit.contain,
-                ),
+                myLocationEnabled: true,
+                myLocationButtonEnabled: false,
+                markers: markers,
               ),
-            )
-          ],
+              Positioned(
+                top: 15,
+                right: 15,
+                child: InkWell(
+                  onTap: () {
+                    _homeViewModel.redirectTab(0);
+                  },
+                  child: Image.asset(
+                    ImagePath.closeIcon,
+                    width: 30,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );

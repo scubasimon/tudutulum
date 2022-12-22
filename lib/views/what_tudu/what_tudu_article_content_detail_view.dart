@@ -96,10 +96,13 @@ class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDeta
           header: WaterDropHeader(),
           controller: _refreshController,
           onRefresh: _onRefresh,
-          child: ListView(
-            children: <Widget>[
-              getExploreAllLocationView(),
-            ],
+          child: Container(
+            color: ColorStyle.getSystemBackground(),
+            child: ListView(
+              children: <Widget>[
+                getExploreAllLocationView(),
+              ],
+            ),
           ),
         ),
       ),
@@ -186,8 +189,8 @@ class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDeta
               height: 20,
               child: Text(
                 listContent["title"]![contentIndex],
-                style: const TextStyle(
-                  color: ColorStyle.darkLabel,
+                style: TextStyle(
+                  color: ColorStyle.getDarkLabel(),
                   fontFamily: FontStyles.mouser,
                   fontSize: FontSizeConst.font11,
                   fontWeight: FontWeight.w400,
@@ -196,8 +199,8 @@ class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDeta
           ),
           Text(
             listContent["content"]![contentIndex],
-            style: const TextStyle(
-              color: ColorStyle.darkLabel,
+            style: TextStyle(
+              color: ColorStyle.getDarkLabel(),
               fontWeight: FontWeight.w400,
               fontSize: FontSizeConst.font12,
               fontFamily: FontStyles.raleway,

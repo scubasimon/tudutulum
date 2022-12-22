@@ -18,12 +18,6 @@ class WhatTuduSiteContentDetailViewModel extends BaseViewModel {
   final _isBookmark = BehaviorSubject<bool>.seeded(false);
   Stream<bool> get isBookmark => _isBookmark;
 
-  final _isLoading = BehaviorSubject<bool>();
-  Stream<bool> get loading => _isLoading;
-
-  final _error = BehaviorSubject<CustomError>();
-  Stream<CustomError> get error => _error;
-
   factory WhatTuduSiteContentDetailViewModel() {
     return _instance;
   }
@@ -33,6 +27,9 @@ class WhatTuduSiteContentDetailViewModel extends BaseViewModel {
   late Site siteContentDetail;
 
   late bool serviceEnabled;
+
+  bool isLoading = false;
+
   locationLib.Location location = locationLib.Location();
 
   final BookmarkRepository _bookmarkRepository = BookmarkRepositoryImpl();
@@ -52,26 +49,26 @@ class WhatTuduSiteContentDetailViewModel extends BaseViewModel {
   }
 
   void bookmarkAction() async {
-    _isLoading.add(true);
+    _observableService.homeProgressLoadingController.sink.add(true);
     if (_isBookmark.value) {
       try {
         _isBookmark.add(false);
         await _bookmarkRepository.unBookmark(siteContentDetail.siteId);
-        _isLoading.add(false);
+        _observableService.homeProgressLoadingController.sink.add(false);
       } catch (e) {
         _isBookmark.add(true);
-        _isLoading.add(false);
-        _error.add(e as CustomError);
+        _observableService.homeProgressLoadingController.sink.add(false);
+        _observableService.homeErrorController.sink.add(e as CustomError);
       }
     } else {
       try {
         _isBookmark.add(true);
         await _bookmarkRepository.bookmark(siteContentDetail.siteId);
-        _isLoading.add(false);
+        _observableService.homeProgressLoadingController.sink.add(false);
       } catch (e) {
         _isBookmark.add(false);
-        _isLoading.add(false);
-        _error.add(e as CustomError);
+        _observableService.homeProgressLoadingController.sink.add(false);
+        _observableService.homeErrorController.sink.add(e as CustomError);
       }
     }
   }

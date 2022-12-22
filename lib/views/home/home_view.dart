@@ -30,6 +30,7 @@ import 'package:tudu/consts/images/ImagePath.dart';
 import 'package:tudu/generated/l10n.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../models/error.dart';
 import '../../services/observable/observable_serivce.dart';
 import '../common/alert.dart';
 
@@ -76,6 +77,8 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
   StreamSubscription<int>? redirectTabStreamListener;
   StreamSubscription<String>? networkStreamListener;
   StreamSubscription<List<GeoPoint>>? redirectToGoogleMapStreamListener = null;
+  StreamSubscription<bool>? loadingListener = null;
+  StreamSubscription<CustomError>? errorListener = null;
 
   @override
   void initState() {
@@ -83,6 +86,8 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
     listenToNetwork();
     listenToRedirectTab();
     listenToRedirectAndDirectionGoogleMap();
+    listenToLoading();
+    listenToError();
     //set orientation is portrait
     pageIndex = widget.pageIndex;
     SystemChrome.setPreferredOrientations(
@@ -112,6 +117,35 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
           pageIndex = data;
         });
       });
+  }
+
+  void listenToLoading() {
+    loadingListener ??= _observableService.homeProgressLoadingStream.asBroadcastStream().listen((data) {
+      print("loadingListener ${data}");
+      if (data) {
+        _showLoading();
+      } else {
+        if (_homeViewModel.isLoading) {
+          _homeViewModel.isLoading = false;
+          Navigator.of(context).pop();
+        }
+      }
+    });
+  }
+
+  void listenToError() {
+    errorListener ??= _observableService.homeErrorStream.asBroadcastStream().listen((event) {
+      print("errorListener ${event}");
+      if (event.code == LocationError.locationPermission.code) {
+        showDialog(context: context, builder: (context) {
+          return ErrorAlert.alertPermission(context, S.current.location_permission_message);
+        });
+      } else {
+        showDialog(context: context, builder: (context){
+          return ErrorAlert.alert(context, event.message ?? S.current.failed);
+        });
+      }
+    });
   }
 
   void listenToRedirectAndDirectionGoogleMap() {
@@ -148,6 +182,8 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
   @override
   void dispose() {
     print("dispose -> home_view");
+    errorListener?.cancel();
+    loadingListener?.cancel();
     redirectToGoogleMapStreamListener?.cancel();
     networkStreamListener?.cancel();
     redirectTabStreamListener?.cancel();
@@ -189,9 +225,9 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
       child: Scaffold(
         key: _scaffoldKey,
         drawer: Drawer(
-          backgroundColor: ColorStyle.systemBackground,
+          backgroundColor: ColorStyle.getSystemBackground(),
           child: Container(
-            color: ColorStyle.systemBackground,
+            color: ColorStyle.getSystemBackground(),
             margin: const EdgeInsets.only(left: 24, right: 24, top: 24, bottom: 16),
             child: SafeArea(
               child: ListView(
@@ -328,8 +364,8 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                     children: [
                       Container(
                         height: 48,
-                        decoration: const BoxDecoration(
-                            color: ColorStyle.systemBackground,
+                        decoration: BoxDecoration(
+                            color: ColorStyle.getSystemBackground(),
                             borderRadius: BorderRadius.all(
                                 Radius.circular(24.0)
                             ),
@@ -386,8 +422,8 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                           const SizedBox(width: 12,),
                           Text(
                             S.current.setting,
-                            style: const TextStyle(
-                              color: ColorStyle.darkLabel,
+                            style: TextStyle(
+                              color: ColorStyle.getDarkLabel(),
                               fontSize: FontSizeConst.font12,
                               fontFamily: FontStyles.raleway,
                               fontWeight: FontWeight.w400,
@@ -419,7 +455,7 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
           ),
         ),
         drawerEnableOpenDragGesture: false,
-        backgroundColor: ColorStyle.secondaryBackground,
+        backgroundColor: ColorStyle.getSecondaryBackground(),
         body: pages[pageIndex],
         bottomNavigationBar: SafeArea(
           child: buildMyNavBar(context),
@@ -430,8 +466,8 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
 
   Widget buildMyNavBar(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: ColorStyle.secondaryBackground,
+      decoration: BoxDecoration(
+        color: ColorStyle.getSecondaryBackground(),
         border: Border(
           top: BorderSide(
             color: ColorStyle.border,
@@ -655,6 +691,7 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
   }
 
   void _showLoading() {
+    _homeViewModel.isLoading = true;
     showDialog(
         context: context,
         barrierDismissible: false,

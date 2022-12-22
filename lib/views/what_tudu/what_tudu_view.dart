@@ -286,7 +286,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                           },
                         ),
                         const Spacer(),
-                        PullDownButton (
+                        PullDownButton(
                           itemBuilder: (context) => [
                             PullDownMenuItem(
                               title: S.current.alphabet,
@@ -409,7 +409,8 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                                                 width: 28,
                                                 height: 28,
                                               ),
-                                              enabled: _homeViewModel.whatTuduBussinessFilterType != ((counter) / 2).round(),
+                                              enabled:
+                                                  _homeViewModel.whatTuduBussinessFilterType != ((counter) / 2).round(),
                                               onTap: () {
                                                 _whatTuduViewModel.getDataWithFilterSortSearch(
                                                   _homeViewModel.listBusiness[((counter) / 2).round()], // get business
@@ -456,8 +457,8 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                   (isAtTop)
                       ? CupertinoSearchTextField(
                           controller: _searchController,
-                          style: const TextStyle(
-                              color: ColorStyle.darkLabel,
+                          style: TextStyle(
+                              color: ColorStyle.getDarkLabel(),
                               fontFamily: FontStyles.sfProText,
                               fontSize: FontSizeConst.font17,
                               fontWeight: FontWeight.w400),
@@ -480,7 +481,10 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
             header: const WaterDropHeader(),
             controller: _refreshController,
             onRefresh: _onRefresh,
-            child: getMainView(),
+            child: Container(
+                color: ColorStyle.getSystemBackground(),
+                child: getMainView()
+            ),
           )),
     );
   }
@@ -541,8 +545,8 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   getArticleTitleText(_homeViewModel.whatTuduBussinessFilterType),
-                  style: const TextStyle(
-                      color: ColorStyle.darkLabel,
+                  style: TextStyle(
+                      color: ColorStyle.getDarkLabel(),
                       fontSize: FontSizeConst.font16,
                       fontWeight: FontWeight.w400,
                       fontFamily: FontStyles.mouser),
@@ -613,11 +617,11 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                             child: Center(
                               child: RoundedBackgroundText(
                                 list[index].title,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontFamily: FontStyles.raleway,
                                   fontSize: FontSizeConst.font12,
                                   fontWeight: FontWeight.w600,
-                                  color: ColorStyle.darkLabel,
+                                  color: ColorStyle.getDarkLabel(),
                                 ),
                                 backgroundColor: ColorStyle.tertiaryBackground,
                               ),
@@ -655,8 +659,8 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                   children: [
                     Text(
                       getSiteTitleText(_homeViewModel.whatTuduBussinessFilterType),
-                      style: const TextStyle(
-                        color: ColorStyle.darkLabel,
+                      style: TextStyle(
+                        color: ColorStyle.getDarkLabel(),
                         fontSize: FontSizeConst.font16,
                         fontWeight: FontWeight.w400,
                         fontFamily: FontStyles.mouser,
@@ -781,14 +785,17 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                     alignment: Alignment.centerLeft,
                     margin: const EdgeInsets.only(bottom: 24, left: 16),
                     decoration: BoxDecoration(
-                      gradient:
-                          LinearGradient(begin: FractionalOffset.centerLeft, end: FractionalOffset.centerRight, colors: [
-                        ColorStyle.secondaryBackground.withOpacity(0.6),
-                        ColorStyle.secondaryBackground.withOpacity(0.0),
-                      ], stops: const [
-                        0.6,
-                        1.0
-                      ]),
+                      gradient: LinearGradient(
+                          begin: FractionalOffset.centerLeft,
+                          end: FractionalOffset.centerRight,
+                          colors: [
+                            ColorStyle.getSecondaryBackground().withOpacity(0.6),
+                            ColorStyle.getSecondaryBackground().withOpacity(0.0),
+                          ],
+                          stops: const [
+                            0.6,
+                            1.0
+                          ]),
                     ),
                     child: Wrap(
                       children: [
@@ -801,8 +808,8 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                               Text(
                                 data[index].title,
                                 overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  color: ColorStyle.darkLabel,
+                                style: TextStyle(
+                                  color: ColorStyle.getDarkLabel(),
                                   fontFamily: FontStyles.raleway,
                                   fontWeight: FontWeight.w800,
                                   fontSize: FontSizeConst.font14,
@@ -811,11 +818,11 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                               Text(
                                 data[index].subTitle,
                                 overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontFamily: FontStyles.raleway,
                                   fontSize: FontSizeConst.font12,
                                   fontWeight: FontWeight.w400,
-                                  color: ColorStyle.darkLabel,
+                                  color: ColorStyle.getDarkLabel(),
                                 ),
                               ),
                             ],
@@ -836,12 +843,29 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
       return InkWell(
         onTap: () {
           if (FirebaseAuth.instance.currentUser != null) {
-            final dealData = Deal(dealId, false, "", [], Site(active: true, title: "", subTitle: "", siteId: 0, business: [], siteContent: SiteContent(), images: []), DateTime.now(), DateTime.now(), "", "", "", "");
+            final dealData = Deal(
+                dealId,
+                false,
+                "",
+                [],
+                Site(
+                    active: true,
+                    title: "",
+                    subTitle: "",
+                    siteId: 0,
+                    business: [],
+                    siteContent: SiteContent(),
+                    images: []),
+                DateTime.now(),
+                DateTime.now(),
+                "",
+                "",
+                "",
+                "");
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) =>
-                        DealDetailView(deal: dealData, preview: true),
+                    builder: (context) => DealDetailView(deal: dealData, preview: true),
                     settings: const RouteSettings(name: StrConst.detalDetailView)));
           } else {
             showDialog(

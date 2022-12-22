@@ -74,8 +74,8 @@ class _SettingView extends State<SettingView> {
                     Center(
                       child: Text(
                         S.current.setting,
-                        style: const TextStyle(
-                          color: ColorStyle.darkLabel,
+                        style: TextStyle(
+                          color: ColorStyle.getDarkLabel(),
                           fontSize: FontSizeConst.font16,
                           fontFamily: FontStyles.mouser,
                           fontWeight: FontWeight.w400
@@ -88,8 +88,8 @@ class _SettingView extends State<SettingView> {
           ),
         ),
         body: Container(
-          padding: const EdgeInsets.only(top: 24, bottom: 24, left: 16, right: 16),
-          color: ColorStyle.systemBackground,
+          padding: EdgeInsets.only(top: 24, bottom: 24, left: 16, right: 16),
+          color: ColorStyle.getSystemBackground(),
           child: Consumer<SettingViewModel>(
             builder: (context, model, child){
               return ListView(
@@ -98,8 +98,8 @@ class _SettingView extends State<SettingView> {
                     children: [
                       Text(
                         S.current.push_notification,
-                        style: const TextStyle(
-                          color: ColorStyle.darkLabel,
+                        style: TextStyle(
+                          color: ColorStyle.getDarkLabel(),
                           fontWeight: FontWeight.w400,
                           fontFamily: FontStyles.mouser,
                           fontSize: FontSizeConst.font16,
@@ -121,11 +121,11 @@ class _SettingView extends State<SettingView> {
                     children: [
                       Text(
                         S.current.push_notification_new_offer,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: FontSizeConst.font14,
                           fontWeight: FontWeight.w400,
                           fontFamily: FontStyles.raleway,
-                          color: ColorStyle.darkLabel,
+                          color: ColorStyle.getDarkLabel(),
                         ),
                       ),
                       const Spacer(),
@@ -145,11 +145,11 @@ class _SettingView extends State<SettingView> {
                     children: [
                       Text(
                         S.current.push_notification_available_offer,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: FontSizeConst.font14,
                           fontWeight: FontWeight.w400,
                           fontFamily: FontStyles.raleway,
-                          color: ColorStyle.darkLabel,
+                          color: ColorStyle.getDarkLabel(),
                         ),
                       ),
                       const Spacer(),
@@ -172,8 +172,8 @@ class _SettingView extends State<SettingView> {
                   ),
                   Text(
                     S.current.preferences,
-                    style: const TextStyle(
-                      color: ColorStyle.darkLabel,
+                    style: TextStyle(
+                      color: ColorStyle.getDarkLabel(),
                       fontWeight: FontWeight.w400,
                       fontFamily: FontStyles.mouser,
                       fontSize: FontSizeConst.font16,
@@ -183,11 +183,11 @@ class _SettingView extends State<SettingView> {
                     children: [
                       Text(
                         S.current.dark_mode,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: FontSizeConst.font14,
                           fontWeight: FontWeight.w400,
                           fontFamily: FontStyles.raleway,
-                          color: ColorStyle.darkLabel,
+                          color: ColorStyle.getDarkLabel(),
                         ),
                       ),
                       const Spacer(),
@@ -197,7 +197,7 @@ class _SettingView extends State<SettingView> {
                         onChanged: (value) {
                           setState(() {
                             model.setDarkMode(value);
-                            PrefUtil.setValue(StrConst.isDarkModeNew, value);
+                            PrefUtil.setValue(StrConst.isDarkMode, value);
                           });
                         },
                       )
@@ -205,11 +205,11 @@ class _SettingView extends State<SettingView> {
                   ),
                   Text(
                     S.current.dark_mode_enable_info,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: FontSizeConst.font10,
                       fontWeight: FontWeight.w600,
                       fontFamily: FontStyles.raleway,
-                      color: ColorStyle.darkLabel,
+                      color: ColorStyle.getDarkLabel(),
                       fontStyle: FontStyle.italic,
                     ),
                   ),
@@ -218,11 +218,11 @@ class _SettingView extends State<SettingView> {
                     children: [
                       Text(
                         S.current.hide_articles,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: FontSizeConst.font14,
                           fontWeight: FontWeight.w400,
                           fontFamily: FontStyles.raleway,
-                          color: ColorStyle.darkLabel,
+                          color: ColorStyle.getDarkLabel(),
                         ),
                       ),
                       const Spacer(),
@@ -239,11 +239,11 @@ class _SettingView extends State<SettingView> {
                   ),
                   Text(
                     S.current.hide_articles_info,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: FontSizeConst.font10,
                       fontWeight: FontWeight.w600,
                       fontFamily: FontStyles.raleway,
-                      color: ColorStyle.darkLabel,
+                      color: ColorStyle.getDarkLabel(),
                       fontStyle: FontStyle.italic,
                     ),
                   ),
@@ -257,11 +257,11 @@ class _SettingView extends State<SettingView> {
                     children: [
                       Text(
                         S.current.clear_saved_data,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: FontSizeConst.font14,
                           fontWeight: FontWeight.w400,
                           fontFamily: FontStyles.raleway,
-                          color: ColorStyle.darkLabel,
+                          color: ColorStyle.getDarkLabel(),
                         ),
                       ),
                       const Spacer(),
@@ -281,11 +281,11 @@ class _SettingView extends State<SettingView> {
                     padding: const EdgeInsets.only(top: 8, bottom: 24),
                     child: Text(
                       S.current.clear_saved_data_info,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: FontSizeConst.font10,
                         fontWeight: FontWeight.w600,
                         fontFamily: FontStyles.raleway,
-                        color: ColorStyle.darkLabel,
+                        color: ColorStyle.getDarkLabel(),
                         fontStyle: FontStyle.italic,
                       ),
                     ),
