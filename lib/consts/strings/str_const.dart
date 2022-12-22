@@ -1,4 +1,8 @@
 class StrConst {
+
+  static const subscriptionAppleKey = "appl_CPoQEtilwBpuWuWaHLkymHMzaTw";
+  static const subscriptionGoogleKey = "goog_LlFiMOevjRBhxKPBHVNDEpgFtCb";
+
   static const mapScene = "MapScene";
   static const whatTuduScene = "WhatTuduScreen";
   static const whatTuduSiteContentDetailScene = "ehatTuduSiteContentDetail";
@@ -31,5 +35,6 @@ class StrConst {
   static const String dateNotification = "date_notification";
   static const String lastLocation = "last_location";
   static const String lastTime = "last_time";
+  static const String selectMap = "select_map";
 
 }

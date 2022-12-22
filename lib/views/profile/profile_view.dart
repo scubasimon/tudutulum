@@ -76,6 +76,8 @@ class _ProfileView extends State<ProfileView> {
 
   @override
   Widget build(BuildContext context) {
+    var shortestSide = MediaQuery.of(context).size.shortestSide;
+    final bool useMobileLayout = shortestSide < 600;
     return ExitAppScope(
       child: Container(
         color: ColorStyle.getSystemBackground(),
@@ -93,11 +95,11 @@ class _ProfileView extends State<ProfileView> {
               child: ListView(
                 controller: _scrollController,
                 children: <Widget>[
-                  createIconView(),
-                  createProfileView(),
-                  createPasswordView(),
-                  createTermView(),
-                  getButton(),
+                  createIconView(useMobileLayout),
+                  createProfileView(useMobileLayout),
+                  createPasswordView(useMobileLayout),
+                  createTermView(useMobileLayout),
+                  getButton(useMobileLayout),
                 ],
               ),
             ),
@@ -107,21 +109,21 @@ class _ProfileView extends State<ProfileView> {
     );
   }
 
-  Widget createIconView() {
+  Widget createIconView(bool useMobileLayout) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 52),
+      margin: EdgeInsets.only(bottom: useMobileLayout ? 30 : 80),
       child: Column(
         children: [
           Image.asset(
             ImagePath.tab1stActiveIcon,
-            height: 92,
+            height: useMobileLayout ? 84 : 100,
             fit: BoxFit.contain,
           ),
           Text(
             S.current.your_account,
-            style: const TextStyle(
+            style: TextStyle(
               color: ColorStyle.primary,
-              fontSize: 34,
+              fontSize: useMobileLayout ? 30 : 34,
               fontFamily: FontStyles.sfProText,
               fontWeight: FontWeight.w700,
             ),
@@ -150,7 +152,7 @@ class _ProfileView extends State<ProfileView> {
     );
   }
 
-  Widget createProfileView() {
+  Widget createProfileView(bool useMobileLayout) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -197,7 +199,7 @@ class _ProfileView extends State<ProfileView> {
           ],
         ),
         Padding(
-          padding: const EdgeInsets.only(bottom: 12, top: 12),
+          padding: EdgeInsets.only(bottom: 12, top: useMobileLayout ? 12 : 36),
           child: Text(
             S.current.update_details,
             style: const TextStyle(
@@ -215,7 +217,10 @@ class _ProfileView extends State<ProfileView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox.fromSize(
-                  size: Size((MediaQuery.of(context).size.width - 32.0 - 10.0) / 2.0, 36.0),
+                  size: Size(
+                    (MediaQuery.of(context).size.width - 42.0) / 2.0,
+                    useMobileLayout ? 30 : 36
+                  ),
                   child: TextField(
                     cursorColor: ColorStyle.primary,
                     controller: _firstNameController,
@@ -237,7 +242,6 @@ class _ProfileView extends State<ProfileView> {
                     ),
                   ),
                 ),
-
                 Container(
                   width: (MediaQuery.of(context).size.width - 32.0 - 10.0) / 2.0,
                   height: 1,
@@ -245,15 +249,16 @@ class _ProfileView extends State<ProfileView> {
                 )
               ],
             ),
-
             Container(width: 10,),
-
             Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox.fromSize(
-                  size: Size((MediaQuery.of(context).size.width - 32.0 - 10.0) / 2.0, 36.0),
+                  size: Size(
+                      (MediaQuery.of(context).size.width - 42.0) / 2.0,
+                      useMobileLayout ? 30 : 36
+                  ),
                   child: TextField(
                     cursorColor: ColorStyle.primary,
                     controller: _familyNameController,
@@ -275,7 +280,6 @@ class _ProfileView extends State<ProfileView> {
                     ),
                   ),
                 ),
-
                 Container(
                   width: (MediaQuery.of(context).size.width - 32.0 - 10.0) / 2.0,
                   height: 1,
@@ -287,7 +291,9 @@ class _ProfileView extends State<ProfileView> {
         ),
         const SizedBox(height: 12,),
         SizedBox.fromSize(
-          size: const Size.fromHeight(36),
+          size: Size.fromHeight(
+            useMobileLayout ? 30 : 36
+          ),
           child: TextField(
             cursorColor: ColorStyle.primary,
             keyboardType: TextInputType.emailAddress,
@@ -317,7 +323,9 @@ class _ProfileView extends State<ProfileView> {
         ),
         const SizedBox(height: 12,),
         SizedBox.fromSize(
-          size: const Size.fromHeight(36),
+          size: Size.fromHeight(
+            useMobileLayout ? 30 : 36
+          ),
           child: TextField(
             cursorColor: ColorStyle.primary,
             keyboardType: TextInputType.phone,
@@ -349,9 +357,9 @@ class _ProfileView extends State<ProfileView> {
     );
   }
 
-  Widget createPasswordView() {
+  Widget createPasswordView(bool useMobileLayout) {
     return Container(
-      padding: const EdgeInsets.only(top: 30),
+      padding: EdgeInsets.only(top: useMobileLayout ? 16 : 36),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -371,7 +379,10 @@ class _ProfileView extends State<ProfileView> {
           Row(
             children: [
               SizedBox.fromSize(
-                size: Size(MediaQuery.of(context).size.width - 56.0, 36),
+                size: Size(
+                  MediaQuery.of(context).size.width - 56.0,
+                  useMobileLayout ? 30 : 36,
+                ),
                 child: TextField(
                   cursorColor: ColorStyle.primary,
                   obscureText: _hideNewPassword,
@@ -416,11 +427,14 @@ class _ProfileView extends State<ProfileView> {
             height: 1,
             color: ColorStyle.tertiaryBackground,
           ),
-          const SizedBox(height: 10,),
+          const SizedBox(height: 12,),
           Row(
             children: [
               SizedBox.fromSize(
-                size: Size(MediaQuery.of(context).size.width - 56.0, 36),
+                size: Size(
+                  MediaQuery.of(context).size.width - 56,
+                  useMobileLayout ? 30 : 36
+                ),
                 child: TextField(
                   cursorColor: ColorStyle.primary,
                   obscureText: _hideRepeatNewPassword,
@@ -494,67 +508,74 @@ class _ProfileView extends State<ProfileView> {
     );
   }
 
-  Widget createTermView() {
+  Widget createTermView(bool useMobileLayout) {
     return Container(
-      margin: const EdgeInsets.only(top: 30),
+      margin: EdgeInsets.only(top: useMobileLayout ? 16 : 72),
       child: Column(
         children: [
-          Row(
-            children: [
-              Checkbox(
-                value: _isReceiveNewOffer,
-                activeColor: ColorStyle.primary,
-                onChanged: (value) {
-                  setState(() {
-                    if (value != null) {
-                      _isReceiveNewOffer = value;
-                    }
-                  });
-                },
-              ),
-              Text(
-                S.current.receive_new_offer_notification_email,
-                style: const TextStyle(
-                  color: ColorStyle.tertiaryDarkLabel60,
-                  fontWeight: FontWeight.w400,
-                  fontSize: FontSizeConst.font13,
-                  fontFamily: FontStyles.sfProText,
+          SizedBox(
+            height: 24.0,
+            child: Row(
+              children: [
+                Checkbox(
+                  value: _isReceiveNewOffer,
+                  activeColor: ColorStyle.primary,
+                  onChanged: (value) {
+                    setState(() {
+                      if (value != null) {
+                        _isReceiveNewOffer = value;
+                      }
+                    });
+                  },
                 ),
-              ),
-            ],
+                Text(
+                  S.current.receive_new_offer_notification_email,
+                  style: const TextStyle(
+                    color: ColorStyle.tertiaryDarkLabel60,
+                    fontWeight: FontWeight.w400,
+                    fontSize: FontSizeConst.font13,
+                    fontFamily: FontStyles.sfProText,
+                  ),
+                ),
+              ],
+            ),
           ),
-          Row(
-            children: [
-              Checkbox(
-                value: _isReceiveMonthlyNewsLetter,
-                activeColor: ColorStyle.primary,
-                onChanged: (value) {
-                  setState(() {
-                    if (value != null) {
-                      _isReceiveMonthlyNewsLetter = value;
-                    }
-                  });
-                },
-              ),
-              Text(
-                S.current.receive_monthly_newsletter_email,
-                style: const TextStyle(
-                  color: ColorStyle.tertiaryDarkLabel60,
-                  fontWeight: FontWeight.w400,
-                  fontSize: FontSizeConst.font13,
-                  fontFamily: FontStyles.sfProText,
+          const SizedBox(height: 8,),
+          SizedBox(
+            height: 24,
+            child: Row(
+              children: [
+                Checkbox(
+                  value: _isReceiveMonthlyNewsLetter,
+                  activeColor: ColorStyle.primary,
+                  onChanged: (value) {
+                    setState(() {
+                      if (value != null) {
+                        _isReceiveMonthlyNewsLetter = value;
+                      }
+                    });
+                  },
                 ),
-              ),
-            ],
+                Text(
+                  S.current.receive_monthly_newsletter_email,
+                  style: const TextStyle(
+                    color: ColorStyle.tertiaryDarkLabel60,
+                    fontWeight: FontWeight.w400,
+                    fontSize: FontSizeConst.font13,
+                    fontFamily: FontStyles.sfProText,
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget getButton() {
+  Widget getButton(bool useMobileLayout) {
     return Container(
-      margin: const EdgeInsets.only(top: 30),
+      margin: EdgeInsets.only(top: useMobileLayout ? 20 : 48),
       child: Column(
         children: [
           Align(
@@ -581,7 +602,7 @@ class _ProfileView extends State<ProfileView> {
           ),
 
           Padding(
-            padding: const EdgeInsets.only(top: 12),
+            padding: EdgeInsets.only(top: useMobileLayout ? 12 : 24),
             child: InkWell(
               onTap: _signOutAction,
               hoverColor: Colors.transparent,
@@ -600,7 +621,7 @@ class _ProfileView extends State<ProfileView> {
           ),
 
           Container(
-            margin: const EdgeInsets.only(top: 12, bottom: 30),
+            margin: EdgeInsets.only(top: useMobileLayout ? 12 : 24, bottom: 30),
             child: InkWell(
               hoverColor: Colors.transparent,
               focusColor: Colors.transparent,

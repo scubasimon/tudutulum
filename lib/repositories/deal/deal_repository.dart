@@ -72,7 +72,7 @@ class DealRepositoryImpl extends DealRepository {
       if (param.title == null) {
         return true;
       } else {
-        return element.titleShort.toLowerCase().contains(param.title!.toLowerCase());
+        return element.site.title.toLowerCase().contains(param.title!.toLowerCase());
       }
     })
         .where((element) => element.active)

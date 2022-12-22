@@ -168,9 +168,9 @@ Future initPurchase() async {
   PurchasesConfiguration configuration;
   Purchases.setDebugLogsEnabled(true);
   if (Platform.isAndroid) {
-    configuration = PurchasesConfiguration("appl_CPoQEtilwBpuWuWaHLkymHMzaTw");
+    configuration = PurchasesConfiguration(StrConst.subscriptionGoogleKey);
   } else {
-    configuration = PurchasesConfiguration("appl_CPoQEtilwBpuWuWaHLkymHMzaTw");
+    configuration = PurchasesConfiguration(StrConst.subscriptionAppleKey);
   }
   await Purchases.configure(configuration);
 }

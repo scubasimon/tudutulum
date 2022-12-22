@@ -5,7 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:map_launcher/map_launcher.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:tudu/consts/font/font_size_const.dart';
+import 'package:tudu/consts/strings/str_const.dart';
+import 'package:tudu/utils/pref_util.dart';
 import 'package:tudu/viewmodels/deal_viewmodel.dart';
+import 'package:tudu/viewmodels/what_tudu_site_content_detail_viewmodel.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
 import 'package:tudu/consts/color/Colors.dart';
 import 'package:tudu/consts/images/ImagePath.dart';
@@ -13,6 +16,7 @@ import 'package:tudu/consts/font/Fonts.dart';
 import 'package:tudu/generated/l10n.dart';
 import 'package:tudu/models/deal.dart';
 import 'package:tudu/views/common/alert.dart';
+import 'package:tudu/views/photo/photo_view.dart';
 import 'package:tudu/views/what_tudu/what_tudu_site_content_detail_view.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -153,7 +157,11 @@ class _DealDetailView extends State<DealDetailView> {
   List<Widget> _dealDetail(Deal deal) {
     List<Widget> items = [
       InkWell(
-        onTap: () {},
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => PhotoViewUtil(banner: deal.images))
+          );
+        },
         child: Container(
           alignment: Alignment.centerLeft,
           width: MediaQuery.of(context).size.width,
@@ -262,29 +270,35 @@ class _DealDetailView extends State<DealDetailView> {
           padding: EdgeInsets.only(top: 12, left: 16, right: 16),
           child: Divider(color: Colors.black,),
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 16, right: 16),
-                  child: Text(
-                    S.current.deal_available,
-                    style: TextStyle(
-                      color: ColorStyle.getDarkLabel(),
-                      fontFamily: FontStyles.raleway,
-                      fontSize: 12,
-                      fontWeight: FontWeight.normal,
+        InkWell(
+          onTap: () {
+            WhatTuduSiteContentDetailViewModel().setSiteContentDetailCover(deal.site);
+            Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => const WhatTuduSiteContentDetailView())
+            );
+          },
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16, right: 16),
+                    child: Text(
+                      S.current.deal_available,
+                      style: TextStyle(
+                        color: ColorStyle.getDarkLabel(),
+                        fontFamily: FontStyles.raleway,
+                        fontSize: 12,
+                        fontWeight: FontWeight.normal,
+                      ),
                     ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 4, left: 16, right: 16),
-                  child: InkWell(
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4, left: 16, right: 16),
                     child: Text(
                       deal.site.title,
                       style: TextStyle(
@@ -294,27 +308,22 @@ class _DealDetailView extends State<DealDetailView> {
                         fontWeight: FontWeight.normal,
                       ),
                     ),
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => const WhatTuduSiteContentDetailView())
-                      );
-                    },
                   ),
-                ),
-              ],
-            ),
-            const Spacer(),
-            Container(
-              alignment: Alignment.centerRight,
-              height: 50,
-              padding: const EdgeInsets.only(right: 16),
-              constraints: BoxConstraints(maxWidth: (MediaQuery.of(context).size.width - 48.0) * 0.3),
-              child: CachedNetworkImage(
-                imageUrl: deal.logo,
-                fit: BoxFit.cover,
+                ],
               ),
-            ),
-          ],
+              const Spacer(),
+              Container(
+                alignment: Alignment.centerRight,
+                height: 50,
+                padding: const EdgeInsets.only(right: 16),
+                constraints: BoxConstraints(maxWidth: (MediaQuery.of(context).size.width - 48.0) * 0.3),
+                child: CachedNetworkImage(
+                  imageUrl: deal.logo,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ],
+          ),
         ),
         const Padding(
           padding: EdgeInsets.only(top: 12, left: 16, right: 16),
@@ -449,7 +458,7 @@ class _DealDetailView extends State<DealDetailView> {
         onPressed: () {
           Navigator.of(context).pop();
         },
-        child: Text(S.current.cancel),
+        child: Text(S.current.redeem_later),
       );
 
       var email = TextButton(
@@ -457,7 +466,7 @@ class _DealDetailView extends State<DealDetailView> {
           Navigator.of(context).pop();
           _openMail("info@thetudu.app");
         },
-        child: Text(S.current.email),
+        child: Text("Via ${S.current.email}"),
       );
 
       var whatsapp = TextButton(
@@ -465,7 +474,7 @@ class _DealDetailView extends State<DealDetailView> {
           Navigator.of(context).pop();
           _openWhatsapp("+529842105598");
         },
-        child: const Text("Whatsapp"),
+        child: const Text("Via Whatsapp"),
       );
 
       return AlertDialog(
@@ -486,7 +495,7 @@ class _DealDetailView extends State<DealDetailView> {
               Navigator.of(context).pop();
               _openWhatsapp("+529842105598");
             },
-            child: const Text("Whatsapp"),
+            child: const Text("Via Whatsapp"),
           ),
           CupertinoActionSheetAction(
             isDefaultAction: true,
@@ -494,21 +503,33 @@ class _DealDetailView extends State<DealDetailView> {
               Navigator.of(context).pop();
               _openMail("info@thetudu.app");
             },
-            child: Text(S.current.email),
+            child: Text("Via ${S.current.email}"),
           ),
           CupertinoActionSheetAction(
             isDestructiveAction: true,
             onPressed: () {
               Navigator.of(context).pop();
             },
-            child: Text(S.current.cancel),
+            child: Text(S.current.redeem_later),
           )
         ],
       );
     }
   }
 
-  void _openNavigationApp(Deal deal) {
+  void _openNavigationApp(Deal deal) async {
+    var map = PrefUtil.getValue(StrConst.selectMap, "") as String;
+    if (map.isNotEmpty) {
+      try {
+        final availableMaps = await MapLauncher.installedMaps;
+        await availableMaps.firstWhere((element){
+          return element.mapName == map;
+        }).showDirections(destination: Coords(deal.site.locationLat!, deal.site.locationLon!));
+        return;
+      } catch (e) {
+        print(e);
+      }
+    }
     if (Platform.isAndroid) {
       _openMap("Google Maps", deal);
     } else {
@@ -526,7 +547,7 @@ class _DealDetailView extends State<DealDetailView> {
             Navigator.of(context).pop();
             _openMap("Apple Maps", deal);
           },
-          child: const Text("Apple Map"),
+          child: const Text("Apple Maps"),
         ),
         CupertinoActionSheetAction(
           isDefaultAction: true,
@@ -534,7 +555,7 @@ class _DealDetailView extends State<DealDetailView> {
             Navigator.of(context).pop();
             _openMap("Google Maps", deal);
           },
-          child: const Text("Google Map"),
+          child: const Text("Google Maps"),
         ),
         CupertinoActionSheetAction(
           isDestructiveAction: true,
@@ -549,6 +570,7 @@ class _DealDetailView extends State<DealDetailView> {
 
   void _openMap(String name, Deal deal) async {
     try {
+      PrefUtil.setValue(StrConst.selectMap, name);
       final availableMaps = await MapLauncher.installedMaps;
       await availableMaps.firstWhere((element){
         return element.mapName == name;

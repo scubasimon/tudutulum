@@ -140,6 +140,18 @@ class _SubscriptionPlanView extends State<SubscriptionPlanView> {
                   ),
                 ),
               ),
+              const SizedBox(height: 12,),
+              Center(
+                child: Text(
+                  S.current.try_a_week,
+                  style: const TextStyle(
+                    fontFamily: FontStyles.mouser,
+                    fontSize: FontSizeConst.font11,
+                    fontWeight: FontWeight.w400,
+                    color: ColorStyle.tertiaryDarkLabel,
+                  ),
+                ),
+              ),
               const SizedBox(height: 48,),
               StreamBuilder(
                 stream: _subscriptionViewModel.subscriptions,

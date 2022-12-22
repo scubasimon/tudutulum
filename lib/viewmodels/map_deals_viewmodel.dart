@@ -86,6 +86,9 @@ class MapDealsViewModel extends BaseViewModel {
         business = await _homeRepository.getListBusinesses();
       }
       var results = await _dealRepository.getDeals(param);
+      results.forEach((element) {
+        print("deal ${element.dealsId}: ${element.site.siteId}  (${element.site.locationLat!}, ${element.site.locationLon})");
+      });
       _listDeals.sink.add(results);
       if (param.refresh) {
         param.refresh = false;

@@ -53,4 +53,5 @@ class ImagePath {
   static const humbergerIcon = "assets/icons/ic_humberger.png";
   static const settingIcon = "assets/icons/ic_setting.png";
   static const removeIcon = "assets/icons/ic_remove.png";
+  static const fiveStars = "assets/images/5stars.png";
 }
