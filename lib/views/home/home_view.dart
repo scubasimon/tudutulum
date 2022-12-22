@@ -34,6 +34,9 @@ import 'package:visibility_detector/visibility_detector.dart';
 import '../../models/error.dart';
 import '../../services/observable/observable_serivce.dart';
 import '../common/alert.dart';
+import 'package:tudu/models/error.dart';
+import 'package:tudu/services/observable/observable_serivce.dart';
+import 'package:tudu/views/common/alert.dart';
 
 
 class HomeView extends StatefulWidget {
@@ -215,7 +218,6 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
         }
         break;
       case AppLifecycleState.detached:
-        print("detached");
         break;
     }
   }
@@ -223,39 +225,36 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return ExitAppScope(
-      child: VisibilityDetector(
-        key: Key('home_view'),
-        onVisibilityChanged: (visibilityInfo) {
-          if (visibilityInfo.visibleFraction > 0) {
-            setState(() {});
-          }
-        },
-        child: Scaffold(
-          key: _scaffoldKey,
-          drawer: Drawer(
-            backgroundColor: ColorStyle.getSystemBackground(),
-            child: Container(
-              color: ColorStyle.getSystemBackground(),
-              margin: const EdgeInsets.only(left: 24, right: 24, top: 24, bottom: 16),
-              child: SafeArea(
-                child: ListView(
-                  children: [
-                    Row(
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            _scaffoldKey.currentState?.closeDrawer();
-                          },
-                          child: Image.asset(
-                            ImagePath.humbergerIcon,
-                            width: 24, height: 24,
-                          ),
+      child: Scaffold(
+        key: _scaffoldKey,
+        drawer: Drawer(
+          backgroundColor: ColorStyle.getSystemBackground(),
+          child: Container(
+            color: ColorStyle.getSystemBackground(),
+            margin: const EdgeInsets.only(left: 24, right: 24, top: 24, bottom: 16),
+            child: SafeArea(
+              child: ListView(
+                children: [
+                  Row(
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          _scaffoldKey.currentState?.closeDrawer();
+                        },
+                        child: Image.asset(
+                          ImagePath.humbergerIcon,
+                          width: 24, height: 24,
                         ),
-                        const Spacer(),
-                      ],
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 16, bottom: 12),
+                      ),
+                      const Spacer(),
+                    ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 16, bottom: 12),
+                    child: InkWell(
+                      onTap: () async {
+                        await launchUrl(Uri.parse(URLConsts.navigateApp));
+                      },
                       child: Text(
                         S.current.navigate_the_app,
                         style: const TextStyle(
@@ -266,8 +265,13 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                         ),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 12, bottom: 12),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12, bottom: 12),
+                    child: InkWell(
+                      onTap: () async {
+                        await launchUrl(Uri.parse(URLConsts.travelTulum));
+                      },
                       child: Text(
                         S.current.travel_to_tulum,
                         style: const TextStyle(
@@ -278,8 +282,13 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                         ),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 12, bottom: 12),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12, bottom: 12),
+                    child: InkWell(
+                      onTap: () async {
+                        await launchUrl(Uri.parse(URLConsts.transport));
+                      },
                       child: Text(
                         S.current.transport_locally,
                         style: const TextStyle(
@@ -290,13 +299,18 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 32.0,),
-                    const Divider(
-                      color: Colors.black,
-                      height: 0.5,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 16, bottom: 12),
+                  ),
+                  const Padding(padding: EdgeInsets.only(bottom: 12)),
+                  const Divider(
+                    color: Colors.black,
+                    height: 0.5,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 24, bottom: 12),
+                    child: InkWell(
+                      onTap: () async {
+                        await launchUrl(Uri.parse(URLConsts.about));
+                      },
                       child: Text(
                         S.current.about,
                         style: const TextStyle(
@@ -307,8 +321,13 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                         ),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 12, bottom: 12),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12, bottom: 12),
+                    child: InkWell(
+                      onTap: () async {
+                        await launchUrl(Uri.parse(URLConsts.comingSoon));
+                      },
                       child: Text(
                         S.current.coming_soon,
                         style: const TextStyle(
@@ -319,65 +338,71 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                         ),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 12, bottom: 8),
-                      child: Text(
-                        S.current.follow_us,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w400,
-                          fontFamily: FontStyles.raleway,
-                          fontSize: FontSizeConst.font12,
-                          color: ColorStyle.tertiaryDarkLabel,
-                        ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12, bottom: 8),
+                    child: Text(
+                      S.current.follow_us,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontFamily: FontStyles.raleway,
+                        fontSize: FontSizeConst.font12,
+                        color: ColorStyle.tertiaryDarkLabel,
                       ),
                     ),
-                    Row(
-                      children: [
-                        const SizedBox(width: 12,),
-                        InkWell(
-                          onTap: () async {
-                            await launchUrl(Uri.parse(URLConsts.instagram));
-                          },
-                          child: Image.asset(
-                            ImagePath.instagramIcon,
-                            width: 24, height: 24,
-                          ),
-                        ),
-                        const SizedBox(width: 12,),
-                        InkWell(
-                          onTap: () async {
-                            await launchUrl(Uri.parse(URLConsts.facebook));
-                          },
-                          child: Image.asset(
-                            ImagePath.facebookIcon,
-                            width: 24, height: 24,
-                          ),
-                        )
-                      ],
-                    ),
-                    const SizedBox(height: 24,),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 12, bottom: 8),
-                      child: Text(
-                        S.current.rate_us,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w400,
-                          fontFamily: FontStyles.raleway,
-                          fontSize: FontSizeConst.font12,
-                          color: ColorStyle.tertiaryDarkLabel,
+                  ),
+                  Row(
+                    children: [
+                      const SizedBox(width: 12,),
+                      InkWell(
+                        onTap: () async {
+                          await launchUrl(Uri.parse(URLConsts.instagram));
+                        },
+                        child: Image.asset(
+                          ImagePath.instagramIcon,
+                          width: 24, height: 24,
                         ),
                       ),
+                      const SizedBox(width: 12,),
+                      InkWell(
+                        onTap: () async {
+                          await launchUrl(Uri.parse(URLConsts.facebook));
+                        },
+                        child: Image.asset(
+                          ImagePath.facebookIcon,
+                          width: 24, height: 24,
+                        ),
+                      )
+                    ],
+                  ),
+                  const Padding(padding: EdgeInsets.only(bottom: 12)),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12, bottom: 8),
+                    child: Text(
+                      S.current.rate_us,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontFamily: FontStyles.raleway,
+                        fontSize: FontSizeConst.font12,
+                        color: ColorStyle.tertiaryDarkLabel,
+                      ),
                     ),
-                    Row(
-                      children: [
-                        Container(
+                  ),
+                  Row(
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          final inAppReview = InAppReview.instance;
+                          inAppReview.openStoreListing(appStoreId: "id1615290927");
+                        },
+                        child: Container(
                           height: 48,
                           decoration: BoxDecoration(
                               color: ColorStyle.getSystemBackground(),
-                              borderRadius: BorderRadius.all(
+                              borderRadius: const BorderRadius.all(
                                   Radius.circular(24.0)
                               ),
-                              boxShadow: [
+                              boxShadow: const [
                                 BoxShadow(
                                     color: ColorStyle.border,
                                     blurRadius: 4.0
@@ -387,66 +412,61 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                           child: Padding(
                             padding: const EdgeInsets.only(left: 8, right: 8),
                             child: Center(
-                              child: RatingBar.builder(
-                                itemSize: 32,
-                                itemBuilder: (context, _) => const Icon(
-                                  Icons.star,
-                                  color: ColorStyle.tertiary,
-                                ),
-                                onRatingUpdate: (double value) async {
-                                  final inAppReview = InAppReview.instance;
-                                  // inAppReview.openStoreListing();
-                                  if (await inAppReview.isAvailable()) {
-                                    await inAppReview.requestReview();
-                                  }
-                                },
+                              child: Image.asset(
+                                ImagePath.fiveStars,
+                                height: 24,
                               ),
                             ),
                           ),
                         ),
-                        const Spacer(),
-                      ],
-                    ),
-                    const SizedBox(height: 56,),
-                    const Divider(
-                      color: Colors.black,
-                      height: 0.5,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 24, bottom: 24, left: 12),
-                      child: InkWell(
-                        onTap: () {
-                          _scaffoldKey.currentState?.closeDrawer();
-                          Navigator.of(context).push(
-                              MaterialPageRoute(builder: (context) => const SettingView())
-                          );
-                        },
-                        child: Row(
-                          children: [
-                            Image.asset(
-                              ImagePath.settingIcon,
-                              width: 24, height: 24,
+                      ),
+                      const Spacer(),
+                    ],
+                  ),
+                  const Padding(padding: EdgeInsets.only(bottom: 24)),
+                  const Divider(
+                    color: Colors.black,
+                    height: 0.5,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 24, bottom: 24, left: 12),
+                    child: InkWell(
+                      onTap: () {
+                        _scaffoldKey.currentState?.closeDrawer();
+                        Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) => const SettingView())
+                        );
+                      },
+                      child: Row(
+                        children: [
+                          Image.asset(
+                            ImagePath.settingIcon,
+                            width: 24, height: 24,
+                          ),
+                          const SizedBox(width: 12,),
+                          Text(
+                            S.current.setting,
+                            style: TextStyle(
+                              color: ColorStyle.getDarkLabel(),
+                              fontSize: FontSizeConst.font12,
+                              fontFamily: FontStyles.raleway,
+                              fontWeight: FontWeight.w400,
                             ),
-                            const SizedBox(width: 12,),
-                            Text(
-                              S.current.setting,
-                              style: TextStyle(
-                                color: ColorStyle.getDarkLabel(),
-                                fontSize: FontSizeConst.font12,
-                                fontFamily: FontStyles.raleway,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            )
-                          ],
-                        ),
+                          )
+                        ],
                       ),
                     ),
-                    const Divider(
-                      color: Colors.black,
-                      height: 0.5,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 24, bottom: 24),
+                  ),
+                  const Divider(
+                    color: Colors.black,
+                    height: 0.5,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 24, bottom: 24),
+                    child: InkWell(
+                      onTap: () async {
+                        await launchUrl(Uri.parse(URLConsts.legalStuff));
+                      },
                       child: Text(
                         S.current.the_legal_stuff,
                         style: const TextStyle(
@@ -456,18 +476,18 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                           color: ColorStyle.tertiaryDarkLabel,
                         ),
                       ),
-                    )
-                  ],
-                ),
+                    ),
+                  )
+                ],
               ),
             ),
           ),
-          drawerEnableOpenDragGesture: false,
-          backgroundColor: ColorStyle.getSecondaryBackground(),
-          body: pages[pageIndex],
-          bottomNavigationBar: SafeArea(
-            child: buildMyNavBar(context),
-          ),
+        ),
+        drawerEnableOpenDragGesture: false,
+        backgroundColor: ColorStyle.getSecondaryBackground(),
+        body: pages[pageIndex],
+        bottomNavigationBar: SafeArea(
+          child: buildMyNavBar(context),
         ),
       ),
     );
@@ -477,7 +497,7 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
     return Container(
       decoration: BoxDecoration(
         color: ColorStyle.getSecondaryBackground(),
-        border: Border(
+        border: const Border(
           top: BorderSide(
             color: ColorStyle.border,
             width: 0.5,

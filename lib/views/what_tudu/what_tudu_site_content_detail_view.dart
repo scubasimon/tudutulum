@@ -1,12 +1,7 @@
-import 'dart:async';
-
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:map_launcher/map_launcher.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:tudu/consts/color/Colors.dart';
 import 'package:tudu/consts/font/Fonts.dart';
@@ -25,15 +20,11 @@ import 'package:tudu/consts/font/font_size_const.dart';
 import 'package:tudu/consts/strings/str_const.dart';
 import 'package:tudu/generated/l10n.dart';
 import 'package:tudu/views/deals/deal_details_view.dart';
-
 import 'package:tudu/views/photo/photo_view.dart';
 import 'package:tudu/viewmodels/home_viewmodel.dart';
 import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
-import 'package:url_launcher/url_launcher_string.dart';
-
-import '../../services/observable/observable_serivce.dart';
-import '../../services/location/permission_request.dart';
-import '../../viewmodels/event_content_detail_viewmodel.dart';
+import 'package:tudu/services/observable/observable_serivce.dart';
+import 'package:tudu/services/location/permission_request.dart';
 
 class WhatTuduSiteContentDetailView extends StatefulWidget {
   const WhatTuduSiteContentDetailView({super.key});

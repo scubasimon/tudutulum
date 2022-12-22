@@ -13,9 +13,7 @@ import 'package:tudu/viewmodels/authentication_viewmodel.dart';
 import 'package:tudu/views/common/alert.dart';
 import 'package:tudu/consts/urls/URLConst.dart';
 import 'package:tudu/models/error.dart';
-
-import '../../viewmodels/home_viewmodel.dart';
-import '../home/home_view.dart';
+import 'package:tudu/viewmodels/home_viewmodel.dart';
 
 class LoginView extends StatefulWidget {
 

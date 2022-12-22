@@ -35,15 +35,15 @@ class SubscriptionViewModel extends BaseViewModel {
         switch (e.packageType) {
           case PackageType.annual:
             type = SubscriptionType.year;
-            name = "Annual Pro";
+            name = "Annual Full Access";
             break;
           case PackageType.monthly:
             type = SubscriptionType.month;
-            name = "1 Month Pro";
+            name = "1 Month Full Access";
             break;
           case PackageType.weekly:
             type = SubscriptionType.week;
-            name = "1 Week Pro";
+            name = "1 Week Full Access";
         }
         // final active = subscriptionsActive.contains(e.storeProduct.identifier);
         // if (active) {
