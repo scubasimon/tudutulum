@@ -29,10 +29,9 @@ import 'package:tudu/views/profile/profile_view.dart';
 import 'package:tudu/consts/images/ImagePath.dart';
 import 'package:tudu/generated/l10n.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import '../../models/error.dart';
-import '../../services/observable/observable_serivce.dart';
-import '../common/alert.dart';
+import 'package:tudu/models/error.dart';
+import 'package:tudu/services/observable/observable_serivce.dart';
+import 'package:tudu/views/common/alert.dart';
 
 
 class HomeView extends StatefulWidget {
@@ -214,7 +213,6 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
         }
         break;
       case AppLifecycleState.detached:
-        print("detached");
         break;
     }
   }
@@ -248,37 +246,52 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 16, bottom: 12),
-                    child: Text(
-                      S.current.navigate_the_app,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontFamily: FontStyles.sfProText,
-                        fontSize: FontSizeConst.font13,
-                        color: ColorStyle.tertiaryDarkLabel,
+                    child: InkWell(
+                      onTap: () async {
+                        await launchUrl(Uri.parse(URLConsts.navigateApp));
+                      },
+                      child: Text(
+                        S.current.navigate_the_app,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontFamily: FontStyles.sfProText,
+                          fontSize: FontSizeConst.font13,
+                          color: ColorStyle.tertiaryDarkLabel,
+                        ),
                       ),
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 12, bottom: 12),
-                    child: Text(
-                      S.current.travel_to_tulum,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontFamily: FontStyles.sfProText,
-                        fontSize: FontSizeConst.font13,
-                        color: ColorStyle.tertiaryDarkLabel,
+                    child: InkWell(
+                      onTap: () async {
+                        await launchUrl(Uri.parse(URLConsts.travelTulum));
+                      },
+                      child: Text(
+                        S.current.travel_to_tulum,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontFamily: FontStyles.sfProText,
+                          fontSize: FontSizeConst.font13,
+                          color: ColorStyle.tertiaryDarkLabel,
+                        ),
                       ),
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 12, bottom: 12),
-                    child: Text(
-                      S.current.transport_locally,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontFamily: FontStyles.sfProText,
-                        fontSize: FontSizeConst.font13,
-                        color: ColorStyle.tertiaryDarkLabel,
+                    child: InkWell(
+                      onTap: () async {
+                        await launchUrl(Uri.parse(URLConsts.transport));
+                      },
+                      child: Text(
+                        S.current.transport_locally,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontFamily: FontStyles.sfProText,
+                          fontSize: FontSizeConst.font13,
+                          color: ColorStyle.tertiaryDarkLabel,
+                        ),
                       ),
                     ),
                   ),
@@ -289,25 +302,35 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 16, bottom: 12),
-                    child: Text(
-                      S.current.about,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontFamily: FontStyles.raleway,
-                        fontSize: FontSizeConst.font12,
-                        color: ColorStyle.tertiaryDarkLabel,
+                    child: InkWell(
+                      onTap: () async {
+                        await launchUrl(Uri.parse(URLConsts.about));
+                      },
+                      child: Text(
+                        S.current.about,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontFamily: FontStyles.raleway,
+                          fontSize: FontSizeConst.font12,
+                          color: ColorStyle.tertiaryDarkLabel,
+                        ),
                       ),
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 12, bottom: 12),
-                    child: Text(
-                      S.current.coming_soon,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontFamily: FontStyles.raleway,
-                        fontSize: FontSizeConst.font12,
-                        color: ColorStyle.tertiaryDarkLabel,
+                    child: InkWell(
+                      onTap: () async {
+                        await launchUrl(Uri.parse(URLConsts.comingSoon));
+                      },
+                      child: Text(
+                        S.current.coming_soon,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontFamily: FontStyles.raleway,
+                          fontSize: FontSizeConst.font12,
+                          color: ColorStyle.tertiaryDarkLabel,
+                        ),
                       ),
                     ),
                   ),
@@ -366,10 +389,10 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                         height: 48,
                         decoration: BoxDecoration(
                             color: ColorStyle.getSystemBackground(),
-                            borderRadius: BorderRadius.all(
+                            borderRadius: const BorderRadius.all(
                                 Radius.circular(24.0)
                             ),
-                            boxShadow: [
+                            boxShadow: const [
                               BoxShadow(
                                   color: ColorStyle.border,
                                   blurRadius: 4.0
@@ -387,10 +410,7 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                               ),
                               onRatingUpdate: (double value) async {
                                 final inAppReview = InAppReview.instance;
-                                // inAppReview.openStoreListing();
-                                if (await inAppReview.isAvailable()) {
-                                  await inAppReview.requestReview();
-                                }
+                                inAppReview.openStoreListing(appStoreId: "id1615290927");
                               },
                             ),
                           ),
@@ -439,13 +459,18 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 24, bottom: 24),
-                    child: Text(
-                      S.current.the_legal_stuff,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontFamily: FontStyles.raleway,
-                        fontSize: FontSizeConst.font12,
-                        color: ColorStyle.tertiaryDarkLabel,
+                    child: InkWell(
+                      onTap: () async {
+                        await launchUrl(Uri.parse(URLConsts.legalStuff));
+                      },
+                      child: Text(
+                        S.current.the_legal_stuff,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontFamily: FontStyles.raleway,
+                          fontSize: FontSizeConst.font12,
+                          color: ColorStyle.tertiaryDarkLabel,
+                        ),
                       ),
                     ),
                   )
@@ -468,7 +493,7 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
     return Container(
       decoration: BoxDecoration(
         color: ColorStyle.getSecondaryBackground(),
-        border: Border(
+        border: const Border(
           top: BorderSide(
             color: ColorStyle.border,
             width: 0.5,

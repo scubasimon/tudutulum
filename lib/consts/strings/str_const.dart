@@ -1,4 +1,8 @@
 class StrConst {
+
+  static const subscriptionAppleKey = "appl_CPoQEtilwBpuWuWaHLkymHMzaTw";
+  static const subscriptionGoogleKey = "goog_LlFiMOevjRBhxKPBHVNDEpgFtCb";
+
   static const mapScene = "MapScene";
   static const whatTuduScene = "WhatTuduScreen";
   static const whatTuduSiteContentDetailScene = "ehatTuduSiteContentDetail";

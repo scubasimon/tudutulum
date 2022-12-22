@@ -214,7 +214,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "preview_deal_message": MessageLookupByLibrary.simpleMessage(
             "To view full term and conditions and to redeem this offer please visit the Deals tab"),
         "price": MessageLookupByLibrary.simpleMessage("Price"),
-        "pro": MessageLookupByLibrary.simpleMessage("Pro"),
+        "pro": MessageLookupByLibrary.simpleMessage("Full Access"),
         "profile": MessageLookupByLibrary.simpleMessage("Profile"),
         "purchase_failed":
             MessageLookupByLibrary.simpleMessage("Payment failed"),
@@ -285,6 +285,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("•  Transport Locally"),
         "travel_to_tulum":
             MessageLookupByLibrary.simpleMessage("•  Travel to Tulum"),
+        "try_a_week": MessageLookupByLibrary.simpleMessage("7 days free trial"),
         "un_authorized_error":
             MessageLookupByLibrary.simpleMessage("UnAuthorized"),
         "update_details":

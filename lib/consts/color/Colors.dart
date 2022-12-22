@@ -30,9 +30,9 @@ class ColorStyle {
   // NEW COLOR FOR DARK MODE
   static Color getSecondaryBackground() {
     if (PrefUtil.getValue(StrConst.isDarkMode, false) as bool == false) {
-      return Color(0xfff8f8f8);
+      return const Color(0xfff8f8f8);
     } else {
-      return Color(0xff1a1a1a);
+      return const Color(0xff1a1a1a);
     }
   }
 

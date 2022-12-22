@@ -160,7 +160,7 @@
   "purchase_success": "Payment success",
   "purchase_failed": "Payment failed",
   "account_type": "{type} account",
-  "pro": "Pro",
+  "pro": "Full Access",
   "free": "Free",
   "change_plan": "Change Plan",
   "deal_added_title": "New Deals",
@@ -170,5 +170,6 @@
   "explopre_events": "Explore Events",
   "price": "Price",
   "further_information": "Further Information",
-  "venue_contact": "Venue Contact:"
+  "venue_contact": "Venue Contact:",
+  "try_a_week": "7 days free trial"
 }

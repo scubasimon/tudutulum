@@ -1660,10 +1660,10 @@ class S {
     );
   }
 
-  /// `Pro`
+  /// `Full Access`
   String get pro {
     return Intl.message(
-      'Pro',
+      'Full Access',
       name: 'pro',
       desc: '',
       args: [],
@@ -1765,6 +1765,16 @@ class S {
     return Intl.message(
       'Venue Contact:',
       name: 'venue_contact',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `7 days free trial`
+  String get try_a_week {
+    return Intl.message(
+      '7 days free trial',
+      name: 'try_a_week',
       desc: '',
       args: [],
     );
