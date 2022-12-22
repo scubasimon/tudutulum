@@ -286,7 +286,7 @@ class _DealsView extends State<DealsView> with AutomaticKeepAliveClientMixin<Dea
     }
     return ExitAppScope(
       child: VisibilityDetector(
-        key: Key('home_view'),
+        key: Key('deals_view'),
         onVisibilityChanged: (visibilityInfo) {
           if (visibilityInfo.visibleFraction > 0) {
             setState(() {});

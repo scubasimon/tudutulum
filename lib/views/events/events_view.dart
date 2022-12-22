@@ -186,7 +186,7 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return ExitAppScope(
       child: VisibilityDetector(
-        key: Key('home_view'),
+        key: Key('events_view'),
         onVisibilityChanged: (visibilityInfo) {
           if (visibilityInfo.visibleFraction > 0) {
             setState(() {});
