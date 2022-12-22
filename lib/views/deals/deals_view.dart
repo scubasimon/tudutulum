@@ -19,6 +19,7 @@ import 'package:tudu/generated/l10n.dart';
 import 'package:tudu/views/deals/deal_details_view.dart';
 import 'package:tudu/views/map/map_deal_view.dart';
 import 'package:tudu/views/subscription/subscription_plan_view.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 class DealsView extends StatefulWidget {
   const DealsView({super.key});
@@ -284,57 +285,65 @@ class _DealsView extends State<DealsView> with AutomaticKeepAliveClientMixin<Dea
       ));
     }
     return ExitAppScope(
-      child: Scaffold(
-        appBar: AppBar(
-          toolbarHeight: (_isAtTop) ? 94 : 56,
-          automaticallyImplyLeading: false,
-          flexibleSpace: Container(
-            padding: EdgeInsets.only(
-                top: MediaQuery.of(context).padding.top + 8,
-                left: 16,
-                right: 16,
-                bottom: 8,),
-            color: ColorStyle.navigation,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: array,
+      child: VisibilityDetector(
+        key: Key('home_view'),
+        onVisibilityChanged: (visibilityInfo) {
+          if (visibilityInfo.visibleFraction > 0) {
+            setState(() {});
+          }
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            toolbarHeight: (_isAtTop) ? 94 : 56,
+            automaticallyImplyLeading: false,
+            flexibleSpace: Container(
+              padding: EdgeInsets.only(
+                  top: MediaQuery.of(context).padding.top + 8,
+                  left: 16,
+                  right: 16,
+                  bottom: 8,),
+              color: ColorStyle.navigation,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: array,
+              ),
             ),
           ),
-        ),
-        body: Container(
-          color: ColorStyle.getSystemBackground(),
-          child: StreamBuilder(
-            stream: _dealsViewModel.userLoginStream,
-            builder: (context, snapshot) {
-              if (snapshot.hasData && snapshot.data!) {
-                return StreamBuilder(
-                  stream: _dealsViewModel.subscription,
-                  builder: (context, snp) {
-                    if (snp.hasData && snp.data!) {
-                      return SmartRefresher(
-                        enablePullDown: _enableRefresh,
-                        enablePullUp: false,
-                        header: const WaterDropHeader(),
-                        controller: _refreshController,
-                        onRefresh: _refresh,
-                        child: ListView(
-                          controller: _scrollController,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
-                              child: createDealsView(),
-                            ),
-                          ],
-                        ),
-                      );
-                    } else {
-                      return Container();
-                    }
-                  },
-                );
-              }
-              return Container();
-            },
+          body: Container(
+            color: ColorStyle.getSystemBackground(),
+            child: StreamBuilder(
+              stream: _dealsViewModel.userLoginStream,
+              builder: (context, snapshot) {
+                if (snapshot.hasData && snapshot.data!) {
+                  return StreamBuilder(
+                    stream: _dealsViewModel.subscription,
+                    builder: (context, snp) {
+                      if (snp.hasData && snp.data!) {
+                        return SmartRefresher(
+                          enablePullDown: _enableRefresh,
+                          enablePullUp: false,
+                          header: const WaterDropHeader(),
+                          controller: _refreshController,
+                          onRefresh: _refresh,
+                          child: ListView(
+                            controller: _scrollController,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
+                                child: createDealsView(),
+                              ),
+                            ],
+                          ),
+                        );
+                      } else {
+                        return Container();
+                      }
+                    },
+                  );
+                }
+                return Container();
+              },
+            ),
           ),
         ),
       ),

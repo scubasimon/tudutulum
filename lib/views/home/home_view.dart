@@ -29,6 +29,7 @@ import 'package:tudu/views/profile/profile_view.dart';
 import 'package:tudu/consts/images/ImagePath.dart';
 import 'package:tudu/generated/l10n.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 import '../../models/error.dart';
 import '../../services/observable/observable_serivce.dart';
@@ -222,243 +223,251 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return ExitAppScope(
-      child: Scaffold(
-        key: _scaffoldKey,
-        drawer: Drawer(
-          backgroundColor: ColorStyle.getSystemBackground(),
-          child: Container(
-            color: ColorStyle.getSystemBackground(),
-            margin: const EdgeInsets.only(left: 24, right: 24, top: 24, bottom: 16),
-            child: SafeArea(
-              child: ListView(
-                children: [
-                  Row(
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          _scaffoldKey.currentState?.closeDrawer();
-                        },
-                        child: Image.asset(
-                          ImagePath.humbergerIcon,
-                          width: 24, height: 24,
-                        ),
-                      ),
-                      const Spacer(),
-                    ],
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 16, bottom: 12),
-                    child: Text(
-                      S.current.navigate_the_app,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontFamily: FontStyles.sfProText,
-                        fontSize: FontSizeConst.font13,
-                        color: ColorStyle.tertiaryDarkLabel,
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 12, bottom: 12),
-                    child: Text(
-                      S.current.travel_to_tulum,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontFamily: FontStyles.sfProText,
-                        fontSize: FontSizeConst.font13,
-                        color: ColorStyle.tertiaryDarkLabel,
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 12, bottom: 12),
-                    child: Text(
-                      S.current.transport_locally,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontFamily: FontStyles.sfProText,
-                        fontSize: FontSizeConst.font13,
-                        color: ColorStyle.tertiaryDarkLabel,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 32.0,),
-                  const Divider(
-                    color: Colors.black,
-                    height: 0.5,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 16, bottom: 12),
-                    child: Text(
-                      S.current.about,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontFamily: FontStyles.raleway,
-                        fontSize: FontSizeConst.font12,
-                        color: ColorStyle.tertiaryDarkLabel,
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 12, bottom: 12),
-                    child: Text(
-                      S.current.coming_soon,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontFamily: FontStyles.raleway,
-                        fontSize: FontSizeConst.font12,
-                        color: ColorStyle.tertiaryDarkLabel,
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 12, bottom: 8),
-                    child: Text(
-                      S.current.follow_us,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontFamily: FontStyles.raleway,
-                        fontSize: FontSizeConst.font12,
-                        color: ColorStyle.tertiaryDarkLabel,
-                      ),
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      const SizedBox(width: 12,),
-                      InkWell(
-                        onTap: () async {
-                          await launchUrl(Uri.parse(URLConsts.instagram));
-                        },
-                        child: Image.asset(
-                          ImagePath.instagramIcon,
-                          width: 24, height: 24,
-                        ),
-                      ),
-                      const SizedBox(width: 12,),
-                      InkWell(
-                        onTap: () async {
-                          await launchUrl(Uri.parse(URLConsts.facebook));
-                        },
-                        child: Image.asset(
-                          ImagePath.facebookIcon,
-                          width: 24, height: 24,
-                        ),
-                      )
-                    ],
-                  ),
-                  const SizedBox(height: 24,),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 12, bottom: 8),
-                    child: Text(
-                      S.current.rate_us,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontFamily: FontStyles.raleway,
-                        fontSize: FontSizeConst.font12,
-                        color: ColorStyle.tertiaryDarkLabel,
-                      ),
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      Container(
-                        height: 48,
-                        decoration: BoxDecoration(
-                            color: ColorStyle.getSystemBackground(),
-                            borderRadius: BorderRadius.all(
-                                Radius.circular(24.0)
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                  color: ColorStyle.border,
-                                  blurRadius: 4.0
-                              ),
-                            ]
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 8, right: 8),
-                          child: Center(
-                            child: RatingBar.builder(
-                              itemSize: 32,
-                              itemBuilder: (context, _) => const Icon(
-                                Icons.star,
-                                color: ColorStyle.tertiary,
-                              ),
-                              onRatingUpdate: (double value) async {
-                                final inAppReview = InAppReview.instance;
-                                // inAppReview.openStoreListing();
-                                if (await inAppReview.isAvailable()) {
-                                  await inAppReview.requestReview();
-                                }
-                              },
-                            ),
-                          ),
-                        ),
-                      ),
-                      const Spacer(),
-                    ],
-                  ),
-                  const SizedBox(height: 56,),
-                  const Divider(
-                    color: Colors.black,
-                    height: 0.5,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 24, bottom: 24, left: 12),
-                    child: InkWell(
-                      onTap: () {
-                        _scaffoldKey.currentState?.closeDrawer();
-                        Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context) => const SettingView())
-                        );
-                      },
-                      child: Row(
-                        children: [
-                          Image.asset(
-                            ImagePath.settingIcon,
+      child: VisibilityDetector(
+        key: Key('home_view'),
+        onVisibilityChanged: (visibilityInfo) {
+          if (visibilityInfo.visibleFraction > 0) {
+            setState(() {});
+          }
+        },
+        child: Scaffold(
+          key: _scaffoldKey,
+          drawer: Drawer(
+            backgroundColor: ColorStyle.getSystemBackground(),
+            child: Container(
+              color: ColorStyle.getSystemBackground(),
+              margin: const EdgeInsets.only(left: 24, right: 24, top: 24, bottom: 16),
+              child: SafeArea(
+                child: ListView(
+                  children: [
+                    Row(
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            _scaffoldKey.currentState?.closeDrawer();
+                          },
+                          child: Image.asset(
+                            ImagePath.humbergerIcon,
                             width: 24, height: 24,
                           ),
-                          const SizedBox(width: 12,),
-                          Text(
-                            S.current.setting,
-                            style: TextStyle(
-                              color: ColorStyle.getDarkLabel(),
-                              fontSize: FontSizeConst.font12,
-                              fontFamily: FontStyles.raleway,
-                              fontWeight: FontWeight.w400,
+                        ),
+                        const Spacer(),
+                      ],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 16, bottom: 12),
+                      child: Text(
+                        S.current.navigate_the_app,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontFamily: FontStyles.sfProText,
+                          fontSize: FontSizeConst.font13,
+                          color: ColorStyle.tertiaryDarkLabel,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 12, bottom: 12),
+                      child: Text(
+                        S.current.travel_to_tulum,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontFamily: FontStyles.sfProText,
+                          fontSize: FontSizeConst.font13,
+                          color: ColorStyle.tertiaryDarkLabel,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 12, bottom: 12),
+                      child: Text(
+                        S.current.transport_locally,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontFamily: FontStyles.sfProText,
+                          fontSize: FontSizeConst.font13,
+                          color: ColorStyle.tertiaryDarkLabel,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 32.0,),
+                    const Divider(
+                      color: Colors.black,
+                      height: 0.5,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 16, bottom: 12),
+                      child: Text(
+                        S.current.about,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontFamily: FontStyles.raleway,
+                          fontSize: FontSizeConst.font12,
+                          color: ColorStyle.tertiaryDarkLabel,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 12, bottom: 12),
+                      child: Text(
+                        S.current.coming_soon,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontFamily: FontStyles.raleway,
+                          fontSize: FontSizeConst.font12,
+                          color: ColorStyle.tertiaryDarkLabel,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 12, bottom: 8),
+                      child: Text(
+                        S.current.follow_us,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontFamily: FontStyles.raleway,
+                          fontSize: FontSizeConst.font12,
+                          color: ColorStyle.tertiaryDarkLabel,
+                        ),
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        const SizedBox(width: 12,),
+                        InkWell(
+                          onTap: () async {
+                            await launchUrl(Uri.parse(URLConsts.instagram));
+                          },
+                          child: Image.asset(
+                            ImagePath.instagramIcon,
+                            width: 24, height: 24,
+                          ),
+                        ),
+                        const SizedBox(width: 12,),
+                        InkWell(
+                          onTap: () async {
+                            await launchUrl(Uri.parse(URLConsts.facebook));
+                          },
+                          child: Image.asset(
+                            ImagePath.facebookIcon,
+                            width: 24, height: 24,
+                          ),
+                        )
+                      ],
+                    ),
+                    const SizedBox(height: 24,),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 12, bottom: 8),
+                      child: Text(
+                        S.current.rate_us,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontFamily: FontStyles.raleway,
+                          fontSize: FontSizeConst.font12,
+                          color: ColorStyle.tertiaryDarkLabel,
+                        ),
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Container(
+                          height: 48,
+                          decoration: BoxDecoration(
+                              color: ColorStyle.getSystemBackground(),
+                              borderRadius: BorderRadius.all(
+                                  Radius.circular(24.0)
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                    color: ColorStyle.border,
+                                    blurRadius: 4.0
+                                ),
+                              ]
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 8, right: 8),
+                            child: Center(
+                              child: RatingBar.builder(
+                                itemSize: 32,
+                                itemBuilder: (context, _) => const Icon(
+                                  Icons.star,
+                                  color: ColorStyle.tertiary,
+                                ),
+                                onRatingUpdate: (double value) async {
+                                  final inAppReview = InAppReview.instance;
+                                  // inAppReview.openStoreListing();
+                                  if (await inAppReview.isAvailable()) {
+                                    await inAppReview.requestReview();
+                                  }
+                                },
+                              ),
                             ),
-                          )
-                        ],
+                          ),
+                        ),
+                        const Spacer(),
+                      ],
+                    ),
+                    const SizedBox(height: 56,),
+                    const Divider(
+                      color: Colors.black,
+                      height: 0.5,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 24, bottom: 24, left: 12),
+                      child: InkWell(
+                        onTap: () {
+                          _scaffoldKey.currentState?.closeDrawer();
+                          Navigator.of(context).push(
+                              MaterialPageRoute(builder: (context) => const SettingView())
+                          );
+                        },
+                        child: Row(
+                          children: [
+                            Image.asset(
+                              ImagePath.settingIcon,
+                              width: 24, height: 24,
+                            ),
+                            const SizedBox(width: 12,),
+                            Text(
+                              S.current.setting,
+                              style: TextStyle(
+                                color: ColorStyle.getDarkLabel(),
+                                fontSize: FontSizeConst.font12,
+                                fontFamily: FontStyles.raleway,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  const Divider(
-                    color: Colors.black,
-                    height: 0.5,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 24, bottom: 24),
-                    child: Text(
-                      S.current.the_legal_stuff,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontFamily: FontStyles.raleway,
-                        fontSize: FontSizeConst.font12,
-                        color: ColorStyle.tertiaryDarkLabel,
-                      ),
+                    const Divider(
+                      color: Colors.black,
+                      height: 0.5,
                     ),
-                  )
-                ],
+                    Padding(
+                      padding: const EdgeInsets.only(top: 24, bottom: 24),
+                      child: Text(
+                        S.current.the_legal_stuff,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontFamily: FontStyles.raleway,
+                          fontSize: FontSizeConst.font12,
+                          color: ColorStyle.tertiaryDarkLabel,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-        drawerEnableOpenDragGesture: false,
-        backgroundColor: ColorStyle.getSecondaryBackground(),
-        body: pages[pageIndex],
-        bottomNavigationBar: SafeArea(
-          child: buildMyNavBar(context),
+          drawerEnableOpenDragGesture: false,
+          backgroundColor: ColorStyle.getSecondaryBackground(),
+          body: pages[pageIndex],
+          bottomNavigationBar: SafeArea(
+            child: buildMyNavBar(context),
+          ),
         ),
       ),
     );

@@ -19,6 +19,7 @@ import 'package:tudu/consts/font/font_size_const.dart';
 import 'package:tudu/consts/strings/str_language_key.dart';
 
 import 'package:tudu/consts/images/ImagePath.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 import '../../consts/color/Colors.dart';
 import '../../consts/font/Fonts.dart';
@@ -184,117 +185,49 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return ExitAppScope(
-      child: Scaffold(
-        appBar: AppBar(
-          toolbarHeight: (isAtTop) ? 94 : 56,
-          automaticallyImplyLeading: false,
-          flexibleSpace: Container(
-            padding: EdgeInsets.only(
-              top: MediaQuery.of(context).padding.top + 8,
-              left: 16,
-              right: 16,
-              bottom: 8,
-            ),
-            color: ColorStyle.navigation,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  height: 36.0,
-                  alignment: Alignment.center,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      InkWell(
-                        child: Image.asset(
-                          ImagePath.humbergerIcon,
-                          width: 28,
-                          height: 28,
+      child: VisibilityDetector(
+        key: Key('home_view'),
+        onVisibilityChanged: (visibilityInfo) {
+          if (visibilityInfo.visibleFraction > 0) {
+            setState(() {});
+          }
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            toolbarHeight: (isAtTop) ? 94 : 56,
+            automaticallyImplyLeading: false,
+            flexibleSpace: Container(
+              padding: EdgeInsets.only(
+                top: MediaQuery.of(context).padding.top + 8,
+                left: 16,
+                right: 16,
+                bottom: 8,
+              ),
+              color: ColorStyle.navigation,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    height: 36.0,
+                    alignment: Alignment.center,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        InkWell(
+                          child: Image.asset(
+                            ImagePath.humbergerIcon,
+                            width: 28,
+                            height: 28,
+                          ),
+                          onTap: () {
+                            NotificationCenter().notify(StrConst.openMenu);
+                          },
                         ),
-                        onTap: () {
-                          NotificationCenter().notify(StrConst.openMenu);
-                        },
-                      ),
-                      const Spacer(),
-                      PullDownButton (
-                        itemBuilder: (context) => [
-                          PullDownMenuItem(
-                            title: S.current.alphabet,
-                            itemTheme: const PullDownMenuItemTheme(
-                              textStyle: TextStyle(
-                                  fontFamily: FontStyles.sfProText,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 17,
-                                  color: ColorStyle.menuLabel),
-                            ),
-                            enabled: _homeViewModel.eventOrderType != 0,
-                            onTap: () {
-                              _eventsViewModel.getDataWithFilterSortSearch(
-                                (_homeViewModel.eventEventFilterType < _homeViewModel.listEventTypes.length)
-                                    ? _homeViewModel.listEventTypes[_homeViewModel.eventEventFilterType]
-                                    : null,
-                                FuncUlti.getSortTypeByInt(0), // Search with Alphabet => "title" = 0
-                                _searchController.text, // Search with Alphabet => "title" = 0
-                              );
-                              _homeViewModel.changeOrderType(0);
-                            },
-                          ),
-                          const PullDownMenuDivider(),
-                          PullDownMenuItem(
-                            title: S.current.distance,
-                            itemTheme: const PullDownMenuItemTheme(
-                              textStyle: TextStyle(
-                                  fontFamily: FontStyles.sfProText,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 17,
-                                  color: ColorStyle.menuLabel),
-                            ),
-                            enabled: _homeViewModel.eventOrderType != 1,
-                            onTap: () {
-                              PermissionRequest.isResquestPermission = true;
-                              PermissionRequest().permissionServiceCall(
-                                context,
-                                    () {
-                                      // _eventsViewModel.sortWithLocation();
-                                      _homeViewModel.changeOrderType(1);
-                                },
-                              );
-                            },
-                          ),
-                        ],
-                        position: PullDownMenuPosition.automatic,
-                        buttonBuilder: (context, showMenu) => Container(
-                          padding: const EdgeInsets.only(left: 8, right: 8),
-                          child: InkWell(
-                            onTap: showMenu,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Expanded(child: Image.asset(ImagePath.sortIcon, fit: BoxFit.contain, width: 16.0)),
-                                Text(
-                                  S.current.sort,
-                                  style: const TextStyle(
-                                    color: ColorStyle.primary,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w500,
-                                    fontFamily: FontStyles.raleway,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 12.0,
-                      ),
-                      PullDownButton(
-                        itemBuilder: (context) => List<PullDownMenuEntry>.generate(
-                            _homeViewModel.listEventTypes.length * 2 + 1,
-                                (counter) => (counter == _homeViewModel.listEventTypes.length * 2)
-                                ? PullDownMenuItem(
-                              title: S.current.all_location,
+                        const Spacer(),
+                        PullDownButton (
+                          itemBuilder: (context) => [
+                            PullDownMenuItem(
+                              title: S.current.alphabet,
                               itemTheme: const PullDownMenuItemTheme(
                                 textStyle: TextStyle(
                                     fontFamily: FontStyles.sfProText,
@@ -302,30 +235,21 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
                                     fontSize: 17,
                                     color: ColorStyle.menuLabel),
                               ),
-                              iconWidget: Image.asset(
-                                _homeViewModel.eventEventFilterType != _homeViewModel.listEventTypes.length
-                                    ? ImagePath.mappinIcon
-                                    : ImagePath.mappinDisableIcon,
-                                width: 28,
-                                height: 28,
-                              ),
-                              enabled: _homeViewModel.eventEventFilterType != ((counter) / 2).round(),
+                              enabled: _homeViewModel.eventOrderType != 0,
                               onTap: () {
                                 _eventsViewModel.getDataWithFilterSortSearch(
-                                  null,
-                                  FuncUlti.getSortTypeByInt(_homeViewModel.eventOrderType),
-                                  _searchController.text,
+                                  (_homeViewModel.eventEventFilterType < _homeViewModel.listEventTypes.length)
+                                      ? _homeViewModel.listEventTypes[_homeViewModel.eventEventFilterType]
+                                      : null,
+                                  FuncUlti.getSortTypeByInt(0), // Search with Alphabet => "title" = 0
+                                  _searchController.text, // Search with Alphabet => "title" = 0
                                 );
-                                _homeViewModel.eventEventFilterType = ((counter) / 2).round();
+                                _homeViewModel.changeOrderType(0);
                               },
-                            )
-                                : (counter == _homeViewModel.listEventTypes.length * 2 - 1)
-                                ? const PullDownMenuDivider.large()
-                                : (counter % 2 == 0)
-                                ? PullDownMenuItem(
-                              title: (counter % 2 == 0)
-                                  ? _homeViewModel.listEventTypes[((counter) / 2).round()].type
-                                  : "",
+                            ),
+                            const PullDownMenuDivider(),
+                            PullDownMenuItem(
+                              title: S.current.distance,
                               itemTheme: const PullDownMenuItemTheme(
                                 textStyle: TextStyle(
                                     fontFamily: FontStyles.sfProText,
@@ -333,90 +257,175 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
                                     fontSize: 17,
                                     color: ColorStyle.menuLabel),
                               ),
-                              iconWidget: Image.asset(
-                                ImagePath.cenoteIcon,
-                                width: 28,
-                                height: 28,
-                              ),
-                              enabled: _homeViewModel.eventEventFilterType != ((counter) / 2).round(),
+                              enabled: _homeViewModel.eventOrderType != 1,
                               onTap: () {
-                                _eventsViewModel.getDataWithFilterSortSearch(
-                                  _homeViewModel.listEventTypes[((counter) / 2).round()],
-                                  FuncUlti.getSortTypeByInt(_homeViewModel.eventOrderType),
-                                  _searchController.text,
+                                PermissionRequest.isResquestPermission = true;
+                                PermissionRequest().permissionServiceCall(
+                                  context,
+                                      () {
+                                        // _eventsViewModel.sortWithLocation();
+                                        _homeViewModel.changeOrderType(1);
+                                  },
                                 );
-                                _homeViewModel.eventEventFilterType = ((counter) / 2).round();
                               },
-                            )
-                                : const PullDownMenuDivider(),
-                            growable: false),
-                        position: PullDownMenuPosition.automatic,
-                        buttonBuilder: (context, showMenu) => Container(
-                          padding: const EdgeInsets.only(left: 8, right: 8),
-                          child: InkWell(
-                            onTap: showMenu,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Expanded(
-                                  child: Image.asset(
-                                    ImagePath.filterIcon,
-                                    fit: BoxFit.contain,
-                                    width: 16,
-                                  ),
-                                ),
-                                Text(
-                                  S.current.filter,
-                                  style: const TextStyle(
+                            ),
+                          ],
+                          position: PullDownMenuPosition.automatic,
+                          buttonBuilder: (context, showMenu) => Container(
+                            padding: const EdgeInsets.only(left: 8, right: 8),
+                            child: InkWell(
+                              onTap: showMenu,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Expanded(child: Image.asset(ImagePath.sortIcon, fit: BoxFit.contain, width: 16.0)),
+                                  Text(
+                                    S.current.sort,
+                                    style: const TextStyle(
                                       color: ColorStyle.primary,
-                                      fontSize: FontSizeConst.font10,
+                                      fontSize: 10,
                                       fontWeight: FontWeight.w500,
-                                      fontFamily: FontStyles.raleway),
-                                ),
-                              ],
+                                      fontFamily: FontStyles.raleway,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(
+                          width: 12.0,
+                        ),
+                        PullDownButton(
+                          itemBuilder: (context) => List<PullDownMenuEntry>.generate(
+                              _homeViewModel.listEventTypes.length * 2 + 1,
+                                  (counter) => (counter == _homeViewModel.listEventTypes.length * 2)
+                                  ? PullDownMenuItem(
+                                title: S.current.all_location,
+                                itemTheme: const PullDownMenuItemTheme(
+                                  textStyle: TextStyle(
+                                      fontFamily: FontStyles.sfProText,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 17,
+                                      color: ColorStyle.menuLabel),
+                                ),
+                                iconWidget: Image.asset(
+                                  _homeViewModel.eventEventFilterType != _homeViewModel.listEventTypes.length
+                                      ? ImagePath.mappinIcon
+                                      : ImagePath.mappinDisableIcon,
+                                  width: 28,
+                                  height: 28,
+                                ),
+                                enabled: _homeViewModel.eventEventFilterType != ((counter) / 2).round(),
+                                onTap: () {
+                                  _eventsViewModel.getDataWithFilterSortSearch(
+                                    null,
+                                    FuncUlti.getSortTypeByInt(_homeViewModel.eventOrderType),
+                                    _searchController.text,
+                                  );
+                                  _homeViewModel.eventEventFilterType = ((counter) / 2).round();
+                                },
+                              )
+                                  : (counter == _homeViewModel.listEventTypes.length * 2 - 1)
+                                  ? const PullDownMenuDivider.large()
+                                  : (counter % 2 == 0)
+                                  ? PullDownMenuItem(
+                                title: (counter % 2 == 0)
+                                    ? _homeViewModel.listEventTypes[((counter) / 2).round()].type
+                                    : "",
+                                itemTheme: const PullDownMenuItemTheme(
+                                  textStyle: TextStyle(
+                                      fontFamily: FontStyles.sfProText,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 17,
+                                      color: ColorStyle.menuLabel),
+                                ),
+                                iconWidget: Image.asset(
+                                  ImagePath.cenoteIcon,
+                                  width: 28,
+                                  height: 28,
+                                ),
+                                enabled: _homeViewModel.eventEventFilterType != ((counter) / 2).round(),
+                                onTap: () {
+                                  _eventsViewModel.getDataWithFilterSortSearch(
+                                    _homeViewModel.listEventTypes[((counter) / 2).round()],
+                                    FuncUlti.getSortTypeByInt(_homeViewModel.eventOrderType),
+                                    _searchController.text,
+                                  );
+                                  _homeViewModel.eventEventFilterType = ((counter) / 2).round();
+                                },
+                              )
+                                  : const PullDownMenuDivider(),
+                              growable: false),
+                          position: PullDownMenuPosition.automatic,
+                          buttonBuilder: (context, showMenu) => Container(
+                            padding: const EdgeInsets.only(left: 8, right: 8),
+                            child: InkWell(
+                              onTap: showMenu,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Expanded(
+                                    child: Image.asset(
+                                      ImagePath.filterIcon,
+                                      fit: BoxFit.contain,
+                                      width: 16,
+                                    ),
+                                  ),
+                                  Text(
+                                    S.current.filter,
+                                    style: const TextStyle(
+                                        color: ColorStyle.primary,
+                                        fontSize: FontSizeConst.font10,
+                                        fontWeight: FontWeight.w500,
+                                        fontFamily: FontStyles.raleway),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                (isAtTop)
-                    ? CupertinoSearchTextField(
-                  controller: _searchController,
-                  style: TextStyle(
-                      color: ColorStyle.getDarkLabel(),
-                      fontFamily: FontStyles.sfProText,
+                  (isAtTop)
+                      ? CupertinoSearchTextField(
+                    controller: _searchController,
+                    style: TextStyle(
+                        color: ColorStyle.getDarkLabel(),
+                        fontFamily: FontStyles.sfProText,
+                        fontSize: FontSizeConst.font17,
+                        fontWeight: FontWeight.w400),
+                    placeholder: S.current.search_placeholder,
+                    placeholderStyle: const TextStyle(
+                      color: ColorStyle.placeHolder,
+                      fontWeight: FontWeight.w400,
                       fontSize: FontSizeConst.font17,
-                      fontWeight: FontWeight.w400),
-                  placeholder: S.current.search_placeholder,
-                  placeholderStyle: const TextStyle(
-                    color: ColorStyle.placeHolder,
-                    fontWeight: FontWeight.w400,
-                    fontSize: FontSizeConst.font17,
-                    fontFamily: FontStyles.sfProText,
-                  ),
-                )
-                    : Container(),
-              ],
-            ),
-          ),
-        ),
-          body: SmartRefresher(
-            enablePullDown: true,
-            enablePullUp: false,
-            header: const WaterDropHeader(),
-            controller: _refreshController,
-            onRefresh: _onRefresh,
-            child: Container(
-              color: ColorStyle.getSystemBackground(),
-              child: ListView(
-                controller: _scrollController,
-                children: <Widget>[createExploreEventsView()],
+                      fontFamily: FontStyles.sfProText,
+                    ),
+                  )
+                      : Container(),
+                ],
               ),
             ),
-          )),
+          ),
+            body: SmartRefresher(
+              enablePullDown: true,
+              enablePullUp: false,
+              header: const WaterDropHeader(),
+              controller: _refreshController,
+              onRefresh: _onRefresh,
+              child: Container(
+                color: ColorStyle.getSystemBackground(),
+                child: ListView(
+                  controller: _scrollController,
+                  children: <Widget>[createExploreEventsView()],
+                ),
+              ),
+            )),
+      ),
     );
   }
 

@@ -22,6 +22,7 @@ import 'package:tudu/models/site.dart';
 import 'package:tudu/views/deals/deal_details_view.dart';
 import 'package:tudu/viewmodels/what_tudu_site_content_detail_viewmodel.dart';
 import 'package:tudu/views/what_tudu/what_tudu_site_content_detail_view.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 class BookmarksView extends StatefulWidget {
   const BookmarksView({super.key});
@@ -240,48 +241,56 @@ class _BookmarksView extends State<BookmarksView> {
       ));
     }
     return ExitAppScope(
-      child: Scaffold(
-        appBar: AppBar(
-          toolbarHeight: (_isAtTop) ? 94 : 56,
-          automaticallyImplyLeading: false,
-          flexibleSpace: Container(
-            padding: EdgeInsets.only(
-              top: MediaQuery.of(context).padding.top + 8,
-              left: 16,
-              right: 16,
-              bottom: 8,),
-            color: ColorStyle.navigation,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: array,
+      child: VisibilityDetector(
+        key: Key('bookmarks_view'),
+        onVisibilityChanged: (visibilityInfo) {
+          if (visibilityInfo.visibleFraction > 0) {
+            setState(() {});
+          }
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            toolbarHeight: (_isAtTop) ? 94 : 56,
+            automaticallyImplyLeading: false,
+            flexibleSpace: Container(
+              padding: EdgeInsets.only(
+                top: MediaQuery.of(context).padding.top + 8,
+                left: 16,
+                right: 16,
+                bottom: 8,),
+              color: ColorStyle.navigation,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: array,
+              ),
             ),
           ),
-        ),
-        body: Container(
-          color: ColorStyle.getSystemBackground(),
-          child: StreamBuilder(
-            stream: _bookmarksViewModel.userLoginStream,
-            builder: (context, snapshot) {
-              if (snapshot.hasData && snapshot.data!) {
-                return SmartRefresher(
-                  enablePullDown: _enableRefresh,
-                  enablePullUp: false,
-                  header: const WaterDropHeader(),
-                  controller: _refreshController,
-                  onRefresh: _refresh,
-                  child: ListView(
-                    controller: _scrollController,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
-                        child: createBookmarksView(),
-                      ),
-                    ],
-                  ),
-                );
-              }
-              return Container();
-            },
+          body: Container(
+            color: ColorStyle.getSystemBackground(),
+            child: StreamBuilder(
+              stream: _bookmarksViewModel.userLoginStream,
+              builder: (context, snapshot) {
+                if (snapshot.hasData && snapshot.data!) {
+                  return SmartRefresher(
+                    enablePullDown: _enableRefresh,
+                    enablePullUp: false,
+                    header: const WaterDropHeader(),
+                    controller: _refreshController,
+                    onRefresh: _refresh,
+                    child: ListView(
+                      controller: _scrollController,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
+                          child: createBookmarksView(),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                return Container();
+              },
+            ),
           ),
         ),
       ),
