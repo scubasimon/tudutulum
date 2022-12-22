@@ -35,5 +35,6 @@ class StrConst {
   static const String dateNotification = "date_notification";
   static const String lastLocation = "last_location";
   static const String lastTime = "last_time";
+  static const String selectMap = "select_map";
 
 }

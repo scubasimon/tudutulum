@@ -295,13 +295,13 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 32.0,),
+                  const Padding(padding: EdgeInsets.only(bottom: 12)),
                   const Divider(
                     color: Colors.black,
                     height: 0.5,
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(top: 16, bottom: 12),
+                    padding: const EdgeInsets.only(top: 24, bottom: 12),
                     child: InkWell(
                       onTap: () async {
                         await launchUrl(Uri.parse(URLConsts.about));
@@ -370,7 +370,7 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                       )
                     ],
                   ),
-                  const SizedBox(height: 24,),
+                  const Padding(padding: EdgeInsets.only(bottom: 12)),
                   Padding(
                     padding: const EdgeInsets.only(top: 12, bottom: 8),
                     child: Text(
@@ -385,33 +385,32 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                   ),
                   Row(
                     children: [
-                      Container(
-                        height: 48,
-                        decoration: BoxDecoration(
-                            color: ColorStyle.getSystemBackground(),
-                            borderRadius: const BorderRadius.all(
-                                Radius.circular(24.0)
-                            ),
-                            boxShadow: const [
-                              BoxShadow(
-                                  color: ColorStyle.border,
-                                  blurRadius: 4.0
+                      InkWell(
+                        onTap: () {
+                          final inAppReview = InAppReview.instance;
+                          inAppReview.openStoreListing(appStoreId: "id1615290927");
+                        },
+                        child: Container(
+                          height: 48,
+                          decoration: BoxDecoration(
+                              color: ColorStyle.getSystemBackground(),
+                              borderRadius: const BorderRadius.all(
+                                  Radius.circular(24.0)
                               ),
-                            ]
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 8, right: 8),
-                          child: Center(
-                            child: RatingBar.builder(
-                              itemSize: 32,
-                              itemBuilder: (context, _) => const Icon(
-                                Icons.star,
-                                color: ColorStyle.tertiary,
+                              boxShadow: const [
+                                BoxShadow(
+                                    color: ColorStyle.border,
+                                    blurRadius: 4.0
+                                ),
+                              ]
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 8, right: 8),
+                            child: Center(
+                              child: Image.asset(
+                                ImagePath.fiveStars,
+                                height: 24,
                               ),
-                              onRatingUpdate: (double value) async {
-                                final inAppReview = InAppReview.instance;
-                                inAppReview.openStoreListing(appStoreId: "id1615290927");
-                              },
                             ),
                           ),
                         ),
@@ -419,7 +418,7 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                       const Spacer(),
                     ],
                   ),
-                  const SizedBox(height: 56,),
+                  const Padding(padding: EdgeInsets.only(bottom: 24)),
                   const Divider(
                     color: Colors.black,
                     height: 0.5,

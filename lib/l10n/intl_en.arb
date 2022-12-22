@@ -69,7 +69,7 @@
   "about": "•  About Tudu Tulum",
   "coming_soon": "•  Coming soon",
   "follow_us": "•  Follow us to see our latest deals",
-  "rate_us": "•  Please rate Us",
+  "rate_us": "•  Please rate us 5 stars",
   "setting": "Settings",
   "the_legal_stuff": "•  The Legal stuff",
   "back": "Back",
@@ -132,7 +132,7 @@
   "redeem_report_message": "Please let us know if you had any issues or if everything went smoothly",
   "successful": "Successful!",
   "issue": "There was an issue",
-  "select_contact_message": "Please select contact",
+  "select_contact_message": "Please let us know what happened:",
   "preview_deal_message": "To view full term and conditions and to redeem this offer please visit the Deals tab",
   "select_navigation_app": "Please select app",
   "app_not_installed": "{name} is not installed",
@@ -171,5 +171,6 @@
   "price": "Price",
   "further_information": "Further Information",
   "venue_contact": "Venue Contact:",
-  "try_a_week": "7 days free trial"
+  "try_a_week": "7 days free trial",
+  "redeem_later": "Redeem Later"
 }

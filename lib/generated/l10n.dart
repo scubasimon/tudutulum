@@ -750,10 +750,10 @@ class S {
     );
   }
 
-  /// `•  Please rate Us`
+  /// `•  Please rate us 5 stars`
   String get rate_us {
     return Intl.message(
-      '•  Please rate Us',
+      '•  Please rate us 5 stars',
       name: 'rate_us',
       desc: '',
       args: [],
@@ -1380,10 +1380,10 @@ class S {
     );
   }
 
-  /// `Please select contact`
+  /// `Please let us know what happened:`
   String get select_contact_message {
     return Intl.message(
-      'Please select contact',
+      'Please let us know what happened:',
       name: 'select_contact_message',
       desc: '',
       args: [],
@@ -1775,6 +1775,16 @@ class S {
     return Intl.message(
       '7 days free trial',
       name: 'try_a_week',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Redeem Later`
+  String get redeem_later {
+    return Intl.message(
+      'Redeem Later',
+      name: 'redeem_later',
       desc: '',
       args: [],
     );

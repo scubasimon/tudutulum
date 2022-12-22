@@ -227,7 +227,8 @@ class MessageLookup extends MessageLookupByLibrary {
                 "When I am near to an available offer"),
         "push_notification_new_offer": MessageLookupByLibrary.simpleMessage(
             "When new offers become available"),
-        "rate_us": MessageLookupByLibrary.simpleMessage("•  Please rate Us"),
+        "rate_us":
+            MessageLookupByLibrary.simpleMessage("•  Please rate us 5 stars"),
         "receive_monthly_newsletter_email":
             MessageLookupByLibrary.simpleMessage(
                 "Receive monthly newsletter email"),
@@ -235,6 +236,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage(
                 "Receive new offer notification emails"),
         "redeem_here": MessageLookupByLibrary.simpleMessage("Redeem Here"),
+        "redeem_later": MessageLookupByLibrary.simpleMessage("Redeem Later"),
         "redeem_report_message": MessageLookupByLibrary.simpleMessage(
             "Please let us know if you had any issues or if everything went smoothly"),
         "redeem_report_title":
@@ -254,8 +256,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "save_changes": MessageLookupByLibrary.simpleMessage("Save Changes"),
         "search_placeholder": MessageLookupByLibrary.simpleMessage(
             "Search here or use the filter above"),
-        "select_contact_message":
-            MessageLookupByLibrary.simpleMessage("Please select contact"),
+        "select_contact_message": MessageLookupByLibrary.simpleMessage(
+            "Please let us know what happened:"),
         "select_navigation_app":
             MessageLookupByLibrary.simpleMessage("Please select app"),
         "server_error": MessageLookupByLibrary.simpleMessage(
