@@ -97,7 +97,7 @@ class _LoginStateView extends State<LoginView> {
     return ExitAppScope(
       child: Scaffold(
         key: _scaffoldKey,
-        backgroundColor: ColorStyle.systemBackground,
+        backgroundColor: ColorStyle.getSystemBackground(),
         body: InkWell(
           hoverColor: Colors.transparent,
           focusColor: Colors.transparent,
@@ -105,225 +105,228 @@ class _LoginStateView extends State<LoginView> {
           onTap: () {
             FocusManager.instance.primaryFocus?.unfocus();
           },
-          child: SafeArea(
-            child: SingleChildScrollView(
-              child: Container(
-                color: ColorStyle.systemBackground,
-                margin: const EdgeInsets.fromLTRB(16, 32, 16, 32),
-                alignment: Alignment.topCenter,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Image.asset(
-                      ImagePath.logoIcon,
-                      width: 50,
-                    ),
-                    Container(
-                      margin: const EdgeInsets.fromLTRB(0, 8, 0, 8),
-                      child: Text(
-                        S.current.login,
-                        style: const TextStyle(
-                            color: ColorStyle.primary,
-                            fontFamily: FontStyles.sfProText,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 34
-                        ),
+          child: Container(
+            color: ColorStyle.getSystemBackground(),
+            child: SafeArea(
+              child: SingleChildScrollView(
+                child: Container(
+                  color: ColorStyle.getSystemBackground(),
+                  margin: const EdgeInsets.fromLTRB(16, 32, 16, 32),
+                  alignment: Alignment.topCenter,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Image.asset(
+                        ImagePath.logoIcon,
+                        width: 50,
                       ),
-                    ),
-                    Text(
-                      S.current.login_description,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                          color: ColorStyle.tertiaryDarkLabel60,
-                          fontFamily: FontStyles.sfProText,
-                          fontSize: 17
-                      ),
-                    ),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height < 1000.0
-                          ? MediaQuery.of(context).size.height * 0.075
-                          : MediaQuery.of(context).size.height * 0.1,
-                    ),
-                    SizedBox.fromSize(
-                      size: const Size.fromHeight(60),
-                      child: TextField(
-                        cursorColor: ColorStyle.primary,
-                        textInputAction: TextInputAction.done,
-                        keyboardType: TextInputType.emailAddress,
-                        controller: _emailController,
-                        style: const TextStyle(
-                          color: ColorStyle.darkLabel,
-                          fontSize: 17,
-                          fontFamily: FontStyles.sfProText,
-                          fontStyle: FontStyle.normal,
-                        ),
-                        decoration: InputDecoration(
-                            labelText: S.current.email,
-                            border: InputBorder.none,
-                            labelStyle: const TextStyle(
-                                color: ColorStyle.tertiaryDarkLabel30
-                            )
-                        ),
-                      ),
-                    ),
-                    const Divider(
-                      height: 0.5,
-                      color: Colors.black,
-                    ),
-                    Row(
-                      children: [
-                        SizedBox.fromSize(
-                            size: Size(MediaQuery.of(context).size.width - 56.0, 60.0),
-                            child: TextField(
-                              cursorColor: ColorStyle.primary,
-                              textInputAction: TextInputAction.done,
-                              obscureText: _hidePassword,
-                              controller: _passwordController,
-                              style: const TextStyle(
-                                color: ColorStyle.darkLabel,
-                                fontSize: 17,
-                                fontFamily: FontStyles.sfProText,
-                                fontStyle: FontStyle.normal,
-                              ),
-                              decoration: InputDecoration(
-                                  labelText: S.current.password,
-                                  border: InputBorder.none,
-                                  labelStyle: const TextStyle(
-                                      color: ColorStyle.tertiaryDarkLabel30
-                                  )
-                              ),
-                            )
-                        ),
-                        InkWell(
-                          onTap: (){
-                            setState(() {
-                              _hidePassword = !_hidePassword;
-                            });
-                          },
-                          child: Image.asset(
-                            _hidePassword ? ImagePath.hideEyeIcon : ImagePath.eyeIcon,
-                            width: 24,
-                            height: 24,
+                      Container(
+                        margin: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+                        child: Text(
+                          S.current.login,
+                          style: const TextStyle(
+                              color: ColorStyle.primary,
+                              fontFamily: FontStyles.sfProText,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 34
                           ),
                         ),
-                      ],
-                    ),
-                    const Divider(
-                      height: 0.5,
-                      color: Colors.black,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
+                      ),
+                      Text(
+                        S.current.login_description,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                            color: ColorStyle.tertiaryDarkLabel60,
+                            fontFamily: FontStyles.sfProText,
+                            fontSize: 17
+                        ),
+                      ),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height < 1000.0
+                            ? MediaQuery.of(context).size.height * 0.075
+                            : MediaQuery.of(context).size.height * 0.1,
+                      ),
+                      SizedBox.fromSize(
+                        size: const Size.fromHeight(60),
+                        child: TextField(
+                          cursorColor: ColorStyle.primary,
+                          textInputAction: TextInputAction.done,
+                          keyboardType: TextInputType.emailAddress,
+                          controller: _emailController,
+                          style: TextStyle(
+                            color: ColorStyle.getDarkLabel(),
+                            fontSize: 17,
+                            fontFamily: FontStyles.sfProText,
+                            fontStyle: FontStyle.normal,
+                          ),
+                          decoration: InputDecoration(
+                              labelText: S.current.email,
+                              border: InputBorder.none,
+                              labelStyle: const TextStyle(
+                                  color: ColorStyle.tertiaryDarkLabel30
+                              )
+                          ),
+                        ),
+                      ),
+                      const Divider(
+                        height: 0.5,
+                        color: Colors.black,
+                      ),
+                      Row(
                         children: [
+                          SizedBox.fromSize(
+                              size: Size(MediaQuery.of(context).size.width - 56.0, 60.0),
+                              child: TextField(
+                                cursorColor: ColorStyle.primary,
+                                textInputAction: TextInputAction.done,
+                                obscureText: _hidePassword,
+                                controller: _passwordController,
+                                style: TextStyle(
+                                  color: ColorStyle.getDarkLabel(),
+                                  fontSize: 17,
+                                  fontFamily: FontStyles.sfProText,
+                                  fontStyle: FontStyle.normal,
+                                ),
+                                decoration: InputDecoration(
+                                    labelText: S.current.password,
+                                    border: InputBorder.none,
+                                    labelStyle: const TextStyle(
+                                        color: ColorStyle.tertiaryDarkLabel30
+                                    )
+                                ),
+                              )
+                          ),
                           InkWell(
-                            onTap: _forgotPasswordAction,
-                            child: Text(
-                              S.current.forgot_password,
-                              style: const TextStyle(
-                                color: ColorStyle.primary,
-                                fontFamily: FontStyles.sfProText,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                              ),
+                            onTap: (){
+                              setState(() {
+                                _hidePassword = !_hidePassword;
+                              });
+                            },
+                            child: Image.asset(
+                              _hidePassword ? ImagePath.hideEyeIcon : ImagePath.eyeIcon,
+                              width: 24,
+                              height: 24,
                             ),
-                          )
+                          ),
                         ],
                       ),
-                    ),
-                    InkWell(
-                      onTap: () { _signInAction(AuthType.email); },
-                      child: Container(
-                        alignment: Alignment.center,
-                        height: 56,
-                        margin: const EdgeInsets.fromLTRB(0, 32, 0, 20),
-                        decoration: const BoxDecoration(
-                          color: ColorStyle.primary,
-                          borderRadius: BorderRadius.all(Radius.circular(12)),
+                      const Divider(
+                        height: 0.5,
+                        color: Colors.black,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            InkWell(
+                              onTap: _forgotPasswordAction,
+                              child: Text(
+                                S.current.forgot_password,
+                                style: const TextStyle(
+                                  color: ColorStyle.primary,
+                                  fontFamily: FontStyles.sfProText,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            )
+                          ],
                         ),
-                        child: Text(
-                          S.current.sign_in,
-                          style: const TextStyle(
-                              color: ColorStyle.lightLabel,
-                              backgroundColor: ColorStyle.primary,
-                              fontFamily: FontStyles.sfProText,
-                              fontSize: 17,
-                              fontWeight: FontWeight.w600
+                      ),
+                      InkWell(
+                        onTap: () { _signInAction(AuthType.email); },
+                        child: Container(
+                          alignment: Alignment.center,
+                          height: 56,
+                          margin: const EdgeInsets.fromLTRB(0, 32, 0, 20),
+                          decoration: const BoxDecoration(
+                            color: ColorStyle.primary,
+                            borderRadius: BorderRadius.all(Radius.circular(12)),
+                          ),
+                          child: Text(
+                            S.current.sign_in,
+                            style: TextStyle(
+                                color: ColorStyle.getLightLabel(),
+                                backgroundColor: ColorStyle.primary,
+                                fontFamily: FontStyles.sfProText,
+                                fontSize: 17,
+                                fontWeight: FontWeight.w600
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          S.current.account_not_exist,
-                          style: const TextStyle(
-                              color: ColorStyle.tertiaryDarkLabel,
-                              fontFamily: FontStyles.sfProText,
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600
-                          ),
-                        ),
-                        const Text(" "),
-                        InkWell(
-                          onTap: () {
-                            Navigator.of(context).push(
-                                MaterialPageRoute(builder: (context) => const RegisterView())
-                            );
-                          },
-                          child: Text(
-                            S.current.create_account,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            S.current.account_not_exist,
                             style: const TextStyle(
-                                color: ColorStyle.primary,
+                                color: ColorStyle.tertiaryDarkLabel,
                                 fontFamily: FontStyles.sfProText,
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600
                             ),
                           ),
-                        )
-                      ],
-                    ),
-                    Text(
-                      S.current.sign_in_other,
-                      style: const TextStyle(
-                        color: ColorStyle.tertiaryDarkLabel,
-                        fontWeight: FontWeight.w600,
-                        fontFamily: FontStyles.sfProText,
-                        fontSize: 15,
+                          const Text(" "),
+                          InkWell(
+                            onTap: () {
+                              Navigator.of(context).push(
+                                  MaterialPageRoute(builder: (context) => const RegisterView())
+                              );
+                            },
+                            child: Text(
+                              S.current.create_account,
+                              style: const TextStyle(
+                                  color: ColorStyle.primary,
+                                  fontFamily: FontStyles.sfProText,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600
+                              ),
+                            ),
+                          )
+                        ],
                       ),
-                    ),
-                    const Padding(padding: EdgeInsets.all(20)),
-                    SizedBox(
-                      height: 40,
-                      width: MediaQuery.of(context).size.width * 2.0 / 3.0,
-                      child: Row(
-                        children: methods,
-                      ),
-                    ),
-                    const SizedBox(height: 70.0,),
-                    InkWell(
-                      onTap: () {
-                        // Navigator.of(context).pushReplacementNamed(URLConsts.home);
-                        _homeViewModel.redirectTab(0);
-                        Navigator.of(context)
-                            .pushNamedAndRemoveUntil(URLConsts.home, (Route<dynamic> route) => false);
-                      },
-                      child: Text(
-                        S.current.maybe_later,
+                      Text(
+                        S.current.sign_in_other,
                         style: const TextStyle(
-                            color: ColorStyle.primary,
-                            fontFamily: FontStyles.sfProText,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600
+                          color: ColorStyle.tertiaryDarkLabel,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: FontStyles.sfProText,
+                          fontSize: 15,
                         ),
                       ),
-                    ),
-                  ],
+                      const Padding(padding: EdgeInsets.all(20)),
+                      SizedBox(
+                        height: 40,
+                        width: MediaQuery.of(context).size.width * 2.0 / 3.0,
+                        child: Row(
+                          children: methods,
+                        ),
+                      ),
+                      const SizedBox(height: 70.0,),
+                      InkWell(
+                        onTap: () {
+                          // Navigator.of(context).pushReplacementNamed(URLConsts.home);
+                          _homeViewModel.redirectTab(0);
+                          Navigator.of(context)
+                              .pushNamedAndRemoveUntil(URLConsts.home, (Route<dynamic> route) => false);
+                        },
+                        child: Text(
+                          S.current.maybe_later,
+                          style: const TextStyle(
+                              color: ColorStyle.primary,
+                              fontFamily: FontStyles.sfProText,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

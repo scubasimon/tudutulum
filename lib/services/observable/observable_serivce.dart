@@ -4,6 +4,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:tudu/models/event.dart';
 
 import '../../models/article.dart';
+import '../../models/error.dart';
 import '../../models/site.dart';
 
 class ObservableService {
@@ -14,6 +15,12 @@ class ObservableService {
   factory ObservableService() {
     return _observableService;
   }
+
+  final StreamController<bool> homeProgressLoadingController = BehaviorSubject<bool>();
+  Stream<bool> get homeProgressLoadingStream => homeProgressLoadingController.stream;
+
+  final StreamController<CustomError> homeErrorController = BehaviorSubject<CustomError>();
+  Stream<CustomError> get homeErrorStream => homeErrorController.stream;
 
   final StreamController<bool> whatTuduProgressLoadingController = BehaviorSubject<bool>();
   Stream<bool> get whatTuduProgressLoadingStream => whatTuduProgressLoadingController.stream;

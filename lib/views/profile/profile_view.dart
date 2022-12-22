@@ -77,25 +77,29 @@ class _ProfileView extends State<ProfileView> {
   @override
   Widget build(BuildContext context) {
     return ExitAppScope(
-      child: Scaffold(
-        body: InkWell(
-          hoverColor: Colors.transparent,
-          focusColor: Colors.transparent,
-          splashColor: Colors.transparent,
-          onTap: () {
-            FocusManager.instance.primaryFocus?.unfocus();
-          },
-          child: Container(
-            margin: const EdgeInsets.only(left: 16, right: 16),
-            child: ListView(
-              controller: _scrollController,
-              children: <Widget>[
-                createIconView(),
-                createProfileView(),
-                createPasswordView(),
-                createTermView(),
-                getButton(),
-              ],
+      child: Container(
+        color: ColorStyle.getSystemBackground(),
+        child: Scaffold(
+          body: InkWell(
+            hoverColor: Colors.transparent,
+            focusColor: Colors.transparent,
+            splashColor: Colors.transparent,
+            onTap: () {
+              FocusManager.instance.primaryFocus?.unfocus();
+            },
+            child: Container(
+              color: ColorStyle.getSystemBackground(),
+              padding: const EdgeInsets.only(left: 16, right: 16),
+              child: ListView(
+                controller: _scrollController,
+                children: <Widget>[
+                  createIconView(),
+                  createProfileView(),
+                  createPasswordView(),
+                  createTermView(),
+                  getButton(),
+                ],
+              ),
             ),
           ),
         ),
@@ -566,8 +570,8 @@ class _ProfileView extends State<ProfileView> {
               onPressed: _updateAction,
               child: Text(
                 S.current.save_changes,
-                style: const TextStyle(
-                  color: ColorStyle.lightLabel,
+                style: TextStyle(
+                  color: ColorStyle.getLightLabel(),
                   fontFamily: FontStyles.sfProText,
                   fontSize: FontSizeConst.font17,
                   fontWeight: FontWeight.w600

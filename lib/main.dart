@@ -235,10 +235,10 @@ class _MyAppState extends State<MyApp> {
         child: MaterialApp(
           theme: ThemeData(
             highlightColor: Colors.transparent,
-            textSelectionTheme: const TextSelectionThemeData(
-              cursorColor: ColorStyle.darkLabel,
-              selectionColor: ColorStyle.darkLabel,
-              selectionHandleColor: ColorStyle.darkLabel,
+            textSelectionTheme: TextSelectionThemeData(
+              cursorColor: ColorStyle.getDarkLabel(),
+              selectionColor: ColorStyle.getDarkLabel(),
+              selectionHandleColor: ColorStyle.getDarkLabel(),
             ),
           ),
           // theme: FlexThemeData.dark(scheme: FlexScheme.mandyRed),

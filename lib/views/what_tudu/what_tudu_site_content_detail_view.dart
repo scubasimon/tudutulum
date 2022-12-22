@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -56,6 +58,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
   @override
   void initState() {
     _textKey.clear();
+
     if (_whatTuduSiteContentDetailViewModel.siteContentDetail.siteContent.fees != null) {
       for (int i = 0;
           i < _whatTuduSiteContentDetailViewModel.siteContentDetail.siteContent.fees!["feeDetail"]!.length;
@@ -162,10 +165,13 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
           header: const WaterDropHeader(),
           controller: _refreshController,
           onRefresh: _onRefresh,
-          child: ListView(
-            children: <Widget>[
-              getExploreAllLocationView(),
-            ],
+          child: Container(
+            color: ColorStyle.getSystemBackground(),
+            child: ListView(
+              children: <Widget>[
+                getExploreAllLocationView(),
+              ],
+            ),
           ),
         ),
       ),
@@ -311,11 +317,11 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: FontStyles.mouser,
                       fontSize: FontSizeConst.font12,
                       fontWeight: FontWeight.w400,
-                      color: ColorStyle.darkLabel,
+                      color: ColorStyle.getDarkLabel(),
                     ),
                   ),
                   InkWell(
@@ -339,8 +345,8 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
             ),
             Text(
               description,
-              style: const TextStyle(
-                color: ColorStyle.darkLabel,
+              style: TextStyle(
+                color: ColorStyle.getDarkLabel(),
                 fontWeight: FontWeight.w500,
                 fontSize: FontSizeConst.font12,
                 fontFamily: FontStyles.raleway,
@@ -368,8 +374,8 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                 height: 20,
                 child: Text(
                   S.current.more_information,
-                  style: const TextStyle(
-                    color: ColorStyle.darkLabel,
+                  style: TextStyle(
+                    color: ColorStyle.getDarkLabel(),
                     fontFamily: FontStyles.mouser,
                     fontSize: FontSizeConst.font12,
                     fontWeight: FontWeight.w400,
@@ -377,8 +383,8 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                 )),
             Text(
               moreInformation,
-              style: const TextStyle(
-                color: ColorStyle.darkLabel,
+              style: TextStyle(
+                color: ColorStyle.getDarkLabel(),
                 fontWeight: FontWeight.w500,
                 fontSize: FontSizeConst.font12,
                 fontFamily: FontStyles.raleway,
@@ -406,8 +412,8 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                 height: 20,
                 child: Text(
                   S.current.advisory,
-                  style: const TextStyle(
-                    color: ColorStyle.darkLabel,
+                  style: TextStyle(
+                    color: ColorStyle.getDarkLabel(),
                     fontFamily: FontStyles.mouser,
                     fontSize: FontSizeConst.font12,
                     fontWeight: FontWeight.w400,
@@ -415,8 +421,8 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                 )),
             Text(
               advisory,
-              style: const TextStyle(
-                color: ColorStyle.darkLabel,
+              style: TextStyle(
+                color: ColorStyle.getDarkLabel(),
                 fontWeight: FontWeight.w500,
                 fontSize: FontSizeConst.font12,
                 fontFamily: FontStyles.raleway,
@@ -444,11 +450,11 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                   height: 20,
                   child: Text(
                     S.current.you_can_expect,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: FontStyles.mouser,
                       fontSize: FontSizeConst.font12,
                       fontWeight: FontWeight.w400,
-                      color: ColorStyle.darkLabel,
+                      color: ColorStyle.getDarkLabel(),
                     ),
                   )),
               Container(
@@ -482,11 +488,11 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                 height: 20,
                 child: Text(
                   S.current.open_times,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: FontStyles.mouser,
                     fontSize: FontSizeConst.font12,
                     fontWeight: FontWeight.w400,
-                    color: ColorStyle.darkLabel,
+                    color: ColorStyle.getDarkLabel(),
                   ),
                 ),
               ),
@@ -522,11 +528,11 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                 height: 20,
                 child: Text(
                   S.current.fees,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: FontStyles.mouser,
                     fontSize: FontSizeConst.font12,
                     fontWeight: FontWeight.w400,
-                    color: ColorStyle.darkLabel,
+                    color: ColorStyle.getDarkLabel(),
                   ),
                 ),
               ),
@@ -549,8 +555,8 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                             Text(
                               key: _textKey[index],
                               fees["feeTitle"]![index],
-                              style: const TextStyle(
-                                color: ColorStyle.darkLabel,
+                              style: TextStyle(
+                                color: ColorStyle.getDarkLabel(),
                                 fontWeight: FontWeight.w500,
                                 fontSize: FontSizeConst.font12,
                                 fontFamily: FontStyles.raleway,
@@ -565,8 +571,8 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                           padding: const EdgeInsets.only(left: 8, bottom: 8),
                           child: Text(
                             fees["feeDetail"]![index],
-                            style: const TextStyle(
-                              color: ColorStyle.darkLabel,
+                            style: TextStyle(
+                              color: ColorStyle.getDarkLabel(),
                               fontWeight: FontWeight.w500,
                               fontSize: FontSizeConst.font12,
                               fontFamily: FontStyles.raleway,
@@ -599,11 +605,11 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                 height: 20,
                 child: Text(
                   S.current.capacity,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: FontStyles.mouser,
                     fontSize: FontSizeConst.font12,
                     fontWeight: FontWeight.w400,
-                    color: ColorStyle.darkLabel,
+                    color: ColorStyle.getDarkLabel(),
                   ),
                 ),
               ),
@@ -612,8 +618,8 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
               ),
               Text(
                 capacity,
-                style: const TextStyle(
-                  color: ColorStyle.darkLabel,
+                style: TextStyle(
+                  color: ColorStyle.getDarkLabel(),
                   fontWeight: FontWeight.w500,
                   fontSize: FontSizeConst.font12,
                   fontFamily: FontStyles.raleway,
@@ -639,11 +645,11 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                   height: 20,
                   child: Text(
                     S.current.events_and_experiences,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: FontStyles.mouser,
                       fontSize: FontSizeConst.font12,
                       fontWeight: FontWeight.w400,
-                      color: ColorStyle.darkLabel,
+                      color: ColorStyle.getDarkLabel(),
                     ),
                   )),
               Container(
@@ -703,8 +709,8 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                   SizedBox(
                     height: 20,
                     child: Text(S.current.get_in_touch_with,
-                        style: const TextStyle(
-                          color: ColorStyle.darkLabel,
+                        style: TextStyle(
+                          color: ColorStyle.getDarkLabel(),
                           fontSize: FontSizeConst.font12,
                           fontWeight: FontWeight.w500,
                           fontFamily: FontStyles.raleway,
@@ -714,11 +720,11 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                     height: 20,
                     child: Text(
                       getIntouch["title"].toString(),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontFamily: FontStyles.mouser,
                         fontSize: FontSizeConst.font12,
                         fontWeight: FontWeight.w400,
-                        color: ColorStyle.darkLabel,
+                        color: ColorStyle.getDarkLabel(),
                       ),
                     ),
                   ),
@@ -769,8 +775,8 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                   SizedBox(
                     height: 20,
                     child: Text(S.current.follow_title,
-                        style: const TextStyle(
-                          color: ColorStyle.darkLabel,
+                        style: TextStyle(
+                          color: ColorStyle.getDarkLabel(),
                           fontSize: FontSizeConst.font12,
                           fontWeight: FontWeight.w500,
                           fontFamily: FontStyles.raleway,
@@ -881,8 +887,8 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                       height: 20,
                       alignment: Alignment.centerLeft,
                       child: Text(S.current.thanks_to_our_trusted_partner,
-                          style: const TextStyle(
-                            color: ColorStyle.darkLabel,
+                          style: TextStyle(
+                            color: ColorStyle.getDarkLabel(),
                             fontSize: FontSizeConst.font12,
                             fontWeight: FontWeight.w500,
                             fontFamily: FontStyles.raleway,
@@ -892,11 +898,11 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                       height: 20,
                       alignment: Alignment.centerLeft,
                       child: Text(partner.name,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontFamily: FontStyles.mouser,
                             fontSize: FontSizeConst.font12,
                             fontWeight: FontWeight.w400,
-                            color: ColorStyle.darkLabel,
+                            color: ColorStyle.getDarkLabel(),
                           )),
                     ),
                   ],
@@ -923,8 +929,8 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
         margin: const EdgeInsets.only(top: 18, bottom: 80),
         alignment: Alignment.center,
         child: Text(S.current.please_report,
-            style: const TextStyle(
-              color: ColorStyle.darkLabel,
+            style: TextStyle(
+              color: ColorStyle.getDarkLabel(),
               fontSize: FontSizeConst.font12,
               fontWeight: FontWeight.w500,
               fontFamily: FontStyles.raleway,
@@ -960,8 +966,8 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
         padding: const EdgeInsets.only(left: 8.0),
         child: Text(
           "• $amenityDescription",
-          style: const TextStyle(
-            color: ColorStyle.darkLabel,
+          style: TextStyle(
+            color: ColorStyle.getDarkLabel(),
             fontWeight: FontWeight.w500,
             fontSize: FontSizeConst.font12,
             fontFamily: FontStyles.raleway,
@@ -1050,8 +1056,8 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
               width: 80,
               child: Text(
                 "${listOpenTimes[dayInWeek]}",
-                style: const TextStyle(
-                  color: ColorStyle.darkLabel,
+                style: TextStyle(
+                  color: ColorStyle.getDarkLabel(),
                   fontWeight: FontWeight.w500,
                   fontSize: FontSizeConst.font12,
                   fontFamily: FontStyles.raleway,
@@ -1063,8 +1069,8 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                 alignment: Alignment.centerLeft,
                 child: Text(
                   "${FuncUlti.getDayInWeekFromKeyword(dayInWeek)}",
-                  style: const TextStyle(
-                    color: ColorStyle.darkLabel,
+                  style: TextStyle(
+                    color: ColorStyle.getDarkLabel(),
                     fontWeight: FontWeight.w500,
                     fontSize: FontSizeConst.font12,
                     fontFamily: FontStyles.raleway,
@@ -1084,8 +1090,8 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
             width: 80,
             child: Text(
               "${listOpenTimes["${dayInWeek}"]}",
-              style: const TextStyle(
-                color: ColorStyle.darkLabel,
+              style: TextStyle(
+                color: ColorStyle.getDarkLabel(),
                 fontWeight: FontWeight.w500,
                 fontSize: FontSizeConst.font12,
                 fontFamily: FontStyles.raleway,
@@ -1097,8 +1103,8 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
               alignment: Alignment.centerLeft,
               child: Text(
                 "${listOpenTimes["${dayInWeek}Description"]}",
-                style: const TextStyle(
-                  color: ColorStyle.darkLabel,
+                style: TextStyle(
+                  color: ColorStyle.getDarkLabel(),
                   fontWeight: FontWeight.w500,
                   fontSize: FontSizeConst.font12,
                   fontFamily: FontStyles.raleway,
@@ -1151,8 +1157,8 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                           // color: ColorStyle.placeHolder,
                           child: Text(
                             "${amenity.title}",
-                            style: const TextStyle(
-                              color: ColorStyle.darkLabel,
+                            style: TextStyle(
+                              color: ColorStyle.getDarkLabel(),
                               fontWeight: FontWeight.bold,
                               fontSize: FontSizeConst.font12,
                               fontFamily: FontStyles.raleway,
@@ -1168,8 +1174,8 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                           // color: ColorStyle.placeHolder,
                           child: Text(
                             "${amenity.description}",
-                            style: const TextStyle(
-                              color: ColorStyle.darkLabel,
+                            style: TextStyle(
+                              color: ColorStyle.getDarkLabel(),
                               fontWeight: FontWeight.w400,
                               fontSize: FontSizeConst.font12,
                               fontFamily: FontStyles.raleway,
@@ -1183,23 +1189,5 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
             ),
           ]);
     }
-  }
-
-  void _showLoading() {
-    showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return Container(
-              decoration: const BoxDecoration(),
-              child: const Center(
-                child: CupertinoActivityIndicator(
-                  radius: 20,
-                  color: ColorStyle.primary,
-                ),
-              )
-          );
-        }
-    );
   }
 }

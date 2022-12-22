@@ -82,70 +82,49 @@ class _PhotoViewUtil extends State<PhotoViewUtil> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: Stack(
-          children: [
-            WillPopScope(
-              onWillPop: () async {
-                return true;
-              },
-              child: PageView.builder(
-                pageSnapping: false,
-                physics: const PageOverscrollPhysics(velocityPerOverscroll: 1000),
-                controller: controller,
-                itemBuilder: (context, i) {
-                  return GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    child: PhotoView(
-                      imageProvider: CachedNetworkImageProvider(
-                        widget.banner[i % widget.banner.length],
-                      ),
-                      loadingBuilder: (context, event) => const Center(
-                        child: SizedBox(
-                          width: 20.0,
-                          height: 20.0,
-                          child: CupertinoActivityIndicator(
-                            radius: 20,
-                            color: ColorStyle.primary,
+    return Container(
+      color: ColorStyle.getSystemBackground(),
+      child: Scaffold(
+          body: Stack(
+            children: [
+              WillPopScope(
+                onWillPop: () async {
+                  return true;
+                },
+                child: PageView.builder(
+                  pageSnapping: false,
+                  physics: const PageOverscrollPhysics(velocityPerOverscroll: 1000),
+                  controller: controller,
+                  itemBuilder: (context, i) {
+                    return GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      child: PhotoView(
+                        imageProvider: CachedNetworkImageProvider(
+                          widget.banner[i % widget.banner.length],
+                        ),
+                        loadingBuilder: (context, event) => const Center(
+                          child: SizedBox(
+                            width: 20.0,
+                            height: 20.0,
+                            child: CupertinoActivityIndicator(
+                              radius: 20,
+                              color: ColorStyle.primary,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            Positioned(
-              left: 40,
-              bottom: 30 + MediaQuery.of(context).padding.bottom,
-              child: InkWell(
-                  onTap: () {
-                    if (controller.page != null) {
-                      controller.animateToPage(
-                          controller.page!.toInt() - 1,
-                          duration: const Duration(milliseconds: 200),
-                          curve: Curves.easeIn
-                      );
-                    }
+                    );
                   },
-                  child: Container(
-                      height: 40,
-                      width: 40,
-                      alignment: Alignment.center,
-                      child: Image.asset(ImagePath.leftArrowIcon, fit: BoxFit.contain, height: 20.0)
-                  )
+                ),
               ),
-            ),
-            Positioned(
-              right: 40,
-              bottom: 30 + MediaQuery.of(context).padding.bottom,
-              child: RotationTransition(
-                turns: const AlwaysStoppedAnimation(180 / 360),
+              Positioned(
+                left: 40,
+                bottom: 30 + MediaQuery.of(context).padding.bottom,
                 child: InkWell(
                     onTap: () {
                       if (controller.page != null) {
                         controller.animateToPage(
-                            controller.page!.toInt() + 1,
+                            controller.page!.toInt() - 1,
                             duration: const Duration(milliseconds: 200),
                             curve: Curves.easeIn
                         );
@@ -159,33 +138,57 @@ class _PhotoViewUtil extends State<PhotoViewUtil> with WidgetsBindingObserver {
                     )
                 ),
               ),
-            ),
-            Positioned(
-              left: 20,
-              top: 30 + MediaQuery.of(context).padding.top,
-              child: InkWell(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Image.asset(ImagePath.leftArrowIcon, fit: BoxFit.contain, height: 20.0),
-                    Container(
-                        margin: const EdgeInsets.only(left: 8),
-                        child: Text(
-                          S.current.back,
-                          style: const TextStyle(
-                            color: ColorStyle.primary,
-                            fontWeight: FontWeight.w400,
-                            fontSize: FontSizeConst.font16,
-                            fontFamily: FontStyles.mouser,
-                          ),
-                        ))
-                  ],
+              Positioned(
+                right: 40,
+                bottom: 30 + MediaQuery.of(context).padding.bottom,
+                child: RotationTransition(
+                  turns: const AlwaysStoppedAnimation(180 / 360),
+                  child: InkWell(
+                      onTap: () {
+                        if (controller.page != null) {
+                          controller.animateToPage(
+                              controller.page!.toInt() + 1,
+                              duration: const Duration(milliseconds: 200),
+                              curve: Curves.easeIn
+                          );
+                        }
+                      },
+                      child: Container(
+                          height: 40,
+                          width: 40,
+                          alignment: Alignment.center,
+                          child: Image.asset(ImagePath.leftArrowIcon, fit: BoxFit.contain, height: 20.0)
+                      )
+                  ),
                 ),
-                onTap: () { Navigator.pop(context); },
               ),
-            )
-          ],
-        ));
+              Positioned(
+                left: 20,
+                top: 30 + MediaQuery.of(context).padding.top,
+                child: InkWell(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Image.asset(ImagePath.leftArrowIcon, fit: BoxFit.contain, height: 20.0),
+                      Container(
+                          margin: const EdgeInsets.only(left: 8),
+                          child: Text(
+                            S.current.back,
+                            style: const TextStyle(
+                              color: ColorStyle.primary,
+                              fontWeight: FontWeight.w400,
+                              fontSize: FontSizeConst.font16,
+                              fontFamily: FontStyles.mouser,
+                            ),
+                          ))
+                    ],
+                  ),
+                  onTap: () { Navigator.pop(context); },
+                ),
+              )
+            ],
+          )),
+    );
   }
 }
 

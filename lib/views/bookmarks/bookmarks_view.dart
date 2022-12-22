@@ -224,8 +224,8 @@ class _BookmarksView extends State<BookmarksView> {
             _enableRefresh = true;
           });
         },
-        style: const TextStyle(
-            color: ColorStyle.darkLabel,
+        style: TextStyle(
+            color: ColorStyle.getDarkLabel(),
             fontFamily: FontStyles.sfProText,
             fontSize: FontSizeConst.font17,
             fontWeight: FontWeight.w400
@@ -257,29 +257,32 @@ class _BookmarksView extends State<BookmarksView> {
             ),
           ),
         ),
-        body: StreamBuilder(
-          stream: _bookmarksViewModel.userLoginStream,
-          builder: (context, snapshot) {
-            if (snapshot.hasData && snapshot.data!) {
-              return SmartRefresher(
-                enablePullDown: _enableRefresh,
-                enablePullUp: false,
-                header: const WaterDropHeader(),
-                controller: _refreshController,
-                onRefresh: _refresh,
-                child: ListView(
-                  controller: _scrollController,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
-                      child: createBookmarksView(),
-                    ),
-                  ],
-                ),
-              );
-            }
-            return Container();
-          },
+        body: Container(
+          color: ColorStyle.getSystemBackground(),
+          child: StreamBuilder(
+            stream: _bookmarksViewModel.userLoginStream,
+            builder: (context, snapshot) {
+              if (snapshot.hasData && snapshot.data!) {
+                return SmartRefresher(
+                  enablePullDown: _enableRefresh,
+                  enablePullUp: false,
+                  header: const WaterDropHeader(),
+                  controller: _refreshController,
+                  onRefresh: _refresh,
+                  child: ListView(
+                    controller: _scrollController,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
+                        child: createBookmarksView(),
+                      ),
+                    ],
+                  ),
+                );
+              }
+              return Container();
+            },
+          ),
         ),
       ),
     );
@@ -298,8 +301,8 @@ class _BookmarksView extends State<BookmarksView> {
               children: [
                 Text(
                   S.current.your_bookmarks,
-                  style: const TextStyle(
-                    color: ColorStyle.darkLabel,
+                  style: TextStyle(
+                    color: ColorStyle.getDarkLabel(),
                     fontSize: FontSizeConst.font16,
                     fontFamily: FontStyles.mouser,
                     fontWeight: FontWeight.w400,
@@ -447,8 +450,8 @@ class _BookmarksView extends State<BookmarksView> {
                             decoration: BoxDecoration(
                               gradient:
                               LinearGradient(begin: FractionalOffset.centerLeft, end: FractionalOffset.centerRight, colors: [
-                                ColorStyle.secondaryBackground.withOpacity(0.6),
-                                ColorStyle.secondaryBackground.withOpacity(0.0),
+                                ColorStyle.getSecondaryBackground().withOpacity(0.6),
+                                ColorStyle.getSecondaryBackground().withOpacity(0.0),
                               ], stops: const [
                                 0.6,
                                 1.0
@@ -465,8 +468,8 @@ class _BookmarksView extends State<BookmarksView> {
                                       Text(
                                         sites[index].title,
                                         overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
-                                          color: ColorStyle.darkLabel,
+                                        style: TextStyle(
+                                          color: ColorStyle.getDarkLabel(),
                                           fontFamily: FontStyles.raleway,
                                           fontWeight: FontWeight.w800,
                                           fontSize: FontSizeConst.font14,
@@ -475,11 +478,11 @@ class _BookmarksView extends State<BookmarksView> {
                                       Text(
                                         sites[index].subTitle,
                                         overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontFamily: FontStyles.raleway,
                                           fontSize: FontSizeConst.font12,
                                           fontWeight: FontWeight.w400,
-                                          color: ColorStyle.darkLabel,
+                                          color: ColorStyle.getDarkLabel(),
                                         ),
                                       ),
                                     ],
@@ -496,7 +499,7 @@ class _BookmarksView extends State<BookmarksView> {
           }
         } else {
           return Container(
-            color: ColorStyle.systemBackground,
+            color: ColorStyle.getSystemBackground(),
           );
         }
       },

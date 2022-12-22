@@ -35,6 +35,8 @@ class HomeViewModel extends BaseViewModel {
 
   ObservableService _observableService = ObservableService();
 
+  bool isLoading = false;
+
   String whatTuduSearchKeyword = "";
   int whatTuduBussinessFilterType = 0;
   int whatTuduOrderType = 0;

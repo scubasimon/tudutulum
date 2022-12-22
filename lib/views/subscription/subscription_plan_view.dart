@@ -77,7 +77,7 @@ class _SubscriptionPlanView extends State<SubscriptionPlanView> {
               right: 16,
               bottom: 8,
             ),
-            color: ColorStyle.systemBackground,
+            color: ColorStyle.getSystemBackground(),
             child: Container(
               height: 36.0,
               alignment: Alignment.centerLeft,
@@ -120,7 +120,7 @@ class _SubscriptionPlanView extends State<SubscriptionPlanView> {
           ),
         ),
         body: Container(
-          color: ColorStyle.systemBackground,
+          color: ColorStyle.getSystemBackground(),
           padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
           child: ListView(
             children: [
@@ -156,7 +156,7 @@ class _SubscriptionPlanView extends State<SubscriptionPlanView> {
                             decoration: BoxDecoration(
                               color: element.selection
                                   ? ColorStyle.primary
-                                  : ColorStyle.systemBackground,
+                                  : ColorStyle.getSystemBackground(),
                               borderRadius: BorderRadius.circular(16),
                               border: element.selection
                                 ? null
@@ -180,7 +180,7 @@ class _SubscriptionPlanView extends State<SubscriptionPlanView> {
                                     element.name,
                                     style: TextStyle(
                                       color: element.selection
-                                          ? ColorStyle.lightLabel
+                                          ? ColorStyle.getLightLabel()
                                           : ColorStyle.primary,
                                       fontWeight: FontWeight.w600,
                                       fontSize: FontSizeConst.font17,
@@ -192,7 +192,7 @@ class _SubscriptionPlanView extends State<SubscriptionPlanView> {
                                     element.priceString,
                                     style: TextStyle(
                                         color: element.selection
-                                            ? ColorStyle.lightLabel
+                                            ? ColorStyle.getLightLabel()
                                             : ColorStyle.primary,
                                         fontFamily: FontStyles.sfProText,
                                         fontSize: FontSizeConst.font14,

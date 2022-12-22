@@ -151,32 +151,35 @@ class _MapDealView extends State<MapDealView> {
             ),
           ),
         ),
-        body: StreamBuilder(
-          stream: _mapDealsViewModel.permission,
-          builder: (context, snapshot) {
-            if (snapshot.hasData && snapshot.data!) {
-              return StreamBuilder(
-                stream: _mapDealsViewModel.currentPosition,
-                builder: (context, snp) {
-                  if (snp.data != null) {
-                    return GoogleMap(
-                      zoomGesturesEnabled: true,
-                      zoomControlsEnabled: false,
-                      initialCameraPosition: CameraPosition(target: snp.data!, zoom: 15),
-                      mapType: MapType.normal,
-                      myLocationEnabled: true,
-                      myLocationButtonEnabled: false,
-                      markers: _markers,
-                    );
-                  } else {
-                    return Container();
-                  }
-                },
-              );
-            } else {
-              return Container();
-            }
-          },
+        body: Container(
+          color: ColorStyle.getSystemBackground(),
+          child: StreamBuilder(
+            stream: _mapDealsViewModel.permission,
+            builder: (context, snapshot) {
+              if (snapshot.hasData && snapshot.data!) {
+                return StreamBuilder(
+                  stream: _mapDealsViewModel.currentPosition,
+                  builder: (context, snp) {
+                    if (snp.data != null) {
+                      return GoogleMap(
+                        zoomGesturesEnabled: true,
+                        zoomControlsEnabled: false,
+                        initialCameraPosition: CameraPosition(target: snp.data!, zoom: 15),
+                        mapType: MapType.normal,
+                        myLocationEnabled: true,
+                        myLocationButtonEnabled: false,
+                        markers: _markers,
+                      );
+                    } else {
+                      return Container();
+                    }
+                  },
+                );
+              } else {
+                return Container();
+              }
+            },
+          ),
         ),
       ),
     );

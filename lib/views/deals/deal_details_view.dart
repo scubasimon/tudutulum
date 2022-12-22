@@ -108,11 +108,11 @@ class _DealDetailView extends State<DealDetailView> {
                           return Center(
                             child: Text(
                               snapshot.data!.titleShort,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontFamily: FontStyles.sfProText,
                                 fontSize: FontSizeConst.font17,
                                 fontWeight: FontWeight.w700,
-                                color: ColorStyle.darkLabel,
+                                color: ColorStyle.getDarkLabel(),
                               ),
                             ),
                           );
@@ -181,8 +181,8 @@ class _DealDetailView extends State<DealDetailView> {
           children: [
             Text(
               deal.title,
-              style: const TextStyle(
-                color: ColorStyle.darkLabel,
+              style: TextStyle(
+                color: ColorStyle.getDarkLabel(),
                 fontFamily: FontStyles.raleway,
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
@@ -205,8 +205,8 @@ class _DealDetailView extends State<DealDetailView> {
         child: Text(
           deal.description ?? "",
           maxLines: widget.preview ? 3 : null,
-          style: const TextStyle(
-            color: ColorStyle.darkLabel,
+          style: TextStyle(
+            color: ColorStyle.getDarkLabel(),
             fontWeight: FontWeight.normal,
             fontSize: FontSizeConst.font12,
             fontFamily: FontStyles.raleway,
@@ -222,11 +222,11 @@ class _DealDetailView extends State<DealDetailView> {
             child: Text(
               S.current.preview_deal_message,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontFamily: FontStyles.mouser,
                 fontSize: 12,
                 fontWeight: FontWeight.w400,
-                color: ColorStyle.darkLabel,
+                color: ColorStyle.getDarkLabel(),
               ),
             ),
           )
@@ -238,11 +238,11 @@ class _DealDetailView extends State<DealDetailView> {
           padding: const EdgeInsets.only(top: 24, left: 16, right: 16),
           child: Text(
             S.current.term_and_conditions,
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: FontStyles.mouser,
               fontSize: 11,
               fontWeight: FontWeight.normal,
-              color: ColorStyle.darkLabel,
+              color: ColorStyle.getDarkLabel(),
             ),
           ),
         ),
@@ -250,11 +250,11 @@ class _DealDetailView extends State<DealDetailView> {
           padding: const EdgeInsets.only(top: 8, left: 16, right: 16),
           child:  Text(
             deal.terms ?? "",
-            style: const TextStyle(
+            style: TextStyle(
               fontWeight: FontWeight.normal,
               fontSize: 12,
               fontFamily: FontStyles.raleway,
-              color: ColorStyle.darkLabel,
+              color: ColorStyle.getDarkLabel(),
             ),
           ),
         ),
@@ -274,8 +274,8 @@ class _DealDetailView extends State<DealDetailView> {
                   padding: const EdgeInsets.only(left: 16, right: 16),
                   child: Text(
                     S.current.deal_available,
-                    style: const TextStyle(
-                      color: ColorStyle.darkLabel,
+                    style: TextStyle(
+                      color: ColorStyle.getDarkLabel(),
                       fontFamily: FontStyles.raleway,
                       fontSize: 12,
                       fontWeight: FontWeight.normal,
@@ -287,8 +287,8 @@ class _DealDetailView extends State<DealDetailView> {
                   child: InkWell(
                     child: Text(
                       deal.site.title,
-                      style: const TextStyle(
-                        color: ColorStyle.darkLabel,
+                      style: TextStyle(
+                        color: ColorStyle.getDarkLabel(),
                         fontFamily: FontStyles.mouser,
                         fontSize: 11,
                         fontWeight: FontWeight.normal,
@@ -333,8 +333,8 @@ class _DealDetailView extends State<DealDetailView> {
               child: Center(
                 child: Text(
                   S.current.redeem_here,
-                  style: const TextStyle(
-                    color: ColorStyle.lightLabel,
+                  style: TextStyle(
+                    color: ColorStyle.getLightLabel(),
                     fontWeight: FontWeight.w600,
                     fontSize: 17,
                     fontFamily: FontStyles.sfProText,
