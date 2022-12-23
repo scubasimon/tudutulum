@@ -1190,6 +1190,16 @@ class S {
     );
   }
 
+  /// `Date`
+  String get date {
+    return Intl.message(
+      'Date',
+      name: 'date',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Name`
   String get alphabet {
     return Intl.message(

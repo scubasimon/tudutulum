@@ -113,6 +113,7 @@
   "confirm_delete_account_message": "Your account information will be completely removed from our system.\n\nYou will no longer be able to redeem any offers unless you sign up again.\n\nIf you are a subscriber, please ensure you also unsubscribe through Google Play/Appstore.",
   "login_message": "You must be signed in to access this page",
   "can_not_find_result": "Can not find any result",
+  "date": "Date",
   "alphabet": "Name",
   "distance": "Distance",
   "articles": " Articles",

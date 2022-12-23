@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -23,6 +25,10 @@ import 'package:tudu/views/deals/deal_details_view.dart';
 import 'package:tudu/viewmodels/what_tudu_site_content_detail_viewmodel.dart';
 import 'package:tudu/views/what_tudu/what_tudu_site_content_detail_view.dart';
 
+import '../../services/observable/observable_serivce.dart';
+import '../../utils/SizeProviderWidget.dart';
+import '../../viewmodels/home_viewmodel.dart';
+
 class BookmarksView extends StatefulWidget {
   const BookmarksView({super.key});
 
@@ -36,6 +42,10 @@ class _BookmarksView extends State<BookmarksView> {
   final _scrollController = ScrollController();
   final _searchController = TextEditingController();
   final _refreshController = RefreshController(initialRefresh: false);
+  HomeViewModel _homeViewModel = HomeViewModel();
+  ObservableService _observableService = ObservableService();
+
+  StreamSubscription<bool>? darkModeListener;
 
   var _order = Order.distance;
   bool _isAtTop = true;
@@ -44,6 +54,8 @@ class _BookmarksView extends State<BookmarksView> {
 
   @override
   void initState() {
+    listenToDarkMode();
+
     _bookmarksViewModel.userLoginStream.listen((event) {
       if (!event) {
         showDialog(context: context, builder: (context){
@@ -93,6 +105,19 @@ class _BookmarksView extends State<BookmarksView> {
     });
     super.initState();
   }
+
+  void listenToDarkMode() {
+    darkModeListener ??= _observableService.darkModeStream.asBroadcastStream().listen((data) {
+      setState(() {});
+    });
+  }
+
+    @override
+    void dispose() {
+      print("dispose -> bookmarks_view");
+      darkModeListener?.cancel();
+      super.dispose();
+    }
 
   @override
   Widget build(BuildContext context) {
@@ -269,14 +294,29 @@ class _BookmarksView extends State<BookmarksView> {
                   header: const WaterDropHeader(),
                   controller: _refreshController,
                   onRefresh: _refresh,
-                  child: ListView(
-                    controller: _scrollController,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
-                        child: createBookmarksView(),
+                  child: SizeProviderWidget(
+                    onChildSize: (size) {
+                      if (size.height < MediaQuery.of(context).size.height
+                          - MediaQuery.of(context).padding.top
+                          - MediaQuery.of(context).padding.bottom
+                          - 56 /*Appbar*/
+                          - 50 /*BottomNav*/) {
+                        _isAtTop = true;
+                        setState(() {});
+                      }
+                    },
+                    child: Container(
+                      color: ColorStyle.getSystemBackground(),
+                      child: ListView(
+                        controller: _scrollController,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
+                            child: createBookmarksView(),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 );
               }
@@ -466,7 +506,7 @@ class _BookmarksView extends State<BookmarksView> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        sites[index].title,
+                                        sites[index].titles["title"].toString(),
                                         overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
                                           color: ColorStyle.getDarkLabel(),
@@ -511,7 +551,7 @@ class _BookmarksView extends State<BookmarksView> {
       return InkWell(
         onTap: () {
           if (FirebaseAuth.instance.currentUser != null) {
-            final dealData = Deal(dealId, false, "", [], Site(active: true, title: "", subTitle: "", siteId: 0, business: [], siteContent: SiteContent(), images: []), DateTime.now(), DateTime.now(), "", "", "", "");
+            final dealData = Deal(dealId, false, "", [], Site(active: true, titles: {}, subTitle: "", siteId: 0, business: [], siteContent: SiteContent(), images: []), DateTime.now(), DateTime.now(), "", "", "", "");
             Navigator.push(
                 context,
                 MaterialPageRoute(

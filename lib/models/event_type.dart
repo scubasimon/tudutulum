@@ -3,6 +3,7 @@ class EventType {
   String icon;
   int locationId;
   String type;
+  int order;
 
   EventType(
       {
@@ -10,6 +11,7 @@ class EventType {
         required this.icon,
         required this.locationId,
         required this.type,
+        required this.order,
       });
 
   Map<String, dynamic> toJson() => {
@@ -17,5 +19,6 @@ class EventType {
     "icon": icon,
     "locationid": locationId,
     "type": type,
+    "order": order,
   };
 }

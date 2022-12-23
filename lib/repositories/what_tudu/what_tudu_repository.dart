@@ -53,10 +53,10 @@ class WhatTuduRepositoryImpl extends WhatTuduRepository {
     if (keywordSort != null) {
       if (keywordSort == StrConst.sortTitle) {
         // Sort with title
-        listSiteResult.sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
+        listSiteResult.sort((a, b) => a.titles["title"].toString().toLowerCase().compareTo(b.titles["title"].toString().toLowerCase()));
       } else if (keywordSort == StrConst.sortDistance) {
         // Sort with distance ///TODO: IMPL LOGIC
-        listSiteResult.sort((a, b) => a.title.compareTo(b.title));
+        listSiteResult.sort((a, b) => a.titles["title"].toString().compareTo(b.titles["title"].toString()));
       } else {
         throw Exception("Sort type not found. Please check again");
       }
@@ -65,8 +65,20 @@ class WhatTuduRepositoryImpl extends WhatTuduRepository {
     // Filter with keywordSearch (Search function)
     if (keywordSearch != null) {
       if (keywordSearch.isNotEmpty) {
-        listSiteResult =
-            listSiteResult.where((site) => site.title.toLowerCase().contains(keywordSearch.toLowerCase())).toList();
+        // Old logic
+        // listSiteResult =
+        //     listSiteResult.where((site) => site.titles["title"].toString().toLowerCase().contains(keywordSearch.toLowerCase())).toList();
+        List<Site> result = [];
+        // Old logic
+        // listEventResult =
+        //     listEventResult.where((event) => event.title.toLowerCase().contains(keywordSearch.toLowerCase())).toList();
+        for (var event in listSiteResult) {
+          if (event.titles["title"].toString().toLowerCase().contains(keywordSearch.toLowerCase()) ||
+              event.subTitle.toString().toLowerCase().contains(keywordSearch.toLowerCase())) {
+            result.add(event);
+          }
+        }
+        listSiteResult = result;
       }
     }
 

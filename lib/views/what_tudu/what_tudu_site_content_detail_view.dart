@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:map_launcher/map_launcher.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:tudu/consts/color/Colors.dart';
 import 'package:tudu/consts/font/Fonts.dart';
@@ -25,6 +28,8 @@ import 'package:tudu/viewmodels/home_viewmodel.dart';
 import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
 import 'package:tudu/services/observable/observable_serivce.dart';
 import 'package:tudu/services/location/permission_request.dart';
+
+import '../../utils/pref_util.dart';
 
 class WhatTuduSiteContentDetailView extends StatefulWidget {
   const WhatTuduSiteContentDetailView({super.key});
@@ -177,7 +182,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
           _whatTuduSiteContentDetailViewModel.siteContentDetail.dealId,
         ),
         getTitle(
-          _whatTuduSiteContentDetailViewModel.siteContentDetail.siteContent.title,
+          _whatTuduSiteContentDetailViewModel.siteContentDetail.titles["contentTitle"],
           _whatTuduSiteContentDetailViewModel.siteContentDetail.siteContent.description,
         ),
         getMoreInformation(_whatTuduSiteContentDetailViewModel.siteContentDetail.siteContent.moreInformation),
@@ -257,7 +262,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                 splashColor: Colors.transparent,
                 onTap: () {
                   if (FirebaseAuth.instance.currentUser != null) {
-                    final dealData = Deal(dealId, false, "", [], Site(active: true, title: "", subTitle: "", siteId: 0, business: [], siteContent: SiteContent(), images: []), DateTime.now(), DateTime.now(), "", "", "", "");
+                    final dealData = Deal(dealId, false, "", [], Site(active: true, titles: {}, subTitle: "", siteId: 0, business: [], siteContent: SiteContent(), images: []), DateTime.now(), DateTime.now(), "", "", "", "");
                     Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -316,11 +321,12 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                     ),
                   ),
                   InkWell(
+                    // Old logic
                     onTap: () {
                       PermissionRequest.isResquestPermission = true;
                       PermissionRequest().permissionServiceCall(
                         context,
-                        _whatTuduSiteContentDetailViewModel.directionWithGoogleMap,
+                        _openNavigationApp,
                       );
                     },
                     child: Padding(
@@ -496,6 +502,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: listOpenTimes.values.toList().length - 1,
                 itemBuilder: (BuildContext context, int index) {
+                  print("listOpenTimes ${listOpenTimes.keys.toList()[index]} - ${listOpenTimes.values.toList()[index]}");
                   return getOpeningTime(listOpenTimes, index);
                 },
               )
@@ -624,7 +631,8 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
   }
 
   Widget getEventsAndExpsView(List<String>? eventIcons, List<String>? eventLinks, int siteId) {
-    if (eventIcons != null && eventLinks != null) {
+    if (getIfFirstEventsAndExps(siteId) ||
+        (eventIcons != null && eventLinks != null && eventIcons.isNotEmpty && eventLinks.isNotEmpty)) {
       return Container(
           alignment: Alignment.centerLeft,
           padding: const EdgeInsets.only(top: 8.0, left: 18, right: 18, bottom: 8),
@@ -647,9 +655,12 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                 alignment: Alignment.topLeft,
                 child: Wrap(
                   children: [
-                    getFirstEventsAndExps(siteId),
+                    getFirstEventsAndExps(siteId), // Logic for Calendar icon and Calendar logic
                     Wrap(
-                      children: eventIcons.map((eventIcon) => getEventsAndExps(eventIcons.indexOf(eventIcon))).toList(),
+                      children: eventIcons!.map((eventIcon) => getEventsAndExps(
+                          eventIcons[eventIcons.indexOf(eventIcon)],
+                          eventLinks![eventIcons.indexOf(eventIcon)]
+                      )).toList(),
                     ),
                   ],
                 ),
@@ -935,16 +946,28 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
       return GestureDetector(
           onTapDown: (position) {
             _getTapPosition(position);
+            _showContextMenu(context, amenityId);
           },
           onLongPress: () => {_showContextMenu(context, amenityId)},
           onDoubleTap: () => {_showContextMenu(context, amenityId)},
           child: Container(
             padding: const EdgeInsets.only(top: 4.0, right: 4.0, bottom: 4.0),
-            child: Image.asset(
-                // "${_homeViewModel.getAmenityById(amenityId)?.icon}", // ICON DIDNT HAVE LINK YET
-                ImagePath.yogaIcon, // FAKE ICON
-                fit: BoxFit.contain,
-                height: 25.0),
+            child: CachedNetworkImage(
+              imageUrl: "${_homeViewModel.getAmenityById(amenityId)?.icon}",
+              width: 25.0,
+              height: 25.0,
+              fit: BoxFit.cover,
+              imageBuilder: (context, imageProvider) => Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                ),
+              ),
+              placeholder: (context, url) => const CupertinoActivityIndicator(
+                radius: 20,
+                color: ColorStyle.primary,
+              ),
+              errorWidget: (context, url, error) => Icon(Icons.error),
+            ),
           ));
     } else {
       return Container();
@@ -971,16 +994,27 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
     }
   }
 
-  Widget getFirstEventsAndExps(int siteId) {
+  bool getIfFirstEventsAndExps(int siteId) {
     bool isHaveEvent = false;
     for (var event in _homeViewModel.listEvents) {
       if (event.sites != null) {
-        if (event.sites!.contains(siteId) && event.datestart.millisecondsSinceEpoch > DateTime.now().millisecondsSinceEpoch) {
+        if (event.sites!.contains(siteId) && !(event.dateend.millisecondsSinceEpoch < DateTime.now().millisecondsSinceEpoch)) {
           isHaveEvent = true;
         }
       }
     }
+    return isHaveEvent;
+  }
 
+  Widget getFirstEventsAndExps(int siteId) {
+    bool isHaveEvent = false;
+    for (var event in _homeViewModel.listEvents) {
+      if (event.sites != null) {
+        if (event.sites!.contains(siteId) && !(event.dateend.millisecondsSinceEpoch < DateTime.now().millisecondsSinceEpoch)) {
+          isHaveEvent = true;
+        }
+      }
+    }
     if (isHaveEvent) {
       return InkWell(
         onTap: () {
@@ -997,10 +1031,30 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
     }
   }
 
-  Widget getEventsAndExps(int eventIndex) {
-    return Container(
-      padding: const EdgeInsets.only(top: 4.0, right: 4.0, bottom: 4.0),
-      child: Image.asset(ImagePath.yogaIcon, fit: BoxFit.contain, height: 25.0),
+  Widget getEventsAndExps(String iconUrl, String iconLink) {
+    return InkWell(
+      onTap: () {
+        FuncUlti.redirectToBrowserWithUrl("$iconLink");
+      },
+      child: Container(
+        padding: const EdgeInsets.only(top: 4.0, right: 4.0, bottom: 4.0),
+        child: CachedNetworkImage(
+          imageUrl: iconUrl,
+          width: 25.0,
+          height: 25.0,
+          fit: BoxFit.cover,
+          imageBuilder: (context, imageProvider) => Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+            ),
+          ),
+          placeholder: (context, url) => const CupertinoActivityIndicator(
+            radius: 20,
+            color: ColorStyle.primary,
+          ),
+          errorWidget: (context, url, error) => Icon(Icons.error),
+        ),
+      ),
     );
   }
 
@@ -1040,10 +1094,10 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
 
   Widget getTextForOpeningTime(Map<String, String> listOpenTimes, int index, String dayInWeek) {
     if (index < 7) {
-      if (listOpenTimes[dayInWeek] != null) {
+      if (listOpenTimes[dayInWeek] != null && listOpenTimes[dayInWeek]!.isNotEmpty) {
         return Row(
           children: [
-            SizedBox(
+            Container(
               width: 80,
               child: Text(
                 "${listOpenTimes[dayInWeek]}",
@@ -1075,25 +1129,13 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
         return Container();
       }
     } else {
-      return Row(
-        children: [
-          SizedBox(
-            width: 80,
-            child: Text(
-              "${listOpenTimes["${dayInWeek}"]}",
-              style: TextStyle(
-                color: ColorStyle.getDarkLabel(),
-                fontWeight: FontWeight.w500,
-                fontSize: FontSizeConst.font12,
-                fontFamily: FontStyles.raleway,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Container(
-              alignment: Alignment.centerLeft,
+      if (listOpenTimes["${dayInWeek}"] != null && listOpenTimes["${dayInWeek}"]!.isNotEmpty) {
+        return Row(
+          children: [
+            SizedBox(
+              width: 80,
               child: Text(
-                "${listOpenTimes["${dayInWeek}Description"]}",
+                "${listOpenTimes["${dayInWeek}"]}",
                 style: TextStyle(
                   color: ColorStyle.getDarkLabel(),
                   fontWeight: FontWeight.w500,
@@ -1102,9 +1144,25 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                 ),
               ),
             ),
-          )
-        ],
-      );
+            Expanded(
+              child: Container(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "${listOpenTimes["${dayInWeek}Description"]}",
+                  style: TextStyle(
+                    color: ColorStyle.getDarkLabel(),
+                    fontWeight: FontWeight.w500,
+                    fontSize: FontSizeConst.font12,
+                    fontFamily: FontStyles.raleway,
+                  ),
+                ),
+              ),
+            )
+          ],
+        );
+      } else {
+        return Container();
+      }
     }
   }
 
@@ -1120,7 +1178,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
     Amenity? amenity = _homeViewModel.getAmenityById(amenityId);
     if (amenity != null) {
       final RenderObject? overlay = Overlay.of(context)?.context.findRenderObject();
-      await showMenu(
+      showMenu(
           context: context,
           position: RelativeRect.fromRect(
               Rect.fromLTWH(
@@ -1179,6 +1237,80 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
               ),
             ),
           ]);
+      Future.delayed(const Duration(milliseconds: 500), () {
+        Navigator.popUntil(context, ModalRoute.withName(StrConst.whatTuduSiteContentDetailScene));
+        setState(() {});
+      });
     }
   }
+
+  void _openNavigationApp() async {
+    var map = PrefUtil.getValue(StrConst.selectMap, "") as String;
+    if (map.isNotEmpty) {
+      try {
+        final availableMaps = await MapLauncher.installedMaps;
+        await availableMaps.firstWhere((element){
+          return element.mapName == map;
+        }).showDirections(destination: Coords(
+          _whatTuduSiteContentDetailViewModel.siteContentDetail.locationLat!,
+          _whatTuduSiteContentDetailViewModel.siteContentDetail.locationLon!,
+        ));
+        return;
+      } catch (e) {
+        print(e);
+      }
+    }
+    if (Platform.isAndroid) {
+      _openMap("Google Maps", _whatTuduSiteContentDetailViewModel.siteContentDetail);
+    } else {
+      showCupertinoModalPopup(context: context, builder: (context) => _sheetNavigation(
+          _whatTuduSiteContentDetailViewModel.siteContentDetail,
+      ));
+    }
+  }
+
+  void _openMap(String name, Site site) async {
+    try {
+      PrefUtil.setValue(StrConst.selectMap, name);
+      final availableMaps = await MapLauncher.installedMaps;
+      await availableMaps.firstWhere((element){
+        return element.mapName == name;
+      }).showDirections(destination: Coords(site.locationLat!, site.locationLon!));
+    } catch (e) {
+      print(e);
+      showDialog(context: context, builder: (context) => ErrorAlert.alert(context, S.current.app_not_installed(name)));
+    }
+  }
+
+  Widget _sheetNavigation(Site site) {
+    return CupertinoActionSheet(
+      message: Text(S.current.select_navigation_app),
+      actions: [
+        CupertinoActionSheetAction(
+          isDefaultAction: true,
+          onPressed: () async {
+            Navigator.of(context).pop();
+            _openMap("Apple Maps", site);
+          },
+          child: const Text("Apple Maps"),
+        ),
+        CupertinoActionSheetAction(
+          isDefaultAction: true,
+          onPressed: () async {
+            Navigator.of(context).pop();
+            _openMap("Google Maps", site);
+          },
+          child: const Text("Google Maps"),
+        ),
+        CupertinoActionSheetAction(
+          isDestructiveAction: true,
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Text(S.current.cancel),
+        )
+      ],
+    );
+  }
+
 }

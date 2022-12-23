@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tudu/consts/font/Fonts.dart';
@@ -13,6 +15,9 @@ import 'package:tudu/views/common/alert.dart';
 import 'dart:io';
 
 import 'package:tudu/views/subscription/subscription_plan_view.dart';
+
+import '../../services/observable/observable_serivce.dart';
+import '../../viewmodels/home_viewmodel.dart';
 
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
@@ -33,13 +38,20 @@ class _ProfileView extends State<ProfileView> {
   final _newPasswordController = TextEditingController();
   final _repeatNewPasswordController = TextEditingController();
 
+  StreamSubscription<bool>? darkModeListener;
+
   var _hideNewPassword = true;
   var _hideRepeatNewPassword = true;
   var _isReceiveNewOffer = false;
   var _isReceiveMonthlyNewsLetter = false;
 
+  HomeViewModel _homeViewModel = HomeViewModel();
+  ObservableService _observableService = ObservableService();
+
   @override
   void initState() {
+    listenToDarkMode();
+
     _profileViewModel.loading.listen((event) {
       if (event) {
         _showLoading();
@@ -72,6 +84,19 @@ class _ProfileView extends State<ProfileView> {
     });
     super.initState();
 
+  }
+
+  void listenToDarkMode() {
+    darkModeListener ??= _observableService.darkModeStream.asBroadcastStream().listen((data) {
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    print("dispose -> profile_view");
+    darkModeListener?.cancel();
+    super.dispose();
   }
 
   @override

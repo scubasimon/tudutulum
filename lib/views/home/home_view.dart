@@ -29,6 +29,10 @@ import 'package:tudu/views/profile/profile_view.dart';
 import 'package:tudu/consts/images/ImagePath.dart';
 import 'package:tudu/generated/l10n.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../../models/error.dart';
+import '../../services/observable/observable_serivce.dart';
+import '../common/alert.dart';
 import 'package:tudu/models/error.dart';
 import 'package:tudu/services/observable/observable_serivce.dart';
 import 'package:tudu/views/common/alert.dart';
@@ -78,6 +82,7 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
   StreamSubscription<List<GeoPoint>>? redirectToGoogleMapStreamListener = null;
   StreamSubscription<bool>? loadingListener = null;
   StreamSubscription<CustomError>? errorListener = null;
+  StreamSubscription<bool>? darkModeListener;
 
   @override
   void initState() {
@@ -87,6 +92,7 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
     listenToRedirectAndDirectionGoogleMap();
     listenToLoading();
     listenToError();
+    listenToDarkMode();
     //set orientation is portrait
     pageIndex = widget.pageIndex;
     SystemChrome.setPreferredOrientations(
@@ -100,11 +106,13 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
       // Action after build()
     });
 
-
-
   }
 
-
+  void listenToDarkMode() {
+    darkModeListener ??= _observableService.darkModeStream.asBroadcastStream().listen((data) {
+      setState(() {});
+    });
+  }
 
   void listenToRedirectTab() {
     redirectTabStreamListener ??= _observableService.redirectTabStream.asBroadcastStream().listen((data) {
@@ -161,7 +169,7 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
           _showLoading();
           FuncUlti.redirectAndMoveToLocation(
               data[0],
-              _whatTuduSiteContentDetailViewModel.siteContentDetail.title
+              _whatTuduSiteContentDetailViewModel.siteContentDetail.titles["contentTitle"].toString()
           );
           Navigator.of(context).pop();
         }
@@ -181,6 +189,7 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
   @override
   void dispose() {
     print("dispose -> home_view");
+    darkModeListener?.cancel();
     errorListener?.cancel();
     loadingListener?.cancel();
     redirectToGoogleMapStreamListener?.cancel();

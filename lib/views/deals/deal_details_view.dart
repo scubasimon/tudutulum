@@ -274,7 +274,8 @@ class _DealDetailView extends State<DealDetailView> {
           onTap: () {
             WhatTuduSiteContentDetailViewModel().setSiteContentDetailCover(deal.site);
             Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => const WhatTuduSiteContentDetailView())
+                MaterialPageRoute(builder: (context) => const WhatTuduSiteContentDetailView(),
+                settings: const RouteSettings(name: StrConst.whatTuduSiteContentDetailScene))
             );
           },
           child: Row(
@@ -300,7 +301,7 @@ class _DealDetailView extends State<DealDetailView> {
                   Padding(
                     padding: const EdgeInsets.only(top: 4, left: 16, right: 16),
                     child: Text(
-                      deal.site.title,
+                      deal.site.titles["title"].toString(),
                       style: TextStyle(
                         color: ColorStyle.getDarkLabel(),
                         fontFamily: FontStyles.mouser,

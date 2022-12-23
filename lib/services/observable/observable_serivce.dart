@@ -45,4 +45,7 @@ class ObservableService {
 
   final StreamController<List<GeoPoint>> listenToRedirectToGoogleMapController = BehaviorSubject<List<GeoPoint>>();
   Stream<List<GeoPoint>> get listenToRedirectToGoogleMapStream => listenToRedirectToGoogleMapController.stream;
+
+  final StreamController<bool> darkModeController = BehaviorSubject<bool>();
+  Stream<bool> get darkModeStream => darkModeController.stream;
 }

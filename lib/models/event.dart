@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Event {
-  int eventid;
+  String eventid;
   bool active;
   String? image;
   String title;

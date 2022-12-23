@@ -3,7 +3,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:notification_center/notification_center.dart';
 import 'package:pull_down_button/pull_down_button.dart';
+import 'package:tudu/viewmodels/home_viewmodel.dart';
 import 'package:tudu/viewmodels/map_deals_viewmodel.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
 import 'package:tudu/consts/color/Colors.dart';
@@ -16,6 +18,8 @@ import 'package:tudu/models/error.dart';
 import 'package:tudu/views/common/alert.dart';
 import 'package:tudu/models/deal.dart';
 import 'package:tudu/views/deals/deal_details_view.dart';
+
+import '../../consts/strings/str_const.dart';
 
 class MapDealView extends StatefulWidget {
   final int? businessId;
@@ -32,6 +36,7 @@ class MapDealView extends StatefulWidget {
 
 class _MapDealView extends State<MapDealView> {
   final MapDealsViewModel _mapDealsViewModel = MapDealsViewModel();
+  final HomeViewModel _homeViewModel = HomeViewModel();
 
   final Set<Marker> _markers = {};
   int? _businessId;
@@ -86,31 +91,55 @@ class _MapDealView extends State<MapDealView> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
+                    // Old UI
+                    // InkWell(
+                    //   onTap: () {
+                    //     Navigator.of(context).pop();
+                    //   },
+                    //   child: Row(
+                    //     mainAxisSize: MainAxisSize.min,
+                    //     children: [
+                    //       Image.asset(
+                    //         ImagePath.leftArrowIcon,
+                    //         fit: BoxFit.contain,
+                    //         height: 20,
+                    //       ),
+                    //       Padding(
+                    //         padding: const EdgeInsets.only(left: 8.0),
+                    //         child: Text(
+                    //           S.current.back,
+                    //           style: const TextStyle(
+                    //             color: ColorStyle.primary,
+                    //             fontSize: FontSizeConst.font16,
+                    //             fontWeight: FontWeight.w400,
+                    //             fontFamily: FontStyles.mouser,
+                    //           ),
+                    //         ),
+                    //       )
+                    //     ],
+                    //   ),
+                    // ),
                     InkWell(
+                      child: Image.asset(
+                        ImagePath.humbergerIcon,
+                        width: 28,
+                        height: 28,
+                      ),
                       onTap: () {
-                        Navigator.of(context).pop();
+                        NotificationCenter().notify(StrConst.openMenu);
                       },
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Image.asset(
-                            ImagePath.leftArrowIcon,
-                            fit: BoxFit.contain,
-                            height: 20,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 8.0),
-                            child: Text(
-                              S.current.back,
-                              style: const TextStyle(
-                                color: ColorStyle.primary,
-                                fontSize: FontSizeConst.font16,
-                                fontWeight: FontWeight.w400,
-                                fontFamily: FontStyles.mouser,
-                              ),
-                            ),
-                          )
-                        ],
+                    ),
+                    const SizedBox(
+                      width: 12.0,
+                    ),
+                    Text(
+                      // _homeViewModel.getBusinessStringById(_mapScreenViewModel.mapFilterType),
+                      (_businessId != null) ? _homeViewModel.getBusinessStringById(_businessId!) : S.current.all_location,
+                      style: const TextStyle(
+                        color: ColorStyle.secondaryDarkLabel94,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                        fontFamily: FontStyles.mouser,
                       ),
                     ),
                     const Spacer(),
@@ -161,14 +190,33 @@ class _MapDealView extends State<MapDealView> {
                   stream: _mapDealsViewModel.currentPosition,
                   builder: (context, snp) {
                     if (snp.data != null) {
-                      return GoogleMap(
-                        zoomGesturesEnabled: true,
-                        zoomControlsEnabled: false,
-                        initialCameraPosition: CameraPosition(target: snp.data!, zoom: 15),
-                        mapType: MapType.normal,
-                        myLocationEnabled: true,
-                        myLocationButtonEnabled: false,
-                        markers: _markers,
+                      return Stack(
+                        alignment: Alignment.topCenter,
+                        children: [
+                          GoogleMap(
+                            zoomGesturesEnabled: true,
+                            zoomControlsEnabled: false,
+                            initialCameraPosition: CameraPosition(target: snp.data!, zoom: 15),
+                            mapType: MapType.normal,
+                            myLocationEnabled: true,
+                            myLocationButtonEnabled: false,
+                            markers: _markers,
+                          ),
+                          Positioned(
+                            top: 15,
+                            right: 15,
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Image.asset(
+                                ImagePath.closeIcon,
+                                width: 30,
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                          )
+                        ],
                       );
                     } else {
                       return Container();

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +22,10 @@ import 'package:tudu/views/deals/deal_details_view.dart';
 import 'package:tudu/views/map/map_deal_view.dart';
 import 'package:tudu/views/subscription/subscription_plan_view.dart';
 
+import '../../services/observable/observable_serivce.dart';
+import '../../utils/SizeProviderWidget.dart';
+import '../../viewmodels/home_viewmodel.dart';
+
 class DealsView extends StatefulWidget {
   const DealsView({super.key});
 
@@ -29,10 +35,14 @@ class DealsView extends StatefulWidget {
 
 class _DealsView extends State<DealsView> with AutomaticKeepAliveClientMixin<DealsView>, WidgetsBindingObserver {
   final _dealsViewModel = DealsViewModel();
+  HomeViewModel _homeViewModel = HomeViewModel();
+  ObservableService _observableService = ObservableService();
 
   final _scrollController = ScrollController();
   final _searchController = TextEditingController();
   final _refreshController = RefreshController(initialRefresh: false);
+
+  StreamSubscription<bool>? darkModeListener;
 
   var _order = Order.distance;
   bool _isAtTop = true;
@@ -44,6 +54,9 @@ class _DealsView extends State<DealsView> with AutomaticKeepAliveClientMixin<Dea
 
   @override
   void initState() {
+
+    _isAtTop = false;
+
     _dealsViewModel.userLoginStream.listen((event) {
       if (!event) {
         showDialog(context: context, builder: (context){
@@ -111,8 +124,15 @@ class _DealsView extends State<DealsView> with AutomaticKeepAliveClientMixin<Dea
     // });
   }
 
+  void listenToDarkMode() {
+    darkModeListener ??= _observableService.darkModeStream.asBroadcastStream().listen((data) {
+      setState(() {});
+    });
+  }
+
   @override
   void dispose() {
+    darkModeListener?.cancel();
     _scrollController.dispose();
     _searchController.dispose();
     _refreshController.dispose();
@@ -290,10 +310,10 @@ class _DealsView extends State<DealsView> with AutomaticKeepAliveClientMixin<Dea
           automaticallyImplyLeading: false,
           flexibleSpace: Container(
             padding: EdgeInsets.only(
-                top: MediaQuery.of(context).padding.top + 8,
-                left: 16,
-                right: 16,
-                bottom: 8,),
+              top: MediaQuery.of(context).padding.top + 8,
+              left: 16,
+              right: 16,
+              bottom: 8,),
             color: ColorStyle.navigation,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -317,14 +337,17 @@ class _DealsView extends State<DealsView> with AutomaticKeepAliveClientMixin<Dea
                         header: const WaterDropHeader(),
                         controller: _refreshController,
                         onRefresh: _refresh,
-                        child: ListView(
-                          controller: _scrollController,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
-                              child: createDealsView(),
-                            ),
-                          ],
+                        child: Container(
+                          color: ColorStyle.getSystemBackground(),
+                          child: ListView(
+                            controller: _scrollController,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
+                                child: createDealsView(),
+                              ),
+                            ],
+                          ),
                         ),
                       );
                     } else {
@@ -421,135 +444,147 @@ class _DealsView extends State<DealsView> with AutomaticKeepAliveClientMixin<Dea
               ),
             );
           }
-          return ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: snapshot.data!.length,
-              itemBuilder: (BuildContext context, int index) {
-                return Stack(
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context) => DealDetailView(
-                              deal: snapshot.data![index],
-                            ))
-                        );
-                      },
-                      child: Container(
-                          margin: const EdgeInsets.only(bottom: 8),
-                          decoration: BoxDecoration(
-                              borderRadius: const BorderRadius.all(
-                                  Radius.circular(10.0)
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.25),
-                                  blurRadius: 7,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ]
-                          ),
-                          alignment: Alignment.centerLeft,
-                          width: MediaQuery.of(context).size.width,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8.0),
-                            child: CachedNetworkImage(
-                              imageUrl: snapshot.data![index].images.first,
-                              width: MediaQuery.of(context).size.width,
-                              height: 236,
-                              fit: BoxFit.cover,
-                              imageBuilder: (context, imageProvider) => Container(
-                                decoration: BoxDecoration(
-                                  image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
-                                ),
-                              ),
-                              placeholder: (context, url) => const CupertinoActivityIndicator(
-                                radius: 20,
-                                color: ColorStyle.primary,
-                              ),
-                              errorWidget: (context, url, error) => const Icon(Icons.error),
-                            ),
-                          )
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      child: IntrinsicWidth(
+          return SizeProviderWidget(
+            onChildSize: (size) {
+              if (size.height < MediaQuery.of(context).size.height
+                  - MediaQuery.of(context).padding.top
+                  - MediaQuery.of(context).padding.bottom
+                  - 56 /*Appbar*/
+                  - 50 /*BottomNav*/) {
+                _isAtTop = true;
+                setState(() {});
+              }
+            },
+            child: ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: snapshot.data!.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return Stack(
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          Navigator.of(context).push(
+                              MaterialPageRoute(builder: (context) => DealDetailView(
+                                deal: snapshot.data![index],
+                              ))
+                          );
+                        },
                         child: Container(
-                          height: 50.0,
-                          constraints: BoxConstraints(
-                            maxWidth: MediaQuery.of(context).size.width - 110,
-                            minWidth: 130,
-                          ),
-                          alignment: Alignment.centerLeft,
-                          margin: const EdgeInsets.only(bottom: 24),
-                          decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                  begin: FractionalOffset.centerLeft,
-                                  end: FractionalOffset.centerRight,
-                                  colors: [
-                                    ColorStyle.getSystemBackground().withOpacity(0.8),
-                                    ColorStyle.getSystemBackground().withOpacity(0.0),
-                                  ],
-                                  stops: const [0.2, 1.0]
-                              )),
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 16.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  snapshot.data![index].titleShort,
-                                  maxLines: 1,
-                                  style: TextStyle(
-                                    color: ColorStyle.getDarkLabel(),
-                                    fontFamily: FontStyles.raleway,
-                                    fontWeight: FontWeight.w800,
-                                    fontSize: FontSizeConst.font14,
+                            margin: const EdgeInsets.only(bottom: 8),
+                            decoration: BoxDecoration(
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(10.0)
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.25),
+                                    blurRadius: 7,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ]
+                            ),
+                            alignment: Alignment.centerLeft,
+                            width: MediaQuery.of(context).size.width,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(8.0),
+                              child: CachedNetworkImage(
+                                imageUrl: snapshot.data![index].images.first,
+                                width: MediaQuery.of(context).size.width,
+                                height: 236,
+                                fit: BoxFit.cover,
+                                imageBuilder: (context, imageProvider) => Container(
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
                                   ),
                                 ),
-                                Text(
-                                  snapshot.data![index].site.title,
-                                  maxLines: 1,
-                                  style: TextStyle(
-                                    fontFamily: FontStyles.raleway,
-                                    fontSize: FontSizeConst.font12,
-                                    fontWeight: FontWeight.w400,
-                                    color: ColorStyle.getDarkLabel(),
-                                  ),
+                                placeholder: (context, url) => const CupertinoActivityIndicator(
+                                  radius: 20,
+                                  color: ColorStyle.primary,
                                 ),
-                              ],
+                                errorWidget: (context, url, error) => const Icon(Icons.error),
+                              ),
+                            )
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        child: IntrinsicWidth(
+                          child: Container(
+                            height: 50.0,
+                            constraints: BoxConstraints(
+                              maxWidth: MediaQuery.of(context).size.width - 110,
+                              minWidth: 130,
+                            ),
+                            alignment: Alignment.centerLeft,
+                            margin: const EdgeInsets.only(bottom: 24),
+                            decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                    begin: FractionalOffset.centerLeft,
+                                    end: FractionalOffset.centerRight,
+                                    colors: [
+                                      ColorStyle.getSystemBackground().withOpacity(0.8),
+                                      ColorStyle.getSystemBackground().withOpacity(0.0),
+                                    ],
+                                    stops: const [0.2, 1.0]
+                                )),
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 16.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    snapshot.data![index].titleShort,
+                                    maxLines: 1,
+                                    style: TextStyle(
+                                      color: ColorStyle.getDarkLabel(),
+                                      fontFamily: FontStyles.raleway,
+                                      fontWeight: FontWeight.w800,
+                                      fontSize: FontSizeConst.font14,
+                                    ),
+                                  ),
+                                  Text(
+                                    snapshot.data![index].site.titles["title"].toString(),
+                                    maxLines: 1,
+                                    style: TextStyle(
+                                      fontFamily: FontStyles.raleway,
+                                      fontSize: FontSizeConst.font12,
+                                      fontWeight: FontWeight.w400,
+                                      color: ColorStyle.getDarkLabel(),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                    Positioned(
-                      right: 16,
-                      bottom: 0,
-                      child: Container(
-                        alignment: Alignment.centerRight,
-                        margin: const EdgeInsets.only(bottom: 24),
-                        height: 50,
-                        constraints: BoxConstraints(maxWidth: (MediaQuery.of(context).size.width - 48.0) * 0.3),
-                        child: CachedNetworkImage(
-                          imageUrl: snapshot.data![index].logo,
-                          fit: BoxFit.cover,
-                          imageBuilder: (context, imageProvider) => Container(
-                            decoration: BoxDecoration(
-                              image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                      Positioned(
+                        right: 16,
+                        bottom: 0,
+                        child: Container(
+                          alignment: Alignment.centerRight,
+                          margin: const EdgeInsets.only(bottom: 24),
+                          height: 50,
+                          constraints: BoxConstraints(maxWidth: (MediaQuery.of(context).size.width - 48.0) * 0.3),
+                          child: CachedNetworkImage(
+                            imageUrl: snapshot.data![index].logo,
+                            fit: BoxFit.cover,
+                            imageBuilder: (context, imageProvider) => Container(
+                              decoration: BoxDecoration(
+                                image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                              ),
                             ),
-                          ),
-                          errorWidget: (context, url, error) => const Icon(Icons.error),
-                        )
-                      ),
-                    )
+                            errorWidget: (context, url, error) => const Icon(Icons.error),
+                          )
+                        ),
+                      )
 
-                  ],
-                );
-              });
+                    ],
+                  );
+                }),
+          );
         } else {
           return Container(
             color: ColorStyle.getSystemBackground(),

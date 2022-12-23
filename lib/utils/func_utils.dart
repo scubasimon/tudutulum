@@ -83,7 +83,7 @@ class FuncUlti {
     }
   }
 
-  static String getSortTypeByInt(int input) {
+  static String getSortWhatTuduTypeByInt(int input) {
     switch (input) {
       case 0:
         return "title"; // Alphabet
@@ -91,6 +91,17 @@ class FuncUlti {
         return "distance"; // Distance
       default:
         return "title"; // Alphabet
+    }
+  }
+
+  static String getSortEventTypeByInt(int input) {
+    switch (input) {
+      case 0:
+        return "date"; // Date
+      case 1:
+        return "distance"; // Distance
+      default:
+        return "date"; // Date
     }
   }
 

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:intl/intl.dart';
 import 'package:localstore/localstore.dart';
@@ -26,6 +27,7 @@ import '../../consts/strings/str_const.dart';
 import '../../generated/l10n.dart';
 import '../../services/location/permission_request.dart';
 import '../../services/observable/observable_serivce.dart';
+import '../../utils/SizeProviderWidget.dart';
 import '../../utils/func_utils.dart';
 import '../../utils/pref_util.dart';
 import '../common/alert.dart';
@@ -48,12 +50,33 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
   final TextEditingController _searchController = TextEditingController();
   final RefreshController _refreshController = RefreshController(initialRefresh: false);
 
+  StreamSubscription<bool>? darkModeListener;
+
   bool isAtTop = true;
 
   @override
   void initState() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
 
-    // isAtTop = false;
+    listenToDarkMode();
+
+    isAtTop = false;
+
+    _scrollController.addListener(() {
+      print("_scrollController.offset ${_scrollController.offset}");
+      if (_scrollController.offset <= 0.0) {
+        isAtTop = true;
+        setState(() {});
+      } else {
+        isAtTop = false;
+        setState(() {});
+      }
+    });
 
     _searchController.addListener(() {
       if (_searchController.text != _homeViewModel.eventSearchKeyword) {
@@ -62,7 +85,7 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
             (_homeViewModel.eventEventFilterType < _homeViewModel.listEventTypes.length)
                 ? _homeViewModel.listEventTypes[_homeViewModel.eventEventFilterType]
                 : null, // Get current filterType
-            FuncUlti.getSortTypeByInt(_homeViewModel.eventOrderType), // Get current OrderType
+            FuncUlti.getSortEventTypeByInt(_homeViewModel.eventOrderType), // Get current OrderType
             _searchController.text // Search text
         );
       }
@@ -92,11 +115,26 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
           (_homeViewModel.eventEventFilterType < _homeViewModel.listEventTypes.length)
               ? _homeViewModel.listEventTypes[_homeViewModel.eventEventFilterType]
               : null, // Get current filterType,
-          FuncUlti.getSortTypeByInt(_homeViewModel.eventOrderType),
+          FuncUlti.getSortEventTypeByInt(_homeViewModel.eventOrderType),
           _searchController.text, // Search text
         );
       }
     });
+  }
+
+  void listenToDarkMode() {
+    darkModeListener ??= _observableService.darkModeStream.asBroadcastStream().listen((data) {
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    print("dispose -> events_view");
+    darkModeListener?.cancel();
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(statusBarColor: Colors.transparent));
+    super.dispose();
   }
 
   Future<void> loadRemoteData(bool isLoadOnInit) async {
@@ -122,7 +160,7 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
           (_homeViewModel.eventEventFilterType < _homeViewModel.listEventTypes.length)
               ? _homeViewModel.listEventTypes[_homeViewModel.eventEventFilterType]
               : null, // Get current filterType,
-          FuncUlti.getSortTypeByInt(_homeViewModel.eventOrderType),
+          FuncUlti.getSortEventTypeByInt(_homeViewModel.eventOrderType),
           _searchController.text, // Search text
         );
       }
@@ -156,7 +194,7 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
           (_homeViewModel.eventEventFilterType < _homeViewModel.listEventTypes.length)
               ? _homeViewModel.listEventTypes[_homeViewModel.eventEventFilterType]
               : null, // Get current filterType,
-          FuncUlti.getSortTypeByInt(_homeViewModel.eventOrderType),
+          FuncUlti.getSortEventTypeByInt(_homeViewModel.eventOrderType),
           _searchController.text, // Search text
         );
       }
@@ -185,116 +223,41 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return ExitAppScope(
       child: Scaffold(
-        appBar: AppBar(
-          toolbarHeight: (isAtTop) ? 94 : 56,
-          automaticallyImplyLeading: false,
-          flexibleSpace: Container(
-            padding: EdgeInsets.only(
-              top: MediaQuery.of(context).padding.top + 8,
-              left: 16,
-              right: 16,
-              bottom: 8,
-            ),
-            color: ColorStyle.navigation,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  height: 36.0,
-                  alignment: Alignment.center,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      InkWell(
-                        child: Image.asset(
-                          ImagePath.humbergerIcon,
-                          width: 28,
-                          height: 28,
+          appBar: AppBar(
+            toolbarHeight: (isAtTop) ? 94 : 56,
+            automaticallyImplyLeading: false,
+            flexibleSpace: Container(
+              padding: EdgeInsets.only(
+                top: MediaQuery.of(context).padding.top + 8,
+                left: 16,
+                right: 16,
+                bottom: 8,
+              ),
+              color: ColorStyle.navigation,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    height: 36.0,
+                    alignment: Alignment.center,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        InkWell(
+                          child: Image.asset(
+                            ImagePath.humbergerIcon,
+                            width: 28,
+                            height: 28,
+                          ),
+                          onTap: () {
+                            NotificationCenter().notify(StrConst.openMenu);
+                          },
                         ),
-                        onTap: () {
-                          NotificationCenter().notify(StrConst.openMenu);
-                        },
-                      ),
-                      const Spacer(),
-                      PullDownButton (
-                        itemBuilder: (context) => [
-                          PullDownMenuItem(
-                            title: S.current.alphabet,
-                            itemTheme: const PullDownMenuItemTheme(
-                              textStyle: TextStyle(
-                                  fontFamily: FontStyles.sfProText,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 17,
-                                  color: ColorStyle.menuLabel),
-                            ),
-                            enabled: _homeViewModel.eventOrderType != 0,
-                            onTap: () {
-                              _eventsViewModel.getDataWithFilterSortSearch(
-                                (_homeViewModel.eventEventFilterType < _homeViewModel.listEventTypes.length)
-                                    ? _homeViewModel.listEventTypes[_homeViewModel.eventEventFilterType]
-                                    : null,
-                                FuncUlti.getSortTypeByInt(0), // Search with Alphabet => "title" = 0
-                                _searchController.text, // Search with Alphabet => "title" = 0
-                              );
-                              _homeViewModel.changeOrderType(0);
-                            },
-                          ),
-                          const PullDownMenuDivider(),
-                          PullDownMenuItem(
-                            title: S.current.distance,
-                            itemTheme: const PullDownMenuItemTheme(
-                              textStyle: TextStyle(
-                                  fontFamily: FontStyles.sfProText,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 17,
-                                  color: ColorStyle.menuLabel),
-                            ),
-                            enabled: _homeViewModel.eventOrderType != 1,
-                            onTap: () {
-                              PermissionRequest.isResquestPermission = true;
-                              PermissionRequest().permissionServiceCall(
-                                context,
-                                    () {
-                                      // _eventsViewModel.sortWithLocation();
-                                      _homeViewModel.changeOrderType(1);
-                                },
-                              );
-                            },
-                          ),
-                        ],
-                        position: PullDownMenuPosition.automatic,
-                        buttonBuilder: (context, showMenu) => Container(
-                          padding: const EdgeInsets.only(left: 8, right: 8),
-                          child: InkWell(
-                            onTap: showMenu,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Expanded(child: Image.asset(ImagePath.sortIcon, fit: BoxFit.contain, width: 16.0)),
-                                Text(
-                                  S.current.sort,
-                                  style: const TextStyle(
-                                    color: ColorStyle.primary,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w500,
-                                    fontFamily: FontStyles.raleway,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 12.0,
-                      ),
-                      PullDownButton(
-                        itemBuilder: (context) => List<PullDownMenuEntry>.generate(
-                            _homeViewModel.listEventTypes.length * 2 + 1,
-                                (counter) => (counter == _homeViewModel.listEventTypes.length * 2)
-                                ? PullDownMenuItem(
-                              title: S.current.all_location,
+                        const Spacer(),
+                        PullDownButton (
+                          itemBuilder: (context) => [
+                            PullDownMenuItem(
+                              title: S.current.date,
                               itemTheme: const PullDownMenuItemTheme(
                                 textStyle: TextStyle(
                                     fontFamily: FontStyles.sfProText,
@@ -302,30 +265,21 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
                                     fontSize: 17,
                                     color: ColorStyle.menuLabel),
                               ),
-                              iconWidget: Image.asset(
-                                _homeViewModel.eventEventFilterType != _homeViewModel.listEventTypes.length
-                                    ? ImagePath.mappinIcon
-                                    : ImagePath.mappinDisableIcon,
-                                width: 28,
-                                height: 28,
-                              ),
-                              enabled: _homeViewModel.eventEventFilterType != ((counter) / 2).round(),
+                              enabled: _homeViewModel.eventOrderType != 0,
                               onTap: () {
                                 _eventsViewModel.getDataWithFilterSortSearch(
-                                  null,
-                                  FuncUlti.getSortTypeByInt(_homeViewModel.eventOrderType),
-                                  _searchController.text,
+                                  (_homeViewModel.eventEventFilterType < _homeViewModel.listEventTypes.length)
+                                      ? _homeViewModel.listEventTypes[_homeViewModel.eventEventFilterType]
+                                      : null,
+                                  FuncUlti.getSortEventTypeByInt(0), // Search with Alphabet => "title" = 0
+                                  _searchController.text, // Search with Alphabet => "title" = 0
                                 );
-                                _homeViewModel.eventEventFilterType = ((counter) / 2).round();
+                                _homeViewModel.changeEventOrderType(0);
                               },
-                            )
-                                : (counter == _homeViewModel.listEventTypes.length * 2 - 1)
-                                ? const PullDownMenuDivider.large()
-                                : (counter % 2 == 0)
-                                ? PullDownMenuItem(
-                              title: (counter % 2 == 0)
-                                  ? _homeViewModel.listEventTypes[((counter) / 2).round()].type
-                                  : "",
+                            ),
+                            const PullDownMenuDivider(),
+                            PullDownMenuItem(
+                              title: S.current.distance,
                               itemTheme: const PullDownMenuItemTheme(
                                 textStyle: TextStyle(
                                     fontFamily: FontStyles.sfProText,
@@ -333,76 +287,171 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
                                     fontSize: 17,
                                     color: ColorStyle.menuLabel),
                               ),
-                              iconWidget: Image.asset(
-                                ImagePath.cenoteIcon,
-                                width: 28,
-                                height: 28,
-                              ),
-                              enabled: _homeViewModel.eventEventFilterType != ((counter) / 2).round(),
+                              enabled: _homeViewModel.eventOrderType != 1,
                               onTap: () {
-                                _eventsViewModel.getDataWithFilterSortSearch(
-                                  _homeViewModel.listEventTypes[((counter) / 2).round()],
-                                  FuncUlti.getSortTypeByInt(_homeViewModel.eventOrderType),
-                                  _searchController.text,
+                                PermissionRequest.isResquestPermission = true;
+                                PermissionRequest().permissionServiceCall(
+                                  context,
+                                      () {
+                                    _eventsViewModel.sortWithLocation();
+                                    _homeViewModel.changeEventOrderType(1);
+                                  },
                                 );
-                                _homeViewModel.eventEventFilterType = ((counter) / 2).round();
                               },
-                            )
-                                : const PullDownMenuDivider(),
-                            growable: false),
-                        position: PullDownMenuPosition.automatic,
-                        buttonBuilder: (context, showMenu) => Container(
-                          padding: const EdgeInsets.only(left: 8, right: 8),
-                          child: InkWell(
-                            onTap: showMenu,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Expanded(
-                                  child: Image.asset(
-                                    ImagePath.filterIcon,
-                                    fit: BoxFit.contain,
-                                    width: 16,
-                                  ),
-                                ),
-                                Text(
-                                  S.current.filter,
-                                  style: const TextStyle(
+                            ),
+                          ],
+                          position: PullDownMenuPosition.automatic,
+                          buttonBuilder: (context, showMenu) => Container(
+                            padding: const EdgeInsets.only(left: 8, right: 8),
+                            child: InkWell(
+                              onTap: showMenu,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Expanded(child: Image.asset(ImagePath.sortIcon, fit: BoxFit.contain, width: 16.0)),
+                                  Text(
+                                    S.current.sort,
+                                    style: const TextStyle(
                                       color: ColorStyle.primary,
-                                      fontSize: FontSizeConst.font10,
+                                      fontSize: 10,
                                       fontWeight: FontWeight.w500,
-                                      fontFamily: FontStyles.raleway),
-                                ),
-                              ],
+                                      fontFamily: FontStyles.raleway,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(
+                          width: 12.0,
+                        ),
+                        PullDownButton(
+                          itemBuilder: (context) => List<PullDownMenuEntry>.generate(
+                              _homeViewModel.listEventTypes.length * 2 + 1,
+                                  (counter) => (counter == _homeViewModel.listEventTypes.length * 2)
+                                  ? PullDownMenuItem(
+                                title: S.current.all_location,
+                                itemTheme: const PullDownMenuItemTheme(
+                                  textStyle: TextStyle(
+                                      fontFamily: FontStyles.sfProText,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 17,
+                                      color: ColorStyle.menuLabel),
+                                ),
+                                iconWidget: Image.asset(
+                                  _homeViewModel.eventEventFilterType != _homeViewModel.listEventTypes.length
+                                      ? ImagePath.mappinIcon
+                                      : ImagePath.mappinDisableIcon,
+                                  width: 28,
+                                  height: 28,
+                                ),
+                                enabled: _homeViewModel.eventEventFilterType != ((counter) / 2).round(),
+                                onTap: () {
+                                  _eventsViewModel.getDataWithFilterSortSearch(
+                                    null,
+                                    FuncUlti.getSortEventTypeByInt(_homeViewModel.eventOrderType),
+                                    _searchController.text,
+                                  );
+                                  _homeViewModel.eventEventFilterType = ((counter) / 2).round();
+                                },
+                              )
+                                  : (counter == _homeViewModel.listEventTypes.length * 2 - 1)
+                                  ? const PullDownMenuDivider.large()
+                                  : (counter % 2 == 0)
+                                  ? PullDownMenuItem(
+                                title: (counter % 2 == 0)
+                                    ? _homeViewModel.listEventTypes[((counter) / 2).round()].type
+                                    : "",
+                                itemTheme: const PullDownMenuItemTheme(
+                                  textStyle: TextStyle(
+                                      fontFamily: FontStyles.sfProText,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 17,
+                                      color: ColorStyle.menuLabel),
+                                ),
+                                iconWidget: CachedNetworkImage(
+                                  imageUrl: _homeViewModel.listEventTypes[((counter) / 2).round()].icon,
+                                  width: 28,
+                                  height: 28,
+                                  fit: BoxFit.cover,
+                                  imageBuilder: (context, imageProvider) => Container(
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                                    ),
+                                  ),
+                                  placeholder: (context, url) => const CupertinoActivityIndicator(
+                                    radius: 20,
+                                    color: ColorStyle.primary,
+                                  ),
+                                  errorWidget: (context, url, error) => Icon(Icons.error),
+                                ),
+                                enabled: _homeViewModel.eventEventFilterType != ((counter) / 2).round(),
+                                onTap: () {
+                                  _eventsViewModel.getDataWithFilterSortSearch(
+                                    _homeViewModel.listEventTypes[((counter) / 2).round()],
+                                    FuncUlti.getSortEventTypeByInt(_homeViewModel.eventOrderType),
+                                    _searchController.text,
+                                  );
+                                  _homeViewModel.eventEventFilterType = ((counter) / 2).round();
+                                },
+                              )
+                                  : const PullDownMenuDivider(),
+                              growable: false),
+                          position: PullDownMenuPosition.automatic,
+                          buttonBuilder: (context, showMenu) => Container(
+                            padding: const EdgeInsets.only(left: 8, right: 8),
+                            child: InkWell(
+                              onTap: showMenu,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Expanded(
+                                    child: Image.asset(
+                                      ImagePath.filterIcon,
+                                      fit: BoxFit.contain,
+                                      width: 16,
+                                    ),
+                                  ),
+                                  Text(
+                                    S.current.filter,
+                                    style: const TextStyle(
+                                        color: ColorStyle.primary,
+                                        fontSize: FontSizeConst.font10,
+                                        fontWeight: FontWeight.w500,
+                                        fontFamily: FontStyles.raleway),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                (isAtTop)
-                    ? CupertinoSearchTextField(
-                  controller: _searchController,
-                  style: TextStyle(
-                      color: ColorStyle.getDarkLabel(),
-                      fontFamily: FontStyles.sfProText,
+                  (isAtTop)
+                      ? CupertinoSearchTextField(
+                    controller: _searchController,
+                    style: TextStyle(
+                        color: ColorStyle.getDarkLabel(),
+                        fontFamily: FontStyles.sfProText,
+                        fontSize: FontSizeConst.font17,
+                        fontWeight: FontWeight.w400),
+                    placeholder: S.current.search_placeholder,
+                    placeholderStyle: const TextStyle(
+                      color: ColorStyle.placeHolder,
+                      fontWeight: FontWeight.w400,
                       fontSize: FontSizeConst.font17,
-                      fontWeight: FontWeight.w400),
-                  placeholder: S.current.search_placeholder,
-                  placeholderStyle: const TextStyle(
-                    color: ColorStyle.placeHolder,
-                    fontWeight: FontWeight.w400,
-                    fontSize: FontSizeConst.font17,
-                    fontFamily: FontStyles.sfProText,
-                  ),
-                )
-                    : Container(),
-              ],
+                      fontFamily: FontStyles.sfProText,
+                    ),
+                  )
+                      : Container(),
+                ],
+              ),
             ),
           ),
-        ),
           body: SmartRefresher(
             enablePullDown: true,
             enablePullUp: false,
@@ -413,7 +462,9 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
               color: ColorStyle.getSystemBackground(),
               child: ListView(
                 controller: _scrollController,
-                children: <Widget>[createExploreEventsView()],
+                children: <Widget>[
+                  createExploreEventsView()
+                ],
               ),
             ),
           )),
@@ -427,6 +478,7 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
+            height: 60,
             padding: EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 8),
             alignment: Alignment.centerLeft,
             child: Text(
@@ -437,19 +489,6 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
                 fontFamily: FontStyles.mouser,
                 fontSize: FontSizeConst.font16,
                 fontWeight: FontWeight.w400,
-              ),
-            ),
-          ),
-          Container(
-            padding: EdgeInsets.only(left: 16, right: 16),
-            alignment: Alignment.centerLeft,
-            child: Text(
-              "December", // TODO: IMPL LOGIC FOR SHOWING WITH MONTH - (MAYBE YEAR)
-              style: TextStyle(
-                color: ColorStyle.getDarkLabel(),
-                fontFamily: FontStyles.raleway,
-                fontSize: FontSizeConst.font12,
-                fontWeight: FontWeight.w700,
               ),
             ),
           ),
@@ -470,157 +509,200 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
         } else if (snapshot.hasError) {
           return Center(child: Text("snapshot.hasError"));
         } else {
-          return ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: snapshot.data!.length,
-              itemBuilder: (BuildContext context, int index) {
-                return InkWell(
-                  onTap: () {
-                    _eventContentDetailViewModel.setEventContentDetailCover(snapshot.data![index]);
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => EventContentDetailView(),
-                            settings: const RouteSettings(name: StrConst.eventContentDetailScene)));
-                  },
-                  child: Container(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Row(
-                        children: [
-                          Container(
-                            margin: EdgeInsets.only(right: 16),
-                            child: CachedNetworkImage(
-                              imageUrl: _homeViewModel.getEventTypeByType(snapshot.data![index].primaryType)!.icon,
-                              width: 22.0,
-                              height: 22.0,
-                              fit: BoxFit.contain,
-                              imageBuilder: (context, imageProvider) => Container(
-                                decoration: BoxDecoration(
-                                  image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
-                                ),
-                              ),
-                              placeholder: (context, url) => const CupertinoActivityIndicator(
-                                radius: 20,
-                                color: ColorStyle.primary,
-                              ),
-                              errorWidget: (context, url, error) => Icon(Icons.error),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                    DateFormat('EEE dd')
+          return SizeProviderWidget(
+            onChildSize: (size) {
+              if (size.height < MediaQuery.of(context).size.height
+                  - MediaQuery.of(context).padding.top
+                  - MediaQuery.of(context).padding.bottom
+                  - 56 /*Appbar*/
+                  - 50 /*BottomNav*/
+                  - 60 /*First Title*/) {
+                isAtTop = true;
+                setState(() {});
+              }
+            },
+            child: ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: snapshot.data!.where((element) => element.dateend.millisecondsSinceEpoch > DateTime.now().millisecondsSinceEpoch).length,
+                itemBuilder: (BuildContext context, int index) {
+                  return InkWell(
+                    onTap: () {
+                      _eventContentDetailViewModel.setEventContentDetailCover(snapshot.data![index]);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => EventContentDetailView(),
+                              settings: const RouteSettings(name: StrConst.eventContentDetailScene)));
+                    },
+                    child: Container(
+                        padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
+                        child: Column(
+                          children: [
+                            (index == 0 ||
+                                DateFormat('MM')
+                                .format(DateTime.fromMicrosecondsSinceEpoch(
+                                snapshot.data![index].datestart.millisecondsSinceEpoch*1000))
+                                .toString()
+                                    !=
+                                DateFormat('MM')
+                                .format(DateTime.fromMicrosecondsSinceEpoch(
+                                snapshot.data![index-1].datestart.millisecondsSinceEpoch*1000))
+                                .toString()) ?
+                            Container(
+                              alignment: Alignment.centerLeft,
+                              margin: const EdgeInsets.only(bottom: 8.0),
+                              child: Text(
+                                DateFormat('MMMM')
                                     .format(DateTime.fromMicrosecondsSinceEpoch(
-                                        snapshot.data![index].datestart.millisecondsSinceEpoch*1000))
-                                    .toString(),
-                                    style: TextStyle(
-                                      color: ColorStyle.getDarkLabel(),
-                                      fontFamily: FontStyles.raleway,
-                                      fontSize: FontSizeConst.font12,
-                                      fontWeight: FontWeight.w600,
-                                    )),
-                                Text(
-                                    DateFormat.Hm()
-                                    .format(DateTime.fromMicrosecondsSinceEpoch(
-                                        snapshot.data![index].datestart.millisecondsSinceEpoch*1000))
+                                    snapshot.data![index].datestart.millisecondsSinceEpoch*1000))
                                     .toString(),
                                 style: TextStyle(
                                   color: ColorStyle.getDarkLabel(),
                                   fontFamily: FontStyles.raleway,
                                   fontSize: FontSizeConst.font12,
-                                  fontWeight: FontWeight.w400,
-                                )),
-                              ],
-                            ),
-                          ),
-                          Expanded(
-                            flex: 4,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ) : Container(),
+                            Row(
                               children: [
-                                Text(
-                                    snapshot.data![index].title,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      color: ColorStyle.getDarkLabel(),
-                                      fontFamily: FontStyles.raleway,
-                                      fontSize: FontSizeConst.font12,
-                                      fontWeight: FontWeight.w600,
+                                Container(
+                                  margin: EdgeInsets.only(right: 16),
+                                  child: CachedNetworkImage(
+                                    imageUrl: _homeViewModel.getEventTypeByType(snapshot.data![index].primaryType)!.icon,
+                                    width: 22.0,
+                                    height: 22.0,
+                                    fit: BoxFit.contain,
+                                    imageBuilder: (context, imageProvider) => Container(
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                                      ),
+                                    ),
+                                    placeholder: (context, url) => const CupertinoActivityIndicator(
+                                      radius: 20,
+                                      color: ColorStyle.primary,
+                                    ),
+                                    errorWidget: (context, url, error) => Icon(Icons.error),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                          DateFormat('EEE dd')
+                                              .format(DateTime.fromMicrosecondsSinceEpoch(
+                                              snapshot.data![index].datestart.millisecondsSinceEpoch*1000))
+                                              .toString(),
+                                          style: TextStyle(
+                                            color: ColorStyle.getDarkLabel(),
+                                            fontFamily: FontStyles.raleway,
+                                            fontSize: FontSizeConst.font12,
+                                            fontWeight: FontWeight.w600,
+                                          )),
+                                      Text(
+                                          DateFormat.Hm()
+                                              .format(DateTime.fromMicrosecondsSinceEpoch(
+                                              snapshot.data![index].datestart.millisecondsSinceEpoch*1000))
+                                              .toString(),
+                                          style: TextStyle(
+                                            color: ColorStyle.getDarkLabel(),
+                                            fontFamily: FontStyles.raleway,
+                                            fontSize: FontSizeConst.font12,
+                                            fontWeight: FontWeight.w400,
+                                          )),
+                                    ],
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 4,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                          snapshot.data![index].title,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            color: ColorStyle.getDarkLabel(),
+                                            fontFamily: FontStyles.raleway,
+                                            fontSize: FontSizeConst.font12,
+                                            fontWeight: FontWeight.w600,
+                                          )
+                                      ),
+                                      Text(
+                                          snapshot.data![index].description,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            color: ColorStyle.getDarkLabel(),
+                                            fontFamily: FontStyles.raleway,
+                                            fontSize: FontSizeConst.font12,
+                                            fontWeight: FontWeight.w400,
+                                          )
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                    margin: EdgeInsets.only(left: 16, right: 16),
+                                    child: (snapshot.data![index].cost == "Free" || snapshot.data![index].cost == "0")
+                                        ? Text(
+                                        snapshot.data![index].cost,
+                                        maxLines: 1,
+                                        style: TextStyle(
+                                          color: ColorStyle.getDarkLabel(),
+                                          fontFamily: FontStyles.raleway,
+                                          fontSize: FontSizeConst.font12,
+                                          fontWeight: FontWeight.w600,
+                                        ))
+                                        : Column(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                            snapshot.data![index].cost,
+                                            maxLines: 1,
+                                            style: TextStyle(
+                                              color: ColorStyle.getDarkLabel(),
+                                              fontFamily: FontStyles.raleway,
+                                              fontSize: FontSizeConst.font12,
+                                              fontWeight: FontWeight.w600,
+                                            )
+                                        ),
+                                        Text(
+                                            snapshot.data![index].currency,
+                                            maxLines: 1,
+                                            style: TextStyle(
+                                              color: ColorStyle.getDarkLabel(),
+                                              fontFamily: FontStyles.raleway,
+                                              fontSize: FontSizeConst.font12,
+                                              fontWeight: FontWeight.w400,
+                                            )
+                                        ),
+                                      ],
                                     )
                                 ),
-                                Text(
-                                    snapshot.data![index].description,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      color: ColorStyle.getDarkLabel(),
-                                      fontFamily: FontStyles.raleway,
-                                      fontSize: FontSizeConst.font12,
-                                      fontWeight: FontWeight.w400,
-                                    )
-                                )
-                              ],
-                            ),
-                          ),
-                          Container(
-                            margin: EdgeInsets.only(left: 16, right: 16),
-                            child: (snapshot.data![index].cost == "Free" || snapshot.data![index].cost == "0")
-                                ? Text(
-                                snapshot.data![index].cost,
-                                maxLines: 1,
-                                style: TextStyle(
-                                  color: ColorStyle.getDarkLabel(),
-                                  fontFamily: FontStyles.raleway,
-                                  fontSize: FontSizeConst.font12,
-                                  fontWeight: FontWeight.w600,
-                                ))
-                                : Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                    snapshot.data![index].cost,
-                                    maxLines: 1,
-                                    style: TextStyle(
-                                      color: ColorStyle.getDarkLabel(),
-                                      fontFamily: FontStyles.raleway,
-                                      fontSize: FontSizeConst.font12,
-                                      fontWeight: FontWeight.w600,
-                                    )
-                                ),
-                                Text(
-                                    snapshot.data![index].currency,
-                                    maxLines: 1,
-                                    style: TextStyle(
-                                      color: ColorStyle.getDarkLabel(),
-                                      fontFamily: FontStyles.raleway,
-                                      fontSize: FontSizeConst.font12,
-                                      fontWeight: FontWeight.w400,
-                                    )
-                                ),
-                              ],
-                            )
-                          ),
-                          (snapshot.data![index].repeating == true)
-                              ? Image.asset(
+                                (snapshot.data![index].repeating == true)
+                                    ? Image.asset(
                                   ImagePath.eventRepeatIcon,
                                   width: 22,
                                   fit: BoxFit.contain,
                                 )
-                              : Image.asset(
+                                    : Image.asset(
                                   ImagePath.eventNotRepeatIcon,
                                   width: 22,
                                   fit: BoxFit.contain,
                                 ),
-                        ],
-                      )),
-                );
-              });
+                              ],
+                            ),
+                          ],
+                        )),
+                  );
+                }),
+          );
         }
       },
     );
