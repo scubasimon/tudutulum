@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -114,7 +113,6 @@ class _BookmarksView extends State<BookmarksView> {
 
     @override
     void dispose() {
-      print("dispose -> bookmarks_view");
       darkModeListener?.cancel();
       super.dispose();
     }

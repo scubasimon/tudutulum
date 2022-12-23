@@ -14,6 +14,13 @@ import 'package:tudu/services/location/location_permission.dart';
 import 'package:tudu/models/business.dart';
 
 class DealsViewModel extends BaseViewModel {
+
+  static final DealsViewModel _instance = DealsViewModel.internal();
+
+  factory DealsViewModel() => _instance;
+
+  DealsViewModel.internal();
+
   final DealRepository _dealRepository = DealRepositoryImpl();
   final PermissionLocation _permissionLocation = PermissionLocation();
   final HomeRepository _homeRepository = HomeRepositoryImpl();
@@ -43,7 +50,6 @@ class DealsViewModel extends BaseViewModel {
     NotificationCenter().subscribe(StrConst.purchaseSuccess, _purchaseSuccess);
     var authorization = await _permissionLocation.permission();
     if (!authorization) {
-      _isLoading.add(false);
       _exception.add(LocationError.locationPermission);
       return;
     }
@@ -52,14 +58,12 @@ class DealsViewModel extends BaseViewModel {
     try {
       final customerInfo = await Purchases.getCustomerInfo();
       active = customerInfo.entitlements.all["Pro"]?.isActive == true;
+      print(customerInfo.activeSubscriptions);
+      print(customerInfo.entitlements);
     } catch (e) {
       print(e);
       active = false;
     }
-
-    // FAKE FOR TEST DEAL
-    // TODO: REMOVE THIS
-    active =  true;
 
     _subscription.add(active);
     if (!active) {
@@ -71,6 +75,11 @@ class DealsViewModel extends BaseViewModel {
     _searchData();
 
     _param.add(Param.Param(refresh: true));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   void searchWithParam({String? title, int? businessId, Param.Order? order}) {

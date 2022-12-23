@@ -10,6 +10,7 @@ import 'package:tudu/consts/color/Colors.dart';
 import 'package:tudu/models/deal.dart';
 import 'package:tudu/models/error.dart';
 import 'package:tudu/models/param.dart';
+import 'package:tudu/utils/pref_util.dart';
 import 'package:tudu/views/common/alert.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
 import 'package:tudu/consts/font/font_size_const.dart';
@@ -21,10 +22,8 @@ import 'package:tudu/generated/l10n.dart';
 import 'package:tudu/views/deals/deal_details_view.dart';
 import 'package:tudu/views/map/map_deal_view.dart';
 import 'package:tudu/views/subscription/subscription_plan_view.dart';
-
-import '../../services/observable/observable_serivce.dart';
-import '../../utils/SizeProviderWidget.dart';
-import '../../viewmodels/home_viewmodel.dart';
+import 'package:tudu/services/observable/observable_serivce.dart';
+import 'package:tudu/utils/SizeProviderWidget.dart';
 
 class DealsView extends StatefulWidget {
   const DealsView({super.key});
@@ -35,8 +34,7 @@ class DealsView extends StatefulWidget {
 
 class _DealsView extends State<DealsView> with AutomaticKeepAliveClientMixin<DealsView>, WidgetsBindingObserver {
   final _dealsViewModel = DealsViewModel();
-  HomeViewModel _homeViewModel = HomeViewModel();
-  ObservableService _observableService = ObservableService();
+  final ObservableService _observableService = ObservableService();
 
   final _scrollController = ScrollController();
   final _searchController = TextEditingController();
@@ -54,74 +52,73 @@ class _DealsView extends State<DealsView> with AutomaticKeepAliveClientMixin<Dea
 
   @override
   void initState() {
-
-    _isAtTop = false;
-
-    _dealsViewModel.userLoginStream.listen((event) {
-      if (!event) {
-        showDialog(context: context, builder: (context){
-          return ErrorAlert.alertLogin(context);
-        });
-      }
-    });
-    _dealsViewModel.loading.listen((event) {
-      if (event) {
-        _showLoading();
-      } else {
-        _refreshController.refreshCompleted();
-        Navigator.of(context).pop();
-      }
-    });
-    _scrollController.addListener(() {
-      if (_scrollController.offset <= 0.0) {
-        _isAtTop = true;
-        setState(() {});
-      } else {
-        _isAtTop = false;
-        setState(() {});
-      }
-    });
-    _searchController.addListener(() {
-      setState(() {
-        _enableRefresh = false;
-      });
-
-      _dealsViewModel.searchWithParam(
-        title: _searchController.text,
-        businessId: _businessId,
-        order: _order,
-      );
-    });
-    _dealsViewModel.error.listen((event) {
-      if (event.code == LocationError.locationPermission.code) {
-        showDialog(context: context, builder: (context) {
-          return ErrorAlert.alertPermission(context, S.current.location_permission_message);
-        });
-      } else {
-        showDialog(context: context, builder: (context){
-          return ErrorAlert.alert(context, event.message ?? S.current.failed);
-        });
-      }
-
-    });
-    _dealsViewModel.subscription.listen((event) {
-      if (!event) {
-        Navigator.of(context).push(
-            MaterialPageRoute(
-                builder: (context) => const SubscriptionPlanView(dismissWhenCompleted: true,)
-            )
-        );
-      }
-    });
-
     super.initState();
 
+    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      var binding = PrefUtil.getValue("binding_deal", false) as bool;
+      if (!binding) {
+        PrefUtil.setValue("binding_deal", true);
+        _isAtTop = false;
 
-    // WidgetsBinding.instance.addObserver(this);
-    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-    //
-    //   print(timeStamp);
-    // });
+        _dealsViewModel.userLoginStream.listen((event) {
+          if (!event) {
+            showDialog(context: context, builder: (context){
+              return ErrorAlert.alertLogin(context);
+            });
+          }
+        });
+        _dealsViewModel.loading.listen((event) {
+          if (event) {
+            _showLoading();
+          } else {
+            _refreshController.refreshCompleted();
+            Navigator.of(context).pop();
+          }
+        });
+        _scrollController.addListener(() {
+          if (_scrollController.offset <= 0.0) {
+            _isAtTop = true;
+            setState(() {});
+          } else {
+            _isAtTop = false;
+            setState(() {});
+          }
+        });
+        _searchController.addListener(() {
+          setState(() {
+            _enableRefresh = false;
+          });
+
+          _dealsViewModel.searchWithParam(
+            title: _searchController.text,
+            businessId: _businessId,
+            order: _order,
+          );
+        });
+        _dealsViewModel.error.listen((event) {
+          if (event.code == LocationError.locationPermission.code) {
+            showDialog(context: context, builder: (context) {
+              return ErrorAlert.alertPermission(context, S.current.location_permission_message);
+            });
+          } else {
+            showDialog(context: context, builder: (context){
+              return ErrorAlert.alert(context, event.message ?? S.current.failed);
+            });
+          }
+
+        });
+        _dealsViewModel.subscription.listen((event) {
+          if (!event) {
+            Navigator.of(context).push(
+                MaterialPageRoute(
+                    builder: (context) => const SubscriptionPlanView(dismissWhenCompleted: true,)
+                )
+            );
+          }
+        });
+      }
+    });
   }
 
   void listenToDarkMode() {
@@ -337,16 +334,28 @@ class _DealsView extends State<DealsView> with AutomaticKeepAliveClientMixin<Dea
                         header: const WaterDropHeader(),
                         controller: _refreshController,
                         onRefresh: _refresh,
-                        child: Container(
-                          color: ColorStyle.getSystemBackground(),
-                          child: ListView(
-                            controller: _scrollController,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
-                                child: createDealsView(),
-                              ),
-                            ],
+                        child: SizeProviderWidget(
+                          onChildSize: (size) {
+                            if (size.height < MediaQuery.of(context).size.height
+                                - MediaQuery.of(context).padding.top
+                                - MediaQuery.of(context).padding.bottom
+                                - 56 /*Appbar*/
+                                - 50 /*BottomNav*/) {
+                              _isAtTop = true;
+                              setState(() {});
+                            }
+                          },
+                          child: Container(
+                            color: ColorStyle.getSystemBackground(),
+                            child: ListView(
+                              controller: _scrollController,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
+                                  child: createDealsView(),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       );
@@ -444,126 +453,115 @@ class _DealsView extends State<DealsView> with AutomaticKeepAliveClientMixin<Dea
               ),
             );
           }
-          return SizeProviderWidget(
-            onChildSize: (size) {
-              if (size.height < MediaQuery.of(context).size.height
-                  - MediaQuery.of(context).padding.top
-                  - MediaQuery.of(context).padding.bottom
-                  - 56 /*Appbar*/
-                  - 50 /*BottomNav*/) {
-                _isAtTop = true;
-                setState(() {});
-              }
-            },
-            child: ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: snapshot.data!.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return Stack(
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          Navigator.of(context).push(
-                              MaterialPageRoute(builder: (context) => DealDetailView(
-                                deal: snapshot.data![index],
-                              ))
-                          );
-                        },
-                        child: Container(
-                            margin: const EdgeInsets.only(bottom: 8),
-                            decoration: BoxDecoration(
-                                borderRadius: const BorderRadius.all(
-                                    Radius.circular(10.0)
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.25),
-                                    blurRadius: 7,
-                                    offset: const Offset(0, 2),
-                                  ),
-                                ]
-                            ),
-                            alignment: Alignment.centerLeft,
-                            width: MediaQuery.of(context).size.width,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(8.0),
-                              child: CachedNetworkImage(
-                                imageUrl: snapshot.data![index].images.first,
-                                width: MediaQuery.of(context).size.width,
-                                height: 236,
-                                fit: BoxFit.cover,
-                                imageBuilder: (context, imageProvider) => Container(
-                                  decoration: BoxDecoration(
-                                    image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
-                                  ),
-                                ),
-                                placeholder: (context, url) => const CupertinoActivityIndicator(
-                                  radius: 20,
-                                  color: ColorStyle.primary,
-                                ),
-                                errorWidget: (context, url, error) => const Icon(Icons.error),
+          return ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: snapshot.data!.length,
+              itemBuilder: (BuildContext context, int index) {
+                return Stack(
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) => DealDetailView(
+                              deal: snapshot.data![index],
+                            ))
+                        );
+                      },
+                      child: Container(
+                          margin: const EdgeInsets.only(bottom: 8),
+                          decoration: BoxDecoration(
+                              borderRadius: const BorderRadius.all(
+                                  Radius.circular(10.0)
                               ),
-                            )
-                        ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.25),
+                                  blurRadius: 7,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ]
+                          ),
+                          alignment: Alignment.centerLeft,
+                          width: MediaQuery.of(context).size.width,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8.0),
+                            child: CachedNetworkImage(
+                              imageUrl: snapshot.data![index].images.first,
+                              width: MediaQuery.of(context).size.width,
+                              height: 236,
+                              fit: BoxFit.cover,
+                              imageBuilder: (context, imageProvider) => Container(
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                                ),
+                              ),
+                              placeholder: (context, url) => const CupertinoActivityIndicator(
+                                radius: 20,
+                                color: ColorStyle.primary,
+                              ),
+                              errorWidget: (context, url, error) => const Icon(Icons.error),
+                            ),
+                          )
                       ),
-                      Positioned(
-                        bottom: 0,
-                        child: IntrinsicWidth(
-                          child: Container(
-                            height: 50.0,
-                            constraints: BoxConstraints(
-                              maxWidth: MediaQuery.of(context).size.width - 110,
-                              minWidth: 130,
-                            ),
-                            alignment: Alignment.centerLeft,
-                            margin: const EdgeInsets.only(bottom: 24),
-                            decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                    begin: FractionalOffset.centerLeft,
-                                    end: FractionalOffset.centerRight,
-                                    colors: [
-                                      ColorStyle.getSystemBackground().withOpacity(0.8),
-                                      ColorStyle.getSystemBackground().withOpacity(0.0),
-                                    ],
-                                    stops: const [0.2, 1.0]
-                                )),
-                            child: Padding(
-                              padding: const EdgeInsets.only(left: 16.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    snapshot.data![index].titleShort,
-                                    maxLines: 1,
-                                    style: TextStyle(
-                                      color: ColorStyle.getDarkLabel(),
-                                      fontFamily: FontStyles.raleway,
-                                      fontWeight: FontWeight.w800,
-                                      fontSize: FontSizeConst.font14,
-                                    ),
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      child: IntrinsicWidth(
+                        child: Container(
+                          height: 50.0,
+                          constraints: BoxConstraints(
+                            maxWidth: MediaQuery.of(context).size.width - 110,
+                            minWidth: 130,
+                          ),
+                          alignment: Alignment.centerLeft,
+                          margin: const EdgeInsets.only(bottom: 24),
+                          decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                  begin: FractionalOffset.centerLeft,
+                                  end: FractionalOffset.centerRight,
+                                  colors: [
+                                    ColorStyle.getSystemBackground().withOpacity(0.8),
+                                    ColorStyle.getSystemBackground().withOpacity(0.0),
+                                  ],
+                                  stops: const [0.2, 1.0]
+                              )),
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 16.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  snapshot.data![index].titleShort,
+                                  maxLines: 1,
+                                  style: TextStyle(
+                                    color: ColorStyle.getDarkLabel(),
+                                    fontFamily: FontStyles.raleway,
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: FontSizeConst.font14,
                                   ),
-                                  Text(
-                                    snapshot.data![index].site.titles["title"].toString(),
-                                    maxLines: 1,
-                                    style: TextStyle(
-                                      fontFamily: FontStyles.raleway,
-                                      fontSize: FontSizeConst.font12,
-                                      fontWeight: FontWeight.w400,
-                                      color: ColorStyle.getDarkLabel(),
-                                    ),
+                                ),
+                                Text(
+                                  snapshot.data![index].site.titles["title"].toString(),
+                                  maxLines: 1,
+                                  style: TextStyle(
+                                    fontFamily: FontStyles.raleway,
+                                    fontSize: FontSizeConst.font12,
+                                    fontWeight: FontWeight.w400,
+                                    color: ColorStyle.getDarkLabel(),
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
                       ),
-                      Positioned(
-                        right: 16,
-                        bottom: 0,
-                        child: Container(
+                    ),
+                    Positioned(
+                      right: 16,
+                      bottom: 0,
+                      child: Container(
                           alignment: Alignment.centerRight,
                           margin: const EdgeInsets.only(bottom: 24),
                           height: 50,
@@ -578,13 +576,12 @@ class _DealsView extends State<DealsView> with AutomaticKeepAliveClientMixin<Dea
                             ),
                             errorWidget: (context, url, error) => const Icon(Icons.error),
                           )
-                        ),
-                      )
+                      ),
+                    )
 
-                    ],
-                  );
-                }),
-          );
+                  ],
+                );
+              });
         } else {
           return Container(
             color: ColorStyle.getSystemBackground(),

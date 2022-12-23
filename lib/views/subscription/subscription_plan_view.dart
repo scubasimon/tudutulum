@@ -29,7 +29,7 @@ class SubscriptionPlanView extends StatefulWidget {
 class _SubscriptionPlanView extends State<SubscriptionPlanView> {
 
   final _subscriptionViewModel = SubscriptionViewModel();
-  ObservableService _observableService = ObservableService();
+  final ObservableService _observableService = ObservableService();
 
   @override
   void initState() {
