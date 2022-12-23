@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:notification_center/notification_center.dart';
 import 'package:flutter/material.dart';
 import 'package:localstore/localstore.dart';
@@ -76,6 +77,9 @@ class SettingViewModel extends BaseViewModel {
 
   Future<void> clearData(BuildContext context) async {
     await removeData();
+
+    DefaultCacheManager manager = DefaultCacheManager();
+    manager.emptyCache();
 
     showDialog(context: context, builder: (context) {
       return NotificationAlert.alert(context, "Your data has been deleted");

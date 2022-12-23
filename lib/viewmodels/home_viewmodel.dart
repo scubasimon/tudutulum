@@ -71,17 +71,33 @@ class HomeViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  void changeOrderType(int orderTypeInput) {
+  void changeWhatTuduOrderType(int orderTypeInput) {
     whatTuduOrderType = orderTypeInput;
     notifyListeners();
   }
 
-  String getBusinessStringById(int idInput) {
-    if (idInput < listBusiness.length) {
-      return listBusiness[idInput].type;
+  void changeEventOrderType(int orderTypeInput) {
+    print("orderTypeInput $orderTypeInput");
+    eventOrderType = orderTypeInput;
+    notifyListeners();
+  }
+
+  String getBusinessStringByIndex(int index) {
+    if (index < listBusiness.length) {
+      return listBusiness[index].type;
     } else {
       return S.current.all_location;
     }
+  }
+
+  String getBusinessStringById(int idInput) {
+    for (var data in listBusiness) {
+      print("${data.businessid == idInput} ${data.businessid} ${idInput}");
+      if (data.businessid == idInput) {
+        return data.type;
+      }
+    }
+    return S.current.all_location;
   }
 
   Site? getSiteById(int idInput) {
@@ -160,6 +176,8 @@ class HomeViewModel extends BaseViewModel {
     await getListArticles();
     await getListSites();
     await getListEvents();
+
+    await requestAllBookmarkedSiteId();
 
     _observableService.whatTuduProgressLoadingController.sink.add(false);
   }
@@ -269,6 +287,14 @@ class HomeViewModel extends BaseViewModel {
     notifyListeners();
   }
 
+  Future<void> requestAllBookmarkedSiteId() async {
+    await _homeRepository.requestAllBookmarkedSiteId();
+  }
+
+  List<int> getAllBookmarkedSiteId() {
+    return _homeRepository.getAllBookmarkedSiteId();
+  }
+
   /// Get data from local
   Future<void> getLocalListPartners() async {
     listPartners = await _homeRepository.getLocalListPartners();
@@ -310,34 +336,44 @@ class HomeViewModel extends BaseViewModel {
 
   /// Comment func for using later
   // Add data (Sites) to fireStore
-  Future<void> createSites(int numberOfSites) async {
-    final remoteSite = await Localstore.instance.collection('test').doc("0").get();
-    if (remoteSite != null) {
-      try {
-        List<Map<String, dynamic>> listData = [];
-        for (int i = 0; i < numberOfSites; i++) {
-          remoteSite["siteid"] = i;
-          remoteSite["title"] = "${FuncUlti.getRandomText(5)} ${FuncUlti.getRandomText(4)}";
-          remoteSite["subTitle"] = "${FuncUlti.getRandomText(6)} ${FuncUlti.getRandomText(6)}";
-          remoteSite["locationLat"] = (Random().nextDouble()+0.001) * 89;
-          remoteSite["locationLon"] = (Random().nextDouble()+0.001) * 179;
-          List<int> listBusiness = [];
-          for (int i = 0; i < 2; i ++) {
-            int randomNumber = Random().nextInt(7);
-            listBusiness.add(randomNumber);
-          }
-          remoteSite["rating"] = (Random().nextDouble()+0.001) * 5;
-          if (Random().nextBool() == true) {
-            remoteSite["dealId"] = 0;
-          } else {
-            remoteSite["dealId"] = null;
-          }
-          listData.add(remoteSite);
-        }
-        await _homeRepository.createData(listData);
-      } catch (e) {
-        print("createSites -> FAIL: $e");
+  Future<void> updateSites() async {
+    try {
+      List<Map<String, dynamic>> listData = [];
+      for (var site in listSites) {
+        // remoteSite["siteid"] = i;
+        // remoteSite["title"] = "${FuncUlti.getRandomText(5)} ${FuncUlti.getRandomText(4)}";
+        // remoteSite["subTitle"] = "${FuncUlti.getRandomText(6)} ${FuncUlti.getRandomText(6)}";
+        // remoteSite["locationLat"] = (Random().nextDouble()+0.001) * 89;
+        // remoteSite["locationLon"] = (Random().nextDouble()+0.001) * 179;
+        // List<int> listBusiness = [];
+        // for (int i = 0; i < 2; i ++) {
+        //   int randomNumber = Random().nextInt(7);
+        //   listBusiness.add(randomNumber);
+        // }
+        // remoteSite["rating"] = (Random().nextDouble()+0.001) * 5;
+        // if (Random().nextBool() == true) {
+        //   remoteSite["dealId"] = 0;
+        // } else {
+        //   remoteSite["dealId"] = null;
+        // }
+
+        // var xxx = site.toJson();
+        // xxx["titles"] = {
+        //   "title": site.title,
+        //   "contentTitle": site.siteContent.title,
+        // };
+        //
+        // if (site.siteContent.getIntouch != null) {
+        //   xxx["getIntouchTitle"] = site.siteContent.getIntouch!["title"];
+        // }
+
+        // xxx["siteid"] = 0;
+
+        // listData.add(xxx);
       }
+      await _homeRepository.createData(listData);
+    } catch (e) {
+      print("createSites -> FAIL: $e");
     }
   }
 

@@ -542,7 +542,7 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
       return Container(
         padding: const EdgeInsets.only(top: 4.0, right: 4.0, bottom: 4.0),
         child: Text(
-            "${_homeViewModel.getSiteById(siteIndex)!.title} / "
+            "${_homeViewModel.getSiteById(siteIndex)!.titles["title"]}"
         ),
       );
     } else {

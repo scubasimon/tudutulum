@@ -30,9 +30,9 @@ class EventRepositoryImpl extends EventRepository {
 
     // Sort with keywordSort (Sort function)
     if (keywordSort != null) {
-      if (keywordSort == StrConst.sortTitle) {
+      if (keywordSort == StrConst.sortDate) {
         // Sort with title
-        listEventResult.sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
+        listEventResult.sort((a, b) => a.datestart.compareTo(b.datestart));
       } else if (keywordSort == StrConst.sortDistance) {
         // Sort with distance ///TODO: IMPL LOGIC
         listEventResult.sort((a, b) => a.title.compareTo(b.title));
@@ -44,11 +44,19 @@ class EventRepositoryImpl extends EventRepository {
     // Filter with keywordSearch (Search function)
     if (keywordSearch != null) {
       if (keywordSearch.isNotEmpty) {
-        listEventResult =
-            listEventResult.where((site) => site.title.toLowerCase().contains(keywordSearch.toLowerCase())).toList();
+        List<Event> result = [];
+        // Old logic
+        // listEventResult =
+        //     listEventResult.where((event) => event.title.toLowerCase().contains(keywordSearch.toLowerCase())).toList();
+        for (var event in listEventResult) {
+          if (event.title.toString().toLowerCase().contains(keywordSearch.toLowerCase()) ||
+              event.description.toString().toLowerCase().contains(keywordSearch.toLowerCase())) {
+            result.add(event);
+          }
+        }
+        listEventResult = result;
       }
     }
-
     return listEventResult;
   }
 }

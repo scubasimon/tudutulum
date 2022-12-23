@@ -81,6 +81,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "Disable this setting if you you\'ld to continue using the app in light mode"),
         "dark_mode_enable_info": MessageLookupByLibrary.simpleMessage(
             "Enable this setting if you\'ld like to continue to using app in dark mode"),
+        "date": MessageLookupByLibrary.simpleMessage("Date"),
         "deactivate_account_title":
             MessageLookupByLibrary.simpleMessage("Deactivate Account"),
         "deal_added_body": MessageLookupByLibrary.simpleMessage(

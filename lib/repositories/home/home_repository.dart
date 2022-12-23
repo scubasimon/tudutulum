@@ -1,12 +1,17 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tudu/models/business.dart';
 import 'package:tudu/models/event.dart';
 import 'package:tudu/models/event_type.dart';
 import 'package:tudu/services/local_datatabase/local_database_service.dart';
 import 'package:tudu/utils/func_utils.dart';
 
+import '../../consts/number/number_const.dart';
 import '../../models/amenity.dart';
 import '../../models/article.dart';
+import '../../models/error.dart';
 import '../../models/partner.dart';
 import '../../models/site.dart';
 import '../../services/firebase/firebase_service.dart';
@@ -33,11 +38,16 @@ abstract class HomeRepository {
   Future<List<Article>> getLocalListArticles();
   Future<List<Site>> getLocalListSites();
   Future<List<Event>> getLocalListEvents();
+
+  Future<List<int>> requestAllBookmarkedSiteId();
+  List<int> getAllBookmarkedSiteId();
 }
 
 class HomeRepositoryImpl extends HomeRepository {
   final FirebaseService _firebaseService = FirebaseServiceImpl();
   final LocalDatabaseService _localDatabaseService = LocalDatabaseServiceImpl();
+
+  List<int> _allBookmarkedSiteId = [];
 
   /// Action with firestore
   @override
@@ -89,9 +99,12 @@ class HomeRepositoryImpl extends HomeRepository {
           businessid: remoteBusiness["businessid"],
           locationid: remoteBusiness["locationid"],
           type: remoteBusiness["type"],
+          icon: remoteBusiness["icon"],
+          order: remoteBusiness["order"],
         ));
       }
     }
+    listBusiness.sort((a, b) => a.order.compareTo(b.order));
     return listBusiness;
   }
 
@@ -106,9 +119,11 @@ class HomeRepositoryImpl extends HomeRepository {
           icon: remoteEventType["icon"],
           locationId: remoteEventType["locationid"],
           type: remoteEventType["type"],
+          order: remoteEventType["order"],
         ));
       }
     }
+    listEventType.sort((a, b) => a.order.compareTo(b.order));
     return listEventType;
   }
 
@@ -138,47 +153,7 @@ class HomeRepositoryImpl extends HomeRepository {
     if (listRemoteSites != null) {
       for (var remoteSite in listRemoteSites) {
         if (remoteSite["active"]) {
-          listSites.add(Site(
-            images: FuncUlti.getListStringFromListDynamic(remoteSite["image"]),
-            active: remoteSite["active"],
-            siteId: remoteSite["siteid"],
-            dealId: (remoteSite["dealId"] != null) ? remoteSite["dealId"] : null,
-            title: remoteSite["title"],
-            subTitle: remoteSite["subTitle"],
-            business: FuncUlti.getListIntFromListDynamic(remoteSite["business"]),
-            locationLat: (remoteSite["locationLat"] != null) ? remoteSite["locationLat"] : null,
-            locationLon: (remoteSite["locationLon"] != null) ? remoteSite["locationLon"] : null,
-            rating: (remoteSite["rating"] != null) ? remoteSite["rating"] : null,
-            siteContent: SiteContent(
-              title: (remoteSite["contentTitle"] != null) ? remoteSite["contentTitle"] : null,
-              description: (remoteSite["contentDescription"] != null) ? remoteSite["contentDescription"] : null,
-              moreInformation: (remoteSite["moreInformation"] != null) ? remoteSite["moreInformation"] : null,
-              advisory: (remoteSite["advisory"] != null) ? remoteSite["advisory"] : null,
-              amenities: (remoteSite["amenities"] != null)
-                  ? FuncUlti.getListIntFromListDynamic(remoteSite["amenities"])
-                  : null,
-              amentityDescriptions: (remoteSite["amentityDescriptions"] != null)
-                  ? FuncUlti.getListStringFromListDynamic(remoteSite["amentityDescriptions"])
-                  : null,
-              openingTimes: (remoteSite["openingTimes"] != null)
-                  ? FuncUlti.getMapStringStringFromStringDynamic(remoteSite["openingTimes"])
-                  : null,
-              fees:
-                  (remoteSite["fees"] != null) ? FuncUlti.getMapStringListFromStringDynamic(remoteSite["fees"]) : null,
-              capacity: (remoteSite["capacity"] != null) ? remoteSite["capacity"] : remoteSite["capacity"],
-              eventIcons: (remoteSite["eventIcons"] != null)
-                  ? FuncUlti.getListStringFromListDynamic(remoteSite["eventIcons"])
-                  : null,
-              eventLinks: (remoteSite["eventLinks"] != null)
-                  ? FuncUlti.getListStringFromListDynamic(remoteSite["eventLinks"])
-                  : null,
-              getIntouch: (remoteSite["getIntouch"] != null)
-                  ? FuncUlti.getMapStringStringFromStringDynamic(remoteSite["getIntouch"])
-                  : null,
-              logo: (remoteSite["logo"] != null) ? remoteSite["logo"] : null,
-              partner: (remoteSite["partner"] != null) ? remoteSite["partner"] : null,
-            ),
-          ));
+          listSites.add(Site.from(remoteSite.data()));
         }
       }
     }
@@ -267,9 +242,12 @@ class HomeRepositoryImpl extends HomeRepository {
           businessid: remoteBusiness["businessid"],
           locationid: remoteBusiness["locationid"],
           type: remoteBusiness["type"],
+          icon: remoteBusiness["icon"],
+          order: remoteBusiness["order"],
         ));
       }
     }
+    listBusiness.sort((a, b) => a.order.compareTo(b.order));
     return listBusiness;
   }
 
@@ -284,9 +262,11 @@ class HomeRepositoryImpl extends HomeRepository {
           icon: remoteEventType["icon"],
           locationId: remoteEventType["locationid"],
           type: remoteEventType["type"],
+          order: remoteEventType["order"],
         ));
       }
     }
+    listEventTypeResult.sort((a, b) => a.order.compareTo(b.order));
     return listEventTypeResult;
   }
 
@@ -316,47 +296,7 @@ class HomeRepositoryImpl extends HomeRepository {
     if (listRemoteSites != null) {
       for (var remoteSite in listRemoteSites) {
         if (remoteSite["active"]) {
-          listSites.add(Site(
-            images: FuncUlti.getListStringFromListDynamic(remoteSite["image"]),
-            active: remoteSite["active"],
-            siteId: remoteSite["siteid"],
-            dealId: (remoteSite["dealId"] != null) ? remoteSite["dealId"] : null,
-            title: remoteSite["title"],
-            subTitle: remoteSite["subTitle"],
-            business: FuncUlti.getListIntFromListDynamic(remoteSite["business"]),
-            locationLat: remoteSite["locationLat"],
-            locationLon: remoteSite["locationLon"],
-            rating: (remoteSite["rating"] != null) ? remoteSite["rating"] : null,
-            siteContent: SiteContent(
-              title: (remoteSite["contentTitle"] != null) ? remoteSite["contentTitle"] : null,
-              description: (remoteSite["contentDescription"] != null) ? remoteSite["contentDescription"] : null,
-              moreInformation: (remoteSite["moreInformation"] != null) ? remoteSite["moreInformation"] : null,
-              advisory: (remoteSite["advisory"] != null) ? remoteSite["advisory"] : null,
-              amenities: (remoteSite["amenities"] != null)
-                  ? FuncUlti.getListIntFromListDynamic(remoteSite["amenities"])
-                  : null,
-              amentityDescriptions: (remoteSite["amentityDescriptions"] != null)
-                  ? FuncUlti.getListStringFromListDynamic(remoteSite["amentityDescriptions"])
-                  : null,
-              openingTimes: (remoteSite["openingTimes"] != null)
-                  ? FuncUlti.getMapStringStringFromStringDynamic(remoteSite["openingTimes"])
-                  : null,
-              fees:
-                  (remoteSite["fees"] != null) ? FuncUlti.getMapStringListFromStringDynamic(remoteSite["fees"]) : null,
-              capacity: (remoteSite["capacity"] != null) ? remoteSite["capacity"] : remoteSite["capacity"],
-              eventIcons: (remoteSite["eventIcons"] != null)
-                  ? FuncUlti.getListStringFromListDynamic(remoteSite["eventIcons"])
-                  : null,
-              eventLinks: (remoteSite["eventLinks"] != null)
-                  ? FuncUlti.getListStringFromListDynamic(remoteSite["eventLinks"])
-                  : null,
-              getIntouch: (remoteSite["getIntouch"] != null)
-                  ? FuncUlti.getMapStringStringFromStringDynamic(remoteSite["getIntouch"])
-                  : null,
-              logo: (remoteSite["logo"] != null) ? remoteSite["logo"] : null,
-              partner: (remoteSite["partner"] != null) ? remoteSite["partner"] : null,
-            ),
-          ));
+          listSites.add(Site.from(remoteSite));
         }
       }
     }
@@ -398,6 +338,47 @@ class HomeRepositoryImpl extends HomeRepository {
       }
     }
     return listEvents;
+  }
+
+
+
+  @override
+  List<int> getAllBookmarkedSiteId() {
+    return _allBookmarkedSiteId;
+  }
+
+  @override
+  Future<List<int>> requestAllBookmarkedSiteId() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      throw AuthenticationError.notLogin;
+    }
+
+    if (_allBookmarkedSiteId.isEmpty) {
+      List<int> listResult = [];
+      try {
+        var data = (await _firebaseService.bookmarks(user.uid)
+            .timeout(const Duration(seconds: NumberConst.timeout)))
+            .map((e) => e["siteid"] as int?)
+            .where((element) => element != null)
+            .toList();
+        for (var result in data) {
+          var siteData = await _firebaseService.getSite(result!);
+          if (siteData["siteid"] != null) {
+            listResult.add(siteData["siteid"]);
+          }
+        }
+
+        _allBookmarkedSiteId = listResult;
+      } catch (e) {
+        if (e is TimeoutException) {
+          throw CommonError.serverError;
+        } else {
+          rethrow;
+        }
+      }
+    }
+    return _allBookmarkedSiteId;
   }
 
   Map<String, String>? getListEventContact(Map<String, dynamic> remoteEvent) {

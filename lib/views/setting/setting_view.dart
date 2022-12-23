@@ -10,6 +10,7 @@ import 'package:tudu/consts/images/ImagePath.dart';
 import 'package:tudu/generated/l10n.dart';
 
 import '../../consts/strings/str_const.dart';
+import '../../services/observable/observable_serivce.dart';
 import '../../utils/pref_util.dart';
 
 class SettingView extends StatefulWidget {
@@ -22,6 +23,7 @@ class SettingView extends StatefulWidget {
 }
 
 class _SettingView extends State<SettingView> {
+  ObservableService _observableService = ObservableService();
 
   @override
   Widget build(BuildContext context) {
@@ -198,6 +200,7 @@ class _SettingView extends State<SettingView> {
                           setState(() {
                             model.setDarkMode(value);
                             PrefUtil.setValue(StrConst.isDarkMode, value);
+                            _observableService.darkModeController.sink.add(value);
                           });
                         },
                       )

@@ -7,7 +7,7 @@ class Site {
   late bool active;
   late List<String> images;
   int? dealId;
-  late String title;
+  late Map<String, String> titles;
   late String subTitle;
   List<int> business = [];
   double? locationLat;
@@ -21,7 +21,7 @@ class Site {
         required this.active,
         required this.images,
         required this.siteId,
-        required this.title,
+        required this.titles,
         required this.subTitle,
         required this.business,
         this.locationLat,
@@ -36,7 +36,7 @@ class Site {
       "active": active,
       "image": images,
       "siteid": siteId,
-      "title": title,
+      "titles": titles,
       "subTitle": subTitle,
       "business": business,
       "locationLat": locationLat,
@@ -57,14 +57,13 @@ class Site {
     active = data["active"];
     siteId = data["siteid"];
     dealId = (data["dealId"] != null) ? data["dealId"] : null;
-    title = data["title"] as String;
+    titles = FuncUlti.getMapStringStringFromStringDynamic(data["titles"]);
     subTitle = data["subTitle"] as String;
     business = FuncUlti.getListIntFromListDynamic(data["business"]);
     locationLat = (data["locationLat"] != null) ? data["locationLat"]: null;
     locationLon = (data["locationLon"] != null) ? data["locationLon"]: null;
     rating = (data["rating"] != null) ? data["rating"] : null;
     siteContent = SiteContent(
-    title: (data["contentTitle"] != null) ? data["contentTitle"] : null,
     description: (data["contentDescription"] != null) ? data["contentDescription"] : null,
     moreInformation: (data["moreInformation"] != null) ? data["moreInformation"] : null,
     advisory: (data["advisory"] != null) ? data["advisory"] : null,
@@ -96,7 +95,6 @@ class Site {
 }
 
 class SiteContent {
-  String? title;
   String? description;
   String? moreInformation;
   String? advisory;
@@ -113,7 +111,6 @@ class SiteContent {
 
   SiteContent(
       {
-        this.title,
         this.description,
         this.moreInformation,
         this.advisory,
@@ -130,7 +127,6 @@ class SiteContent {
       });
 
   Map<String, dynamic> toJson() => {
-    "contentTitle": title,
     "contentDescription": description,
     "moreInformation": moreInformation,
     "advisory": advisory,

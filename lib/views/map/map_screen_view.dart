@@ -123,13 +123,13 @@ class _MapScreenView extends State<MapScreenView> {
     for (var site in data) {
       if (site.locationLat != null && site.locationLon != null) {
         final Marker marker = Marker(
-            markerId: MarkerId(site.title),
+            markerId: MarkerId(site.titles["title"]!),
             position: LatLng(site.locationLat!, site.locationLon!),
             // infoWindow: InfoWindow(title: "Title: ${site.title}", snippet: "Subtitle: ${site.subTitle}"),
             icon: await MarkerIcon.downloadResizePictureCircle(site.images[0],
                 size: 150, addBorder: true, borderColor: Colors.white, borderSize: 15),
             onTap: () {
-              print("ON TAP MARKER -> ${site.title}");
+              print("ON TAP MARKER -> ${site.titles["title"]!}");
               _whatTuduSiteContentDetailViewModel.setSiteContentDetailCover(site);
               Navigator.push(
                   context,
@@ -179,7 +179,7 @@ class _MapScreenView extends State<MapScreenView> {
                       width: 12.0,
                     ),
                     Text(
-                      _homeViewModel.getBusinessStringById(_mapScreenViewModel.mapFilterType),
+                      _homeViewModel.getBusinessStringByIndex(_mapScreenViewModel.mapFilterType),
                       style: const TextStyle(
                         color: ColorStyle.secondaryDarkLabel94,
                         fontSize: 16,
@@ -212,7 +212,7 @@ class _MapScreenView extends State<MapScreenView> {
                                   onTap: () {
                                     _whatTuduViewModel.getDataWithFilterSortSearchForMap(
                                       null, // Filter all business => businnesFilter = null
-                                      FuncUlti.getSortTypeByInt(_homeViewModel.whatTuduOrderType),
+                                      FuncUlti.getSortWhatTuduTypeByInt(_homeViewModel.whatTuduOrderType),
                                       _homeViewModel.whatTuduSearchKeyword,
                                     );
                                     _mapScreenViewModel.mapFilterType = ((counter) / 2).round();
@@ -241,7 +241,7 @@ class _MapScreenView extends State<MapScreenView> {
                                           onTap: () {
                                             _whatTuduViewModel.getDataWithFilterSortSearchForMap(
                                               _homeViewModel.listBusiness[((counter) / 2).round()], // get business
-                                              FuncUlti.getSortTypeByInt(_homeViewModel.whatTuduOrderType),
+                                              FuncUlti.getSortWhatTuduTypeByInt(_homeViewModel.whatTuduOrderType),
                                               _homeViewModel.whatTuduSearchKeyword,
                                             );
                                             _mapScreenViewModel.mapFilterType = ((counter) / 2).round();

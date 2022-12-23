@@ -31,13 +31,13 @@ class Deal {
     titleShort = data["titleshort"] as String? ?? "";
     logo = data["logo"] as String? ?? "";
     businesses = (data["business"] as List<dynamic>? ?? []).map((e) => e as int).toList();
-    var site = data["site"] as Map<String, dynamic>? ?? {};
 
+    var site = data["site"] as Map<String, dynamic>? ?? {};
     this.site = Site(
         active: true,
         images: [],
         siteId: site["siteid"] as int,
-        title: site["title"] as String? ?? "",
+        titles: {"title": site["title"] as String? ?? "", "contentTitle": site["contentTitle"] as String? ?? ""},
         subTitle: "",
         business: [],
         siteContent: SiteContent(),

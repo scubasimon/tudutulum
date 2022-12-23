@@ -56,7 +56,7 @@ class DealRepositoryImpl extends DealRepository {
           throw CommonError.serverError;
         } else {
           // LOAD FROM LOCAL
-          print("LOADDING DEAL LOCAL");
+          print("LOADDING DEAL LOCAL -> because: $e");
           _results = await _localDatabaseService.getDeals();
           for (var result in _results) {
             var siteData = await _firebaseService.getSite(result.site.siteId);
@@ -72,7 +72,7 @@ class DealRepositoryImpl extends DealRepository {
       if (param.title == null) {
         return true;
       } else {
-        return element.site.title.toLowerCase().contains(param.title!.toLowerCase());
+        return element.site.titles["title"].toString().toLowerCase().contains(param.title!.toLowerCase());
       }
     })
         .where((element) => element.active)
@@ -165,7 +165,7 @@ class DealRepositoryImpl extends DealRepository {
 
   void _sortAlphabet(List<Deal> data) {
     data.sort((a, b) {
-      return a.site.title.compareTo(b.site.title);
+      return a.site.titles["title"].toString().compareTo(b.site.titles["title"].toString());
     });
   }
 

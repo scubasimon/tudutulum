@@ -88,10 +88,8 @@ class FirebaseServiceImpl extends FirebaseService {
   @override
   Future<void> createData(List<Map<String, dynamic>> data) async {
     try {
-      print("createData ${data.length.toString()}");
       for (var element in data) {
-        print("createData ${element["eventid"].toString()}");
-        await FirebaseFirestore.instance.collection("events").doc(element["eventid"].toString()).set(element);
+        await FirebaseFirestore.instance.collection("sites").doc(element["siteid"].toString()).set(element);
       }
     } catch (e) {
       print(e);

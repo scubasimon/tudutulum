@@ -56,6 +56,11 @@ class DealsViewModel extends BaseViewModel {
       print(e);
       active = false;
     }
+
+    // FAKE FOR TEST DEAL
+    // TODO: REMOVE THIS
+    active =  true;
+
     _subscription.add(active);
     if (!active) {
       _searchData();

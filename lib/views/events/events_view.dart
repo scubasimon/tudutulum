@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:intl/intl.dart';
 import 'package:localstore/localstore.dart';
@@ -19,7 +20,6 @@ import 'package:tudu/consts/font/font_size_const.dart';
 import 'package:tudu/consts/strings/str_language_key.dart';
 
 import 'package:tudu/consts/images/ImagePath.dart';
-import 'package:visibility_detector/visibility_detector.dart';
 
 import '../../consts/color/Colors.dart';
 import '../../consts/font/Fonts.dart';
@@ -27,6 +27,7 @@ import '../../consts/strings/str_const.dart';
 import '../../generated/l10n.dart';
 import '../../services/location/permission_request.dart';
 import '../../services/observable/observable_serivce.dart';
+import '../../utils/SizeProviderWidget.dart';
 import '../../utils/func_utils.dart';
 import '../../utils/pref_util.dart';
 import '../common/alert.dart';
@@ -49,12 +50,33 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
   final TextEditingController _searchController = TextEditingController();
   final RefreshController _refreshController = RefreshController(initialRefresh: false);
 
+  StreamSubscription<bool>? darkModeListener;
+
   bool isAtTop = true;
 
   @override
   void initState() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
 
-    // isAtTop = false;
+    listenToDarkMode();
+
+    isAtTop = false;
+
+    _scrollController.addListener(() {
+      print("_scrollController.offset ${_scrollController.offset}");
+      if (_scrollController.offset <= 0.0) {
+        isAtTop = true;
+        setState(() {});
+      } else {
+        isAtTop = false;
+        setState(() {});
+      }
+    });
 
     _searchController.addListener(() {
       if (_searchController.text != _homeViewModel.eventSearchKeyword) {
@@ -63,7 +85,7 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
             (_homeViewModel.eventEventFilterType < _homeViewModel.listEventTypes.length)
                 ? _homeViewModel.listEventTypes[_homeViewModel.eventEventFilterType]
                 : null, // Get current filterType
-            FuncUlti.getSortTypeByInt(_homeViewModel.eventOrderType), // Get current OrderType
+            FuncUlti.getSortEventTypeByInt(_homeViewModel.eventOrderType), // Get current OrderType
             _searchController.text // Search text
         );
       }
@@ -93,11 +115,26 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
           (_homeViewModel.eventEventFilterType < _homeViewModel.listEventTypes.length)
               ? _homeViewModel.listEventTypes[_homeViewModel.eventEventFilterType]
               : null, // Get current filterType,
-          FuncUlti.getSortTypeByInt(_homeViewModel.eventOrderType),
+          FuncUlti.getSortEventTypeByInt(_homeViewModel.eventOrderType),
           _searchController.text, // Search text
         );
       }
     });
+  }
+
+  void listenToDarkMode() {
+    darkModeListener ??= _observableService.darkModeStream.asBroadcastStream().listen((data) {
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    print("dispose -> events_view");
+    darkModeListener?.cancel();
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(statusBarColor: Colors.transparent));
+    super.dispose();
   }
 
   Future<void> loadRemoteData(bool isLoadOnInit) async {
@@ -123,7 +160,7 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
           (_homeViewModel.eventEventFilterType < _homeViewModel.listEventTypes.length)
               ? _homeViewModel.listEventTypes[_homeViewModel.eventEventFilterType]
               : null, // Get current filterType,
-          FuncUlti.getSortTypeByInt(_homeViewModel.eventOrderType),
+          FuncUlti.getSortEventTypeByInt(_homeViewModel.eventOrderType),
           _searchController.text, // Search text
         );
       }
@@ -157,7 +194,7 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
           (_homeViewModel.eventEventFilterType < _homeViewModel.listEventTypes.length)
               ? _homeViewModel.listEventTypes[_homeViewModel.eventEventFilterType]
               : null, // Get current filterType,
-          FuncUlti.getSortTypeByInt(_homeViewModel.eventOrderType),
+          FuncUlti.getSortEventTypeByInt(_homeViewModel.eventOrderType),
           _searchController.text, // Search text
         );
       }
@@ -185,14 +222,7 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return ExitAppScope(
-      child: VisibilityDetector(
-        key: Key('events_view'),
-        onVisibilityChanged: (visibilityInfo) {
-          if (visibilityInfo.visibleFraction > 0) {
-            setState(() {});
-          }
-        },
-        child: Scaffold(
+      child: Scaffold(
           appBar: AppBar(
             toolbarHeight: (isAtTop) ? 94 : 56,
             automaticallyImplyLeading: false,
@@ -227,7 +257,7 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
                         PullDownButton (
                           itemBuilder: (context) => [
                             PullDownMenuItem(
-                              title: S.current.alphabet,
+                              title: S.current.date,
                               itemTheme: const PullDownMenuItemTheme(
                                 textStyle: TextStyle(
                                     fontFamily: FontStyles.sfProText,
@@ -241,10 +271,10 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
                                   (_homeViewModel.eventEventFilterType < _homeViewModel.listEventTypes.length)
                                       ? _homeViewModel.listEventTypes[_homeViewModel.eventEventFilterType]
                                       : null,
-                                  FuncUlti.getSortTypeByInt(0), // Search with Alphabet => "title" = 0
+                                  FuncUlti.getSortEventTypeByInt(0), // Search with Alphabet => "title" = 0
                                   _searchController.text, // Search with Alphabet => "title" = 0
                                 );
-                                _homeViewModel.changeOrderType(0);
+                                _homeViewModel.changeEventOrderType(0);
                               },
                             ),
                             const PullDownMenuDivider(),
@@ -263,8 +293,8 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
                                 PermissionRequest().permissionServiceCall(
                                   context,
                                       () {
-                                        // _eventsViewModel.sortWithLocation();
-                                        _homeViewModel.changeOrderType(1);
+                                    _eventsViewModel.sortWithLocation();
+                                    _homeViewModel.changeEventOrderType(1);
                                   },
                                 );
                               },
@@ -321,7 +351,7 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
                                 onTap: () {
                                   _eventsViewModel.getDataWithFilterSortSearch(
                                     null,
-                                    FuncUlti.getSortTypeByInt(_homeViewModel.eventOrderType),
+                                    FuncUlti.getSortEventTypeByInt(_homeViewModel.eventOrderType),
                                     _searchController.text,
                                   );
                                   _homeViewModel.eventEventFilterType = ((counter) / 2).round();
@@ -341,16 +371,27 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
                                       fontSize: 17,
                                       color: ColorStyle.menuLabel),
                                 ),
-                                iconWidget: Image.asset(
-                                  ImagePath.cenoteIcon,
+                                iconWidget: CachedNetworkImage(
+                                  imageUrl: _homeViewModel.listEventTypes[((counter) / 2).round()].icon,
                                   width: 28,
                                   height: 28,
+                                  fit: BoxFit.cover,
+                                  imageBuilder: (context, imageProvider) => Container(
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                                    ),
+                                  ),
+                                  placeholder: (context, url) => const CupertinoActivityIndicator(
+                                    radius: 20,
+                                    color: ColorStyle.primary,
+                                  ),
+                                  errorWidget: (context, url, error) => Icon(Icons.error),
                                 ),
                                 enabled: _homeViewModel.eventEventFilterType != ((counter) / 2).round(),
                                 onTap: () {
                                   _eventsViewModel.getDataWithFilterSortSearch(
                                     _homeViewModel.listEventTypes[((counter) / 2).round()],
-                                    FuncUlti.getSortTypeByInt(_homeViewModel.eventOrderType),
+                                    FuncUlti.getSortEventTypeByInt(_homeViewModel.eventOrderType),
                                     _searchController.text,
                                   );
                                   _homeViewModel.eventEventFilterType = ((counter) / 2).round();
@@ -411,21 +452,22 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
               ),
             ),
           ),
-            body: SmartRefresher(
-              enablePullDown: true,
-              enablePullUp: false,
-              header: const WaterDropHeader(),
-              controller: _refreshController,
-              onRefresh: _onRefresh,
-              child: Container(
-                color: ColorStyle.getSystemBackground(),
-                child: ListView(
-                  controller: _scrollController,
-                  children: <Widget>[createExploreEventsView()],
-                ),
+          body: SmartRefresher(
+            enablePullDown: true,
+            enablePullUp: false,
+            header: const WaterDropHeader(),
+            controller: _refreshController,
+            onRefresh: _onRefresh,
+            child: Container(
+              color: ColorStyle.getSystemBackground(),
+              child: ListView(
+                controller: _scrollController,
+                children: <Widget>[
+                  createExploreEventsView()
+                ],
               ),
-            )),
-      ),
+            ),
+          )),
     );
   }
 
@@ -436,6 +478,7 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
+            height: 60,
             padding: EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 8),
             alignment: Alignment.centerLeft,
             child: Text(
@@ -446,19 +489,6 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
                 fontFamily: FontStyles.mouser,
                 fontSize: FontSizeConst.font16,
                 fontWeight: FontWeight.w400,
-              ),
-            ),
-          ),
-          Container(
-            padding: EdgeInsets.only(left: 16, right: 16),
-            alignment: Alignment.centerLeft,
-            child: Text(
-              "December", // TODO: IMPL LOGIC FOR SHOWING WITH MONTH - (MAYBE YEAR)
-              style: TextStyle(
-                color: ColorStyle.getDarkLabel(),
-                fontFamily: FontStyles.raleway,
-                fontSize: FontSizeConst.font12,
-                fontWeight: FontWeight.w700,
               ),
             ),
           ),
@@ -479,157 +509,200 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
         } else if (snapshot.hasError) {
           return Center(child: Text("snapshot.hasError"));
         } else {
-          return ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: snapshot.data!.length,
-              itemBuilder: (BuildContext context, int index) {
-                return InkWell(
-                  onTap: () {
-                    _eventContentDetailViewModel.setEventContentDetailCover(snapshot.data![index]);
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => EventContentDetailView(),
-                            settings: const RouteSettings(name: StrConst.eventContentDetailScene)));
-                  },
-                  child: Container(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Row(
-                        children: [
-                          Container(
-                            margin: EdgeInsets.only(right: 16),
-                            child: CachedNetworkImage(
-                              imageUrl: _homeViewModel.getEventTypeByType(snapshot.data![index].primaryType)!.icon,
-                              width: 22.0,
-                              height: 22.0,
-                              fit: BoxFit.contain,
-                              imageBuilder: (context, imageProvider) => Container(
-                                decoration: BoxDecoration(
-                                  image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
-                                ),
-                              ),
-                              placeholder: (context, url) => const CupertinoActivityIndicator(
-                                radius: 20,
-                                color: ColorStyle.primary,
-                              ),
-                              errorWidget: (context, url, error) => Icon(Icons.error),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                    DateFormat('EEE dd')
+          return SizeProviderWidget(
+            onChildSize: (size) {
+              if (size.height < MediaQuery.of(context).size.height
+                  - MediaQuery.of(context).padding.top
+                  - MediaQuery.of(context).padding.bottom
+                  - 56 /*Appbar*/
+                  - 50 /*BottomNav*/
+                  - 60 /*First Title*/) {
+                isAtTop = true;
+                setState(() {});
+              }
+            },
+            child: ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: snapshot.data!.where((element) => element.dateend.millisecondsSinceEpoch > DateTime.now().millisecondsSinceEpoch).length,
+                itemBuilder: (BuildContext context, int index) {
+                  return InkWell(
+                    onTap: () {
+                      _eventContentDetailViewModel.setEventContentDetailCover(snapshot.data![index]);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => EventContentDetailView(),
+                              settings: const RouteSettings(name: StrConst.eventContentDetailScene)));
+                    },
+                    child: Container(
+                        padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
+                        child: Column(
+                          children: [
+                            (index == 0 ||
+                                DateFormat('MM')
+                                .format(DateTime.fromMicrosecondsSinceEpoch(
+                                snapshot.data![index].datestart.millisecondsSinceEpoch*1000))
+                                .toString()
+                                    !=
+                                DateFormat('MM')
+                                .format(DateTime.fromMicrosecondsSinceEpoch(
+                                snapshot.data![index-1].datestart.millisecondsSinceEpoch*1000))
+                                .toString()) ?
+                            Container(
+                              alignment: Alignment.centerLeft,
+                              margin: const EdgeInsets.only(bottom: 8.0),
+                              child: Text(
+                                DateFormat('MMMM')
                                     .format(DateTime.fromMicrosecondsSinceEpoch(
-                                        snapshot.data![index].datestart.millisecondsSinceEpoch*1000))
-                                    .toString(),
-                                    style: TextStyle(
-                                      color: ColorStyle.getDarkLabel(),
-                                      fontFamily: FontStyles.raleway,
-                                      fontSize: FontSizeConst.font12,
-                                      fontWeight: FontWeight.w600,
-                                    )),
-                                Text(
-                                    DateFormat.Hm()
-                                    .format(DateTime.fromMicrosecondsSinceEpoch(
-                                        snapshot.data![index].datestart.millisecondsSinceEpoch*1000))
+                                    snapshot.data![index].datestart.millisecondsSinceEpoch*1000))
                                     .toString(),
                                 style: TextStyle(
                                   color: ColorStyle.getDarkLabel(),
                                   fontFamily: FontStyles.raleway,
                                   fontSize: FontSizeConst.font12,
-                                  fontWeight: FontWeight.w400,
-                                )),
-                              ],
-                            ),
-                          ),
-                          Expanded(
-                            flex: 4,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ) : Container(),
+                            Row(
                               children: [
-                                Text(
-                                    snapshot.data![index].title,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      color: ColorStyle.getDarkLabel(),
-                                      fontFamily: FontStyles.raleway,
-                                      fontSize: FontSizeConst.font12,
-                                      fontWeight: FontWeight.w600,
+                                Container(
+                                  margin: EdgeInsets.only(right: 16),
+                                  child: CachedNetworkImage(
+                                    imageUrl: _homeViewModel.getEventTypeByType(snapshot.data![index].primaryType)!.icon,
+                                    width: 22.0,
+                                    height: 22.0,
+                                    fit: BoxFit.contain,
+                                    imageBuilder: (context, imageProvider) => Container(
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                                      ),
+                                    ),
+                                    placeholder: (context, url) => const CupertinoActivityIndicator(
+                                      radius: 20,
+                                      color: ColorStyle.primary,
+                                    ),
+                                    errorWidget: (context, url, error) => Icon(Icons.error),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                          DateFormat('EEE dd')
+                                              .format(DateTime.fromMicrosecondsSinceEpoch(
+                                              snapshot.data![index].datestart.millisecondsSinceEpoch*1000))
+                                              .toString(),
+                                          style: TextStyle(
+                                            color: ColorStyle.getDarkLabel(),
+                                            fontFamily: FontStyles.raleway,
+                                            fontSize: FontSizeConst.font12,
+                                            fontWeight: FontWeight.w600,
+                                          )),
+                                      Text(
+                                          DateFormat.Hm()
+                                              .format(DateTime.fromMicrosecondsSinceEpoch(
+                                              snapshot.data![index].datestart.millisecondsSinceEpoch*1000))
+                                              .toString(),
+                                          style: TextStyle(
+                                            color: ColorStyle.getDarkLabel(),
+                                            fontFamily: FontStyles.raleway,
+                                            fontSize: FontSizeConst.font12,
+                                            fontWeight: FontWeight.w400,
+                                          )),
+                                    ],
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 4,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                          snapshot.data![index].title,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            color: ColorStyle.getDarkLabel(),
+                                            fontFamily: FontStyles.raleway,
+                                            fontSize: FontSizeConst.font12,
+                                            fontWeight: FontWeight.w600,
+                                          )
+                                      ),
+                                      Text(
+                                          snapshot.data![index].description,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            color: ColorStyle.getDarkLabel(),
+                                            fontFamily: FontStyles.raleway,
+                                            fontSize: FontSizeConst.font12,
+                                            fontWeight: FontWeight.w400,
+                                          )
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                    margin: EdgeInsets.only(left: 16, right: 16),
+                                    child: (snapshot.data![index].cost == "Free" || snapshot.data![index].cost == "0")
+                                        ? Text(
+                                        snapshot.data![index].cost,
+                                        maxLines: 1,
+                                        style: TextStyle(
+                                          color: ColorStyle.getDarkLabel(),
+                                          fontFamily: FontStyles.raleway,
+                                          fontSize: FontSizeConst.font12,
+                                          fontWeight: FontWeight.w600,
+                                        ))
+                                        : Column(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                            snapshot.data![index].cost,
+                                            maxLines: 1,
+                                            style: TextStyle(
+                                              color: ColorStyle.getDarkLabel(),
+                                              fontFamily: FontStyles.raleway,
+                                              fontSize: FontSizeConst.font12,
+                                              fontWeight: FontWeight.w600,
+                                            )
+                                        ),
+                                        Text(
+                                            snapshot.data![index].currency,
+                                            maxLines: 1,
+                                            style: TextStyle(
+                                              color: ColorStyle.getDarkLabel(),
+                                              fontFamily: FontStyles.raleway,
+                                              fontSize: FontSizeConst.font12,
+                                              fontWeight: FontWeight.w400,
+                                            )
+                                        ),
+                                      ],
                                     )
                                 ),
-                                Text(
-                                    snapshot.data![index].description,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      color: ColorStyle.getDarkLabel(),
-                                      fontFamily: FontStyles.raleway,
-                                      fontSize: FontSizeConst.font12,
-                                      fontWeight: FontWeight.w400,
-                                    )
-                                )
-                              ],
-                            ),
-                          ),
-                          Container(
-                            margin: EdgeInsets.only(left: 16, right: 16),
-                            child: (snapshot.data![index].cost == "Free" || snapshot.data![index].cost == "0")
-                                ? Text(
-                                snapshot.data![index].cost,
-                                maxLines: 1,
-                                style: TextStyle(
-                                  color: ColorStyle.getDarkLabel(),
-                                  fontFamily: FontStyles.raleway,
-                                  fontSize: FontSizeConst.font12,
-                                  fontWeight: FontWeight.w600,
-                                ))
-                                : Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                    snapshot.data![index].cost,
-                                    maxLines: 1,
-                                    style: TextStyle(
-                                      color: ColorStyle.getDarkLabel(),
-                                      fontFamily: FontStyles.raleway,
-                                      fontSize: FontSizeConst.font12,
-                                      fontWeight: FontWeight.w600,
-                                    )
-                                ),
-                                Text(
-                                    snapshot.data![index].currency,
-                                    maxLines: 1,
-                                    style: TextStyle(
-                                      color: ColorStyle.getDarkLabel(),
-                                      fontFamily: FontStyles.raleway,
-                                      fontSize: FontSizeConst.font12,
-                                      fontWeight: FontWeight.w400,
-                                    )
-                                ),
-                              ],
-                            )
-                          ),
-                          (snapshot.data![index].repeating == true)
-                              ? Image.asset(
+                                (snapshot.data![index].repeating == true)
+                                    ? Image.asset(
                                   ImagePath.eventRepeatIcon,
                                   width: 22,
                                   fit: BoxFit.contain,
                                 )
-                              : Image.asset(
+                                    : Image.asset(
                                   ImagePath.eventNotRepeatIcon,
                                   width: 22,
                                   fit: BoxFit.contain,
                                 ),
-                        ],
-                      )),
-                );
-              });
+                              ],
+                            ),
+                          ],
+                        )),
+                  );
+                }),
+          );
         }
       },
     );
