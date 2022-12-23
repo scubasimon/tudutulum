@@ -14,6 +14,7 @@ import 'package:tudu/services/location/location_permission.dart';
 import 'package:tudu/models/business.dart';
 
 class DealsViewModel extends BaseViewModel {
+
   final DealRepository _dealRepository = DealRepositoryImpl();
   final PermissionLocation _permissionLocation = PermissionLocation();
   final HomeRepository _homeRepository = HomeRepositoryImpl();
@@ -26,24 +27,31 @@ class DealsViewModel extends BaseViewModel {
   Stream<bool> get subscription => _subscription;
 
   final _userLogin = BehaviorSubject<bool>();
-  Stream<bool> get userLoginStream => _userLogin.stream;
+  Stream<bool> get userLoginStream => _userLogin;
 
   final _listDeals = BehaviorSubject<List<Deal>>();
-  Stream<List<Deal>> get deals => _listDeals.stream;
+  Stream<List<Deal>> get deals => _listDeals;
 
   final _isLoading = BehaviorSubject<bool>();
-  Stream<bool> get loading => _isLoading.stream;
+  Stream<bool> get loading => _isLoading;
 
   final _exception = BehaviorSubject<CustomError>();
-  Stream<CustomError> get error => _exception.stream;
+  Stream<CustomError> get error => _exception;
 
   @override
   FutureOr<void> init() async {
-    _userLogin.sink.add(FirebaseAuth.instance.currentUser != null);
     NotificationCenter().subscribe(StrConst.purchaseSuccess, _purchaseSuccess);
+    _searchData();
+  }
+  
+  void getData() async {
+    var login = FirebaseAuth.instance.currentUser != null;
+    _userLogin.sink.add(login);
+    if (!login) {
+      return;
+    }
     var authorization = await _permissionLocation.permission();
     if (!authorization) {
-      _isLoading.add(false);
       _exception.add(LocationError.locationPermission);
       return;
     }
@@ -52,24 +60,18 @@ class DealsViewModel extends BaseViewModel {
     try {
       final customerInfo = await Purchases.getCustomerInfo();
       active = customerInfo.entitlements.all["Pro"]?.isActive == true;
+      print(customerInfo.activeSubscriptions);
+      print(customerInfo.entitlements);
     } catch (e) {
       print(e);
       active = false;
     }
 
-    // FAKE FOR TEST DEAL
-    // TODO: REMOVE THIS
-    active =  true;
-
     _subscription.add(active);
     if (!active) {
-      _searchData();
       return;
     }
-
     _isLoading.sink.add(true);
-    _searchData();
-
     _param.add(Param.Param(refresh: true));
   }
 

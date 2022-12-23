@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -114,7 +113,6 @@ class _BookmarksView extends State<BookmarksView> {
 
     @override
     void dispose() {
-      print("dispose -> bookmarks_view");
       darkModeListener?.cancel();
       super.dispose();
     }
@@ -308,6 +306,8 @@ class _BookmarksView extends State<BookmarksView> {
                     child: Container(
                       color: ColorStyle.getSystemBackground(),
                       child: ListView(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
                         controller: _scrollController,
                         children: [
                           Padding(
@@ -461,21 +461,6 @@ class _BookmarksView extends State<BookmarksView> {
                             )),
                       ),
                       getDealItemIfExist(sites[index].dealId),
-                      Positioned(
-                        right: 16,
-                        top: 16,
-                        child: InkWell(
-                          onTap: () {
-                            _bookmarksViewModel.unBookmark(sites[index].siteId);
-                          },
-                          child: Image.asset(
-                            ImagePath.tab4thActiveIcon,
-                            width: 16,
-                            height: 25,
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                      ),
                       Positioned(
                         bottom: 0,
                         child: IntrinsicWidth(
