@@ -3,7 +3,8 @@ class ImagePath {
   static const logoTuduTulum = "assets/images/logo_tudu_tulum.png";
   static const logoTuduBB = "assets/images/logo_tudu_bb.png";
   static const logoIcon = "assets/images/logo_icon.png";
-  static const appleIcon = "assets/icons/ic_apple.png";
+  static const appleWhiteIcon = "assets/icons/ic_apple_white.png";
+  static const appleBlackIcon = "assets/icons/ic_apple_black.png";
   static const googleIcon = "assets/icons/ic_google.png";
   static const facebookIcon = "assets/icons/ic_facebook.png";
   static const chevronLeftIcon = "assets/icons/ic_chevron_left.png";

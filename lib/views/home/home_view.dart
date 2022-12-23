@@ -261,11 +261,11 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                       },
                       child: Text(
                         S.current.navigate_the_app,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.w400,
                           fontFamily: FontStyles.sfProText,
                           fontSize: FontSizeConst.font13,
-                          color: ColorStyle.tertiaryDarkLabel,
+                          color: _isDarkMode() ? ColorStyle.tertiaryLightLabel : ColorStyle.tertiaryDarkLabel,
                         ),
                       ),
                     ),
@@ -278,11 +278,11 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                       },
                       child: Text(
                         S.current.travel_to_tulum,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.w400,
                           fontFamily: FontStyles.sfProText,
                           fontSize: FontSizeConst.font13,
-                          color: ColorStyle.tertiaryDarkLabel,
+                          color: _isDarkMode() ? ColorStyle.tertiaryLightLabel : ColorStyle.tertiaryDarkLabel,
                         ),
                       ),
                     ),
@@ -295,18 +295,18 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                       },
                       child: Text(
                         S.current.transport_locally,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.w400,
                           fontFamily: FontStyles.sfProText,
                           fontSize: FontSizeConst.font13,
-                          color: ColorStyle.tertiaryDarkLabel,
+                          color: _isDarkMode() ? ColorStyle.tertiaryLightLabel : ColorStyle.tertiaryDarkLabel,
                         ),
                       ),
                     ),
                   ),
                   const Padding(padding: EdgeInsets.only(bottom: 12)),
-                  const Divider(
-                    color: Colors.black,
+                  Divider(
+                    color: _isDarkMode() ? Colors.white : Colors.black,
                     height: 0.5,
                   ),
                   Padding(
@@ -317,11 +317,11 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                       },
                       child: Text(
                         S.current.about,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.w400,
                           fontFamily: FontStyles.raleway,
                           fontSize: FontSizeConst.font12,
-                          color: ColorStyle.tertiaryDarkLabel,
+                          color: _isDarkMode() ? ColorStyle.tertiaryLightLabel : ColorStyle.tertiaryDarkLabel,
                         ),
                       ),
                     ),
@@ -334,11 +334,11 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                       },
                       child: Text(
                         S.current.coming_soon,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.w400,
                           fontFamily: FontStyles.raleway,
                           fontSize: FontSizeConst.font12,
-                          color: ColorStyle.tertiaryDarkLabel,
+                          color: _isDarkMode() ? ColorStyle.tertiaryLightLabel : ColorStyle.tertiaryDarkLabel,
                         ),
                       ),
                     ),
@@ -347,11 +347,11 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                     padding: const EdgeInsets.only(top: 12, bottom: 8),
                     child: Text(
                       S.current.follow_us,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.w400,
                         fontFamily: FontStyles.raleway,
                         fontSize: FontSizeConst.font12,
-                        color: ColorStyle.tertiaryDarkLabel,
+                        color: _isDarkMode() ? ColorStyle.tertiaryLightLabel : ColorStyle.tertiaryDarkLabel,
                       ),
                     ),
                   ),
@@ -384,11 +384,11 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                     padding: const EdgeInsets.only(top: 12, bottom: 8),
                     child: Text(
                       S.current.rate_us,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.w400,
                         fontFamily: FontStyles.raleway,
                         fontSize: FontSizeConst.font12,
-                        color: ColorStyle.tertiaryDarkLabel,
+                        color: _isDarkMode() ? ColorStyle.tertiaryLightLabel : ColorStyle.tertiaryDarkLabel,
                       ),
                     ),
                   ),
@@ -428,8 +428,8 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                     ],
                   ),
                   const Padding(padding: EdgeInsets.only(bottom: 24)),
-                  const Divider(
-                    color: Colors.black,
+                  Divider(
+                    color: _isDarkMode() ? Colors.white : Colors.black,
                     height: 0.5,
                   ),
                   Padding(
@@ -451,7 +451,7 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                           Text(
                             S.current.setting,
                             style: TextStyle(
-                              color: ColorStyle.getDarkLabel(),
+                              color: _isDarkMode() ? ColorStyle.tertiaryLightLabel : ColorStyle.tertiaryDarkLabel,
                               fontSize: FontSizeConst.font12,
                               fontFamily: FontStyles.raleway,
                               fontWeight: FontWeight.w400,
@@ -461,8 +461,8 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                       ),
                     ),
                   ),
-                  const Divider(
-                    color: Colors.black,
+                  Divider(
+                    color: _isDarkMode() ? Colors.white : Colors.black,
                     height: 0.5,
                   ),
                   Padding(
@@ -473,11 +473,11 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                       },
                       child: Text(
                         S.current.the_legal_stuff,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.w400,
                           fontFamily: FontStyles.raleway,
                           fontSize: FontSizeConst.font12,
-                          color: ColorStyle.tertiaryDarkLabel,
+                          color: _isDarkMode() ? ColorStyle.tertiaryLightLabel : ColorStyle.tertiaryDarkLabel,
                         ),
                       ),
                     ),
@@ -738,5 +738,9 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                 ),
               ));
         });
+  }
+
+  bool _isDarkMode() {
+    return PrefUtil.getValue(StrConst.isDarkMode, false) as bool;
   }
 }

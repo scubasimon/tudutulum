@@ -5,8 +5,10 @@ import 'package:provider/provider.dart';
 import 'package:tudu/consts/color/Colors.dart';
 import 'package:tudu/consts/font/Fonts.dart';
 import 'package:tudu/consts/images/ImagePath.dart';
+import 'package:tudu/consts/strings/str_const.dart';
 import 'package:tudu/generated/l10n.dart';
 import 'package:tudu/models/auth.dart';
+import 'package:tudu/utils/pref_util.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
 import 'package:tudu/views/register/register_view.dart';
 import 'package:tudu/viewmodels/authentication_viewmodel.dart';
@@ -29,7 +31,7 @@ class LoginView extends StatefulWidget {
 class _LoginStateView extends State<LoginView> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   late final AuthenticationViewModel _authenticationViewModel;
-  HomeViewModel _homeViewModel = HomeViewModel();
+  final HomeViewModel _homeViewModel = HomeViewModel();
 
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -50,6 +52,7 @@ class _LoginStateView extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
+    var darkMode = PrefUtil.getValue(StrConst.isDarkMode, false) as bool;
     var methods =  [
       Expanded(
         child: InkWell(
@@ -83,7 +86,7 @@ class _LoginStateView extends State<LoginView> {
               _signInAction(AuthType.apple);
             },
             child: Image.asset(
-              ImagePath.appleIcon,
+              darkMode ? ImagePath.appleWhiteIcon : ImagePath.appleBlackIcon,
               width: 40,
               height: 40,
             ),
@@ -135,8 +138,8 @@ class _LoginStateView extends State<LoginView> {
                       Text(
                         S.current.login_description,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(
-                            color: ColorStyle.tertiaryDarkLabel60,
+                        style: TextStyle(
+                            color: darkMode ? ColorStyle.tertiaryLightLabel : ColorStyle.tertiaryDarkLabel60,
                             fontFamily: FontStyles.sfProText,
                             fontSize: 17
                         ),
@@ -162,15 +165,15 @@ class _LoginStateView extends State<LoginView> {
                           decoration: InputDecoration(
                               labelText: S.current.email,
                               border: InputBorder.none,
-                              labelStyle: const TextStyle(
-                                  color: ColorStyle.tertiaryDarkLabel30
+                              labelStyle: TextStyle(
+                                  color: darkMode ? ColorStyle.tertiaryLightLabel60 : ColorStyle.tertiaryDarkLabel30
                               )
                           ),
                         ),
                       ),
-                      const Divider(
+                      Divider(
                         height: 0.5,
-                        color: Colors.black,
+                        color: darkMode ? Colors.white : Colors.black,
                       ),
                       Row(
                         children: [
@@ -190,8 +193,8 @@ class _LoginStateView extends State<LoginView> {
                                 decoration: InputDecoration(
                                     labelText: S.current.password,
                                     border: InputBorder.none,
-                                    labelStyle: const TextStyle(
-                                        color: ColorStyle.tertiaryDarkLabel30
+                                    labelStyle: TextStyle(
+                                        color: darkMode ? ColorStyle.tertiaryLightLabel60 : ColorStyle.tertiaryDarkLabel30
                                     )
                                 ),
                               )
@@ -210,9 +213,9 @@ class _LoginStateView extends State<LoginView> {
                           ),
                         ],
                       ),
-                      const Divider(
+                      Divider(
                         height: 0.5,
-                        color: Colors.black,
+                        color: darkMode ? Colors.white : Colors.black,
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16),
@@ -262,8 +265,8 @@ class _LoginStateView extends State<LoginView> {
                         children: [
                           Text(
                             S.current.account_not_exist,
-                            style: const TextStyle(
-                                color: ColorStyle.tertiaryDarkLabel,
+                            style: TextStyle(
+                                color: darkMode ? ColorStyle.tertiaryLightLabel : ColorStyle.tertiaryDarkLabel,
                                 fontFamily: FontStyles.sfProText,
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600
@@ -290,8 +293,8 @@ class _LoginStateView extends State<LoginView> {
                       ),
                       Text(
                         S.current.sign_in_other,
-                        style: const TextStyle(
-                          color: ColorStyle.tertiaryDarkLabel,
+                        style: TextStyle(
+                          color: darkMode ? ColorStyle.tertiaryLightLabel : ColorStyle.tertiaryDarkLabel,
                           fontWeight: FontWeight.w600,
                           fontFamily: FontStyles.sfProText,
                           fontSize: 15,

@@ -1,18 +1,18 @@
-import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tudu/consts/color/Colors.dart';
 import 'package:tudu/consts/font/Fonts.dart';
 import 'package:tudu/consts/images/ImagePath.dart';
+import 'package:tudu/consts/strings/str_const.dart';
 import 'package:tudu/consts/urls/URLConst.dart';
 import 'package:tudu/generated/l10n.dart';
+import 'package:tudu/utils/pref_util.dart';
 import 'package:tudu/viewmodels/authentication_viewmodel.dart';
 import 'package:tudu/views/common/alert.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:tudu/models/error.dart';
-
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -50,6 +50,7 @@ class _RegisterStateView extends State<RegisterView> {
 
   @override
   Widget build(BuildContext context) {
+    var darkMode = PrefUtil.getValue(StrConst.darkMode, false) as bool;
     return ExitAppScope(
       child: Container(
         color: ColorStyle.getSystemBackground(),
@@ -93,8 +94,8 @@ class _RegisterStateView extends State<RegisterView> {
                             Text(
                               S.current.register_message,
                               textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                  color: ColorStyle.tertiaryDarkLabel60,
+                              style: TextStyle(
+                                  color: darkMode ? ColorStyle.tertiaryLightLabel : ColorStyle.tertiaryDarkLabel60,
                                   fontFamily: FontStyles.sfProText,
                                   fontSize: 17
                               ),
@@ -119,15 +120,15 @@ class _RegisterStateView extends State<RegisterView> {
                                 decoration: InputDecoration(
                                     labelText: S.current.name,
                                     border: InputBorder.none,
-                                    labelStyle: const TextStyle(
-                                        color: ColorStyle.tertiaryDarkLabel30
+                                    labelStyle: TextStyle(
+                                        color: darkMode ? ColorStyle.tertiaryLightLabel60 : ColorStyle.tertiaryDarkLabel30
                                     )
                                 ),
                               ),
                             ),
-                            const Divider(
+                            Divider(
                               height: 0.5,
-                              color: Colors.black,
+                              color: darkMode ? Colors.white : Colors.black,
                             ),
                             SizedBox.fromSize(
                               size: const Size.fromHeight(60),
@@ -145,15 +146,15 @@ class _RegisterStateView extends State<RegisterView> {
                                 decoration: InputDecoration(
                                     labelText: "${S.current.email}*",
                                     border: InputBorder.none,
-                                    labelStyle: const TextStyle(
-                                        color: ColorStyle.tertiaryDarkLabel30
+                                    labelStyle: TextStyle(
+                                        color: darkMode ? ColorStyle.tertiaryLightLabel60 : ColorStyle.tertiaryDarkLabel30
                                     )
                                 ),
                               ),
                             ),
-                            const Divider(
+                            Divider(
                               height: 0.5,
-                              color: Colors.black,
+                              color: darkMode ? Colors.white : Colors.black,
                             ),
                             Row(
                               children: [
@@ -173,8 +174,8 @@ class _RegisterStateView extends State<RegisterView> {
                                     decoration: InputDecoration(
                                         labelText: "${S.current.password}*",
                                         border: InputBorder.none,
-                                        labelStyle: const TextStyle(
-                                            color: ColorStyle.tertiaryDarkLabel30
+                                        labelStyle: TextStyle(
+                                            color: darkMode ? ColorStyle.tertiaryLightLabel60 : ColorStyle.tertiaryDarkLabel30
                                         )
                                     ),
                                   ),
@@ -193,17 +194,17 @@ class _RegisterStateView extends State<RegisterView> {
                                 ),
                               ],
                             ),
-                            const Divider(
+                            Divider(
                               height: 0.5,
-                              color: Colors.black,
+                              color: darkMode ? Colors.white : Colors.black,
                             ),
                             const SizedBox(height: 16.0,),
                             Row(
                               children: [
                                 Text(
                                   S.current.required_message,
-                                  style: const TextStyle(
-                                      color: ColorStyle.secondaryDarkLabel,
+                                  style: TextStyle(
+                                      color: darkMode ? ColorStyle.secondaryLightLabel : ColorStyle.secondaryDarkLabel,
                                       fontFamily: FontStyles.sfProText,
                                       fontSize: 13,
                                       fontWeight: FontWeight.normal
@@ -217,6 +218,9 @@ class _RegisterStateView extends State<RegisterView> {
                                 Checkbox(
                                   value: _isAccepted,
                                   activeColor: ColorStyle.primary,
+                                  side: BorderSide(
+                                    color: darkMode ? Colors.white : Colors.black
+                                  ),
                                   onChanged: (value) {
                                     setState(() {
                                       if (value != null) {
@@ -227,8 +231,8 @@ class _RegisterStateView extends State<RegisterView> {
                                 ),
                                 Text(
                                   S.current.agree_message,
-                                  style: const TextStyle(
-                                    color: ColorStyle.secondaryDarkLabel,
+                                  style: TextStyle(
+                                    color: darkMode ? ColorStyle.secondaryLightLabel : ColorStyle.secondaryDarkLabel,
                                     fontFamily: FontStyles.sfProText,
                                     fontWeight: FontWeight.w500,
                                     fontSize: 13,
@@ -277,8 +281,8 @@ class _RegisterStateView extends State<RegisterView> {
                               children: [
                                 Text(
                                   S.current.account_exist_message,
-                                  style: const TextStyle(
-                                      color: ColorStyle.tertiaryDarkLabel,
+                                  style: TextStyle(
+                                      color: darkMode ? ColorStyle.tertiaryLightLabel : ColorStyle.tertiaryDarkLabel,
                                       fontFamily: FontStyles.sfProText,
                                       fontSize: 15,
                                       fontWeight: FontWeight.w600

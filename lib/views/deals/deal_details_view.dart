@@ -134,17 +134,22 @@ class _DealDetailView extends State<DealDetailView> {
           stream: _dealViewModel.deal,
           builder: (context, snapshot) {
             if (snapshot.data == null || snapshot.data!.titleShort.isEmpty) {
-              return Container();
+              return Container(
+                color: ColorStyle.getSystemBackground(),
+              );
             } else {
               final deal = snapshot.data!;
-              return SmartRefresher(
-                controller: _refreshController,
-                enablePullDown: true,
-                enablePullUp: false,
-                header: const WaterDropHeader(),
-                onRefresh: _refresh,
-                child: ListView(
-                  children: _dealDetail(deal),
+              return Container(
+                color: ColorStyle.getSystemBackground(),
+                child: SmartRefresher(
+                  controller: _refreshController,
+                  enablePullDown: true,
+                  enablePullUp: false,
+                  header: const WaterDropHeader(),
+                  onRefresh: _refresh,
+                  child: ListView(
+                    children: _dealDetail(deal),
+                  ),
                 ),
               );
             }

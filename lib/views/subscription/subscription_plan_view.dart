@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:notification_center/notification_center.dart';
 import 'package:tudu/consts/urls/URLConst.dart';
+import 'package:tudu/utils/pref_util.dart';
 import 'package:tudu/viewmodels/subscription_viewmodel.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
 import 'package:tudu/consts/color/Colors.dart';
@@ -64,6 +65,7 @@ class _SubscriptionPlanView extends State<SubscriptionPlanView> {
 
   @override
   Widget build(BuildContext context) {
+    var darkMode = PrefUtil.getValue(StrConst.isDarkMode, false) as bool;
     return ExitAppScope(
       child: Scaffold(
         appBar: AppBar(
@@ -144,11 +146,11 @@ class _SubscriptionPlanView extends State<SubscriptionPlanView> {
               Center(
                 child: Text(
                   S.current.try_a_week,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: FontStyles.mouser,
                     fontSize: FontSizeConst.font11,
                     fontWeight: FontWeight.w400,
-                    color: ColorStyle.tertiaryDarkLabel,
+                    color: darkMode ? ColorStyle.tertiaryLightLabel : ColorStyle.tertiaryDarkLabel,
                   ),
                 ),
               ),
@@ -248,8 +250,8 @@ class _SubscriptionPlanView extends State<SubscriptionPlanView> {
                 child: Center(
                   child: Text(
                     S.current.restore_purchase,
-                    style: const TextStyle(
-                      color: ColorStyle.tertiaryDarkLabel,
+                    style: TextStyle(
+                      color: darkMode ? ColorStyle.tertiaryLightLabel : ColorStyle.tertiaryDarkLabel,
                       fontFamily: FontStyles.mouser,
                       fontSize: FontSizeConst.font14,
                       fontWeight: FontWeight.w400,

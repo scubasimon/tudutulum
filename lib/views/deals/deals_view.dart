@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +31,7 @@ class DealsView extends StatefulWidget {
   State<StatefulWidget> createState() => _DealsView();
 }
 
-class _DealsView extends State<DealsView> with AutomaticKeepAliveClientMixin<DealsView>, WidgetsBindingObserver {
+class _DealsView extends State<DealsView> {
   final _dealsViewModel = DealsViewModel();
   final ObservableService _observableService = ObservableService();
 
@@ -41,6 +40,10 @@ class _DealsView extends State<DealsView> with AutomaticKeepAliveClientMixin<Dea
   final _refreshController = RefreshController(initialRefresh: false);
 
   StreamSubscription<bool>? darkModeListener;
+  StreamSubscription<bool>? _userLoginStream;
+  StreamSubscription<bool>? _loading;
+  StreamSubscription<CustomError>? _error;
+  StreamSubscription<bool>? _subscription;
 
   var _order = Order.distance;
   bool _isAtTop = true;
@@ -52,73 +55,67 @@ class _DealsView extends State<DealsView> with AutomaticKeepAliveClientMixin<Dea
 
   @override
   void initState() {
-    super.initState();
-
-    WidgetsBinding.instance.addObserver(this);
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      var binding = PrefUtil.getValue("binding_deal", false) as bool;
-      if (!binding) {
-        PrefUtil.setValue("binding_deal", true);
+    _isAtTop = false;
+    _dealsViewModel.getData();
+    _scrollController.addListener(() {
+      if (_scrollController.offset <= 0.0) {
+        _isAtTop = true;
+        setState(() {});
+      } else {
         _isAtTop = false;
+        setState(() {});
+      }
+    });
+    _searchController.addListener(() {
+      setState(() {
+        _enableRefresh = false;
+      });
 
-        _dealsViewModel.userLoginStream.listen((event) {
-          if (!event) {
-            showDialog(context: context, builder: (context){
-              return ErrorAlert.alertLogin(context);
-            });
-          }
-        });
-        _dealsViewModel.loading.listen((event) {
-          if (event) {
-            _showLoading();
-          } else {
-            _refreshController.refreshCompleted();
-            Navigator.of(context).pop();
-          }
-        });
-        _scrollController.addListener(() {
-          if (_scrollController.offset <= 0.0) {
-            _isAtTop = true;
-            setState(() {});
-          } else {
-            _isAtTop = false;
-            setState(() {});
-          }
-        });
-        _searchController.addListener(() {
-          setState(() {
-            _enableRefresh = false;
-          });
+      _dealsViewModel.searchWithParam(
+        title: _searchController.text,
+        businessId: _businessId,
+        order: _order,
+      );
+    });
 
-          _dealsViewModel.searchWithParam(
-            title: _searchController.text,
-            businessId: _businessId,
-            order: _order,
-          );
-        });
-        _dealsViewModel.error.listen((event) {
-          if (event.code == LocationError.locationPermission.code) {
-            showDialog(context: context, builder: (context) {
-              return ErrorAlert.alertPermission(context, S.current.location_permission_message);
-            });
-          } else {
-            showDialog(context: context, builder: (context){
-              return ErrorAlert.alert(context, event.message ?? S.current.failed);
-            });
-          }
-
-        });
-        _dealsViewModel.subscription.listen((event) {
-          if (!event) {
-            Navigator.of(context).push(
-                MaterialPageRoute(
-                    builder: (context) => const SubscriptionPlanView(dismissWhenCompleted: true,)
-                )
-            );
-          }
+    _userLoginStream = _dealsViewModel.userLoginStream.listen((event) {
+      if (!event) {
+        showDialog(context: context, builder: (context){
+          return ErrorAlert.alertLogin(context);
         });
       }
     });
+    _loading = _dealsViewModel.loading.listen((event) {
+      if (event) {
+        _showLoading();
+      } else {
+        _refreshController.refreshCompleted();
+        Navigator.of(context).pop();
+      }
+    });
+    _error = _dealsViewModel.error.listen((event) {
+      if (event.code == LocationError.locationPermission.code) {
+        showDialog(context: context, builder: (context) {
+          return ErrorAlert.alertPermission(context, S.current.location_permission_message);
+        });
+      } else {
+        showDialog(context: context, builder: (context){
+          return ErrorAlert.alert(context, event.message ?? S.current.failed);
+        });
+      }
+
+    });
+    _subscription = _dealsViewModel.subscription.listen((event) {
+      if (!event) {
+        Navigator.of(context).push(
+            MaterialPageRoute(
+                builder: (context) => const SubscriptionPlanView(dismissWhenCompleted: true,)
+            )
+        );
+      }
+    });
+    listenToDarkMode();
+    super.initState();
   }
 
   void listenToDarkMode() {
@@ -129,16 +126,19 @@ class _DealsView extends State<DealsView> with AutomaticKeepAliveClientMixin<Dea
 
   @override
   void dispose() {
+    super.dispose();
     darkModeListener?.cancel();
     _scrollController.dispose();
     _searchController.dispose();
     _refreshController.dispose();
-    super.dispose();
+    _subscription?.cancel();
+    _loading?.cancel();
+    _error?.cancel();
+    _userLoginStream?.cancel();
   }
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     List<Widget> array = [
       Container(
         height: 36.0,
@@ -348,6 +348,8 @@ class _DealsView extends State<DealsView> with AutomaticKeepAliveClientMixin<Dea
                           child: Container(
                             color: ColorStyle.getSystemBackground(),
                             child: ListView(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
                               controller: _scrollController,
                               children: [
                                 Padding(
