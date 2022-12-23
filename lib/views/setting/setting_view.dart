@@ -23,8 +23,6 @@ class SettingView extends StatefulWidget {
 }
 
 class _SettingView extends State<SettingView> {
-  ObservableService _observableService = ObservableService();
-
   @override
   Widget build(BuildContext context) {
     return ExitAppScope(
@@ -194,14 +192,11 @@ class _SettingView extends State<SettingView> {
                       ),
                       const Spacer(),
                       CupertinoSwitch(
-                        value: model.enableDarkMode,
+                        value: PrefUtil.getValue(StrConst.isDarkMode, false) as bool,
                         activeColor: ColorStyle.primary,
                         onChanged: (value) {
-                          setState(() {
-                            model.setDarkMode(value);
-                            PrefUtil.setValue(StrConst.isDarkMode, value);
-                            _observableService.darkModeController.sink.add(value);
-                          });
+                          model.setDarkMode(value);
+                          setState(() {});
                         },
                       )
                     ],
@@ -230,7 +225,7 @@ class _SettingView extends State<SettingView> {
                       ),
                       const Spacer(),
                       CupertinoSwitch(
-                        value: model.hideArticles,
+                        value: PrefUtil.getValue(StrConst.isHideArticle, false) as bool,
                         activeColor: ColorStyle.primary,
                         onChanged: (value) {
                           setState(() {

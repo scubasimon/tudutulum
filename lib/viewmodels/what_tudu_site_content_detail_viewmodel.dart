@@ -58,7 +58,11 @@ class WhatTuduSiteContentDetailViewModel extends BaseViewModel {
       } catch (e) {
         _isBookmark.add(true);
         _observableService.homeProgressLoadingController.sink.add(false);
-        _observableService.homeErrorController.sink.add(e as CustomError);
+        _observableService.homeErrorController.sink.add(CustomError(
+            "Bookmark Action Fail",
+            message: e.toString(),
+            data: const {}
+        ));
       }
     } else {
       try {
@@ -68,7 +72,11 @@ class WhatTuduSiteContentDetailViewModel extends BaseViewModel {
       } catch (e) {
         _isBookmark.add(false);
         _observableService.homeProgressLoadingController.sink.add(false);
-        _observableService.homeErrorController.sink.add(e as CustomError);
+        _observableService.homeErrorController.sink.add(CustomError(
+            "Bookmark Action Fail",
+            message: e.toString(),
+            data: const {}
+        ));
       }
     }
   }

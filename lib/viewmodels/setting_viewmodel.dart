@@ -8,9 +8,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tudu/base/base_viewmodel.dart';
 import 'package:tudu/consts/strings/str_const.dart';
 
+import '../services/observable/observable_serivce.dart';
+import '../utils/pref_util.dart';
 import '../views/common/alert.dart';
 
 class SettingViewModel extends BaseViewModel {
+  ObservableService _observableService = ObservableService();
+
   late SharedPreferences _instance;
   bool _isPushNotification = false;
   bool _enableNewOffer = false;
@@ -62,11 +66,15 @@ class SettingViewModel extends BaseViewModel {
 
   void setDarkMode(bool value) async {
     _enableDarkMode = value;
+    PrefUtil.setValue(StrConst.isDarkMode, value);
+    _observableService.darkModeController.sink.add(value);
     await _instance.setBool(StrConst.darkMode, value);
   }
 
   void setHideArticles(bool value) async {
     _hideArticles = value;
+    PrefUtil.setValue(StrConst.isHideArticle, value);
+    _observableService.darkModeController.sink.add(value);
     await _instance.setBool(StrConst.hideArticles, value);
   }
 

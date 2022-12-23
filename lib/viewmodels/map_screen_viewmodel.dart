@@ -24,66 +24,14 @@ class MapScreenViewModel extends BaseViewModel {
 
   MapScreenViewModel._internal();
 
-  List<Site> listSiteForMapView = [];
-
-  bool isGotoCurrent = false;
-  int mapFilterType = 0;
-
-  late bool serviceEnabled;
-  locationLib.Location location = locationLib.Location();
-  late locationLib.PermissionStatus _permissionGranted;
-  locationLib.LocationData? currentPosition;
   LatLng? destinationPosition;
 
   @override
   FutureOr<void> init() {
-
   }
 
-  void setInitMapInfo(
-      List<Site>? listSiteForMapViewInput,
-      bool isGoToCurrentPosition,
-      int mapFilterTypeInput,) {
-    if (listSiteForMapViewInput != null) {
-      listSiteForMapView = listSiteForMapViewInput.where((element) => true).toList();
-      isGotoCurrent = isGoToCurrentPosition;
-      mapFilterType = mapFilterTypeInput;
-      notifyListeners();
-    }
-  }
-
-  void setCurrentPosition(LatLng input) async {
+  void setDestinationPosition(LatLng input) async {
     destinationPosition = input;
     notifyListeners();
-  }
-
-  Future<void> getCurrentPosition() async {
-    currentPosition = await location.getLocation();
-    notifyListeners();
-  }
-
-  Future<void> checkLocationEnable(BuildContext context) async {
-    serviceEnabled = await location.serviceEnabled();
-    if (!serviceEnabled) {
-      serviceEnabled = await location.requestService();
-      if (!serviceEnabled) {
-        handlerLocationPermissionChanged();
-        return;
-      }
-    }
-
-    _permissionGranted = await location.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied) {
-      _permissionGranted = await location.requestPermission();
-      if (_permissionGranted != PermissionStatus.granted) {
-        handlerLocationPermissionChanged();
-        return;
-      }
-    }
-  }
-
-  void handlerLocationPermissionChanged() {
-    // ACTION ON PERMISSION CHANGED
-    print("handlerLocationPermissionChanged -> ACTION NOT IMPL YET");
   }
 }

@@ -92,54 +92,32 @@ class _MapDealView extends State<MapDealView> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     // Old UI
-                    // InkWell(
-                    //   onTap: () {
-                    //     Navigator.of(context).pop();
-                    //   },
-                    //   child: Row(
-                    //     mainAxisSize: MainAxisSize.min,
-                    //     children: [
-                    //       Image.asset(
-                    //         ImagePath.leftArrowIcon,
-                    //         fit: BoxFit.contain,
-                    //         height: 20,
-                    //       ),
-                    //       Padding(
-                    //         padding: const EdgeInsets.only(left: 8.0),
-                    //         child: Text(
-                    //           S.current.back,
-                    //           style: const TextStyle(
-                    //             color: ColorStyle.primary,
-                    //             fontSize: FontSizeConst.font16,
-                    //             fontWeight: FontWeight.w400,
-                    //             fontFamily: FontStyles.mouser,
-                    //           ),
-                    //         ),
-                    //       )
-                    //     ],
-                    //   ),
-                    // ),
                     InkWell(
-                      child: Image.asset(
-                        ImagePath.humbergerIcon,
-                        width: 28,
-                        height: 28,
-                      ),
                       onTap: () {
-                        NotificationCenter().notify(StrConst.openMenu);
+                        Navigator.of(context).pop();
                       },
-                    ),
-                    const SizedBox(
-                      width: 12.0,
-                    ),
-                    Text(
-                      // _homeViewModel.getBusinessStringById(_mapScreenViewModel.mapFilterType),
-                      (_businessId != null) ? _homeViewModel.getBusinessStringById(_businessId!) : S.current.all_location,
-                      style: const TextStyle(
-                        color: ColorStyle.secondaryDarkLabel94,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
-                        fontFamily: FontStyles.mouser,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Image.asset(
+                            ImagePath.leftArrowIcon,
+                            height: 20,
+                            fit: BoxFit.contain,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: Text(
+                              // _homeViewModel.getBusinessStringById(_mapScreenViewModel.mapFilterType),
+                              (_businessId != null) ? _homeViewModel.getBusinessStringById(_businessId!) : S.current.all_location,
+                              style: const TextStyle(
+                                color: ColorStyle.primary,
+                                fontSize: FontSizeConst.font16,
+                                fontWeight: FontWeight.w400,
+                                fontFamily: FontStyles.mouser,
+                              ),
+                            ),
+                          )
+                        ],
                       ),
                     ),
                     const Spacer(),
@@ -202,20 +180,6 @@ class _MapDealView extends State<MapDealView> {
                             myLocationButtonEnabled: false,
                             markers: _markers,
                           ),
-                          Positioned(
-                            top: 15,
-                            right: 15,
-                            child: InkWell(
-                              onTap: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: Image.asset(
-                                ImagePath.closeIcon,
-                                width: 30,
-                                fit: BoxFit.contain,
-                              ),
-                            ),
-                          )
                         ],
                       );
                     } else {

@@ -11,6 +11,7 @@ import 'package:tudu/consts/font/Fonts.dart';
 import 'package:tudu/consts/images/ImagePath.dart';
 import 'package:tudu/models/amenity.dart';
 import 'package:tudu/models/deal.dart';
+import 'package:tudu/models/error.dart';
 import 'package:tudu/models/partner.dart';
 import 'package:tudu/models/site.dart';
 import 'package:tudu/utils/func_utils.dart';
@@ -83,8 +84,57 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
   }
 
   void _onRefresh() async {
-    setState(() {});
-    _refreshController.refreshCompleted();
+    try {
+      _observableService.homeProgressLoadingController.sink.add(true);
+      await loadRemoteData();
+    } catch (e) {
+      _refreshController.refreshFailed();
+      _observableService.homeProgressLoadingController.sink.add(false);
+      _observableService.homeErrorController.sink.add(CustomError(
+        "Refresh FAIL",
+        message: e.toString(),
+        data: const {}
+      ));
+    }
+  }
+
+  Future<void> loadRemoteData() async {
+    try {
+      await _homeViewModel.getListSites();
+      loadNewSite();
+    } catch (e) {
+      print("loadRemoteData: $e");
+      // If network has prob -> Load data from local
+      await loadLocalData();
+    }
+  }
+
+  Future<void> loadLocalData() async {
+    try {
+      await _homeViewModel.getLocalListSites();
+      loadNewSite();
+    } catch (e) {
+      _observableService.homeProgressLoadingController.sink.add(false);
+      _observableService.networkController.sink.add(e.toString());
+    }
+  }
+
+  void loadNewSite() {
+    Site? currentSite = _homeViewModel.getSiteById(_whatTuduSiteContentDetailViewModel.siteContentDetail.siteId);
+    if (currentSite != null) {
+      setState(() {});
+      _refreshController.refreshCompleted();
+      _whatTuduSiteContentDetailViewModel.setSiteContentDetailCover(currentSite);
+      _observableService.homeProgressLoadingController.sink.add(false);
+    } else {
+      _refreshController.refreshFailed();
+      _observableService.homeProgressLoadingController.sink.add(false);
+      _observableService.homeErrorController.sink.add(CustomError(
+          "Refresh FAIL",
+          message: "Facing error",
+          data: const {}
+      ));
+    }
   }
 
   @override
@@ -164,6 +214,8 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
           child: Container(
             color: ColorStyle.getSystemBackground(),
             child: ListView(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
               children: <Widget>[
                 getExploreAllLocationView(),
               ],
@@ -1179,6 +1231,8 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
     if (amenity != null) {
       final RenderObject? overlay = Overlay.of(context)?.context.findRenderObject();
       showMenu(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20)),
           context: context,
           position: RelativeRect.fromRect(
               Rect.fromLTWH(
@@ -1195,47 +1249,37 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
               )),
           items: [
             PopupMenuItem(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  (amenity.title.isNotEmpty)
-                      ? Container(
-                          width: overlay.paintBounds.size.width,
-                          alignment: Alignment.center,
-                          // color: ColorStyle.placeHolder,
-                          child: Text(
-                            "${amenity.title}",
-                            style: TextStyle(
-                              color: ColorStyle.getDarkLabel(),
-                              fontWeight: FontWeight.bold,
-                              fontSize: FontSizeConst.font12,
-                              fontFamily: FontStyles.raleway,
-                              height: 1,
-                            ),
-                          ),
-                        )
-                      : Container(),
-                  (amenity.description.isNotEmpty)
-                      ? Container(
-                          width: overlay.paintBounds.size.width,
-                          alignment: Alignment.center,
-                          // color: ColorStyle.placeHolder,
-                          child: Text(
-                            "${amenity.description}",
-                            style: TextStyle(
-                              color: ColorStyle.getDarkLabel(),
-                              fontWeight: FontWeight.w400,
-                              fontSize: FontSizeConst.font12,
-                              fontFamily: FontStyles.raleway,
-                              height: 1,
-                            ),
-                          ),
-                        )
-                      : Container()
-                ],
-              ),
-            ),
+                value: 'NOTHING',
+                child: Center(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ("${amenity.title}".isNotEmpty) ? Text(
+                        "${amenity.title}",
+                        style: TextStyle(
+                          color: ColorStyle.secondaryDarkLabel94,
+                          fontWeight: FontWeight.bold,
+                          fontSize: FontSizeConst.font12,
+                          fontFamily: FontStyles.raleway,
+                          height: 1,
+                        ),
+                      ) : Container(),
+                      Container(height: ("${amenity.title}".isNotEmpty && "${amenity.description}".isNotEmpty) ? 8 : 0),
+                      ("${amenity.description}".isNotEmpty) ? Text(
+                        "${amenity.description}",
+                        style: TextStyle(
+                          color: ColorStyle.secondaryDarkLabel94,
+                          fontWeight: FontWeight.w400,
+                          fontSize: FontSizeConst.font12,
+                          fontFamily: FontStyles.raleway,
+                          height: 1,
+                        ),
+                      ) : Container(),
+                    ],
+                  ),
+                )),
           ]);
       Future.delayed(const Duration(milliseconds: 500), () {
         Navigator.popUntil(context, ModalRoute.withName(StrConst.whatTuduSiteContentDetailScene));
