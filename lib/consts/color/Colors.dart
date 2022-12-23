@@ -20,6 +20,9 @@ class ColorStyle {
   static const tertiaryDarkLabel60 = Color(0x993c3c43);
   static const tertiaryDarkLabel30 = Color(0x443c3c43);
   static const quaternaryDarkLabel = Color(0xff999999);
+  static const secondaryLightLabel = Color(0xffd9d9d9);
+  static const tertiaryLightLabel = Color(0xffc3c3bc);
+  static const tertiaryLightLabel60 = Color(0x99c3c3bc);
 
   static const navigation = Color(0xff00a299);
 

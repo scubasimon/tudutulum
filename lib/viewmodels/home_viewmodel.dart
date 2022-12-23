@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:localstore/localstore.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
@@ -9,18 +8,11 @@ import 'package:tudu/models/business.dart';
 import 'package:tudu/models/event.dart';
 import 'package:tudu/models/event_type.dart';
 import 'package:tudu/services/observable/observable_serivce.dart';
-import 'package:tudu/viewmodels/what_tudu_viewmodel.dart';
-
-import '../generated/l10n.dart';
-import '../models/article.dart';
-import '../models/partner.dart';
-import '../models/site.dart';
-import '../repositories/home/home_repository.dart';
-import 'dart:async';
-import 'package:tudu/base/base_viewmodel.dart';
-import 'package:rxdart/rxdart.dart';
-
-import '../utils/func_utils.dart';
+import 'package:tudu/generated/l10n.dart';
+import 'package:tudu/models/article.dart';
+import 'package:tudu/models/partner.dart';
+import 'package:tudu/models/site.dart';
+import 'package:tudu/repositories/home/home_repository.dart';
 
 class HomeViewModel extends BaseViewModel {
   final HomeRepository _homeRepository = HomeRepositoryImpl();
@@ -33,8 +25,9 @@ class HomeViewModel extends BaseViewModel {
 
   HomeViewModel._internal();
 
-  ObservableService _observableService = ObservableService();
+  final ObservableService _observableService = ObservableService();
 
+  @override
   bool isLoading = false;
 
   String whatTuduSearchKeyword = "";

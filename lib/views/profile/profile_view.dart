@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tudu/consts/font/Fonts.dart';
+import 'package:tudu/consts/strings/str_const.dart';
 import 'package:tudu/consts/urls/URLConst.dart';
 import 'package:tudu/models/error.dart';
+import 'package:tudu/utils/pref_util.dart';
 import 'package:tudu/viewmodels/profile_viewmodel.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
 import 'package:tudu/consts/font/font_size_const.dart';
@@ -45,8 +47,7 @@ class _ProfileView extends State<ProfileView> {
   var _isReceiveNewOffer = false;
   var _isReceiveMonthlyNewsLetter = false;
 
-  HomeViewModel _homeViewModel = HomeViewModel();
-  ObservableService _observableService = ObservableService();
+  final _observableService = ObservableService();
 
   @override
   void initState() {
@@ -103,6 +104,7 @@ class _ProfileView extends State<ProfileView> {
   Widget build(BuildContext context) {
     var shortestSide = MediaQuery.of(context).size.shortestSide;
     final bool useMobileLayout = shortestSide < 600;
+    var darkMode = PrefUtil.getValue(StrConst.isDarkMode, false) as bool;
     return ExitAppScope(
       child: Container(
         color: ColorStyle.getSystemBackground(),
@@ -120,11 +122,11 @@ class _ProfileView extends State<ProfileView> {
               child: ListView(
                 controller: _scrollController,
                 children: <Widget>[
-                  createIconView(useMobileLayout),
-                  createProfileView(useMobileLayout),
-                  createPasswordView(useMobileLayout),
-                  createTermView(useMobileLayout),
-                  getButton(useMobileLayout),
+                  createIconView(useMobileLayout, darkMode),
+                  createProfileView(useMobileLayout, darkMode),
+                  createPasswordView(useMobileLayout, darkMode),
+                  createTermView(useMobileLayout, darkMode),
+                  getButton(useMobileLayout, darkMode),
                 ],
               ),
             ),
@@ -134,7 +136,7 @@ class _ProfileView extends State<ProfileView> {
     );
   }
 
-  Widget createIconView(bool useMobileLayout) {
+  Widget createIconView(bool useMobileLayout, bool darkMode) {
     return Container(
       margin: EdgeInsets.only(bottom: useMobileLayout ? 30 : 80),
       child: Column(
@@ -162,8 +164,8 @@ class _ProfileView extends State<ProfileView> {
               }
               return Text(
                 message,
-                style: const TextStyle(
-                  color: ColorStyle.tertiaryDarkLabel60,
+                style: TextStyle(
+                  color: darkMode ? ColorStyle.tertiaryLightLabel: ColorStyle.tertiaryDarkLabel60,
                   fontWeight: FontWeight.w400,
                   fontSize: FontSizeConst.font17,
                   fontStyle: FontStyle.italic,
@@ -177,7 +179,7 @@ class _ProfileView extends State<ProfileView> {
     );
   }
 
-  Widget createProfileView(bool useMobileLayout) {
+  Widget createProfileView(bool useMobileLayout, bool darkMode) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -190,8 +192,8 @@ class _ProfileView extends State<ProfileView> {
                 if (snapshot.hasData) {
                   return Text(
                     snapshot.data!,
-                    style: const TextStyle(
-                      color: ColorStyle.tertiaryDarkLabel60,
+                    style: TextStyle(
+                      color: darkMode ? ColorStyle.tertiaryLightLabel: ColorStyle.tertiaryDarkLabel60,
                       fontFamily: FontStyles.sfProText,
                       fontSize: FontSizeConst.font17,
                       fontWeight: FontWeight.w400,
@@ -227,8 +229,8 @@ class _ProfileView extends State<ProfileView> {
           padding: EdgeInsets.only(bottom: 12, top: useMobileLayout ? 12 : 36),
           child: Text(
             S.current.update_details,
-            style: const TextStyle(
-              color: ColorStyle.tertiaryDarkLabel60,
+            style: TextStyle(
+              color: darkMode ? ColorStyle.tertiaryLightLabel: ColorStyle.tertiaryDarkLabel60,
               fontFamily: FontStyles.sfProText,
               fontSize: FontSizeConst.font17,
               fontWeight: FontWeight.w400,
@@ -249,20 +251,20 @@ class _ProfileView extends State<ProfileView> {
                   child: TextField(
                     cursorColor: ColorStyle.primary,
                     controller: _firstNameController,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.w100,
                       fontSize: FontSizeConst.font17,
                       fontFamily: FontStyles.sfProText,
-                      color: ColorStyle.tertiaryDarkLabel,
+                      color: darkMode ? ColorStyle.tertiaryLightLabel : ColorStyle.tertiaryDarkLabel,
                     ),
                     decoration: InputDecoration(
                         hintText: S.current.first_name,
                         border: InputBorder.none,
-                        hintStyle: const TextStyle(
+                        hintStyle: TextStyle(
                           fontWeight: FontWeight.w100,
                           fontSize: FontSizeConst.font17,
                           fontFamily: FontStyles.sfProText,
-                          color: ColorStyle.tertiaryDarkLabel30,
+                          color: darkMode ? ColorStyle.tertiaryLightLabel60 : ColorStyle.tertiaryDarkLabel30,
                         )
                     ),
                   ),
@@ -287,20 +289,20 @@ class _ProfileView extends State<ProfileView> {
                   child: TextField(
                     cursorColor: ColorStyle.primary,
                     controller: _familyNameController,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.w100,
                       fontSize: FontSizeConst.font17,
                       fontFamily: FontStyles.sfProText,
-                      color: ColorStyle.tertiaryDarkLabel,
+                      color: darkMode ? ColorStyle.tertiaryLightLabel : ColorStyle.tertiaryDarkLabel,
                     ),
                     decoration: InputDecoration(
                         hintText: S.current.family_name,
                         border: InputBorder.none,
-                        hintStyle: const TextStyle(
+                        hintStyle: TextStyle(
                           fontWeight: FontWeight.w100,
                           fontSize: FontSizeConst.font17,
                           fontFamily: FontStyles.sfProText,
-                          color: ColorStyle.tertiaryDarkLabel30,
+                          color: darkMode ? ColorStyle.tertiaryLightLabel60 : ColorStyle.tertiaryDarkLabel30,
                         )
                     ),
                   ),
@@ -323,20 +325,20 @@ class _ProfileView extends State<ProfileView> {
             cursorColor: ColorStyle.primary,
             keyboardType: TextInputType.emailAddress,
             controller: _emailController,
-            style: const TextStyle(
+            style: TextStyle(
               fontWeight: FontWeight.w100,
               fontSize: FontSizeConst.font17,
               fontFamily: FontStyles.sfProText,
-              color: ColorStyle.tertiaryDarkLabel,
+              color: darkMode ? ColorStyle.tertiaryLightLabel : ColorStyle.tertiaryDarkLabel,
             ),
             decoration: InputDecoration(
                 hintText: S.current.email,
                 border: InputBorder.none,
-                hintStyle: const TextStyle(
+                hintStyle: TextStyle(
                   fontWeight: FontWeight.w100,
                   fontSize: FontSizeConst.font17,
                   fontFamily: FontStyles.sfProText,
-                  color: ColorStyle.tertiaryDarkLabel30,
+                  color: darkMode ? ColorStyle.tertiaryLightLabel60 : ColorStyle.tertiaryDarkLabel30,
                 )
             ),
           ),
@@ -355,20 +357,20 @@ class _ProfileView extends State<ProfileView> {
             cursorColor: ColorStyle.primary,
             keyboardType: TextInputType.phone,
             controller: _mobileController,
-            style: const TextStyle(
+            style: TextStyle(
               fontWeight: FontWeight.w100,
               fontSize: FontSizeConst.font17,
               fontFamily: FontStyles.sfProText,
-              color: ColorStyle.tertiaryDarkLabel,
+              color: darkMode ? ColorStyle.tertiaryLightLabel : ColorStyle.tertiaryDarkLabel,
             ),
             decoration: InputDecoration(
                 hintText: S.current.mobile,
                 border: InputBorder.none,
-                hintStyle: const TextStyle(
+                hintStyle: TextStyle(
                   fontWeight: FontWeight.w100,
                   fontSize: FontSizeConst.font17,
                   fontFamily: FontStyles.sfProText,
-                  color: ColorStyle.tertiaryDarkLabel30,
+                  color: darkMode ? ColorStyle.tertiaryLightLabel60 : ColorStyle.tertiaryDarkLabel30,
                 )
             ),
           ),
@@ -382,7 +384,7 @@ class _ProfileView extends State<ProfileView> {
     );
   }
 
-  Widget createPasswordView(bool useMobileLayout) {
+  Widget createPasswordView(bool useMobileLayout, bool darkMode) {
     return Container(
       padding: EdgeInsets.only(top: useMobileLayout ? 16 : 36),
       child: Column(
@@ -393,8 +395,8 @@ class _ProfileView extends State<ProfileView> {
             padding: const EdgeInsets.only(bottom: 12),
             child: Text(
               S.current.change_password,
-              style: const TextStyle(
-                color: ColorStyle.tertiaryDarkLabel60,
+              style: TextStyle(
+                color: darkMode ? ColorStyle.tertiaryLightLabel : ColorStyle.tertiaryDarkLabel60,
                 fontFamily: FontStyles.sfProText,
                 fontSize: FontSizeConst.font17,
                 fontWeight: FontWeight.w400,
@@ -412,20 +414,20 @@ class _ProfileView extends State<ProfileView> {
                   cursorColor: ColorStyle.primary,
                   obscureText: _hideNewPassword,
                   controller: _newPasswordController,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.w100,
                     fontSize: FontSizeConst.font17,
                     fontFamily: FontStyles.sfProText,
-                    color: ColorStyle.tertiaryDarkLabel,
+                    color: darkMode ? ColorStyle.tertiaryLightLabel : ColorStyle.tertiaryDarkLabel,
                   ),
                   decoration: InputDecoration(
                       hintText: S.current.new_password,
                       border: InputBorder.none,
-                      hintStyle: const TextStyle(
+                      hintStyle: TextStyle(
                         fontWeight: FontWeight.w100,
                         fontSize: FontSizeConst.font17,
                         fontFamily: FontStyles.sfProText,
-                        color: ColorStyle.tertiaryDarkLabel30,
+                        color: darkMode ? ColorStyle.tertiaryLightLabel60 : ColorStyle.tertiaryDarkLabel30,
                       )
                   ),
                 ),
@@ -464,20 +466,20 @@ class _ProfileView extends State<ProfileView> {
                   cursorColor: ColorStyle.primary,
                   obscureText: _hideRepeatNewPassword,
                   controller: _repeatNewPasswordController,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.w100,
                     fontSize: FontSizeConst.font17,
                     fontFamily: FontStyles.sfProText,
-                    color: ColorStyle.tertiaryDarkLabel,
+                    color: darkMode ? ColorStyle.tertiaryLightLabel : ColorStyle.tertiaryDarkLabel,
                   ),
                   decoration: InputDecoration(
                       hintText: S.current.repeat_new_password,
                       border: InputBorder.none,
-                      hintStyle: const TextStyle(
+                      hintStyle: TextStyle(
                         fontWeight: FontWeight.w100,
                         fontSize: FontSizeConst.font17,
                         fontFamily: FontStyles.sfProText,
-                        color: ColorStyle.tertiaryDarkLabel30,
+                        color: darkMode ? ColorStyle.tertiaryLightLabel60 : ColorStyle.tertiaryDarkLabel30,
                       )
                   ),
                 ),
@@ -533,7 +535,7 @@ class _ProfileView extends State<ProfileView> {
     );
   }
 
-  Widget createTermView(bool useMobileLayout) {
+  Widget createTermView(bool useMobileLayout, bool darkMode) {
     return Container(
       margin: EdgeInsets.only(top: useMobileLayout ? 16 : 72),
       child: Column(
@@ -545,6 +547,9 @@ class _ProfileView extends State<ProfileView> {
                 Checkbox(
                   value: _isReceiveNewOffer,
                   activeColor: ColorStyle.primary,
+                  side: BorderSide(
+                      color: darkMode ? Colors.white : Colors.black
+                  ),
                   onChanged: (value) {
                     setState(() {
                       if (value != null) {
@@ -555,8 +560,8 @@ class _ProfileView extends State<ProfileView> {
                 ),
                 Text(
                   S.current.receive_new_offer_notification_email,
-                  style: const TextStyle(
-                    color: ColorStyle.tertiaryDarkLabel60,
+                  style: TextStyle(
+                    color: darkMode ? ColorStyle.tertiaryLightLabel : ColorStyle.tertiaryDarkLabel60,
                     fontWeight: FontWeight.w400,
                     fontSize: FontSizeConst.font13,
                     fontFamily: FontStyles.sfProText,
@@ -572,6 +577,9 @@ class _ProfileView extends State<ProfileView> {
               children: [
                 Checkbox(
                   value: _isReceiveMonthlyNewsLetter,
+                  side: BorderSide(
+                      color: darkMode ? Colors.white : Colors.black
+                  ),
                   activeColor: ColorStyle.primary,
                   onChanged: (value) {
                     setState(() {
@@ -583,8 +591,8 @@ class _ProfileView extends State<ProfileView> {
                 ),
                 Text(
                   S.current.receive_monthly_newsletter_email,
-                  style: const TextStyle(
-                    color: ColorStyle.tertiaryDarkLabel60,
+                  style: TextStyle(
+                    color: darkMode ? ColorStyle.tertiaryLightLabel : ColorStyle.tertiaryDarkLabel60,
                     fontWeight: FontWeight.w400,
                     fontSize: FontSizeConst.font13,
                     fontFamily: FontStyles.sfProText,
@@ -598,7 +606,7 @@ class _ProfileView extends State<ProfileView> {
     );
   }
 
-  Widget getButton(bool useMobileLayout) {
+  Widget getButton(bool useMobileLayout, bool darkMode) {
     return Container(
       margin: EdgeInsets.only(top: useMobileLayout ? 20 : 48),
       child: Column(
@@ -661,8 +669,8 @@ class _ProfileView extends State<ProfileView> {
                   children: [
                     TextSpan(
                       text: "${S.current.delete_account} ",
-                      style: const TextStyle(
-                        color: ColorStyle.tertiaryDarkLabel60,
+                      style: TextStyle(
+                        color: darkMode ? ColorStyle.tertiaryLightLabel : ColorStyle.tertiaryDarkLabel60,
                         fontWeight: FontWeight.w400,
                       ),
                     ),

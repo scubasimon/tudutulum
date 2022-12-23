@@ -7,6 +7,7 @@ import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
@@ -51,7 +52,11 @@ Future<void> main() async {
     await PrefUtil.init();
     PrefUtil.setValue(StrConst.isWhatTuduDataBinded, false);
     PrefUtil.setValue(StrConst.isEventDataBinded, false);
-
+    if (PrefUtil.preferences.getBool(StrConst.isDarkMode) == null) {
+      var brightness = SchedulerBinding.instance.window.platformBrightness;
+      bool isDarkMode = brightness == Brightness.dark;
+      PrefUtil.setValue(StrConst.isDarkMode, isDarkMode);
+    }
     // if (kDebugMode) {
     //   await _connectToFirebaseEmulator();
     // }
