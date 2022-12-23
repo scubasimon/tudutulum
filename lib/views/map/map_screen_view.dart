@@ -73,7 +73,7 @@ class _MapScreenView extends State<MapScreenView> {
       await _mapScreenViewModel.checkLocationEnable(context);
       if (_mapScreenViewModel.isGotoCurrent) {
         await _mapScreenViewModel.getCurrentPosition();
-        goToCurrentPosition();
+        // goToCurrentPosition();
       } else {
         goToDestinationPosition();
       }
@@ -107,8 +107,6 @@ class _MapScreenView extends State<MapScreenView> {
   }
 
   void goToDestinationPosition() {
-    print("goToDestinationPosition -> ${_mapScreenViewModel.destinationPosition?.latitude}");
-    print("goToDestinationPosition -> ${_mapScreenViewModel.destinationPosition?.longitude}");
     mapController?.animateCamera(CameraUpdate.newLatLngZoom(
       LatLng(_mapScreenViewModel.destinationPosition?.latitude ?? 20.214193,
           _mapScreenViewModel.destinationPosition?.longitude ?? -87.453294),
