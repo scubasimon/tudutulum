@@ -69,7 +69,7 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
     const DealsView(),
     const BookmarksView(),
     const ProfileView(),
-    const MapScreenView(),
+    // const MapScreenView(),
   ];
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -168,7 +168,7 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
           _showLoading();
           FuncUlti.redirectAndMoveToLocation(
               data[0],
-              _whatTuduSiteContentDetailViewModel.siteContentDetail.titles["contentTitle"].toString()
+              _whatTuduSiteContentDetailViewModel.siteContentDetail.title.toString()
           );
           Navigator.of(context).pop();
         }

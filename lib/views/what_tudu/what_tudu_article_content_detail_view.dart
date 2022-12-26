@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:tudu/consts/color/Colors.dart';
@@ -138,6 +139,15 @@ class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDeta
               alignment: Alignment.centerLeft,
               width: MediaQuery.of(context).size.width,
               child: CachedNetworkImage(
+                cacheManager: CacheManager(
+                  Config(
+                    "cachedImg", //featureStoreKey
+                    stalePeriod: const Duration(seconds: 15),
+                    maxNrOfCacheObjects: 1,
+                    repo: JsonCacheInfoRepository(databaseName: "cachedImg"),
+                    fileService: HttpFileService(),
+                  ),
+                ),
                 imageUrl: urlImage,
                 width: MediaQuery.of(context).size.width,
                 height: 300,

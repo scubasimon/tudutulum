@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:map_launcher/map_launcher.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:tudu/consts/font/font_size_const.dart';
@@ -173,6 +174,15 @@ class _DealDetailView extends State<DealDetailView> {
           alignment: Alignment.centerLeft,
           width: MediaQuery.of(context).size.width,
           child: CachedNetworkImage(
+            cacheManager: CacheManager(
+              Config(
+                "cachedImg", //featureStoreKey
+                stalePeriod: const Duration(seconds: 15),
+                maxNrOfCacheObjects: 1,
+                repo: JsonCacheInfoRepository(databaseName: "cachedImg"),
+                fileService: HttpFileService(),
+              ),
+            ),
             imageUrl: deal.images.first,
             width: MediaQuery.of(context).size.width,
             height: 300,
@@ -310,7 +320,7 @@ class _DealDetailView extends State<DealDetailView> {
                   Padding(
                     padding: const EdgeInsets.only(top: 4, left: 16, right: 16),
                     child: Text(
-                      deal.site.titles["title"].toString(),
+                      deal.site.title.toString(),
                       style: TextStyle(
                         color: ColorStyle.getDarkLabel(),
                         fontFamily: FontStyles.mouser,
@@ -328,6 +338,15 @@ class _DealDetailView extends State<DealDetailView> {
                 padding: const EdgeInsets.only(right: 16),
                 constraints: BoxConstraints(maxWidth: (MediaQuery.of(context).size.width - 48.0) * 0.3),
                 child: CachedNetworkImage(
+                  cacheManager: CacheManager(
+                    Config(
+                      "cachedImg", //featureStoreKey
+                      stalePeriod: const Duration(seconds: 15),
+                      maxNrOfCacheObjects: 1,
+                      repo: JsonCacheInfoRepository(databaseName: "cachedImg"),
+                      fileService: HttpFileService(),
+                    ),
+                  ),
                   imageUrl: deal.logo,
                   fit: BoxFit.cover,
                 ),

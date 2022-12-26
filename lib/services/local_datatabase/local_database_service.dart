@@ -197,7 +197,7 @@ class LocalDatabaseServiceImpl extends LocalDatabaseService {
         active: site["active"],
         images: (site["image"] as List<dynamic>? ?? []).map((e) => e as String).toList(),
         siteId: site["siteid"] as int,
-        titles: site["titles"],
+        title: site["title"],
         subTitle: site["subTitle"],
         business:  (site["business"] as List<dynamic>? ?? []).map((e) => e as int).toList(),
         siteContent: SiteContent(
