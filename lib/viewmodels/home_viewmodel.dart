@@ -14,10 +14,9 @@ import 'package:tudu/models/article.dart';
 import 'package:tudu/models/partner.dart';
 import 'package:tudu/models/site.dart';
 import 'package:tudu/repositories/home/home_repository.dart';
-
-import '../consts/strings/str_const.dart';
-import '../repositories/api_repository/api_repository.dart';
-import '../utils/pref_util.dart';
+import 'package:tudu/consts/strings/str_const.dart';
+import 'package:tudu/repositories/api_repository/api_repository.dart';
+import 'package:tudu/utils/pref_util.dart';
 
 class HomeViewModel extends BaseViewModel {
   final HomeRepository _homeRepository = HomeRepositoryImpl();
@@ -55,7 +54,10 @@ class HomeViewModel extends BaseViewModel {
   List<Business> listBusiness = [];
 
   @override
-  FutureOr<void> init() async {
+  FutureOr<void> init() {
+  }
+
+  void loginPurchase() async {
     if (FirebaseAuth.instance.currentUser != null) {
       try {
         await Purchases.logIn(FirebaseAuth.instance.currentUser!.uid);
@@ -63,7 +65,6 @@ class HomeViewModel extends BaseViewModel {
         print(e);
       }
     }
-
   }
 
   void redirectTab(int tabIndex) {
@@ -215,28 +216,24 @@ class HomeViewModel extends BaseViewModel {
   void saveDataToLocal() {
     if (listBusiness.isNotEmpty) {
       for (var business in listBusiness) {
-        // Localstore.instance.collection('businesses').doc(business.businessid.toString()).set(business.toJson());
         Localstore.instance.collection('businesses').doc(listBusiness.indexOf(business).toString()).set(business.toJson());
       }
     }
 
     if (listAmenites.isNotEmpty) {
       for (var amenites in listAmenites) {
-        // Localstore.instance.collection('amenities').doc(amenites.amenityId.toString()).set(amenites.toJson());
         Localstore.instance.collection('amenities').doc(listAmenites.indexOf(amenites).toString()).set(amenites.toJson());
       }
     }
 
     if (listPartners.isNotEmpty) {
       for (var partner in listPartners) {
-        // Localstore.instance.collection('partners').doc(partner.partnerId.toString()).set(partner.toJson());
         Localstore.instance.collection('partners').doc(listPartners.indexOf(partner).toString()).set(partner.toJson());
       }
     }
 
     if (listEventTypes.isNotEmpty) {
       for (var eventType in listEventTypes) {
-        // Localstore.instance.collection('eventtypes').doc(eventType.eventId.toString()).set(eventType.toJson());
         Localstore.instance.collection('eventtypes').doc(listEventTypes.indexOf(eventType).toString()).set(eventType.toJson());
       }
     }

@@ -1,37 +1,25 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
-import 'dart:typed_data';
 import 'package:custom_marker/marker_icon.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
-import 'package:rxdart/rxdart.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'dart:ui' as ui;
-
-import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:notification_center/notification_center.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:tudu/services/observable/observable_serivce.dart';
 import 'package:tudu/viewmodels/home_viewmodel.dart';
 import 'package:tudu/viewmodels/what_tudu_viewmodel.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
-
-import '../../consts/color/Colors.dart';
-import '../../consts/font/Fonts.dart';
-import '../../consts/font/font_size_const.dart';
-import '../../consts/images/ImagePath.dart';
-import '../../consts/strings/str_const.dart';
-import '../../generated/l10n.dart';
-import '../../models/article.dart';
-import '../../models/site.dart';
-import '../../utils/func_utils.dart';
-import '../../services/location/permission_request.dart';
-import '../../viewmodels/map_screen_viewmodel.dart';
-import '../../viewmodels/what_tudu_site_content_detail_viewmodel.dart';
-import '../what_tudu/what_tudu_site_content_detail_view.dart';
+import 'package:tudu/consts/color/Colors.dart';
+import 'package:tudu/consts/font/Fonts.dart';
+import 'package:tudu/consts/font/font_size_const.dart';
+import 'package:tudu/consts/images/ImagePath.dart';
+import 'package:tudu/consts/strings/str_const.dart';
+import 'package:tudu/generated/l10n.dart';
+import 'package:tudu/models/site.dart';
+import 'package:tudu/utils/func_utils.dart';
+import 'package:tudu/viewmodels/map_screen_viewmodel.dart';
+import 'package:tudu/viewmodels/what_tudu_site_content_detail_viewmodel.dart';
+import 'package:tudu/views/what_tudu/what_tudu_site_content_detail_view.dart';
 
 class MapScreenView extends StatefulWidget {
   const MapScreenView({
@@ -43,11 +31,11 @@ class MapScreenView extends StatefulWidget {
 }
 
 class _MapScreenView extends State<MapScreenView> {
-  MapScreenViewModel _mapScreenViewModel = MapScreenViewModel();
-  ObservableService _observableService = ObservableService();
-  WhatTuduViewModel _whatTuduViewModel = WhatTuduViewModel();
-  HomeViewModel _homeViewModel = HomeViewModel();
-  WhatTuduSiteContentDetailViewModel _whatTuduSiteContentDetailViewModel = WhatTuduSiteContentDetailViewModel();
+  final MapScreenViewModel _mapScreenViewModel = MapScreenViewModel();
+  final ObservableService _observableService = ObservableService();
+  final WhatTuduViewModel _whatTuduViewModel = WhatTuduViewModel();
+  final HomeViewModel _homeViewModel = HomeViewModel();
+  final WhatTuduSiteContentDetailViewModel _whatTuduSiteContentDetailViewModel = WhatTuduSiteContentDetailViewModel();
 
   StreamSubscription<List<Site>?>? reloadMarkerSite;
 
@@ -55,7 +43,7 @@ class _MapScreenView extends State<MapScreenView> {
 
   GoogleMapController? mapController; //controller for Google map
 
-  CameraPosition initCameraPosition = CameraPosition(target: LatLng(20.214193, -87.453294), zoom: 15.0);
+  CameraPosition initCameraPosition = const CameraPosition(target: LatLng(20.214193, -87.453294), zoom: 15.0);
 
   bool isMapCreated = false;
   final Set<Marker> markers = {};
@@ -119,7 +107,6 @@ class _MapScreenView extends State<MapScreenView> {
               // infoWindow: InfoWindow(title: "Title: ${site.title}", snippet: "Subtitle: ${site.subTitle}"),
               icon: icon,
               onTap: () {
-                print("ON TAP MARKER -> ${site.titles["title"]!}");
                 _whatTuduSiteContentDetailViewModel.setSiteContentDetailCover(site);
                 Navigator.push(
                     context,
@@ -175,7 +162,7 @@ class _MapScreenView extends State<MapScreenView> {
                         width: 12.0,
                       ),
                       Text(
-                        _homeViewModel.getBusinessStringByIndex(_homeViewModel.whatTuduBussinessFilterType),
+                        S.current.back,
                         style: const TextStyle(
                           color: ColorStyle.primary,
                           fontSize: FontSizeConst.font16,

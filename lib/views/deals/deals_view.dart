@@ -22,7 +22,7 @@ import 'package:tudu/views/deals/deal_details_view.dart';
 import 'package:tudu/views/map/map_deal_view.dart';
 import 'package:tudu/views/subscription/subscription_plan_view.dart';
 import 'package:tudu/services/observable/observable_serivce.dart';
-import 'package:tudu/utils/size_provider_widget.dart';
+import 'package:tudu/views/common/size_provider_widget.dart';
 
 class DealsView extends StatefulWidget {
   const DealsView({super.key});

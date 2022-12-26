@@ -85,6 +85,7 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
 
   @override
   void initState() {
+    _homeViewModel.loginPurchase();
     NotificationCenter().subscribe(StrConst.openMenu, _openDrawer);
     listenToNetwork();
     listenToRedirectTab();
@@ -716,7 +717,6 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
   }
 
   void _showAlert(String message) {
-    print("_showAlert $message");
     showDialog(
         context: context,
         builder: (BuildContext context) {
