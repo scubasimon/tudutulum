@@ -9,13 +9,13 @@ import 'package:rxdart/rxdart.dart';
 import 'package:tudu/models/deal.dart';
 import 'package:tudu/models/error.dart';
 import 'package:tudu/repositories/deal/deal_repository.dart';
-import 'package:location/location.dart';
+import 'package:tudu/services/local_datatabase/local_database_service.dart';
 
 class MapDealsViewModel extends BaseViewModel {
   final PermissionLocation _permissionLocation = PermissionLocation();
   final HomeRepository _homeRepository = HomeRepositoryImpl();
   final DealRepository _dealRepository = DealRepositoryImpl();
-  final Location _location = Location();
+  final LocalDatabaseService _localDatabaseService = LocalDatabaseServiceImpl();
 
   List<Business> business = [];
 
@@ -46,14 +46,8 @@ class MapDealsViewModel extends BaseViewModel {
       return;
     }
 
-    _isLoading.add(true);
-
-    // var result = await _location.getLocation();
-    // if (result.latitude != null && result.longitude != null) {
-    //   _currentLocation.add(LatLng(result.latitude!, result.longitude!));
-    // }
     _currentLocation.add(const LatLng(20.214193,-87.453294));
-    _param.add(Param(refresh: true, order: null));
+    _param.add(Param(refresh: false, order: null));
     _searchData();
     
   }
@@ -64,7 +58,7 @@ class MapDealsViewModel extends BaseViewModel {
     if (value == null) {
       value = Param(
         businessId: businessId,
-        refresh: true,
+        refresh: false,
       );
     } else {
       value.refresh = false;
@@ -78,17 +72,19 @@ class MapDealsViewModel extends BaseViewModel {
   }
 
   Future<void> _getData(Param param) async {
-    if (param.refresh && !_isLoading.value) {
+    if (param.refresh) {
       _isLoading.add(true);
     }
     try {
       if (param.refresh) {
         business = await _homeRepository.getListBusinesses();
+      } else {
+        final result = await _localDatabaseService.getBusinesses() ?? [];
+        business = result.map((e) {
+          return Business(businessid: e["businessid"], locationid: e["locationid"], type: e["type"], icon: e["icon"], order: e["order"]);
+        }).toList();
       }
       var results = await _dealRepository.getDeals(param);
-      results.forEach((element) {
-        print("deal ${element.dealsId}: ${element.site.siteId}  (${element.site.locationLat!}, ${element.site.locationLon})");
-      });
       _listDeals.sink.add(results);
       if (param.refresh) {
         param.refresh = false;

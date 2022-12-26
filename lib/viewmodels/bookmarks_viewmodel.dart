@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:tudu/base/base_viewmodel.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:tudu/consts/strings/str_const.dart';
 import 'package:tudu/models/param.dart';
 import 'package:tudu/models/error.dart';
 import 'package:tudu/models/business.dart';
@@ -10,12 +11,15 @@ import 'package:tudu/models/site.dart';
 import 'package:tudu/repositories/bookmark/bookmark_repository.dart';
 import 'package:tudu/repositories/home/home_repository.dart';
 import 'package:tudu/services/location/location_permission.dart';
+import 'package:tudu/utils/pref_util.dart';
+import 'package:tudu/services/local_datatabase/local_database_service.dart';
 
 class BookmarksViewModel extends BaseViewModel {
 
   final BookmarkRepository _bookmarkRepository = BookmarkRepositoryImpl();
   final PermissionLocation _permissionLocation = PermissionLocation();
   final HomeRepository _homeRepository = HomeRepositoryImpl();
+  final LocalDatabaseService _localDatabaseService = LocalDatabaseServiceImpl();
 
   final _param = BehaviorSubject<Param>();
 
@@ -45,17 +49,21 @@ class BookmarksViewModel extends BaseViewModel {
   @override
   FutureOr<void> init() async {
     _userLogin.add(FirebaseAuth.instance.currentUser != null);
-    _isLoading.sink.add(true);
-
     var authorization = await _permissionLocation.permission();
     _isPermission.add(authorization);
     if (!authorization) {
-      _isLoading.add(false);
       _exception.add(LocationError.locationPermission);
       return;
     }
 
-    var param = Param(refresh: true);
+    var refresh = true;
+    if (PrefUtil.getValue(StrConst.isBookmarkBind, false) as bool) {
+      refresh = false;
+    } else {
+      PrefUtil.setValue(StrConst.isBookmarkBind, true);
+    }
+
+    var param = Param(refresh: refresh);
     if (isSort) {
       param.order = Order.distance;
     } else {
@@ -113,23 +121,22 @@ class BookmarksViewModel extends BaseViewModel {
   }
 
   Future<void> _getData(Param param) async {
-    if (param.refresh && !_isLoading.value) {
-      _isLoading.add(true);
-    }
+    _isLoading.add(true);
     try {
       if (param.refresh) {
         business = await _homeRepository.getListBusinesses();
+      } else {
+        final result = await _localDatabaseService.getBusinesses() ?? [];
+        business = result.map((e) {
+          return Business(businessid: e["businessid"], locationid: e["locationid"], type: e["type"], icon: e["icon"], order: e["order"]);
+        }).toList();
       }
       var results = await _bookmarkRepository.bookmarks(param);
       _listSite.add(results);
-      if (param.refresh) {
-        param.refresh = false;
-        _isLoading.add(false);
-      }
+      param.refresh = false;
+      _isLoading.add(false);
     } catch (e) {
-      if (param.refresh) {
-        _isLoading.add(false);
-      }
+      _isLoading.add(false);
       if ( e is CustomError) {
         _exception.add(e);
       } else {

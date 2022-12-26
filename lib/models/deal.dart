@@ -22,10 +22,16 @@ class Deal {
     active = data["active"] as bool? ?? false;
     description = data["description"] as String?;
     images = (data["images"] as List<dynamic>? ?? []).map((e) => e as String).toList();
-    var date = data["startdate"] as Timestamp;
-    startDate = date.toDate();
-    date = data["enddate"] as Timestamp;
-    endDate = date.toDate();
+    if (data["startdate"].runtimeType == int) {
+      startDate = DateTime.fromMillisecondsSinceEpoch(data["startdate"] as int);
+    } else {
+      startDate = (data["startdate"] as Timestamp).toDate();
+    }
+    if (data["enddate"].runtimeType == int) {
+      endDate = DateTime.fromMillisecondsSinceEpoch(data["enddate"] as int);
+    } else {
+      endDate = (data["enddate"] as Timestamp).toDate();
+    }
     terms = data["terms"] as String?;
     title = data["title"] as String? ?? "";
     titleShort = data["titleshort"] as String? ?? "";
@@ -33,7 +39,35 @@ class Deal {
     businesses = (data["business"] as List<dynamic>? ?? []).map((e) => e as int).toList();
 
     var site = data["site"] as Map<String, dynamic>? ?? {};
-    this.site = Site(
+    final siteContent = site["siteContent"] as Map<String, dynamic>? ?? {};
+    if (site["titles"] != null) {
+      this.site = Site(
+        active: site["active"],
+        images: (site["image"] as List<dynamic>? ?? []).map((e) => e as String).toList(),
+        siteId: site["siteid"] as int,
+        titles: site["titles"],
+        subTitle: site["subTitle"],
+        business:  (site["business"] as List<dynamic>? ?? []).map((e) => e as int).toList(),
+        siteContent: SiteContent(
+          description: siteContent["contentDescription"],
+          moreInformation: siteContent["moreInformation"],
+          advisory: siteContent["advisory"],
+          amenities: (siteContent["amenities"] as List<dynamic>? ??[]).map((e) => e as int).toList(),
+          amentityDescriptions: (siteContent["amentityDescriptions"] as List<dynamic>? ?? []).map((e) => e as String).toList(),
+          openingTimes: siteContent["openingTimes"],
+          fees: siteContent["fees"],
+          capacity: siteContent["capacity"],
+          eventIcons: (siteContent["eventIcons"] as List<dynamic>? ?? []).map((e) => e as String).toList(),
+          eventLinks: (siteContent["eventLinks"] as List<dynamic>? ?? []).map((e) => e as String).toList(),
+          getIntouch: siteContent["getIntouch"],
+          logo: siteContent["logo"],
+          partner: siteContent["partner"]
+        ),
+        locationLat: site["locationLat"] as double?,
+        locationLon: site["locationLon"] as double?,
+      );
+    } else {
+      this.site = Site(
         active: true,
         images: [],
         siteId: site["siteid"] as int,
@@ -43,11 +77,25 @@ class Deal {
         siteContent: SiteContent(),
         locationLat: site["locationLat"] as double?,
         locationLon: site["locationLon"] as double?,
-    );
+      );
+    }
+
   }
 
   Map<String, dynamic> toJson() {
-    Map<String, int> siteMap = {"siteId": site.siteId};
+    Map<String, dynamic> siteMap = {
+      "dealId": site.dealId,
+      "active": site.active,
+      "image": site.images,
+      "siteid": site.siteId,
+      "titles": site.titles,
+      "subTitle": site.subTitle,
+      "business": site.business,
+      "locationLat": site.locationLat,
+      "locationLon": site.locationLon,
+      "rating": site.rating,
+      "siteContent": site.siteContent.toJson(),
+    };
     Map<String, dynamic> result = {
       "dealsid": dealsId,
       "active": active,
@@ -57,9 +105,9 @@ class Deal {
       "enddate": endDate.millisecondsSinceEpoch,
       "terms": terms,
       "title": title,
-      "titleShort": titleShort,
+      "titleshort": titleShort,
       "logo": logo,
-      "businesses": businesses,
+      "business": businesses,
       "site": siteMap,
     };
     return result;

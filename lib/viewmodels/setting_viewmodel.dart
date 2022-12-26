@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:notification_center/notification_center.dart';
 import 'package:flutter/material.dart';
@@ -7,13 +6,15 @@ import 'package:localstore/localstore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tudu/base/base_viewmodel.dart';
 import 'package:tudu/consts/strings/str_const.dart';
-
-import '../services/observable/observable_serivce.dart';
-import '../utils/pref_util.dart';
-import '../views/common/alert.dart';
+import 'package:tudu/models/error.dart';
+import 'package:tudu/services/location/location_permission.dart';
+import 'package:tudu/services/observable/observable_serivce.dart';
+import 'package:tudu/views/common/alert.dart';
+import 'package:tudu/generated/l10n.dart';
 
 class SettingViewModel extends BaseViewModel {
-  ObservableService _observableService = ObservableService();
+  final ObservableService _observableService = ObservableService();
+  final _permissionLocation = PermissionLocation();
 
   late SharedPreferences _instance;
   bool _isPushNotification = false;
@@ -35,8 +36,8 @@ class SettingViewModel extends BaseViewModel {
     _instance = await SharedPreferences.getInstance();
     _enableNewOffer = _instance.getBool(StrConst.newOffer) ?? false;
     _enableAvailableOffer = _instance.getBool(StrConst.availableOffer) ?? false;
-    _enableDarkMode = _instance.getBool(StrConst.darkMode) ?? false;
-    _hideArticles = _instance.getBool(StrConst.hideArticles) ?? false;
+    _enableDarkMode = _instance.getBool(StrConst.isDarkMode) ?? false;
+    _hideArticles = _instance.getBool(StrConst.isHideArticle) ?? false;
     _hideAds = _instance.getBool(StrConst.hideAds) ?? false;
     _isPushNotification = _enableAvailableOffer || _enableNewOffer;
     notifyListeners();
@@ -58,24 +59,33 @@ class SettingViewModel extends BaseViewModel {
 
   }
 
-  void setAvailableOffer(bool value) async {
+  Future<void> setAvailableOffer(bool value) async {
     _enableAvailableOffer = value;
-    await _instance.setBool(StrConst.availableOffer, value);
-    _isPushNotification = _enableAvailableOffer || _enableNewOffer;
+    if (value) {
+      if (await _permissionLocation.permission()) {
+        await _instance.setBool(StrConst.availableOffer, true);
+        _isPushNotification = _enableAvailableOffer || _enableNewOffer;
+      } else {
+        _enableAvailableOffer = false;
+        _isPushNotification = _enableAvailableOffer || _enableNewOffer;
+        throw LocationError.locationPermission;
+      }
+    } else {
+      await _instance.setBool(StrConst.availableOffer, false);
+      _isPushNotification = _enableAvailableOffer || _enableNewOffer;
+    }
   }
 
   void setDarkMode(bool value) async {
     _enableDarkMode = value;
-    PrefUtil.setValue(StrConst.isDarkMode, value);
     _observableService.darkModeController.sink.add(value);
-    await _instance.setBool(StrConst.darkMode, value);
+    await _instance.setBool(StrConst.isDarkMode, value);
   }
 
   void setHideArticles(bool value) async {
     _hideArticles = value;
-    PrefUtil.setValue(StrConst.isHideArticle, value);
     _observableService.darkModeController.sink.add(value);
-    await _instance.setBool(StrConst.hideArticles, value);
+    await _instance.setBool(StrConst.isHideArticle, value);
   }
 
   void setHideAds(bool value) async {
@@ -90,7 +100,7 @@ class SettingViewModel extends BaseViewModel {
     manager.emptyCache();
 
     showDialog(context: context, builder: (context) {
-      return NotificationAlert.alert(context, "Your data has been deleted");
+      return NotificationAlert.alert(context, S.current.data_deleted);
     });
   }
 
@@ -103,6 +113,10 @@ class SettingViewModel extends BaseViewModel {
     removeDataOneByOne("sites");
     removeDataOneByOne("events");
     removeDataOneByOne("deals");
+    removeDataOneByOne("deals");
+    removeDataOneByOne("bookmarks");
+    _instance.setBool(StrConst.isBookmarkBind, false);
+    _instance.setBool(StrConst.isDealBind, false);
   }
 
   Future<void> removeDataOneByOne(String collectionName) async {

@@ -27,7 +27,7 @@ import '../../consts/strings/str_const.dart';
 import '../../generated/l10n.dart';
 import '../../services/location/permission_request.dart';
 import '../../services/observable/observable_serivce.dart';
-import '../../utils/size_provider_widget.dart';
+import '../common/size_provider_widget.dart';
 import '../../utils/func_utils.dart';
 import '../../utils/pref_util.dart';
 import '../common/alert.dart';

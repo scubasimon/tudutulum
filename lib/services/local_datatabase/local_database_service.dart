@@ -1,17 +1,7 @@
 import 'dart:async';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:localstore/localstore.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-import 'package:tudu/models/error.dart';
-import 'package:tudu/generated/l10n.dart';
-import 'package:tudu/services/observable/observable_serivce.dart';
-import 'package:tudu/utils/func_utils.dart';
-
-import '../../consts/strings/str_const.dart';
-import '../../models/deal.dart';
+import 'package:tudu/models/deal.dart';
+import 'package:tudu/models/site.dart';
 
 abstract class LocalDatabaseService {
   Future<List<Map<String, dynamic>>?> getArticles();
@@ -29,6 +19,8 @@ abstract class LocalDatabaseService {
   Future<List<Map<String, dynamic>>?> getBusinesses();
 
   Future<List<Map<String, dynamic>>?> getEventTypes();
+
+  Future<List<Site>> getBookmarks();
 }
 
 class LocalDatabaseServiceImpl extends LocalDatabaseService {
@@ -182,5 +174,51 @@ class LocalDatabaseServiceImpl extends LocalDatabaseService {
       }
     }
     return listResult;
+  }
+
+  @override
+  Future<List<Site>> getBookmarks() async {
+    int i = 0;
+    bool keepFetching = true;
+    List<Map<String, dynamic>> listRemoteEvents = [];
+    while (keepFetching) {
+      final listSitesResult = await Localstore.instance.collection("bookmarks").doc(i.toString()).get();
+      if (listSitesResult != null) {
+        listRemoteEvents.add(listSitesResult);
+        i++;
+      } else {
+        keepFetching = false;
+      }
+    }
+
+    List<Site> listLocalDeal = listRemoteEvents.map((site){
+      final siteContent = site["siteContent"] as Map<String, dynamic>? ?? {};
+      return Site(
+        active: site["active"],
+        images: (site["image"] as List<dynamic>? ?? []).map((e) => e as String).toList(),
+        siteId: site["siteid"] as int,
+        titles: site["titles"],
+        subTitle: site["subTitle"],
+        business:  (site["business"] as List<dynamic>? ?? []).map((e) => e as int).toList(),
+        siteContent: SiteContent(
+            description: siteContent["contentDescription"],
+            moreInformation: siteContent["moreInformation"],
+            advisory: siteContent["advisory"],
+            amenities: (siteContent["amenities"] as List<dynamic>? ??[]).map((e) => e as int).toList(),
+            amentityDescriptions: (siteContent["amentityDescriptions"] as List<dynamic>? ?? []).map((e) => e as String).toList(),
+            openingTimes: siteContent["openingTimes"],
+            fees: siteContent["fees"],
+            capacity: siteContent["capacity"],
+            eventIcons: (siteContent["eventIcons"] as List<dynamic>? ?? []).map((e) => e as String).toList(),
+            eventLinks: (siteContent["eventLinks"] as List<dynamic>? ?? []).map((e) => e as String).toList(),
+            getIntouch: siteContent["getIntouch"],
+            logo: siteContent["logo"],
+            partner: siteContent["partner"]
+        ),
+        locationLat: site["locationLat"] as double?,
+        locationLon: site["locationLon"] as double?,
+      );
+    }).toList();
+    return listLocalDeal;
   }
 }

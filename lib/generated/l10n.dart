@@ -1799,6 +1799,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Your data has been deleted`
+  String get data_deleted {
+    return Intl.message(
+      'Your data has been deleted',
+      name: 'data_deleted',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:notification_center/notification_center.dart';
 import 'package:tudu/consts/color/Colors.dart';
@@ -86,6 +85,7 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
 
   @override
   void initState() {
+    _homeViewModel.loginPurchase();
     NotificationCenter().subscribe(StrConst.openMenu, _openDrawer);
     listenToNetwork();
     listenToRedirectTab();
@@ -717,7 +717,6 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
   }
 
   void _showAlert(String message) {
-    print("_showAlert $message");
     showDialog(
         context: context,
         builder: (BuildContext context) {
