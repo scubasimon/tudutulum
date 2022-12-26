@@ -22,12 +22,6 @@ class ObservableService {
   final StreamController<CustomError> homeErrorController = BehaviorSubject<CustomError>();
   Stream<CustomError> get homeErrorStream => homeErrorController.stream;
 
-  final StreamController<bool> whatTuduProgressLoadingController = BehaviorSubject<bool>();
-  Stream<bool> get whatTuduProgressLoadingStream => whatTuduProgressLoadingController.stream;
-
-  final StreamController<List<Site>> mapProgressLoadingController = BehaviorSubject<List<Site>>();
-  Stream<List<Site>> get mapProgressLoadingStream => mapProgressLoadingController.stream;
-
   final StreamController<int> redirectTabController = BehaviorSubject<int>();
   Stream<int> get redirectTabStream => redirectTabController.stream;
 

@@ -11,6 +11,7 @@ import 'package:tudu/consts/font/Fonts.dart';
 import 'package:tudu/consts/images/ImagePath.dart';
 import 'package:tudu/models/amenity.dart';
 import 'package:tudu/models/deal.dart';
+import 'package:tudu/models/event.dart';
 import 'package:tudu/models/partner.dart';
 import 'package:tudu/models/site.dart';
 import 'package:tudu/utils/func_utils.dart';
@@ -28,6 +29,7 @@ import 'package:tudu/viewmodels/home_viewmodel.dart';
 import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
 import 'package:url_launcher/url_launcher_string.dart';
 
+import '../../models/error.dart';
 import '../../services/observable/observable_serivce.dart';
 import '../../services/location/permission_request.dart';
 import '../../viewmodels/event_content_detail_viewmodel.dart';
@@ -63,8 +65,57 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
   }
 
   void _onRefresh() async {
-    setState(() {});
-    _refreshController.refreshCompleted();
+    try {
+      _observableService.homeProgressLoadingController.sink.add(true);
+      await loadRemoteData();
+    } catch (e) {
+      _refreshController.refreshFailed();
+      _observableService.homeProgressLoadingController.sink.add(false);
+      _observableService.homeErrorController.sink.add(CustomError(
+          "Refresh FAIL",
+          message: e.toString(),
+          data: const {}
+      ));
+    }
+  }
+
+  Future<void> loadRemoteData() async {
+    try {
+      await _homeViewModel.getListEvents();
+      loadNewEvent();
+    } catch (e) {
+      print("loadRemoteData: $e");
+      // If network has prob -> Load data from local
+      await loadLocalData();
+    }
+  }
+
+  Future<void> loadLocalData() async {
+    try {
+      await _homeViewModel.getLocalListEvents();
+      loadNewEvent();
+    } catch (e) {
+      _observableService.homeProgressLoadingController.sink.add(false);
+      _observableService.networkController.sink.add(e.toString());
+    }
+  }
+
+  void loadNewEvent() {
+    Event? currentEvent = _homeViewModel.getEventById(_eventContentDetailViewModel.eventContentDetail.eventid);
+    if (currentEvent != null) {
+      setState(() {});
+      _refreshController.refreshCompleted();
+      _eventContentDetailViewModel.setEventContentDetailCover(currentEvent);
+      _observableService.homeProgressLoadingController.sink.add(false);
+    } else {
+      _refreshController.refreshFailed();
+      _observableService.homeProgressLoadingController.sink.add(false);
+      _observableService.homeErrorController.sink.add(CustomError(
+          "Refresh FAIL",
+          message: "Facing error",
+          data: const {}
+      ));
+    }
   }
 
   @override
@@ -135,15 +186,20 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
             ),
           ),
         ),
-        body: SmartRefresher(
-          enablePullDown: true,
-          header: const WaterDropHeader(),
-          controller: _refreshController,
-          onRefresh: _onRefresh,
-          child: ListView(
-            children: <Widget>[
-              getExploreAllLocationView(),
-            ],
+        body: Container(
+          color: ColorStyle.getSystemBackground(),
+          child: SmartRefresher(
+            enablePullDown: true,
+            header: const WaterDropHeader(),
+            controller: _refreshController,
+            onRefresh: _onRefresh,
+            child: ListView(
+              shrinkWrap: true,
+              // physics: const NeverScrollableScrollPhysics(),
+              children: <Widget>[
+                getExploreAllLocationView(),
+              ],
+            ),
           ),
         ),
       ),

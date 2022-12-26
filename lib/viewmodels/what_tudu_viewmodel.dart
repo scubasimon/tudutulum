@@ -46,12 +46,8 @@ class WhatTuduViewModel extends BaseViewModel {
       String? keywordSort,
       String? keywordSearch) {
     try {
-      _observableService.whatTuduProgressLoadingController.sink.add(true);
-      /*List<Article> listArticlesResult = _whatTuduRepository.getArticlesWithFilterSortSearch(
-        _homeViewModel.listArticles,
-        (businessFilter != null) ? businessFilter.businessid : -1,
-        keywordSearch,
-      );*/
+      _observableService.homeProgressLoadingController.sink.add(true);
+
       List<Site> listSitesResult = _whatTuduRepository.getSitesWithFilterSortSearch(
         _homeViewModel.listSites,
         (businessFilter != null) ? businessFilter.businessid : -1,
@@ -59,16 +55,15 @@ class WhatTuduViewModel extends BaseViewModel {
         keywordSearch,
       );
 
-      // _observableService.listArticlesController.sink.add(listArticlesResult);
       _observableService.listSitesController.sink.add(listSitesResult);
-      _observableService.whatTuduProgressLoadingController.sink.add(false);
+      _observableService.homeProgressLoadingController.sink.add(false);
     } catch (e) {
       rethrow;
     }
   }
 
   void sortWithLocation() async {
-    _observableService.whatTuduProgressLoadingController.sink.add(true);
+    _observableService.homeProgressLoadingController.sink.add(true);
     await checkLocationEnable();
     var currentPosition = await location.getLocation();
     if (currentPosition.latitude != null && currentPosition.longitude != null) {
@@ -81,7 +76,7 @@ class WhatTuduViewModel extends BaseViewModel {
         notifyListeners();
       }
     }
-    _observableService.whatTuduProgressLoadingController.sink.add(false);
+    _observableService.homeProgressLoadingController.sink.add(false);
   }
 
   double getDistance(LocationData location, Site a) {
@@ -111,23 +106,5 @@ class WhatTuduViewModel extends BaseViewModel {
   void handlerLocationPermissionChanged() {
     // ACTION ON PERMISSION CHANGED
     print("handlerLocationPermissionChanged -> ACTION NOT IMPL YET");
-  }
-
-  void getDataWithFilterSortSearchForMap(
-      Business? businessFilter,
-      String? keywordSort,
-      String? keywordSearch) {
-    try {
-      List<Site> listSitesResult = _whatTuduRepository.getSitesWithFilterSortSearch(
-        _homeViewModel.listSites,
-        (businessFilter != null) ? businessFilter.businessid : -1,
-        keywordSort,
-        keywordSearch,
-      );
-
-      _observableService.mapProgressLoadingController.sink.add(listSitesResult);
-    } catch (e) {
-      rethrow;
-    }
   }
 }

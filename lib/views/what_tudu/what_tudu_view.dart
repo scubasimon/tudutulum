@@ -34,7 +34,7 @@ import 'package:tudu/views/map/map_screen_view.dart';
 
 import '../../models/deal.dart';
 import '../../services/observable/observable_serivce.dart';
-import '../../utils/SizeProviderWidget.dart';
+import '../../utils/size_provider_widget.dart';
 import '../deals/deal_details_view.dart';
 
 enum DataLoadingType {
@@ -62,7 +62,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
   final TextEditingController _searchController = TextEditingController();
 
   StreamSubscription<bool>? darkModeListener;
-  StreamSubscription<bool>? loadingListener;
+  // StreamSubscription<bool>? loadingListener;
   StreamSubscription<List<Article>?>? zeroDataArticleListener;
   StreamSubscription<List<Site>?>? zeroDataSiteListener;
 
@@ -81,7 +81,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
     print("what_tudu_view -> initState");
     listenToDarkMode();
     listenToZeroDataFilter();
-    listenToLoading();
+    // listenToLoading();
 
     isAtTop = false;
 
@@ -187,25 +187,25 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
       // Prevent to reload data on every time open What tudu
       PrefUtil.setValue(StrConst.isWhatTuduDataBinded, true);
     } catch (e) {
-      _observableService.whatTuduProgressLoadingController.sink.add(false);
+      _observableService.homeProgressLoadingController.sink.add(false);
       _observableService.networkController.sink.add(e.toString());
     }
   }
 
-  void listenToLoading() {
-    loadingListener ??= _observableService.whatTuduProgressLoadingStream.asBroadcastStream().listen((data) {
-      if (data) {
-        _showLoading();
-      } else {
-        if (_whatTuduViewModel.isLoading) {
-          _whatTuduViewModel.isLoading = false;
-          Navigator.of(context).popUntil((route) {
-            return (route.isFirst);
-          });
-        }
-      }
-    });
-  }
+  // void listenToLoading() {
+  //   loadingListener ??= _observableService.whatTuduProgressLoadingStream.asBroadcastStream().listen((data) {
+  //     if (data) {
+  //       _showLoading();
+  //     } else {
+  //       if (_whatTuduViewModel.isLoading) {
+  //         _whatTuduViewModel.isLoading = false;
+  //         Navigator.of(context).popUntil((route) {
+  //           return (route.isFirst);
+  //         });
+  //       }
+  //     }
+  //   });
+  // }
 
   void listenToDarkMode() {
     darkModeListener ??= _observableService.darkModeStream.asBroadcastStream().listen((data) {
@@ -243,7 +243,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
   void dispose() {
     print("dispose -> what_tudu_view");
     darkModeListener?.cancel();
-    loadingListener?.cancel();
+    // loadingListener?.cancel();
     zeroDataArticleListener?.cancel();
     zeroDataSiteListener?.cancel();
     super.dispose();
@@ -334,7 +334,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                                 PermissionRequest.isResquestPermission = true;
                                 PermissionRequest().permissionServiceCall(
                                   context,
-                                      () {
+                                  () {
                                     /// IMPL logic
                                     _whatTuduViewModel.sortWithLocation();
                                     _homeViewModel.changeWhatTuduOrderType(1);
@@ -373,66 +373,64 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                         PullDownButton(
                           itemBuilder: (context) => List<PullDownMenuEntry>.generate(
                               _homeViewModel.listBusiness.length * 2 + 1,
-                                  (counter) => (counter == _homeViewModel.listBusiness.length * 2)
+                              (counter) => (counter == _homeViewModel.listBusiness.length * 2)
                                   ? PullDownMenuItem(
-                                title: S.current.all_location,
-                                itemTheme: const PullDownMenuItemTheme(
-                                  textStyle: TextStyle(
-                                      fontFamily: FontStyles.sfProText,
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 17,
-                                      color: ColorStyle.menuLabel),
-                                ),
-                                iconWidget: Image.asset(
-                                  _homeViewModel.whatTuduBussinessFilterType !=
-                                      _homeViewModel.listBusiness.length
-                                      ? ImagePath.mappinIcon
-                                      : ImagePath.mappinDisableIcon,
-                                  width: 28,
-                                  height: 28,
-                                ),
-                                enabled: _homeViewModel.whatTuduBussinessFilterType != ((counter) / 2).round(),
-                                onTap: () {
-                                  _whatTuduViewModel.getDataWithFilterSortSearch(
-                                    null, // Filter all business => businnesFilter = null
-                                    FuncUlti.getSortWhatTuduTypeByInt(_homeViewModel.whatTuduOrderType),
-                                    _searchController.text,
-                                  );
-                                  _homeViewModel.whatTuduBussinessFilterType = ((counter) / 2).round();
-                                },
-                              )
+                                      title: S.current.all_location,
+                                      itemTheme: const PullDownMenuItemTheme(
+                                        textStyle: TextStyle(
+                                            fontFamily: FontStyles.sfProText,
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 17,
+                                            color: ColorStyle.menuLabel),
+                                      ),
+                                      iconWidget: Image.asset(
+                                        _homeViewModel.whatTuduBussinessFilterType != _homeViewModel.listBusiness.length
+                                            ? ImagePath.mappinIcon
+                                            : ImagePath.mappinDisableIcon,
+                                        width: 28,
+                                        height: 28,
+                                      ),
+                                      enabled: _homeViewModel.whatTuduBussinessFilterType != ((counter) / 2).round(),
+                                      onTap: () {
+                                        _whatTuduViewModel.getDataWithFilterSortSearch(
+                                          null, // Filter all business => businnesFilter = null
+                                          FuncUlti.getSortWhatTuduTypeByInt(_homeViewModel.whatTuduOrderType),
+                                          _searchController.text,
+                                        );
+                                        _homeViewModel.whatTuduBussinessFilterType = ((counter) / 2).round();
+                                      },
+                                    )
                                   : (counter == _homeViewModel.listBusiness.length * 2 - 1)
-                                  ? const PullDownMenuDivider.large()
-                                  : (counter % 2 == 0)
-                                  ? PullDownMenuItem(
-                                title: (counter % 2 == 0)
-                                    ? _homeViewModel.listBusiness[((counter) / 2).round()].type
-                                    : "",
-                                itemTheme: const PullDownMenuItemTheme(
-                                  textStyle: TextStyle(
-                                      fontFamily: FontStyles.sfProText,
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 17,
-                                      color: ColorStyle.menuLabel),
-                                ),
-                                iconWidget: Image.asset(
-                                  ImagePath.cenoteIcon,
-                                  width: 28,
-                                  height: 28,
-                                ),
-                                enabled: _homeViewModel.whatTuduBussinessFilterType !=
-                                    ((counter) / 2).round(),
-                                onTap: () {
-                                  _whatTuduViewModel.getDataWithFilterSortSearch(
-                                    _homeViewModel
-                                        .listBusiness[((counter) / 2).round()], // get business
-                                    FuncUlti.getSortWhatTuduTypeByInt(_homeViewModel.whatTuduOrderType),
-                                    _searchController.text,
-                                  );
-                                  _homeViewModel.whatTuduBussinessFilterType = ((counter) / 2).round();
-                                },
-                              )
-                                  : const PullDownMenuDivider(),
+                                      ? const PullDownMenuDivider.large()
+                                      : (counter % 2 == 0)
+                                          ? PullDownMenuItem(
+                                              title: (counter % 2 == 0)
+                                                  ? _homeViewModel.listBusiness[((counter) / 2).round()].type
+                                                  : "",
+                                              itemTheme: const PullDownMenuItemTheme(
+                                                textStyle: TextStyle(
+                                                    fontFamily: FontStyles.sfProText,
+                                                    fontWeight: FontWeight.w500,
+                                                    fontSize: 17,
+                                                    color: ColorStyle.menuLabel),
+                                              ),
+                                              iconWidget: Image.asset(
+                                                ImagePath.cenoteIcon,
+                                                width: 28,
+                                                height: 28,
+                                              ),
+                                              enabled:
+                                                  _homeViewModel.whatTuduBussinessFilterType != ((counter) / 2).round(),
+                                              onTap: () {
+                                                _whatTuduViewModel.getDataWithFilterSortSearch(
+                                                  _homeViewModel.listBusiness[((counter) / 2).round()], // get business
+                                                  FuncUlti.getSortWhatTuduTypeByInt(_homeViewModel.whatTuduOrderType),
+                                                  _searchController.text,
+                                                );
+                                                _homeViewModel.whatTuduBussinessFilterType = ((counter) / 2).round();
+                                              },
+                                            )
+                                          : const PullDownMenuDivider(),
                               growable: false),
                           position: PullDownMenuPosition.automatic,
                           buttonBuilder: (context, showMenu) => Container(
@@ -468,38 +466,41 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                   ),
                   (isAtTop)
                       ? CupertinoSearchTextField(
-                    controller: _searchController,
-                    style: TextStyle(
-                        color: ColorStyle.getDarkLabel(),
-                        fontFamily: FontStyles.sfProText,
-                        fontSize: FontSizeConst.font17,
-                        fontWeight: FontWeight.w400),
-                    placeholder: S.current.search_placeholder,
-                    placeholderStyle: const TextStyle(
-                      color: ColorStyle.placeHolder,
-                      fontWeight: FontWeight.w400,
-                      fontSize: FontSizeConst.font17,
-                      fontFamily: FontStyles.sfProText,
-                    ),
-                  )
+                          controller: _searchController,
+                          style: TextStyle(
+                              color: ColorStyle.getDarkLabel(),
+                              fontFamily: FontStyles.sfProText,
+                              fontSize: FontSizeConst.font17,
+                              fontWeight: FontWeight.w400),
+                          placeholder: S.current.search_placeholder,
+                          placeholderStyle: const TextStyle(
+                            color: ColorStyle.placeHolder,
+                            fontWeight: FontWeight.w400,
+                            fontSize: FontSizeConst.font17,
+                            fontFamily: FontStyles.sfProText,
+                          ),
+                        )
                       : Container(),
                 ],
               ),
             ),
           ),
-          body: SmartRefresher(
-            enablePullDown: true,
-            enablePullUp: false,
-            header: const WaterDropHeader(),
-            controller: _refreshController,
-            onRefresh: _onRefresh,
-            child: Container(
-              color: ColorStyle.getSystemBackground(),
-              child: ListView(
-                controller: _scrollController,
-                children: [
-                  getMainView()
-                ],
+          body: Container(
+            color: ColorStyle.getSystemBackground(),
+            child: SmartRefresher(
+              enablePullDown: true,
+              enablePullUp: false,
+              header: const WaterDropHeader(),
+              controller: _refreshController,
+              onRefresh: _onRefresh,
+              child: Container(
+                color: ColorStyle.getSystemBackground(),
+                child: ListView(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  controller: _scrollController,
+                  children: [getMainView()],
+                ),
               ),
             ),
           )),
@@ -535,7 +536,9 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         children: [
-          (_searchController.text.isEmpty) ? createAllLocationArticlesView() : Container(),
+          (_searchController.text.isEmpty && (PrefUtil.getValue(StrConst.isHideArticle, false) as bool == false))
+              ? createAllLocationArticlesView()
+              : Container(),
           createExploreAllLocationView()
         ],
       );
@@ -669,11 +672,13 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
           }
           return SizeProviderWidget(
             onChildSize: (size) {
-              if (size.height < MediaQuery.of(context).size.height
-                  - MediaQuery.of(context).padding.top
-                  - MediaQuery.of(context).padding.bottom
-                  - 56 /*Appbar*/
-                  - 50 /*BottomNav*/) {
+              if (size.height <
+                  MediaQuery.of(context).size.height -
+                      MediaQuery.of(context).padding.top -
+                      MediaQuery.of(context).padding.bottom -
+                      56 /*Appbar*/
+                      -
+                      50 /*BottomNav*/) {
                 isAtTop = true;
                 setState(() {});
               }
@@ -703,17 +708,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                         splashColor: Colors.transparent,
                         onTap: () {
                           print("PermissionRequest -> START");
-                          PermissionRequest.isResquestPermission = true;
-                          PermissionRequest().permissionServiceCall(
-                            context,
-                            () {
-                              _mapScreenViewModel.setInitMapInfo(
-                                  (_observableService.listSitesController as BehaviorSubject<List<Site>?>).value,
-                                  true,
-                                  _homeViewModel.whatTuduBussinessFilterType);
-                              _homeViewModel.redirectTab(5); // Map tab
-                            },
-                          );
+                          _homeViewModel.redirectTab(5); // Map tab
                         },
                         child: Column(
                           children: [
@@ -807,12 +802,13 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
               Positioned(
                   right: 24,
                   top: 8,
-                  child: (_homeViewModel.getAllBookmarkedSiteId().contains(data[index].siteId)) ? Image.asset(
-                    ImagePath.tab4thActiveIcon,
-                    fit: BoxFit.contain,
-                    width: 16.0,
-                  ) : Container()
-              ),
+                  child: (_homeViewModel.getAllBookmarkedSiteId().contains(data[index].siteId))
+                      ? Image.asset(
+                          ImagePath.tab4thActiveIcon,
+                          fit: BoxFit.contain,
+                          width: 16.0,
+                        )
+                      : Container()),
               Positioned(
                 bottom: 0,
                 child: IntrinsicWidth(

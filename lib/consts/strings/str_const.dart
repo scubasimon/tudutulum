@@ -38,4 +38,5 @@ class StrConst {
   static const String lastTime = "last_time";
   static const String selectMap = "select_map";
 
+  static const String isHideArticle = "is_hide_article";
 }
