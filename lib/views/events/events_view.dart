@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:intl/intl.dart';
 import 'package:localstore/localstore.dart';
@@ -372,6 +373,15 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
                                       color: ColorStyle.menuLabel),
                                 ),
                                 iconWidget: CachedNetworkImage(
+                                  cacheManager: CacheManager(
+                                    Config(
+                                      "cachedImg", //featureStoreKey
+                                      stalePeriod: const Duration(seconds: 15),
+                                      maxNrOfCacheObjects: 1,
+                                      repo: JsonCacheInfoRepository(databaseName: "cachedImg"),
+                                      fileService: HttpFileService(),
+                                    ),
+                                  ),
                                   imageUrl: _homeViewModel.listEventTypes[((counter) / 2).round()].icon,
                                   width: 28,
                                   height: 28,
@@ -573,6 +583,15 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
                                 Container(
                                   margin: EdgeInsets.only(right: 16),
                                   child: CachedNetworkImage(
+                                    cacheManager: CacheManager(
+                                      Config(
+                                        "cachedImg", //featureStoreKey
+                                        stalePeriod: const Duration(seconds: 15),
+                                        maxNrOfCacheObjects: 1,
+                                        repo: JsonCacheInfoRepository(databaseName: "cachedImg"),
+                                        fileService: HttpFileService(),
+                                      ),
+                                    ),
                                     imageUrl: _homeViewModel.getEventTypeByType(snapshot.data![index].primaryType)!.icon,
                                     width: 22.0,
                                     height: 22.0,

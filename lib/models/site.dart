@@ -5,9 +5,9 @@ import '../utils/func_utils.dart';
 class Site {
   late int siteId;
   late bool active;
+  late String title;
   late List<String> images;
   int? dealId;
-  late Map<String, String> titles;
   late String subTitle;
   List<int> business = [];
   double? locationLat;
@@ -18,10 +18,10 @@ class Site {
   Site(
       {
         this.dealId,
+        required this.title,
         required this.active,
         required this.images,
         required this.siteId,
-        required this.titles,
         required this.subTitle,
         required this.business,
         this.locationLat,
@@ -36,7 +36,7 @@ class Site {
       "active": active,
       "image": images,
       "siteid": siteId,
-      "titles": titles,
+      "title": title,
       "subTitle": subTitle,
       "business": business,
       "locationLat": locationLat,
@@ -57,7 +57,7 @@ class Site {
     active = data["active"];
     siteId = data["siteid"];
     dealId = (data["dealId"] != null) ? data["dealId"] : null;
-    titles = FuncUlti.getMapStringStringFromStringDynamic(data["titles"]);
+    title = data["title"];
     subTitle = data["subTitle"] as String;
     business = FuncUlti.getListIntFromListDynamic(data["business"]);
     locationLat = (data["locationLat"] != null) ? data["locationLat"]: null;

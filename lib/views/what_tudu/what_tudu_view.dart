@@ -11,6 +11,7 @@ import 'package:rounded_background_text/rounded_background_text.dart';
 import 'package:tudu/consts/color/Colors.dart';
 import 'package:tudu/consts/font/Fonts.dart';
 import 'package:tudu/models/article.dart';
+import 'package:tudu/models/error.dart';
 import 'package:tudu/utils/func_utils.dart';
 import 'package:tudu/utils/pref_util.dart';
 import 'package:tudu/viewmodels/home_viewmodel.dart';
@@ -154,6 +155,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
       PrefUtil.setValue(StrConst.isWhatTuduDataBinded, true);
     } catch (e) {
       print("loadRemoteData: $e");
+      print("loadRemoteData: ${(e as CustomError).message}");
       // If network has prob -> Load data from local
       await loadLocalData(isLoadOnInit);
     }
@@ -710,7 +712,10 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                         splashColor: Colors.transparent,
                         onTap: () {
                           print("PermissionRequest -> START");
-                          _homeViewModel.redirectTab(5); // Map tab
+                          // _homeViewModel.redirectTab(5); // Map tab
+                          Navigator.of(context).push(
+                              MaterialPageRoute(builder: (context) => const MapScreenView())
+                          );
                         },
                         child: Column(
                           children: [
@@ -844,7 +849,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                data[index].titles["title"].toString(),
+                                data[index].title.toString(),
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                   color: ColorStyle.getDarkLabel(),
@@ -888,7 +893,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                 [],
                 Site(
                     active: true,
-                    titles: {},
+                    title: "",
                     subTitle: "",
                     siteId: 0,
                     business: [],

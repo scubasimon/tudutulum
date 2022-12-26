@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:notification_center/notification_center.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -440,6 +441,15 @@ class _BookmarksView extends State<BookmarksView> {
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(8.0),
                               child: CachedNetworkImage(
+                                cacheManager: CacheManager(
+                                  Config(
+                                    "cachedImg", //featureStoreKey
+                                    stalePeriod: const Duration(seconds: 15),
+                                    maxNrOfCacheObjects: 1,
+                                    repo: JsonCacheInfoRepository(databaseName: "cachedImg"),
+                                    fileService: HttpFileService(),
+                                  ),
+                                ),
                                 imageUrl: sites[index].images.first,
                                 width: MediaQuery.of(context).size.width,
                                 height: 236,
@@ -488,7 +498,7 @@ class _BookmarksView extends State<BookmarksView> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        sites[index].titles["title"].toString(),
+                                        sites[index].title.toString(),
                                         overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
                                           color: ColorStyle.getDarkLabel(),
@@ -533,7 +543,7 @@ class _BookmarksView extends State<BookmarksView> {
       return InkWell(
         onTap: () {
           if (FirebaseAuth.instance.currentUser != null) {
-            final dealData = Deal(dealId, false, "", [], Site(active: true, titles: {}, subTitle: "", siteId: 0, business: [], siteContent: SiteContent(), images: []), DateTime.now(), DateTime.now(), "", "", "", "");
+            final dealData = Deal(dealId, false, "", [], Site(active: true, title: "", subTitle: "", siteId: 0, business: [], siteContent: SiteContent(), images: []), DateTime.now(), DateTime.now(), "", "", "", "");
             Navigator.push(
                 context,
                 MaterialPageRoute(

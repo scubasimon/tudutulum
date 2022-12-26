@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:map_launcher/map_launcher.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:tudu/consts/color/Colors.dart';
@@ -235,7 +236,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
           _whatTuduSiteContentDetailViewModel.siteContentDetail.dealId,
         ),
         getTitle(
-          _whatTuduSiteContentDetailViewModel.siteContentDetail.titles["contentTitle"],
+          _whatTuduSiteContentDetailViewModel.siteContentDetail.title,
           _whatTuduSiteContentDetailViewModel.siteContentDetail.siteContent.description,
         ),
         getMoreInformation(_whatTuduSiteContentDetailViewModel.siteContentDetail.siteContent.moreInformation),
@@ -291,6 +292,15 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
             alignment: Alignment.centerLeft,
             width: MediaQuery.of(context).size.width,
             child: CachedNetworkImage(
+              cacheManager: CacheManager(
+                Config(
+                  "cachedImg", //featureStoreKey
+                  stalePeriod: const Duration(seconds: 15),
+                  maxNrOfCacheObjects: 1,
+                  repo: JsonCacheInfoRepository(databaseName: "cachedImg"),
+                  fileService: HttpFileService(),
+                ),
+              ),
               imageUrl: urlImage,
               width: MediaQuery.of(context).size.width,
               height: 300,
@@ -315,7 +325,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                 splashColor: Colors.transparent,
                 onTap: () {
                   if (FirebaseAuth.instance.currentUser != null) {
-                    final dealData = Deal(dealId, false, "", [], Site(active: true, titles: {}, subTitle: "", siteId: 0, business: [], siteContent: SiteContent(), images: []), DateTime.now(), DateTime.now(), "", "", "", "");
+                    final dealData = Deal(dealId, false, "", [], Site(active: true, title: "", subTitle: "", siteId: 0, business: [], siteContent: SiteContent(), images: []), DateTime.now(), DateTime.now(), "", "", "", "");
                     Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -733,6 +743,15 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
             top: 10,
             right: 20,
             child: CachedNetworkImage(
+              cacheManager: CacheManager(
+                Config(
+                  "cachedImg", //featureStoreKey
+                  stalePeriod: const Duration(seconds: 15),
+                  maxNrOfCacheObjects: 1,
+                  repo: JsonCacheInfoRepository(databaseName: "cachedImg"),
+                  fileService: HttpFileService(),
+                ),
+              ),
               imageUrl: logo,
               width: 48.0,
               height: 48.0,
@@ -922,6 +941,15 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
               top: 10,
               right: 20,
               child: CachedNetworkImage(
+                cacheManager: CacheManager(
+                  Config(
+                    "cachedImg", //featureStoreKey
+                    stalePeriod: const Duration(seconds: 15),
+                    maxNrOfCacheObjects: 1,
+                    repo: JsonCacheInfoRepository(databaseName: "cachedImg"),
+                    fileService: HttpFileService(),
+                  ),
+                ),
                 imageUrl: partner.icon,
                 width: 48.0,
                 height: 48.0,
@@ -1018,6 +1046,15 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
           child: Container(
             padding: const EdgeInsets.only(top: 4.0, right: 4.0, bottom: 4.0),
             child: CachedNetworkImage(
+              cacheManager: CacheManager(
+                Config(
+                  "cachedImg", //featureStoreKey
+                  stalePeriod: const Duration(seconds: 15),
+                  maxNrOfCacheObjects: 1,
+                  repo: JsonCacheInfoRepository(databaseName: "cachedImg"),
+                  fileService: HttpFileService(),
+                ),
+              ),
               imageUrl: "${_homeViewModel.getAmenityById(amenityId)?.icon}",
               width: 25.0,
               height: 25.0,
@@ -1083,8 +1120,9 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
     if (isHaveEvent) {
       return InkWell(
         onTap: () {
-          _eventsViewModel.setEvetRedirectedFromSite(siteId);
-          _homeViewModel.redirectTab(1);
+          // _eventsViewModel.setEvetRedirectedFromSite(siteId);
+          // _homeViewModel.redirectTab(1);
+          Navigator.of(context).pop();
         },
         child: Container(
           padding: const EdgeInsets.only(top: 4.0, right: 4.0, bottom: 4.0),
@@ -1104,6 +1142,15 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
       child: Container(
         padding: const EdgeInsets.only(top: 4.0, right: 4.0, bottom: 4.0),
         child: CachedNetworkImage(
+          cacheManager: CacheManager(
+            Config(
+              "cachedImg", //featureStoreKey
+              stalePeriod: const Duration(seconds: 15),
+              maxNrOfCacheObjects: 1,
+              repo: JsonCacheInfoRepository(databaseName: "cachedImg"),
+              fileService: HttpFileService(),
+            ),
+          ),
           imageUrl: iconUrl,
           width: 25.0,
           height: 25.0,

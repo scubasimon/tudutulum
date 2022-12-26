@@ -99,6 +99,18 @@ class SettingViewModel extends BaseViewModel {
     DefaultCacheManager manager = DefaultCacheManager();
     manager.emptyCache();
 
+    try {
+      JsonCacheInfoRepository(databaseName: "cachedImg").deleteDataFile();
+    } catch (e, s) {
+      print(s);
+      showDialog(context: context, builder: (context) {
+        return NotificationAlert.alert(context, "Fail when clear cached because of: $s");
+      });
+    }
+
+    imageCache.clear();
+    imageCache.clearLiveImages();
+
     showDialog(context: context, builder: (context) {
       return NotificationAlert.alert(context, S.current.data_deleted);
     });
