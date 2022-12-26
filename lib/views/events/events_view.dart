@@ -27,7 +27,7 @@ import '../../consts/strings/str_const.dart';
 import '../../generated/l10n.dart';
 import '../../services/location/permission_request.dart';
 import '../../services/observable/observable_serivce.dart';
-import '../../utils/SizeProviderWidget.dart';
+import '../../utils/size_provider_widget.dart';
 import '../../utils/func_utils.dart';
 import '../../utils/pref_util.dart';
 import '../common/alert.dart';
@@ -202,7 +202,7 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
       // Prevent to reload data on every time open What tudu
       PrefUtil.setValue(StrConst.isEventDataBinded, true);
     } catch (e) {
-      _observableService.whatTuduProgressLoadingController.sink.add(false);
+      _observableService.homeProgressLoadingController.sink.add(false);
       _observableService.networkController.sink.add(e.toString());
     }
   }
@@ -452,19 +452,22 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
               ),
             ),
           ),
-          body: SmartRefresher(
-            enablePullDown: true,
-            enablePullUp: false,
-            header: const WaterDropHeader(),
-            controller: _refreshController,
-            onRefresh: _onRefresh,
-            child: Container(
-              color: ColorStyle.getSystemBackground(),
-              child: ListView(
-                controller: _scrollController,
-                children: <Widget>[
-                  createExploreEventsView()
-                ],
+          body: Container(
+            color: ColorStyle.getSystemBackground(),
+            child: SmartRefresher(
+              enablePullDown: true,
+              enablePullUp: false,
+              header: const WaterDropHeader(),
+              controller: _refreshController,
+              onRefresh: _onRefresh,
+              child: Container(
+                color: ColorStyle.getSystemBackground(),
+                child: ListView(
+                  controller: _scrollController,
+                  children: <Widget>[
+                    createExploreEventsView()
+                  ],
+                ),
               ),
             ),
           )),
@@ -524,7 +527,10 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
             child: ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                itemCount: snapshot.data!.where((element) => element.dateend.millisecondsSinceEpoch > DateTime.now().millisecondsSinceEpoch).length,
+                itemCount: snapshot.data!.where((element) =>
+                  element.dateend.millisecondsSinceEpoch > DateTime.now().millisecondsSinceEpoch
+                  && element.datestart.millisecondsSinceEpoch < DateTime.now().millisecondsSinceEpoch
+                ).length,
                 itemBuilder: (BuildContext context, int index) {
                   return InkWell(
                     onTap: () {

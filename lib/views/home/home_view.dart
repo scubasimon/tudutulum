@@ -127,8 +127,7 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
 
   void listenToLoading() {
     loadingListener ??= _observableService.homeProgressLoadingStream.asBroadcastStream().listen((data) {
-      print("loadingListener ${data}");
-      if (data) {
+      if (data && (_homeViewModel.isLoading == false)) {
         _showLoading();
       } else {
         if (_homeViewModel.isLoading) {
@@ -489,8 +488,11 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
         drawerEnableOpenDragGesture: false,
         backgroundColor: ColorStyle.getSecondaryBackground(),
         body: pages[pageIndex],
-        bottomNavigationBar: SafeArea(
-          child: buildMyNavBar(context),
+        bottomNavigationBar: Container(
+          color: ColorStyle.getSystemBackground(),
+          child: SafeArea(
+            child: buildMyNavBar(context),
+          ),
         ),
       ),
     );

@@ -54,6 +54,7 @@ Future<void> main() async {
     PrefUtil.setValue(StrConst.isEventDataBinded, false);
     PrefUtil.setValue(StrConst.isDealBind, false);
     PrefUtil.setValue(StrConst.isBookmarkBind, false);
+
     if (PrefUtil.preferences.getBool(StrConst.isDarkMode) == null) {
       var brightness = SchedulerBinding.instance.window.platformBrightness;
       bool isDarkMode = brightness == Brightness.dark;

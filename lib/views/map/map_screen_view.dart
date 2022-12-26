@@ -8,7 +8,6 @@ import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart' as locationLib;
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
@@ -50,8 +49,6 @@ class _MapScreenView extends State<MapScreenView> {
   HomeViewModel _homeViewModel = HomeViewModel();
   WhatTuduSiteContentDetailViewModel _whatTuduSiteContentDetailViewModel = WhatTuduSiteContentDetailViewModel();
 
-  locationLib.Location location = locationLib.Location();
-
   StreamSubscription<List<Site>?>? reloadMarkerSite;
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -70,11 +67,7 @@ class _MapScreenView extends State<MapScreenView> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       //init listen network connection
-      await _mapScreenViewModel.checkLocationEnable(context);
-      if (_mapScreenViewModel.isGotoCurrent) {
-        await _mapScreenViewModel.getCurrentPosition();
-        goToCurrentPosition();
-      } else {
+      if (_mapScreenViewModel.destinationPosition != null) {
         goToDestinationPosition();
       }
     });
@@ -90,25 +83,15 @@ class _MapScreenView extends State<MapScreenView> {
     setState(() {});
   }
 
-  void goToCurrentPosition() {
-    print("goToCurrentPosition -> ${_mapScreenViewModel.currentPosition?.latitude}");
-    print("goToCurrentPosition -> ${_mapScreenViewModel.currentPosition?.longitude}");
-    mapController?.animateCamera(CameraUpdate.newLatLngZoom(
-      LatLng(
-          _mapScreenViewModel.currentPosition?.latitude ?? 20.214193, _mapScreenViewModel.currentPosition?.longitude ?? -87.453294),
-      12.0,
-    ));
-  }
-
   void listenToDataFilter() {
-    reloadMarkerSite ??= _observableService.mapProgressLoadingStream.asBroadcastStream().listen((data) {
-      _addMarker(data);
+    reloadMarkerSite ??= _observableService.listSitesStream.asBroadcastStream().listen((data) {
+      if (data != null) {
+        _addMarker(data);
+      }
     });
   }
 
   void goToDestinationPosition() {
-    print("goToDestinationPosition -> ${_mapScreenViewModel.destinationPosition?.latitude}");
-    print("goToDestinationPosition -> ${_mapScreenViewModel.destinationPosition?.longitude}");
     mapController?.animateCamera(CameraUpdate.newLatLngZoom(
       LatLng(_mapScreenViewModel.destinationPosition?.latitude ?? 20.214193,
           _mapScreenViewModel.destinationPosition?.longitude ?? -87.453294),
@@ -117,31 +100,45 @@ class _MapScreenView extends State<MapScreenView> {
   }
 
   Future<void> _addMarker(List<Site> data) async {
-    _showLoading();
+    _observableService.homeProgressLoadingController.sink.add(true);
     markers.clear();
-
     for (var site in data) {
       if (site.locationLat != null && site.locationLon != null) {
-        final Marker marker = Marker(
-            markerId: MarkerId(site.titles["title"]!),
-            position: LatLng(site.locationLat!, site.locationLon!),
-            // infoWindow: InfoWindow(title: "Title: ${site.title}", snippet: "Subtitle: ${site.subTitle}"),
-            icon: await MarkerIcon.downloadResizePictureCircle(site.images[0],
-                size: 150, addBorder: true, borderColor: Colors.white, borderSize: 15),
-            onTap: () {
-              print("ON TAP MARKER -> ${site.titles["title"]!}");
-              _whatTuduSiteContentDetailViewModel.setSiteContentDetailCover(site);
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const WhatTuduSiteContentDetailView(),
-                      settings: const RouteSettings(name: StrConst.whatTuduSiteContentDetailScene)));
-            });
-        markers.add(marker);
+        try {
+          var icon = await MarkerIcon.downloadResizePictureCircle(
+            site.images[0],
+            size: 150,
+            addBorder: true,
+            borderColor: Colors.white,
+            borderSize: 15,
+          ).timeout(const Duration(seconds: 10));
+
+          final Marker marker = Marker(
+              markerId: MarkerId(site.titles["title"]!),
+              position: LatLng(site.locationLat!, site.locationLon!),
+              // infoWindow: InfoWindow(title: "Title: ${site.title}", snippet: "Subtitle: ${site.subTitle}"),
+              icon: icon,
+              onTap: () {
+                print("ON TAP MARKER -> ${site.titles["title"]!}");
+                _whatTuduSiteContentDetailViewModel.setSiteContentDetailCover(site);
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const WhatTuduSiteContentDetailView(),
+                        settings: const RouteSettings(name: StrConst.whatTuduSiteContentDetailScene)));
+              });
+          setState(() {});
+          markers.add(marker);
+
+        } catch (e) {
+          setState(() {});
+          _observableService.homeProgressLoadingController.sink.add(false);
+          _observableService.networkController.sink.add(e.toString());
+        }
       }
     }
-    Navigator.pop(context);
     setState(() {});
+    _observableService.homeProgressLoadingController.sink.add(false);
   }
 
   @override
@@ -162,123 +159,126 @@ class _MapScreenView extends State<MapScreenView> {
             child: Container(
                 height: 36.0,
                 alignment: Alignment.center,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    InkWell(
-                      child: Image.asset(
-                        ImagePath.humbergerIcon,
-                        width: 28,
-                        height: 28,
+                child: InkWell(
+                  onTap: () {
+                    _homeViewModel.redirectTab(0);
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Image.asset(
+                        ImagePath.leftArrowIcon,
+                        height: 20,
+                        fit: BoxFit.contain,
                       ),
-                      onTap: () {
-                        NotificationCenter().notify(StrConst.openMenu);
-                      },
-                    ),
-                    const SizedBox(
-                      width: 12.0,
-                    ),
-                    Text(
-                      _homeViewModel.getBusinessStringByIndex(_mapScreenViewModel.mapFilterType),
-                      style: const TextStyle(
-                        color: ColorStyle.secondaryDarkLabel94,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
-                        fontFamily: FontStyles.mouser,
+                      const SizedBox(
+                        width: 12.0,
                       ),
-                    ),
-                    const Spacer(),
-                    PullDownButton(
-                      itemBuilder: (context) => List<PullDownMenuEntry>.generate(
-                          _homeViewModel.listBusiness.length * 2 + 1,
-                          (counter) => (counter == _homeViewModel.listBusiness.length * 2)
-                              ? PullDownMenuItem(
-                                  title: S.current.all_location,
-                                  itemTheme: const PullDownMenuItemTheme(
-                                    textStyle: TextStyle(
-                                        fontFamily: FontStyles.sfProText,
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 17,
-                                        color: ColorStyle.menuLabel),
-                                  ),
-                                  iconWidget: Image.asset(
-                                    _mapScreenViewModel.mapFilterType != 3
-                                        ? ImagePath.mappinIcon
-                                        : ImagePath.mappinDisableIcon,
-                                    width: 28,
-                                    height: 28,
-                                  ),
-                                  enabled: _mapScreenViewModel.mapFilterType != ((counter) / 2).round(),
-                                  onTap: () {
-                                    _whatTuduViewModel.getDataWithFilterSortSearchForMap(
-                                      null, // Filter all business => businnesFilter = null
-                                      FuncUlti.getSortWhatTuduTypeByInt(_homeViewModel.whatTuduOrderType),
-                                      _homeViewModel.whatTuduSearchKeyword,
-                                    );
-                                    _mapScreenViewModel.mapFilterType = ((counter) / 2).round();
-                                  },
-                                )
-                              : (counter == _homeViewModel.listBusiness.length * 2 - 1)
-                                  ? const PullDownMenuDivider.large()
-                                  : (counter % 2 == 0)
-                                      ? PullDownMenuItem(
-                                          title: (counter % 2 == 0)
-                                              ? _homeViewModel.listBusiness[((counter) / 2).round()].type
-                                              : "",
-                                          itemTheme: const PullDownMenuItemTheme(
-                                            textStyle: TextStyle(
-                                                fontFamily: FontStyles.sfProText,
-                                                fontWeight: FontWeight.w500,
-                                                fontSize: 17,
-                                                color: ColorStyle.menuLabel),
-                                          ),
-                                          iconWidget: Image.asset(
-                                            ImagePath.cenoteIcon,
-                                            width: 28,
-                                            height: 28,
-                                          ),
-                                          enabled: _mapScreenViewModel.mapFilterType != ((counter) / 2).round(),
-                                          onTap: () {
-                                            _whatTuduViewModel.getDataWithFilterSortSearchForMap(
-                                              _homeViewModel.listBusiness[((counter) / 2).round()], // get business
-                                              FuncUlti.getSortWhatTuduTypeByInt(_homeViewModel.whatTuduOrderType),
-                                              _homeViewModel.whatTuduSearchKeyword,
-                                            );
-                                            _mapScreenViewModel.mapFilterType = ((counter) / 2).round();
-                                          },
-                                        )
-                                      : const PullDownMenuDivider(),
-                          growable: false),
-                      position: PullDownMenuPosition.automatic,
-                      buttonBuilder: (context, showMenu) => Container(
-                        padding: const EdgeInsets.only(left: 8, right: 8),
-                        child: InkWell(
-                          onTap: showMenu,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Expanded(
-                                child: Image.asset(
-                                  ImagePath.filterIcon,
-                                  fit: BoxFit.contain,
-                                  width: 16,
-                                ),
-                              ),
-                              Text(
-                                S.current.filter,
-                                style: const TextStyle(
-                                    color: ColorStyle.primary,
-                                    fontSize: FontSizeConst.font10,
+                      Text(
+                        _homeViewModel.getBusinessStringByIndex(_homeViewModel.whatTuduBussinessFilterType),
+                        style: const TextStyle(
+                          color: ColorStyle.primary,
+                          fontSize: FontSizeConst.font16,
+                          fontWeight: FontWeight.w400,
+                          fontFamily: FontStyles.mouser,
+                        ),
+                      ),
+                      const Spacer(),
+                      PullDownButton(
+                        itemBuilder: (context) => List<PullDownMenuEntry>.generate(
+                            _homeViewModel.listBusiness.length * 2 + 1,
+                                (counter) => (counter == _homeViewModel.listBusiness.length * 2)
+                                ? PullDownMenuItem(
+                              title: S.current.all_location,
+                              itemTheme: const PullDownMenuItemTheme(
+                                textStyle: TextStyle(
+                                    fontFamily: FontStyles.sfProText,
                                     fontWeight: FontWeight.w500,
-                                    fontFamily: FontStyles.raleway),
+                                    fontSize: 17,
+                                    color: ColorStyle.menuLabel),
                               ),
-                            ],
+                              iconWidget: Image.asset(
+                                _homeViewModel.whatTuduBussinessFilterType !=
+                                    _homeViewModel.listBusiness.length
+                                    ? ImagePath.mappinIcon
+                                    : ImagePath.mappinDisableIcon,
+                                width: 28,
+                                height: 28,
+                              ),
+                              enabled: _homeViewModel.whatTuduBussinessFilterType != ((counter) / 2).round(),
+                              onTap: () {
+                                _whatTuduViewModel.getDataWithFilterSortSearch(
+                                  null, // Filter all business => businnesFilter = null
+                                  FuncUlti.getSortWhatTuduTypeByInt(_homeViewModel.whatTuduOrderType),
+                                  _homeViewModel.whatTuduSearchKeyword,
+                                );
+                                _homeViewModel.whatTuduBussinessFilterType = ((counter) / 2).round();
+                              },
+                            )
+                                : (counter == _homeViewModel.listBusiness.length * 2 - 1)
+                                ? const PullDownMenuDivider.large()
+                                : (counter % 2 == 0)
+                                ? PullDownMenuItem(
+                              title: (counter % 2 == 0)
+                                  ? _homeViewModel.listBusiness[((counter) / 2).round()].type
+                                  : "",
+                              itemTheme: const PullDownMenuItemTheme(
+                                textStyle: TextStyle(
+                                    fontFamily: FontStyles.sfProText,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 17,
+                                    color: ColorStyle.menuLabel),
+                              ),
+                              iconWidget: Image.asset(
+                                ImagePath.cenoteIcon,
+                                width: 28,
+                                height: 28,
+                              ),
+                              enabled: _homeViewModel.whatTuduBussinessFilterType !=
+                                  ((counter) / 2).round(),
+                              onTap: () {
+                                _whatTuduViewModel.getDataWithFilterSortSearch(
+                                  _homeViewModel
+                                      .listBusiness[((counter) / 2).round()], // get business
+                                  FuncUlti.getSortWhatTuduTypeByInt(_homeViewModel.whatTuduOrderType),
+                                  _homeViewModel.whatTuduSearchKeyword,
+                                );
+                                _homeViewModel.whatTuduBussinessFilterType = ((counter) / 2).round();
+                              },
+                            )
+                                : const PullDownMenuDivider(),
+                            growable: false),
+                        position: PullDownMenuPosition.automatic,
+                        buttonBuilder: (context, showMenu) => Container(
+                          padding: const EdgeInsets.only(left: 8, right: 8),
+                          child: InkWell(
+                            onTap: showMenu,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: Image.asset(
+                                    ImagePath.filterIcon,
+                                    fit: BoxFit.contain,
+                                    width: 16,
+                                  ),
+                                ),
+                                Text(
+                                  S.current.filter,
+                                  style: const TextStyle(
+                                      color: ColorStyle.primary,
+                                      fontSize: FontSizeConst.font10,
+                                      fontWeight: FontWeight.w500,
+                                      fontFamily: FontStyles.raleway),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 )),
           ),
         ),
@@ -301,47 +301,17 @@ class _MapScreenView extends State<MapScreenView> {
                   setState(() {
                     mapController = controller;
                     isMapCreated = true;
-                    _addMarker(_mapScreenViewModel.listSiteForMapView);
+                    // _addMarker(_homeViewModel.listSites);
                   });
                 },
                 myLocationEnabled: true,
                 myLocationButtonEnabled: false,
                 markers: markers,
               ),
-              Positioned(
-                top: 15,
-                right: 15,
-                child: InkWell(
-                  onTap: () {
-                    _homeViewModel.redirectTab(0);
-                  },
-                  child: Image.asset(
-                    ImagePath.closeIcon,
-                    width: 30,
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              )
             ],
           ),
         ),
       ),
     );
-  }
-
-  void _showLoading() {
-    showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return Container(
-              decoration: const BoxDecoration(),
-              child: const Center(
-                child: CupertinoActivityIndicator(
-                  radius: 20,
-                  color: ColorStyle.primary,
-                ),
-              ));
-        });
   }
 }

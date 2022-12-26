@@ -23,8 +23,6 @@ class SettingView extends StatefulWidget {
 }
 
 class _SettingView extends State<SettingView> {
-  ObservableService _observableService = ObservableService();
-
   @override
   Widget build(BuildContext context) {
     return ExitAppScope(
@@ -199,7 +197,6 @@ class _SettingView extends State<SettingView> {
                         onChanged: (value) {
                           setState(() {
                             model.setDarkMode(value);
-                            _observableService.darkModeController.sink.add(value);
                           });
                         },
                       )

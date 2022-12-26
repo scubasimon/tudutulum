@@ -340,8 +340,6 @@ class HomeRepositoryImpl extends HomeRepository {
     return listEvents;
   }
 
-
-
   @override
   List<int> getAllBookmarkedSiteId() {
     return _allBookmarkedSiteId;

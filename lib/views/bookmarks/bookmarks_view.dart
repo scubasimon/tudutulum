@@ -26,6 +26,10 @@ import 'package:tudu/views/what_tudu/what_tudu_site_content_detail_view.dart';
 import 'package:tudu/services/observable/observable_serivce.dart';
 import 'package:tudu/utils/SizeProviderWidget.dart';
 
+import '../../services/observable/observable_serivce.dart';
+import '../../utils/size_provider_widget.dart';
+import '../../viewmodels/home_viewmodel.dart';
+
 class BookmarksView extends StatefulWidget {
   const BookmarksView({super.key});
 

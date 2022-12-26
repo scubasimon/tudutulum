@@ -4,6 +4,7 @@ import 'package:localstore/localstore.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:tudu/base/base_viewmodel.dart';
 import 'package:tudu/models/amenity.dart';
+import 'package:tudu/models/api_article_detail.dart';
 import 'package:tudu/models/business.dart';
 import 'package:tudu/models/event.dart';
 import 'package:tudu/models/event_type.dart';
@@ -14,8 +15,13 @@ import 'package:tudu/models/partner.dart';
 import 'package:tudu/models/site.dart';
 import 'package:tudu/repositories/home/home_repository.dart';
 
+import '../consts/strings/str_const.dart';
+import '../repositories/api_repository/api_repository.dart';
+import '../utils/pref_util.dart';
+
 class HomeViewModel extends BaseViewModel {
   final HomeRepository _homeRepository = HomeRepositoryImpl();
+  final APIRepository _articleAsCollectionRepository = APIRepositoryImpl();
 
   static final HomeViewModel _instance = HomeViewModel._internal();
 
@@ -39,6 +45,7 @@ class HomeViewModel extends BaseViewModel {
   int eventOrderType = 0;
 
 
+  List<APIArticleDetail> listAPIArticleDetail = [];
   List<Article> listArticles = [];
   List<Site> listSites = [];
   List<Event> listEvents = [];
@@ -70,7 +77,6 @@ class HomeViewModel extends BaseViewModel {
   }
 
   void changeEventOrderType(int orderTypeInput) {
-    print("orderTypeInput $orderTypeInput");
     eventOrderType = orderTypeInput;
     notifyListeners();
   }
@@ -96,6 +102,14 @@ class HomeViewModel extends BaseViewModel {
   Site? getSiteById(int idInput) {
     for (var element in listSites) {
       if (idInput == element.siteId) {
+        return element;
+      }
+    }
+  }
+
+  Event? getEventById(String idInput) {
+    for (var element in listEvents) {
+      if (idInput == element.eventid) {
         return element;
       }
     }
@@ -159,7 +173,7 @@ class HomeViewModel extends BaseViewModel {
   }
 
   Future<void> getDataFromFireStore() async {
-    _observableService.whatTuduProgressLoadingController.sink.add(true);
+    _observableService.homeProgressLoadingController.sink.add(true);
 
     await getListBusinesses();
     await getListPartners();
@@ -172,11 +186,15 @@ class HomeViewModel extends BaseViewModel {
 
     await requestAllBookmarkedSiteId();
 
-    _observableService.whatTuduProgressLoadingController.sink.add(false);
+    if ((PrefUtil.getValue(StrConst.isHideArticle, false) as bool) == false) {
+      await getListAPIArticle();
+    }
+
+    _observableService.homeProgressLoadingController.sink.add(false);
   }
 
   Future<void> getDataFromLocalDatabase() async {
-    _observableService.whatTuduProgressLoadingController.sink.add(true);
+    _observableService.homeProgressLoadingController.sink.add(true);
 
     await getLocalListBusinesses();
     await getLocalListPartners();
@@ -187,7 +205,11 @@ class HomeViewModel extends BaseViewModel {
     await getLocalListSites();
     await getLocalListEvents();
 
-    _observableService.whatTuduProgressLoadingController.sink.add(false);
+    if ((PrefUtil.getValue(StrConst.isHideArticle, false) as bool) == false) {
+      await getLocalListAPIArticle();
+    }
+
+    _observableService.homeProgressLoadingController.sink.add(false);
   }
 
   void saveDataToLocal() {
@@ -239,9 +261,25 @@ class HomeViewModel extends BaseViewModel {
         Localstore.instance.collection('events').doc(listEvents.indexOf(event).toString()).set(event.toJson());
       }
     }
+
+    if (listAPIArticleDetail.isNotEmpty) {
+      for (var apiArticleDetail in listAPIArticleDetail) {
+        // Localstore.instance.collection('events').doc(event.eventid.toString()).set(event.toJson());
+        Localstore.instance.collection('apiArticle').doc(listAPIArticleDetail.indexOf(apiArticleDetail).toString()).set(apiArticleDetail.toJson());
+      }
+    }
   }
 
   /// Get data from Firestore
+  Future<void> getListAPIArticle() async {
+    await _articleAsCollectionRepository.getListSite();
+    await _articleAsCollectionRepository.getListArticle();
+    await _articleAsCollectionRepository.getArticleDetail();
+
+    listAPIArticleDetail = _articleAsCollectionRepository.getListAPIArticleDetail();
+    notifyListeners();
+  }
+
   Future<void> getListPartners() async {
     listPartners = await _homeRepository.getListPartners();
     notifyListeners();
@@ -324,6 +362,13 @@ class HomeViewModel extends BaseViewModel {
   Future<void> getLocalListEvents() async {
     listEvents = await _homeRepository.getLocalListEvents();
     _observableService.listSitesController.sink.add(listSites);
+    notifyListeners();
+  }
+
+  Future<void> getLocalListAPIArticle() async {
+    await _articleAsCollectionRepository.getLocalArticleDetail();
+
+    listAPIArticleDetail = _articleAsCollectionRepository.getListAPIArticleDetail();
     notifyListeners();
   }
 

@@ -41,4 +41,5 @@ class StrConst {
   static const String isDealBind = "is_deal_bind";
   static const String isBookmarkBind = "is_bookmark_bind";
 
+  static const String isHideArticle = "is_hide_article";
 }

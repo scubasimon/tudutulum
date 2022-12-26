@@ -8,9 +8,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tudu/base/base_viewmodel.dart';
 import 'package:tudu/consts/strings/str_const.dart';
 
+import '../services/observable/observable_serivce.dart';
+import '../utils/pref_util.dart';
 import '../views/common/alert.dart';
 
 class SettingViewModel extends BaseViewModel {
+  ObservableService _observableService = ObservableService();
+
   late SharedPreferences _instance;
   bool _isPushNotification = false;
   bool _enableNewOffer = false;
@@ -32,7 +36,7 @@ class SettingViewModel extends BaseViewModel {
     _enableNewOffer = _instance.getBool(StrConst.newOffer) ?? false;
     _enableAvailableOffer = _instance.getBool(StrConst.availableOffer) ?? false;
     _enableDarkMode = _instance.getBool(StrConst.isDarkMode) ?? false;
-    _hideArticles = _instance.getBool(StrConst.hideArticles) ?? false;
+    _hideArticles = _instance.getBool(StrConst.isHideArticle) ?? false;
     _hideAds = _instance.getBool(StrConst.hideAds) ?? false;
     _isPushNotification = _enableAvailableOffer || _enableNewOffer;
     notifyListeners();
@@ -62,12 +66,14 @@ class SettingViewModel extends BaseViewModel {
 
   void setDarkMode(bool value) async {
     _enableDarkMode = value;
+    _observableService.darkModeController.sink.add(value);
     await _instance.setBool(StrConst.isDarkMode, value);
   }
 
   void setHideArticles(bool value) async {
     _hideArticles = value;
-    await _instance.setBool(StrConst.hideArticles, value);
+    _observableService.darkModeController.sink.add(value);
+    await _instance.setBool(StrConst.isHideArticle, value);
   }
 
   void setHideAds(bool value) async {
