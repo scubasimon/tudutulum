@@ -172,7 +172,7 @@ class HomeViewModel extends BaseViewModel {
     return null;
   }
 
-  Future<void> getDataFromFireStore() async {
+  Future<void> getDataFromFireStore(bool isLoadOnInit) async {
     _observableService.homeProgressLoadingController.sink.add(true);
 
     await getListBusinesses();
@@ -180,9 +180,9 @@ class HomeViewModel extends BaseViewModel {
     await getListAmenities();
     await getListEventType();
 
-    await getListArticles();
-    await getListSites();
-    await getListEvents();
+    await getListArticles(isLoadOnInit);
+    await getListSites(isLoadOnInit);
+    await getListEvents(isLoadOnInit);
 
     await requestAllBookmarkedSiteId();
 
@@ -300,21 +300,21 @@ class HomeViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  Future<void> getListArticles() async {
+  Future<void> getListArticles(bool isLoadOnInit) async {
     listArticles = await _homeRepository.getListArticles();
-    _observableService.listArticlesController.sink.add(listArticles);
+    if (isLoadOnInit) _observableService.listArticlesController.sink.add(listArticles);
     notifyListeners();
   }
 
-  Future<void> getListSites() async {
+  Future<void> getListSites(bool isLoadOnInit) async {
     listSites = await _homeRepository.getListSites();
-    _observableService.listSitesController.sink.add(listSites);
+    if (isLoadOnInit) _observableService.listSitesController.sink.add(listSites);
     notifyListeners();
   }
 
-  Future<void> getListEvents() async {
+  Future<void> getListEvents(bool isLoadOnInit) async {
     listEvents = await _homeRepository.getListEvents();
-    _observableService.listEventsController.sink.add(listEvents);
+    if (isLoadOnInit) _observableService.listEventsController.sink.add(listEvents);
     notifyListeners();
   }
 
@@ -395,19 +395,22 @@ class HomeViewModel extends BaseViewModel {
         //   remoteSite["dealId"] = null;
         // }
 
-        // var xxx = site.toJson();
+        var xxx = site.toJson();
         // xxx["titles"] = {
         //   "title": site.title,
         //   "contentTitle": site.siteContent.title,
         // };
-        //
+
         // if (site.siteContent.getIntouch != null) {
         //   xxx["getIntouchTitle"] = site.siteContent.getIntouch!["title"];
         // }
 
-        // xxx["siteid"] = 0;
+        xxx["siteid"] = site.siteId;
+        xxx["title"] = site.titles["title"];
 
-        // listData.add(xxx);
+        print("titletitletitle ${site.titles["title"]}");
+
+        listData.add(xxx);
       }
       await _homeRepository.createData(listData);
     } catch (e) {

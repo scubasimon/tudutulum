@@ -43,9 +43,6 @@ class EventsViewModel extends BaseViewModel {
       EventType? evenTypeFilter,
       String? keywordSort,
       String? keywordSearch) {
-
-    print("getDataWithFilterSortSearch $keywordSearch");
-
     try {
       List<Event> listSitesResult = _eventRepository.getEventsWithFilterSortSearch(
         _homeViewModel.listEvents,
@@ -53,7 +50,6 @@ class EventsViewModel extends BaseViewModel {
         keywordSort,
         keywordSearch,
       );
-
       _observableService.listEventsController.sink.add(listSitesResult);
     } catch (e) {
       rethrow;

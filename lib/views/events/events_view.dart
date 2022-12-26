@@ -141,7 +141,7 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
     try {
       print("loadRemoteData -> start");
       // Get data from firestore
-      await _homeViewModel.getDataFromFireStore();
+      await _homeViewModel.getDataFromFireStore(isLoadOnInit);
 
       // Save data to local after get data from firestore have done
       _homeViewModel.saveDataToLocal();
@@ -527,10 +527,7 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
             child: ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                itemCount: snapshot.data!.where((element) =>
-                  element.dateend.millisecondsSinceEpoch > DateTime.now().millisecondsSinceEpoch
-                  && element.datestart.millisecondsSinceEpoch < DateTime.now().millisecondsSinceEpoch
-                ).length,
+                itemCount: snapshot.data!.length,
                 itemBuilder: (BuildContext context, int index) {
                   return InkWell(
                     onTap: () {

@@ -126,7 +126,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
     try {
       print("loadRemoteData -> start");
       // Get data from firestore
-      await _homeViewModel.getDataFromFireStore();
+      await _homeViewModel.getDataFromFireStore(isLoadOnInit);
 
       // Save data to local after get data from firestore have done
       _homeViewModel.saveDataToLocal();
@@ -496,10 +496,12 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
               child: Container(
                 color: ColorStyle.getSystemBackground(),
                 child: ListView(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
+                  // shrinkWrap: true,
+                  // physics: const NeverScrollableScrollPhysics(),
                   controller: _scrollController,
-                  children: [getMainView()],
+                  children: <Widget>[
+                    getMainView()
+                  ],
                 ),
               ),
             ),
@@ -532,9 +534,9 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
         _isSiteZeroDataResult == DataLoadingType.LOADING) {
       return Container();
     } else {
-      return ListView(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
+      return Column(
+        // shrinkWrap: true,
+        // physics: const NeverScrollableScrollPhysics(),
         children: [
           (_searchController.text.isEmpty && (PrefUtil.getValue(StrConst.isHideArticle, false) as bool == false))
               ? createAllLocationArticlesView()

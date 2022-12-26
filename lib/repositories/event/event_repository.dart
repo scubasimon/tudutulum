@@ -19,6 +19,12 @@ class EventRepositoryImpl extends EventRepository {
   ) {
     // Clone data of input Events
     List<Event> listEventResult = listEventInput.where((event) => true).toList();
+
+    // Filter with time
+    listEventResult = listEventResult
+        .where((event) => event.dateend.millisecondsSinceEpoch > DateTime.now().millisecondsSinceEpoch
+        && event.datestart.millisecondsSinceEpoch < DateTime.now().millisecondsSinceEpoch).toList();
+
     // Filter with eventTypeId (Filter function)
     if (eventTypeFilterId != null) {
       if (eventTypeFilterId != -1) {
@@ -48,7 +54,11 @@ class EventRepositoryImpl extends EventRepository {
         // Old logic
         // listEventResult =
         //     listEventResult.where((event) => event.title.toLowerCase().contains(keywordSearch.toLowerCase())).toList();
+
+
         for (var event in listEventResult) {
+          print("1111 ${event.title.toString().toLowerCase().contains(keywordSearch.toLowerCase())} - ${keywordSearch.toLowerCase()} - ${event.title.toString().toLowerCase()}");
+          print("2222 ${event.description.toString().toLowerCase().contains(keywordSearch.toLowerCase())} - ${keywordSearch.toLowerCase()} - ${event.description.toString().toLowerCase()}");
           if (event.title.toString().toLowerCase().contains(keywordSearch.toLowerCase()) ||
               event.description.toString().toLowerCase().contains(keywordSearch.toLowerCase())) {
             result.add(event);
