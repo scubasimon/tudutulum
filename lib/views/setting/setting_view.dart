@@ -199,7 +199,6 @@ class _SettingView extends State<SettingView> {
                         onChanged: (value) {
                           setState(() {
                             model.setDarkMode(value);
-                            PrefUtil.setValue(StrConst.isDarkMode, value);
                             _observableService.darkModeController.sink.add(value);
                           });
                         },

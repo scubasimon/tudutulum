@@ -31,7 +31,7 @@ class SettingViewModel extends BaseViewModel {
     _instance = await SharedPreferences.getInstance();
     _enableNewOffer = _instance.getBool(StrConst.newOffer) ?? false;
     _enableAvailableOffer = _instance.getBool(StrConst.availableOffer) ?? false;
-    _enableDarkMode = _instance.getBool(StrConst.darkMode) ?? false;
+    _enableDarkMode = _instance.getBool(StrConst.isDarkMode) ?? false;
     _hideArticles = _instance.getBool(StrConst.hideArticles) ?? false;
     _hideAds = _instance.getBool(StrConst.hideAds) ?? false;
     _isPushNotification = _enableAvailableOffer || _enableNewOffer;
@@ -62,7 +62,7 @@ class SettingViewModel extends BaseViewModel {
 
   void setDarkMode(bool value) async {
     _enableDarkMode = value;
-    await _instance.setBool(StrConst.darkMode, value);
+    await _instance.setBool(StrConst.isDarkMode, value);
   }
 
   void setHideArticles(bool value) async {

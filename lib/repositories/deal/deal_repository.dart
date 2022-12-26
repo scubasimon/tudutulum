@@ -11,8 +11,7 @@ import 'package:tudu/services/firebase/firebase_service.dart';
 import 'package:location/location.dart';
 import 'package:tudu/services/location/location_permission.dart';
 import 'package:tudu/models/site.dart';
-
-import '../../services/local_datatabase/local_database_service.dart';
+import 'package:tudu/services/local_datatabase/local_database_service.dart';
 
 abstract class DealRepository {
   Future<List<Deal>> getDeals(p.Param param, {double? filterDistance});
@@ -36,7 +35,7 @@ class DealRepositoryImpl extends DealRepository {
 
   @override
   Future<List<Deal>> getDeals(p.Param param, {double? filterDistance}) async {
-    if (_results.isEmpty || param.refresh) {
+    if (param.refresh) {
       try {
         _results = (await _firebaseService.getDeals().timeout(const Duration(seconds: NumberConst.timeout)))
             .map((e) => Deal.from(e)).toList();
@@ -44,9 +43,12 @@ class DealRepositoryImpl extends DealRepository {
           var siteData = await _firebaseService.getSite(result.site.siteId);
           result.site = Site.from(siteData);
         }
-        print(_results.length);
-
         // Save to local
+        try {
+          await Localstore.instance.collection("deals").delete();
+        } catch (e) {
+          print(e);
+        }
         for (var deal in _results) {
           Localstore.instance.collection('deals').doc(_results.indexOf(deal).toString()).set(deal.toJson());
         }
@@ -55,17 +57,11 @@ class DealRepositoryImpl extends DealRepository {
         if (e is TimeoutException) {
           throw CommonError.serverError;
         } else {
-          // LOAD FROM LOCAL
-          print("LOADDING DEAL LOCAL -> because: $e");
-          _results = await _localDatabaseService.getDeals();
-          for (var result in _results) {
-            var siteData = await _firebaseService.getSite(result.site.siteId);
-            result.site = Site.from(siteData);
-          }
-          print(_results.length);
-          // rethrow;
+          rethrow;
         }
       }
+    } else {
+      _results = await _localDatabaseService.getDeals();
     }
 
     var results = _results.where((element) {
@@ -113,7 +109,7 @@ class DealRepositoryImpl extends DealRepository {
       var result = await _firebaseService.getDeal(id)
           .timeout(const Duration(seconds: NumberConst.timeout));
       var deal = Deal.from(result);
-      var siteData = await _firebaseService.getSite(deal.dealsId);
+      var siteData = await _firebaseService.getSite(deal.site.siteId);
       deal.site = Site.from(siteData);
       return deal;
     } catch (e) {
@@ -152,7 +148,6 @@ class DealRepositoryImpl extends DealRepository {
     try {
       var result = await _firebaseService.getRedeem(dealId, user.uid)
           .timeout(const Duration(seconds: NumberConst.timeout));
-      print(result);
       return result.isNotEmpty;
     } catch (e) {
       if (e is TimeoutException) {

@@ -599,6 +599,7 @@ class _DealsView extends State<DealsView> {
     List<PullDownMenuEntry> items = List.generate(_dealsViewModel.business.length * 2 - 1, (index) {
       if (index % 2 == 0) {
         var business = _dealsViewModel.business[index ~/ 2];
+
         return PullDownMenuItem(
           title: business.type,
           enabled: _businessId != business.businessid,

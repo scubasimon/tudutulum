@@ -18,8 +18,7 @@ import 'package:tudu/models/error.dart';
 import 'package:tudu/views/common/alert.dart';
 import 'package:tudu/models/deal.dart';
 import 'package:tudu/views/deals/deal_details_view.dart';
-
-import '../../consts/strings/str_const.dart';
+import 'package:tudu/consts/strings/str_const.dart';
 
 class MapDealView extends StatefulWidget {
   final int? businessId;

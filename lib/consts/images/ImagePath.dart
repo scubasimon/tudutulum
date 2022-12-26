@@ -1,7 +1,9 @@
 
 class ImagePath {
-  static const logoTuduTulum = "assets/images/logo_tudu_tulum.png";
+  static const logoTuduTulumBlack = "assets/images/logo_tudu_tulum_black.png";
+  static const logoTuduTulumWhite = "assets/images/logo_tudu_tulum_white.png";
   static const logoTuduBB = "assets/images/logo_tudu_bb.png";
+  static const logoTuduWW = "assets/images/logo_tudu_ww.png";
   static const logoIcon = "assets/images/logo_icon.png";
   static const appleWhiteIcon = "assets/icons/ic_apple_white.png";
   static const appleBlackIcon = "assets/icons/ic_apple_black.png";
