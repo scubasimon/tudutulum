@@ -490,7 +490,7 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
         backgroundColor: ColorStyle.getSecondaryBackground(),
         body: pages[pageIndex],
         bottomNavigationBar: Container(
-          color: ColorStyle.getSystemBackground(),
+          color: ColorStyle.getSecondaryBackground(),
           child: SafeArea(
             child: buildMyNavBar(context),
           ),

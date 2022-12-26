@@ -69,9 +69,6 @@ class DealsViewModel extends BaseViewModel {
       print(e);
       active = false;
     }
-
-    active = true;
-
     _subscription.add(active);
     if (!active) {
       return;

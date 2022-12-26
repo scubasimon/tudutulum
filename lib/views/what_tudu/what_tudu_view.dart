@@ -498,7 +498,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
               child: Container(
                 color: ColorStyle.getSystemBackground(),
                 child: ListView(
-                  // shrinkWrap: true,
+                  shrinkWrap: true,
                   // physics: const NeverScrollableScrollPhysics(),
                   controller: _scrollController,
                   children: <Widget>[

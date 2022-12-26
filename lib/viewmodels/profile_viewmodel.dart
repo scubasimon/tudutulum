@@ -9,6 +9,7 @@ import 'package:tudu/repositories/auth/auth_repository.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:tudu/utils/func_utils.dart';
 import 'package:tudu/generated/l10n.dart';
+import 'package:tudu/utils/pref_util.dart';
 
 class ProfileViewModel extends BaseViewModel {
 
@@ -59,6 +60,8 @@ class ProfileViewModel extends BaseViewModel {
 
   Future<void> signOut() async {
     try {
+      PrefUtil.setValue(StrConst.isBookmarkBind, false);
+      Purchases.logOut();
       await _authRepository.signOut();
     } catch (e) {
       print(e);
@@ -78,6 +81,8 @@ class ProfileViewModel extends BaseViewModel {
   }
 
   Future<void> deleteAccount() {
+    PrefUtil.setValue(StrConst.isBookmarkBind, false);
+    Purchases.logOut();
     return _authRepository
         .deleteAccount();
   }
