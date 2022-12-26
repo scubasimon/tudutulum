@@ -130,6 +130,7 @@ class _DealDetailView extends State<DealDetailView> {
             ),
           ),
         ),
+        backgroundColor: ColorStyle.getSystemBackground(),
         body: StreamBuilder(
           stream: _dealViewModel.deal,
           builder: (context, snapshot) {

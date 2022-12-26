@@ -9,7 +9,6 @@ import 'package:tudu/consts/color/Colors.dart';
 import 'package:tudu/models/deal.dart';
 import 'package:tudu/models/error.dart';
 import 'package:tudu/models/param.dart';
-import 'package:tudu/utils/pref_util.dart';
 import 'package:tudu/views/common/alert.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
 import 'package:tudu/consts/font/font_size_const.dart';
