@@ -64,7 +64,7 @@ class CardBoardView extends StatelessWidget {
               ),
             ),
             Image.asset(
-              ImagePath.logoTuduBB,
+              darkMode ? ImagePath.logoTuduWW : ImagePath.logoTuduBB,
               width: 24,
               height: 24,
             ),

@@ -130,6 +130,7 @@ class _DealDetailView extends State<DealDetailView> {
             ),
           ),
         ),
+        backgroundColor: ColorStyle.getSystemBackground(),
         body: StreamBuilder(
           stream: _dealViewModel.deal,
           builder: (context, snapshot) {
@@ -160,6 +161,7 @@ class _DealDetailView extends State<DealDetailView> {
   }
 
   List<Widget> _dealDetail(Deal deal) {
+    var darkMode = PrefUtil.getValue(StrConst.isDarkMode, false) as bool;
     List<Widget> items = [
       InkWell(
         onTap: () {
@@ -271,9 +273,11 @@ class _DealDetailView extends State<DealDetailView> {
             ),
           ),
         ),
-        const Padding(
-          padding: EdgeInsets.only(top: 12, left: 16, right: 16),
-          child: Divider(color: Colors.black,),
+        Padding(
+          padding: const EdgeInsets.only(top: 12, left: 16, right: 16),
+          child: Divider(
+            color: darkMode ? Colors.white : Colors.black,
+          ),
         ),
         InkWell(
           onTap: () {
@@ -331,9 +335,11 @@ class _DealDetailView extends State<DealDetailView> {
             ],
           ),
         ),
-        const Padding(
-          padding: EdgeInsets.only(top: 12, left: 16, right: 16),
-          child: Divider(color: Colors.black,),
+        Padding(
+          padding: const EdgeInsets.only(top: 12, left: 16, right: 16),
+          child: Divider(
+            color: darkMode ? Colors.white : Colors.black,
+          ),
         ),
         Padding(
           padding: const EdgeInsets.only(top: 12, left: 16, bottom: 16, right: 16),

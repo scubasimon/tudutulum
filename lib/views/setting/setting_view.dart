@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tudu/viewmodels/setting_viewmodel.dart';
+import 'package:tudu/views/common/alert.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
 import 'package:tudu/consts/color/Colors.dart';
 import 'package:tudu/consts/font/Fonts.dart';
@@ -23,6 +24,7 @@ class SettingView extends StatefulWidget {
 }
 
 class _SettingView extends State<SettingView> {
+
   @override
   Widget build(BuildContext context) {
     return ExitAppScope(
@@ -88,7 +90,7 @@ class _SettingView extends State<SettingView> {
           ),
         ),
         body: Container(
-          padding: EdgeInsets.only(top: 24, bottom: 24, left: 16, right: 16),
+          padding: const EdgeInsets.only(top: 24, bottom: 24, left: 16, right: 16),
           color: ColorStyle.getSystemBackground(),
           child: Consumer<SettingViewModel>(
             builder: (context, model, child){
@@ -109,6 +111,9 @@ class _SettingView extends State<SettingView> {
                       Checkbox(
                         value: model.isPushNotification,
                         activeColor: ColorStyle.primary,
+                        side: BorderSide(
+                          color: model.enableDarkMode ? Colors.white : Colors.black
+                        ),
                         onChanged: (value) {
                           setState(() {
                             model.setPushNotification(value ?? false);
@@ -156,10 +161,14 @@ class _SettingView extends State<SettingView> {
                       CupertinoSwitch(
                         value: model.enableAvailableOffer,
                         activeColor: ColorStyle.primary,
-                        onChanged: (value) {
-                          setState(() {
-                            model.setAvailableOffer(value);
-                          });
+                        onChanged: (value) async {
+                          try {
+                            await model.setAvailableOffer(value);
+                          } catch (e) {
+                            print(e);
+                            showDialog(context: context, builder: (context) => ErrorAlert.alertPermission(context, S.current.location_permission_message));
+                          }
+                          setState(() {});
                         },
                       ),
                     ],
@@ -192,11 +201,12 @@ class _SettingView extends State<SettingView> {
                       ),
                       const Spacer(),
                       CupertinoSwitch(
-                        value: PrefUtil.getValue(StrConst.isDarkMode, false) as bool,
+                        value: model.enableDarkMode,
                         activeColor: ColorStyle.primary,
                         onChanged: (value) {
-                          model.setDarkMode(value);
-                          setState(() {});
+                          setState(() {
+                            model.setDarkMode(value);
+                          });
                         },
                       )
                     ],
@@ -225,7 +235,7 @@ class _SettingView extends State<SettingView> {
                       ),
                       const Spacer(),
                       CupertinoSwitch(
-                        value: PrefUtil.getValue(StrConst.isHideArticle, false) as bool,
+                        value: model.hideArticles,
                         activeColor: ColorStyle.primary,
                         onChanged: (value) {
                           setState(() {

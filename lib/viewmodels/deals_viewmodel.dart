@@ -12,12 +12,15 @@ import 'package:tudu/models/param.dart' as Param;
 import 'package:tudu/repositories/home/home_repository.dart';
 import 'package:tudu/services/location/location_permission.dart';
 import 'package:tudu/models/business.dart';
+import 'package:tudu/utils/pref_util.dart';
+import 'package:tudu/services/local_datatabase/local_database_service.dart';
 
 class DealsViewModel extends BaseViewModel {
 
   final DealRepository _dealRepository = DealRepositoryImpl();
   final PermissionLocation _permissionLocation = PermissionLocation();
   final HomeRepository _homeRepository = HomeRepositoryImpl();
+  final LocalDatabaseService _localDatabaseService = LocalDatabaseServiceImpl();
 
   List<Business> business = [];
 
@@ -56,7 +59,7 @@ class DealsViewModel extends BaseViewModel {
       return;
     }
 
-    bool active = false;
+    bool active = true;
     try {
       final customerInfo = await Purchases.getCustomerInfo();
       active = customerInfo.entitlements.all["Pro"]?.isActive == true;
@@ -73,8 +76,13 @@ class DealsViewModel extends BaseViewModel {
     if (!active) {
       return;
     }
-    _isLoading.sink.add(true);
-    _param.add(Param.Param(refresh: true));
+    var refresh = true;
+    if (PrefUtil.getValue(StrConst.isDealBind, false) as bool) {
+      refresh = false;
+    } else {
+      PrefUtil.setValue(StrConst.isDealBind, true);
+    }
+    _param.add(Param.Param(refresh: refresh, order: Param.Order.distance));
   }
 
   void searchWithParam({String? title, int? businessId, Param.Order? order}) {
@@ -111,7 +119,7 @@ class DealsViewModel extends BaseViewModel {
 
   _purchaseSuccess() {
     _subscription.add(true);
-    _isLoading.sink.add(true);
+    PrefUtil.setValue(StrConst.isDealBind, true);
     _param.add(Param.Param(refresh: true));
   }
 
@@ -120,25 +128,23 @@ class DealsViewModel extends BaseViewModel {
   }
 
   Future<void> _getData(Param.Param param) async {
-    if (param.refresh && !_isLoading.value) {
-      _isLoading.add(true);
-    }
+    _isLoading.add(true);
     try {
       if (param.refresh) {
         business = await _homeRepository.getListBusinesses();
+      } else {
+        final result = await _localDatabaseService.getBusinesses() ?? [];
+        business = result.map((e) {
+          return Business(businessid: e["businessid"], locationid: e["locationid"], type: e["type"], icon: e["icon"], order: e["order"]);
+        }).toList();
       }
       var results = await _dealRepository.getDeals(param);
-      print(results);
 
       _listDeals.sink.add(results);
-      if (param.refresh) {
-        param.refresh = false;
-        _isLoading.add(false);
-      }
+      param.refresh = false;
+      _isLoading.add(false);
     } catch (e) {
-      if (param.refresh) {
-        _isLoading.add(false);
-      }
+      _isLoading.add(false);
       if (e is CustomError) {
         _exception.sink.add(e);
       } else {

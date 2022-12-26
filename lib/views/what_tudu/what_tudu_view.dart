@@ -34,7 +34,7 @@ import 'package:tudu/views/map/map_screen_view.dart';
 
 import '../../models/deal.dart';
 import '../../services/observable/observable_serivce.dart';
-import '../../utils/size_provider_widget.dart';
+import '../common/size_provider_widget.dart';
 import '../deals/deal_details_view.dart';
 
 enum DataLoadingType {

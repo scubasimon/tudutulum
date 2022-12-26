@@ -1,14 +1,19 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:localstore/localstore.dart';
 import 'package:location/location.dart';
+import 'package:tudu/consts/strings/str_const.dart';
 import 'package:tudu/models/param.dart' as p;
 import 'package:tudu/models/site.dart';
 import 'package:tudu/services/firebase/firebase_service.dart';
 import 'package:tudu/models/error.dart';
 import 'package:tudu/consts/number/number_const.dart';
 import 'package:tudu/services/location/location_permission.dart';
+import 'package:tudu/services/local_datatabase/local_database_service.dart';
+import 'package:tudu/utils/pref_util.dart';
 
 abstract class BookmarkRepository {
   Future<void> bookmark(int siteId);
@@ -23,10 +28,13 @@ abstract class BookmarkRepository {
 class BookmarkRepositoryImpl extends BookmarkRepository {
 
   final FirebaseService _firebaseService = FirebaseServiceImpl();
+  final LocalDatabaseService _localDatabaseService = LocalDatabaseServiceImpl();
+
   List<Site> _results = [];
   final Location _location = Location();
-  LocationData? _currentLocation;
+  GeoPoint? _currentLocation;
   final PermissionLocation _permissionLocation = PermissionLocation();
+
 
   @override
   Future<void> bookmark(int siteId) async {
@@ -53,8 +61,7 @@ class BookmarkRepositoryImpl extends BookmarkRepository {
     if (user == null) {
       throw AuthenticationError.notLogin;
     }
-
-    if (_results.isEmpty || param.refresh) {
+    if (param.refresh) {
       _results = [];
       try {
         var data = (await _firebaseService.bookmarks(user.uid)
@@ -66,6 +73,14 @@ class BookmarkRepositoryImpl extends BookmarkRepository {
           var siteData = await _firebaseService.getSite(result!);
           _results.add(Site.from(siteData));
         }
+        try {
+          await Localstore.instance.collection("bookmarks").delete();
+        } catch (e) {
+          print(e);
+        }
+        for (var site in _results) {
+          await Localstore.instance.collection('bookmarks').doc(_results.indexOf(site).toString()).set(site.toJson());
+        }
       } catch (e) {
         if (e is TimeoutException) {
           throw CommonError.serverError;
@@ -73,6 +88,8 @@ class BookmarkRepositoryImpl extends BookmarkRepository {
           rethrow;
         }
       }
+    } else {
+      _results = await _localDatabaseService.getBookmarks();
     }
     var results = _results.where((element) {
       if (param.title == null) {
@@ -148,14 +165,17 @@ class BookmarkRepositoryImpl extends BookmarkRepository {
         throw LocationError.locationPermission;
       }
 
-      _currentLocation = await _location.getLocation();
+      final result = await _location.getLocation();
+      if (result.latitude != null && result.longitude != null ) {
+        _currentLocation = GeoPoint(result.latitude!, result.longitude!);
+      }
     }
 
     if (_currentLocation?.latitude != null && _currentLocation?.longitude != null) {
       data
           .sort((a, b) =>
-          _getDistance(GeoPoint(_currentLocation!.latitude!, _currentLocation!.longitude!), GeoPoint(a.locationLat!, a.locationLon!))
-              .compareTo(_getDistance(GeoPoint(_currentLocation!.latitude!, _currentLocation!.longitude!), GeoPoint(b.locationLat!, b.locationLon!)))
+          _getDistance(GeoPoint(_currentLocation!.latitude, _currentLocation!.longitude), GeoPoint(a.locationLat!, a.locationLon!))
+              .compareTo(_getDistance(GeoPoint(_currentLocation!.latitude, _currentLocation!.longitude), GeoPoint(b.locationLat!, b.locationLon!)))
       );
     }
   }

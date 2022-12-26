@@ -9,7 +9,6 @@ import 'package:tudu/consts/color/Colors.dart';
 import 'package:tudu/models/deal.dart';
 import 'package:tudu/models/error.dart';
 import 'package:tudu/models/param.dart';
-import 'package:tudu/utils/pref_util.dart';
 import 'package:tudu/views/common/alert.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
 import 'package:tudu/consts/font/font_size_const.dart';
@@ -22,7 +21,7 @@ import 'package:tudu/views/deals/deal_details_view.dart';
 import 'package:tudu/views/map/map_deal_view.dart';
 import 'package:tudu/views/subscription/subscription_plan_view.dart';
 import 'package:tudu/services/observable/observable_serivce.dart';
-import 'package:tudu/utils/size_provider_widget.dart';
+import 'package:tudu/views/common/size_provider_widget.dart';
 
 class DealsView extends StatefulWidget {
   const DealsView({super.key});
@@ -599,6 +598,7 @@ class _DealsView extends State<DealsView> {
     List<PullDownMenuEntry> items = List.generate(_dealsViewModel.business.length * 2 - 1, (index) {
       if (index % 2 == 0) {
         var business = _dealsViewModel.business[index ~/ 2];
+
         return PullDownMenuItem(
           title: business.type,
           enabled: _businessId != business.businessid,

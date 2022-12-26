@@ -10,6 +10,8 @@ import 'package:tudu/views/common/exit_app_scope.dart';
 import 'package:tudu/views/login/login_view.dart';
 import 'package:tudu/views/onboard/card_board_view.dart';
 import 'package:tudu/generated/l10n.dart';
+import 'package:tudu/consts/strings/str_const.dart';
+import 'package:tudu/utils/pref_util.dart';
 
 class OnboardView extends StatefulWidget {
   const OnboardView({super.key});
@@ -28,6 +30,7 @@ class _OnboardState extends State<OnboardView> {
 
   @override
   Widget build(BuildContext context) {
+    var darkMode = PrefUtil.getValue(StrConst.isDarkMode, false) as bool;
     return ExitAppScope(
       child: Scaffold(
         key: _scaffoldKey,
@@ -40,7 +43,7 @@ class _OnboardState extends State<OnboardView> {
                 child:  Column(
                   children: [
                     Image.asset(
-                      ImagePath.logoTuduTulum,
+                      darkMode ? ImagePath.logoTuduTulumWhite : ImagePath.logoTuduTulumBlack,
                       height: MediaQuery.of(context).size.height * 0.15,
                     ),
                     SizedBox(
