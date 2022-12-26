@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:notification_center/notification_center.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -488,6 +489,15 @@ class _DealsView extends State<DealsView> {
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(8.0),
                             child: CachedNetworkImage(
+                              cacheManager: CacheManager(
+                                Config(
+                                  "cachedImg", //featureStoreKey
+                                  stalePeriod: const Duration(seconds: 15),
+                                  maxNrOfCacheObjects: 1,
+                                  repo: JsonCacheInfoRepository(databaseName: "cachedImg"),
+                                  fileService: HttpFileService(),
+                                ),
+                              ),
                               imageUrl: snapshot.data![index].images.first,
                               width: MediaQuery.of(context).size.width,
                               height: 236,
@@ -544,7 +554,7 @@ class _DealsView extends State<DealsView> {
                                   ),
                                 ),
                                 Text(
-                                  snapshot.data![index].site.titles["title"].toString(),
+                                  snapshot.data![index].site.title.toString(),
                                   maxLines: 1,
                                   style: TextStyle(
                                     fontFamily: FontStyles.raleway,
@@ -568,6 +578,15 @@ class _DealsView extends State<DealsView> {
                           height: 50,
                           constraints: BoxConstraints(maxWidth: (MediaQuery.of(context).size.width - 48.0) * 0.3),
                           child: CachedNetworkImage(
+                            cacheManager: CacheManager(
+                              Config(
+                                "cachedImg", //featureStoreKey
+                                stalePeriod: const Duration(seconds: 15),
+                                maxNrOfCacheObjects: 1,
+                                repo: JsonCacheInfoRepository(databaseName: "cachedImg"),
+                                fileService: HttpFileService(),
+                              ),
+                            ),
                             imageUrl: snapshot.data![index].logo,
                             fit: BoxFit.cover,
                             imageBuilder: (context, imageProvider) => Container(

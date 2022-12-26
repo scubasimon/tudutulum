@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:map_launcher/map_launcher.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -27,6 +28,7 @@ import 'package:tudu/views/deals/deal_details_view.dart';
 import 'package:tudu/views/photo/photo_view.dart';
 import 'package:tudu/viewmodels/home_viewmodel.dart';
 import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
+import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 import '../../models/error.dart';
@@ -251,6 +253,15 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
             alignment: Alignment.centerLeft,
             width: MediaQuery.of(context).size.width,
             child: CachedNetworkImage(
+              cacheManager: CacheManager(
+                Config(
+                  "cachedImg",
+                  stalePeriod: const Duration(seconds: 15),
+                  maxNrOfCacheObjects: 1,
+                  repo: JsonCacheInfoRepository(databaseName: "cachedImg"),
+                  fileService: HttpFileService(),
+                ),
+              ),
               imageUrl: urlImage,
               width: MediaQuery.of(context).size.width,
               height: 300,
@@ -476,7 +487,7 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
                       (getContact["telephone"] != null) ? InkWell(
                         child: Container(
                           padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                          child: Image.asset(ImagePath.phoneIcon, fit: BoxFit.contain, height: 42.0),
+                          child: Image.asset(ImagePath.phoneIcon, fit: BoxFit.contain, height: 32.0),
                         ),
                         onTap: () {
                           UrlLauncher.launch("tel://${getContact["phone"].toString()}");
@@ -485,25 +496,37 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
                       (getContact["email"] != null) ? InkWell(
                         child: Container(
                           padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                          child: Image.asset(ImagePath.emailIcon, fit: BoxFit.contain, height: 42.0),
+                          child: Image.asset(ImagePath.emailIcon, fit: BoxFit.contain, height: 32.0),
                         ),
-                        onTap: () {
-                          UrlLauncher.launch("mailto:${getContact["email"].toString()}");
+                        onTap: () async {
+                          // UrlLauncher.launch("mailto:${getContact["email"].toString()}");
+                          final url = Uri.parse("mailto:${getContact["email"].toString()}");
+                          if (await canLaunchUrl(url)) {
+                            await launchUrl(url);
+                          } else {
+                            showDialog(context: context, builder: (context) => ErrorAlert.alert(context, S.current.app_not_installed("Whatsapp")));
+                          }
                         },
                       ) : Container(),
                       (getContact["whatsapp"] != null) ? InkWell(
                         child: Container(
                           padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                          child: Image.asset(ImagePath.whatsAppIcon, fit: BoxFit.contain, height: 42.0),
+                          child: Image.asset(ImagePath.whatsAppIcon, fit: BoxFit.contain, height: 32.0),
                         ),
-                        onTap: () {
-                          UrlLauncher.launch("https://wa.me/${getContact["whatsapp"].toString()}?text=Hello");
+                        onTap: () async {
+                          // UrlLauncher.launch("https://wa.me/${getContact["whatsapp"].toString()}?text=Hello");
+                          final url = Uri.parse("whatsapp://send?phone=${getContact["whatsapp"]}");
+                          if (await canLaunchUrl(url)) {
+                            await launchUrl(url);
+                          } else {
+                            showDialog(context: context, builder: (context) => ErrorAlert.alert(context, S.current.app_not_installed("Whatsapp")));
+                          }
                         },
                       ) : Container(),
                       (getContact["website"] != null) ? InkWell(
                         child: Container(
                           padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                          child: Image.asset(ImagePath.internetIcon, fit: BoxFit.contain, height: 42.0),
+                          child: Image.asset(ImagePath.internetIcon, fit: BoxFit.contain, height: 32.0),
                         ),
                         onTap: () {
                           print("getIntouch[""] ${getContact["website"]}");
@@ -513,7 +536,7 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
                       (getContact["instagram"] != null) ? InkWell(
                         child: Container(
                           padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                          child: Image.asset(ImagePath.instagramIcon, fit: BoxFit.contain, height: 42.0),
+                          child: Image.asset(ImagePath.instagramIcon, fit: BoxFit.contain, height: 32.0),
                         ),
                         onTap: () {
                           UrlLauncher.launch(
@@ -525,7 +548,7 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
                       (getContact["facebook"] != null) ? InkWell(
                         child: Container(
                           padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                          child: Image.asset(ImagePath.facebookIcon, fit: BoxFit.contain, height: 42.0),
+                          child: Image.asset(ImagePath.facebookIcon, fit: BoxFit.contain, height: 32.0),
                         ),
                         onTap: () {
                           UrlLauncher.launch(
@@ -537,7 +560,7 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
                       (getContact["google"] != null) ? InkWell(
                         child: Container(
                           padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                          child: Image.asset(ImagePath.googleIcon, fit: BoxFit.contain, height: 42.0),
+                          child: Image.asset(ImagePath.googleIcon, fit: BoxFit.contain, height: 32.0),
                         ),
                         onTap: () {
                           FuncUlti.redirectToBrowserWithUrl("${getContact["google"]}");
@@ -583,7 +606,7 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
       return Container(
         padding: const EdgeInsets.only(top: 4.0, right: 4.0, bottom: 4.0),
         child: Text(
-            "${_homeViewModel.getSiteById(siteIndex)!.titles["title"]}"
+            "${_homeViewModel.getSiteById(siteIndex)!.title}"
         ),
       );
     } else {

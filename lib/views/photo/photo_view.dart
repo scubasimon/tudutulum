@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:tudu/consts/color/Colors.dart';
 import 'package:tudu/consts/font/Fonts.dart';
@@ -90,6 +91,15 @@ class _PhotoViewUtil extends State<PhotoViewUtil> with WidgetsBindingObserver {
                         behavior: HitTestBehavior.opaque,
                         child: PhotoView(
                           imageProvider: CachedNetworkImageProvider(
+                            cacheManager: CacheManager(
+                              Config(
+                                "cachedImg", //featureStoreKey
+                                stalePeriod: const Duration(seconds: 15),
+                                maxNrOfCacheObjects: 1,
+                                repo: JsonCacheInfoRepository(databaseName: "cachedImg"),
+                                fileService: HttpFileService(),
+                              ),
+                            ),
                             widget.banner[i % widget.banner.length],
                           ),
                           loadingBuilder: (context, event) => const Center(

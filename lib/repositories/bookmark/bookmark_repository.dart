@@ -95,7 +95,7 @@ class BookmarkRepositoryImpl extends BookmarkRepository {
       if (param.title == null) {
         return true;
       } else {
-        return element.titles["title"].toString().toLowerCase().contains(param.title!.toLowerCase())
+        return element.title.toString().toLowerCase().contains(param.title!.toLowerCase())
         || element.subTitle.toLowerCase().contains(param.title!.toLowerCase());
       }
     })
@@ -155,7 +155,7 @@ class BookmarkRepositoryImpl extends BookmarkRepository {
 
   void _sortAlphabet(List<Site> data) {
     data.sort((a, b) {
-      return a.titles["title"].toString().compareTo(b.titles["title"].toString());
+      return a.title.toString().compareTo(b.title.toString());
     });
   }
 

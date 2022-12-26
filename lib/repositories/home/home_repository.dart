@@ -348,34 +348,33 @@ class HomeRepositoryImpl extends HomeRepository {
   @override
   Future<List<int>> requestAllBookmarkedSiteId() async {
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
-      throw AuthenticationError.notLogin;
-    }
-
-    if (_allBookmarkedSiteId.isEmpty) {
-      List<int> listResult = [];
-      try {
-        var data = (await _firebaseService.bookmarks(user.uid)
-            .timeout(const Duration(seconds: NumberConst.timeout)))
-            .map((e) => e["siteid"] as int?)
-            .where((element) => element != null)
-            .toList();
-        for (var result in data) {
-          var siteData = await _firebaseService.getSite(result!);
-          if (siteData["siteid"] != null) {
-            listResult.add(siteData["siteid"]);
+    if (user != null) {
+      if (_allBookmarkedSiteId.isEmpty) {
+        List<int> listResult = [];
+        try {
+          var data = (await _firebaseService.bookmarks(user.uid)
+              .timeout(const Duration(seconds: NumberConst.timeout)))
+              .map((e) => e["siteid"] as int?)
+              .where((element) => element != null)
+              .toList();
+          for (var result in data) {
+            var siteData = await _firebaseService.getSite(result!);
+            if (siteData["siteid"] != null) {
+              listResult.add(siteData["siteid"]);
+            }
           }
-        }
 
-        _allBookmarkedSiteId = listResult;
-      } catch (e) {
-        if (e is TimeoutException) {
-          throw CommonError.serverError;
-        } else {
-          rethrow;
+          _allBookmarkedSiteId = listResult;
+        } catch (e) {
+          if (e is TimeoutException) {
+            throw CommonError.serverError;
+          } else {
+            rethrow;
+          }
         }
       }
     }
+
     return _allBookmarkedSiteId;
   }
 

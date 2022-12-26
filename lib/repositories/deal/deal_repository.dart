@@ -68,7 +68,7 @@ class DealRepositoryImpl extends DealRepository {
       if (param.title == null) {
         return true;
       } else {
-        return element.site.titles["title"].toString().toLowerCase().contains(param.title!.toLowerCase());
+        return element.site.title.toString().toLowerCase().contains(param.title!.toLowerCase());
       }
     })
         .where((element) => element.active)
@@ -160,7 +160,7 @@ class DealRepositoryImpl extends DealRepository {
 
   void _sortAlphabet(List<Deal> data) {
     data.sort((a, b) {
-      return a.site.titles["title"].toString().compareTo(b.site.titles["title"].toString());
+      return a.site.title.toString().compareTo(b.site.title.toString());
     });
   }
 

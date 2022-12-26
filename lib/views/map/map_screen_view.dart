@@ -102,7 +102,7 @@ class _MapScreenView extends State<MapScreenView> {
           ).timeout(const Duration(seconds: 10));
 
           final Marker marker = Marker(
-              markerId: MarkerId(site.titles["title"]!),
+              markerId: MarkerId(site.title),
               position: LatLng(site.locationLat!, site.locationLon!),
               // infoWindow: InfoWindow(title: "Title: ${site.title}", snippet: "Subtitle: ${site.subTitle}"),
               icon: icon,
@@ -119,6 +119,31 @@ class _MapScreenView extends State<MapScreenView> {
 
         } catch (e) {
           setState(() {});
+
+          var icon = await MarkerIcon.downloadResizePictureCircle(
+            "https://pngimage.net/wp-content/uploads/2018/06/no-image-found-png-1-300x200.png",
+            size: 150,
+            addBorder: true,
+            borderColor: Colors.white,
+            borderSize: 15,
+          ).timeout(const Duration(seconds: 10));
+
+          final Marker marker = Marker(
+              markerId: MarkerId(site.title),
+              position: LatLng(site.locationLat!, site.locationLon!),
+              // infoWindow: InfoWindow(title: "Title: ${site.title}", snippet: "Subtitle: ${site.subTitle}"),
+              icon: icon,
+              onTap: () {
+                _whatTuduSiteContentDetailViewModel.setSiteContentDetailCover(site);
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const WhatTuduSiteContentDetailView(),
+                        settings: const RouteSettings(name: StrConst.whatTuduSiteContentDetailScene)));
+              });
+          setState(() {});
+          markers.add(marker);
+
           _observableService.homeProgressLoadingController.sink.add(false);
           _observableService.networkController.sink.add(e.toString());
         }
