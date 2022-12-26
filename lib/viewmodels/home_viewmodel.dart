@@ -173,7 +173,7 @@ class HomeViewModel extends BaseViewModel {
     return null;
   }
 
-  Future<void> getDataFromFireStore() async {
+  Future<void> getDataFromFireStore(bool isLoadOnInit) async {
     _observableService.homeProgressLoadingController.sink.add(true);
 
     await getListBusinesses();
@@ -181,9 +181,9 @@ class HomeViewModel extends BaseViewModel {
     await getListAmenities();
     await getListEventType();
 
-    await getListArticles();
-    await getListSites();
-    await getListEvents();
+    await getListArticles(isLoadOnInit);
+    await getListSites(isLoadOnInit);
+    await getListEvents(isLoadOnInit);
 
     await requestAllBookmarkedSiteId();
 
@@ -297,21 +297,21 @@ class HomeViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  Future<void> getListArticles() async {
+  Future<void> getListArticles(bool isLoadOnInit) async {
     listArticles = await _homeRepository.getListArticles();
-    _observableService.listArticlesController.sink.add(listArticles);
+    if (isLoadOnInit) _observableService.listArticlesController.sink.add(listArticles);
     notifyListeners();
   }
 
-  Future<void> getListSites() async {
+  Future<void> getListSites(bool isLoadOnInit) async {
     listSites = await _homeRepository.getListSites();
-    _observableService.listSitesController.sink.add(listSites);
+    if (isLoadOnInit) _observableService.listSitesController.sink.add(listSites);
     notifyListeners();
   }
 
-  Future<void> getListEvents() async {
+  Future<void> getListEvents(bool isLoadOnInit) async {
     listEvents = await _homeRepository.getListEvents();
-    _observableService.listEventsController.sink.add(listEvents);
+    if (isLoadOnInit) _observableService.listEventsController.sink.add(listEvents);
     notifyListeners();
   }
 
@@ -375,36 +375,7 @@ class HomeViewModel extends BaseViewModel {
     try {
       List<Map<String, dynamic>> listData = [];
       for (var site in listSites) {
-        // remoteSite["siteid"] = i;
-        // remoteSite["title"] = "${FuncUlti.getRandomText(5)} ${FuncUlti.getRandomText(4)}";
-        // remoteSite["subTitle"] = "${FuncUlti.getRandomText(6)} ${FuncUlti.getRandomText(6)}";
-        // remoteSite["locationLat"] = (Random().nextDouble()+0.001) * 89;
-        // remoteSite["locationLon"] = (Random().nextDouble()+0.001) * 179;
-        // List<int> listBusiness = [];
-        // for (int i = 0; i < 2; i ++) {
-        //   int randomNumber = Random().nextInt(7);
-        //   listBusiness.add(randomNumber);
-        // }
-        // remoteSite["rating"] = (Random().nextDouble()+0.001) * 5;
-        // if (Random().nextBool() == true) {
-        //   remoteSite["dealId"] = 0;
-        // } else {
-        //   remoteSite["dealId"] = null;
-        // }
-
-        // var xxx = site.toJson();
-        // xxx["titles"] = {
-        //   "title": site.title,
-        //   "contentTitle": site.siteContent.title,
-        // };
-        //
-        // if (site.siteContent.getIntouch != null) {
-        //   xxx["getIntouchTitle"] = site.siteContent.getIntouch!["title"];
-        // }
-
-        // xxx["siteid"] = 0;
-
-        // listData.add(xxx);
+        ///TODO: IMPL IF NEEDED
       }
       await _homeRepository.createData(listData);
     } catch (e) {
