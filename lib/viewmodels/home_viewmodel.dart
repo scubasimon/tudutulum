@@ -375,39 +375,7 @@ class HomeViewModel extends BaseViewModel {
     try {
       List<Map<String, dynamic>> listData = [];
       for (var site in listSites) {
-        // remoteSite["siteid"] = i;
-        // remoteSite["title"] = "${FuncUlti.getRandomText(5)} ${FuncUlti.getRandomText(4)}";
-        // remoteSite["subTitle"] = "${FuncUlti.getRandomText(6)} ${FuncUlti.getRandomText(6)}";
-        // remoteSite["locationLat"] = (Random().nextDouble()+0.001) * 89;
-        // remoteSite["locationLon"] = (Random().nextDouble()+0.001) * 179;
-        // List<int> listBusiness = [];
-        // for (int i = 0; i < 2; i ++) {
-        //   int randomNumber = Random().nextInt(7);
-        //   listBusiness.add(randomNumber);
-        // }
-        // remoteSite["rating"] = (Random().nextDouble()+0.001) * 5;
-        // if (Random().nextBool() == true) {
-        //   remoteSite["dealId"] = 0;
-        // } else {
-        //   remoteSite["dealId"] = null;
-        // }
-
-        var xxx = site.toJson();
-        // xxx["titles"] = {
-        //   "title": site.title,
-        //   "contentTitle": site.siteContent.title,
-        // };
-
-        // if (site.siteContent.getIntouch != null) {
-        //   xxx["getIntouchTitle"] = site.siteContent.getIntouch!["title"];
-        // }
-
-        xxx["siteid"] = site.siteId;
-        xxx["title"] = site.titles["title"];
-
-        print("titletitletitle ${site.titles["title"]}");
-
-        listData.add(xxx);
+        ///TODO: IMPL IF NEEDED
       }
       await _homeRepository.createData(listData);
     } catch (e) {

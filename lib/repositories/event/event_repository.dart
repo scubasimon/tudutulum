@@ -57,8 +57,6 @@ class EventRepositoryImpl extends EventRepository {
 
 
         for (var event in listEventResult) {
-          print("1111 ${event.title.toString().toLowerCase().contains(keywordSearch.toLowerCase())} - ${keywordSearch.toLowerCase()} - ${event.title.toString().toLowerCase()}");
-          print("2222 ${event.description.toString().toLowerCase().contains(keywordSearch.toLowerCase())} - ${keywordSearch.toLowerCase()} - ${event.description.toString().toLowerCase()}");
           if (event.title.toString().toLowerCase().contains(keywordSearch.toLowerCase()) ||
               event.description.toString().toLowerCase().contains(keywordSearch.toLowerCase())) {
             result.add(event);
