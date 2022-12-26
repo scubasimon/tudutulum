@@ -81,7 +81,7 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
 
   Future<void> loadRemoteData() async {
     try {
-      await _homeViewModel.getListEvents();
+      await _homeViewModel.getListEvents(false);
       loadNewEvent();
     } catch (e) {
       print("loadRemoteData: $e");
@@ -473,7 +473,7 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
                   ) : Container(),
                   Row(
                     children: [
-                      (getContact["phone"] != null) ? InkWell(
+                      (getContact["telephone"] != null) ? InkWell(
                         child: Container(
                           padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
                           child: Image.asset(ImagePath.phoneIcon, fit: BoxFit.contain, height: 42.0),
@@ -534,28 +534,13 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
                           );
                         },
                       ) : Container(),
-                      (getContact["owl"] != null) ? InkWell(
+                      (getContact["google"] != null) ? InkWell(
                         child: Container(
                           padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                          child: Image.asset(ImagePath.owlIcon, fit: BoxFit.contain, height: 42.0),
+                          child: Image.asset(ImagePath.googleIcon, fit: BoxFit.contain, height: 42.0),
                         ),
                         onTap: () {
-                          UrlLauncher.launch(
-                            getContact["owl"].toString(),
-                            universalLinksOnly: true,
-                          );
-                        },
-                      ) : Container(),
-                      (getContact["twitter"] != null) ? InkWell(
-                        child: Container(
-                          padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                          child: Image.asset(ImagePath.twitterIcon, fit: BoxFit.contain, height: 42.0),
-                        ),
-                        onTap: () {
-                          UrlLauncher.launch(
-                            getContact["twitter"].toString(),
-                            universalLinksOnly: true,
-                          );
+                          FuncUlti.redirectToBrowserWithUrl("${getContact["google"]}");
                         },
                       ) : Container()
                     ],

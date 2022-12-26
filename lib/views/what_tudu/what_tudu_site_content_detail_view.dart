@@ -29,6 +29,7 @@ import 'package:tudu/viewmodels/home_viewmodel.dart';
 import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
 import 'package:tudu/services/observable/observable_serivce.dart';
 import 'package:tudu/services/location/permission_request.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../utils/pref_util.dart';
 
@@ -100,7 +101,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
 
   Future<void> loadRemoteData() async {
     try {
-      await _homeViewModel.getListSites();
+      await _homeViewModel.getListSites(true);
       loadNewSite();
     } catch (e) {
       print("loadRemoteData: $e");
@@ -206,16 +207,16 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
             ),
           ),
         ),
-        body: SmartRefresher(
-          enablePullDown: true,
-          header: const WaterDropHeader(),
-          controller: _refreshController,
-          onRefresh: _onRefresh,
-          child: Container(
-            color: ColorStyle.getSystemBackground(),
+        body: Container(
+          color: ColorStyle.getSystemBackground(),
+          child: SmartRefresher(
+            enablePullDown: true,
+            header: const WaterDropHeader(),
+            controller: _refreshController,
+            onRefresh: _onRefresh,
             child: ListView(
               shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
+              // physics: const NeverScrollableScrollPhysics(),
               children: <Widget>[
                 getExploreAllLocationView(),
               ],
@@ -798,8 +799,14 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                           padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
                           child: Image.asset(ImagePath.emailIcon, fit: BoxFit.contain, height: 42.0),
                         ),
-                        onTap: () {
-                          UrlLauncher.launch("mailto:${getIntouch["email"].toString()}");
+                        onTap: () async {
+                          // UrlLauncher.launch("mailto:${getIntouch["email"].toString()}");
+                          final url = Uri.parse("mailto:${getIntouch["email"]}");
+                          if (await canLaunchUrl(url)) {
+                            await launchUrl(url);
+                          } else {
+                            showDialog(context: context, builder: (context) => ErrorAlert.alert(context, S.current.app_not_installed("Mail")));
+                          }
                         },
                       ) : Container(),
                       (getIntouch["whatsapp"] != null) ? InkWell(
@@ -807,8 +814,14 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                           padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
                           child: Image.asset(ImagePath.whatsAppIcon, fit: BoxFit.contain, height: 42.0),
                         ),
-                        onTap: () {
-                          UrlLauncher.launch("https://wa.me/${getIntouch["whatsapp"].toString()}?text=Hello");
+                        onTap: () async {
+                          // UrlLauncher.launch("https://wa.me/${getIntouch["whatsapp"].toString()}?text=Hello");
+                          final url = Uri.parse("whatsapp://send?phone=${getIntouch["whatsapp"]}");
+                          if (await canLaunchUrl(url)) {
+                            await launchUrl(url);
+                          } else {
+                            showDialog(context: context, builder: (context) => ErrorAlert.alert(context, S.current.app_not_installed("Whatsapp")));
+                          }
                         },
                       ) : Container(),
                       (getIntouch["website"] != null) ? InkWell(
@@ -1281,7 +1294,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                   ),
                 )),
           ]);
-      Future.delayed(const Duration(milliseconds: 500), () {
+      Future.delayed(const Duration(milliseconds: 2000), () {
         Navigator.popUntil(context, ModalRoute.withName(StrConst.whatTuduSiteContentDetailScene));
         setState(() {});
       });
