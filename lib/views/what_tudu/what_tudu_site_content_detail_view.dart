@@ -264,6 +264,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
         getIntouch(
           _whatTuduSiteContentDetailViewModel.siteContentDetail.siteContent.getIntouch,
           _whatTuduSiteContentDetailViewModel.siteContentDetail.siteContent.logo,
+          _whatTuduSiteContentDetailViewModel.siteContentDetail.title,
         ),
         Container(
           height: 0.5,
@@ -797,7 +798,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
     }
   }
 
-  Widget getIntouch(Map<String, String>? getIntouch, String? logo) {
+  Widget getIntouch(Map<String, String>? getIntouch, String? logo, title) {
     if (getIntouch != null && logo != null) {
       return Stack(
         children: [
@@ -855,7 +856,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                   SizedBox(
                     height: 20,
                     child: Text(
-                      getIntouch["title"].toString(),
+                      title.toString(),
                       style: TextStyle(
                         fontFamily: FontStyles.mouser,
                         fontSize: FontSizeConst.font12,
