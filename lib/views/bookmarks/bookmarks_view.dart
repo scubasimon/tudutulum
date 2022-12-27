@@ -45,7 +45,7 @@ class _BookmarksView extends State<BookmarksView> {
   StreamSubscription<bool>? darkModeListener;
 
   var _order = Order.distance;
-  bool _isAtTop = true;
+  bool _isAtTop = false;
   int? _businessId;
   var _enableRefresh = true;
 
@@ -290,31 +290,16 @@ class _BookmarksView extends State<BookmarksView> {
                   header: const WaterDropHeader(),
                   controller: _refreshController,
                   onRefresh: _refresh,
-                  child: SizeProviderWidget(
-                    onChildSize: (size) {
-                      if (size.height < MediaQuery.of(context).size.height
-                          - MediaQuery.of(context).padding.top
-                          - MediaQuery.of(context).padding.bottom
-                          - 56 /*Appbar*/
-                          - 50 /*BottomNav*/) {
-                        _isAtTop = true;
-                        setState(() {});
-                      }
-                    },
-                    child: Container(
-                      color: ColorStyle.getSystemBackground(),
-                      child: ListView(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        controller: _scrollController,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
-                            child: createBookmarksView(),
-                          ),
-                        ],
+                  child: ListView(
+                    // shrinkWrap: true,
+                    // physics: const NeverScrollableScrollPhysics(),
+                    controller: _scrollController,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
+                        child: createBookmarksView(),
                       ),
-                    ),
+                    ],
                   ),
                 );
               }

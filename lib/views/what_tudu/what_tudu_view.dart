@@ -8,6 +8,7 @@ import 'package:notification_center/notification_center.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:rounded_background_text/rounded_background_text.dart';
+import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:tudu/consts/color/Colors.dart';
 import 'package:tudu/consts/font/Fonts.dart';
 import 'package:tudu/models/article.dart';
@@ -67,7 +68,11 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
   StreamSubscription<List<Article>?>? zeroDataArticleListener;
   StreamSubscription<List<Site>?>? zeroDataSiteListener;
 
-  bool isAtTop = true;
+  StopWatchTimer? stopWatchTimerShowHideSearch;
+
+  bool isShowing = false;
+  final int searchAnimationDuration = 300;
+  double calculateSearchHeight = 56;
 
   DataLoadingType _isArticleZeroDataResult = DataLoadingType.LOADING;
   DataLoadingType _isSiteZeroDataResult = DataLoadingType.LOADING;
@@ -84,15 +89,32 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
     listenToZeroDataFilter();
     // listenToLoading();
 
-    isAtTop = false;
+    stopWatchTimerShowHideSearch = StopWatchTimer(
+      mode: StopWatchMode.countDown,
+      presetMillisecond: searchAnimationDuration,
+      onStop: () { },
+      onChange: (value) {
+        slowlyShowOrHideSearch(value);
+      },
+      onChangeRawSecond: (value) {},
+      onChangeRawMinute: (value) {},
+    );
 
-    _scrollController.addListener(() {
-      if (_scrollController.offset <= 0.0) {
-        isAtTop = true;
-        setState(() {});
-      } else {
-        isAtTop = false;
-        setState(() {});
+    _scrollController.addListener(() async {
+      if (_scrollController.offset <= 0.0 && isShowing == false) {
+        isShowing = true;
+        if (stopWatchTimerShowHideSearch!.isRunning == false) {
+          stopWatchTimerShowHideSearch!.onExecute.add(StopWatchExecute.reset);
+          stopWatchTimerShowHideSearch!.onExecute.add(StopWatchExecute.start);
+        }
+      }
+
+      if (_scrollController.offset > 0.0 && isShowing == true) {
+        isShowing = false;
+        if (stopWatchTimerShowHideSearch!.isRunning == false) {
+          stopWatchTimerShowHideSearch!.onExecute.add(StopWatchExecute.reset);
+          stopWatchTimerShowHideSearch!.onExecute.add(StopWatchExecute.start);
+        }
       }
     });
 
@@ -107,9 +129,6 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
             _searchController.text // Search text
             );
       }
-      if (_searchController.text != "") {
-        isAtTop = true;
-      }
     });
 
     super.initState();
@@ -121,6 +140,16 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
         await loadRemoteData(true);
       }
     });
+  }
+
+  void slowlyShowOrHideSearch(int value) async {
+    final double searchHeightPercent = value/searchAnimationDuration.toDouble();
+    if (isShowing == true) {
+      calculateSearchHeight = 94 - 38 * searchHeightPercent;
+    } else {
+      calculateSearchHeight = 56 + 38 * searchHeightPercent;
+    }
+    setState(() {});
   }
 
   Future<void> loadRemoteData(bool isLoadOnInit) async {
@@ -244,6 +273,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
   @override
   void dispose() {
     print("dispose -> what_tudu_view");
+    stopWatchTimerShowHideSearch?.onExecute.add(StopWatchExecute.stop);
     darkModeListener?.cancel();
     // loadingListener?.cancel();
     zeroDataArticleListener?.cancel();
@@ -268,7 +298,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
     return ExitAppScope(
       child: Scaffold(
           appBar: AppBar(
-            toolbarHeight: (isAtTop) ? 94 : 56,
+            toolbarHeight: calculateSearchHeight,
             automaticallyImplyLeading: false,
             flexibleSpace: Container(
               padding: EdgeInsets.only(
@@ -466,7 +496,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                       ],
                     ),
                   ),
-                  (isAtTop)
+                  (calculateSearchHeight > 90)
                       ? CupertinoSearchTextField(
                           controller: _searchController,
                           style: TextStyle(
@@ -495,16 +525,13 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
               header: const WaterDropHeader(),
               controller: _refreshController,
               onRefresh: _onRefresh,
-              child: Container(
-                color: ColorStyle.getSystemBackground(),
-                child: ListView(
-                  shrinkWrap: true,
-                  // physics: const NeverScrollableScrollPhysics(),
-                  controller: _scrollController,
-                  children: <Widget>[
-                    getMainView()
-                  ],
-                ),
+              child: ListView(
+                // shrinkWrap: true,
+                // physics: const NeverScrollableScrollPhysics(),
+                controller: _scrollController,
+                children: <Widget>[
+                  getMainView()
+                ],
               ),
             ),
           )),
@@ -674,73 +701,59 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
           if (snapshot.data!.isEmpty) {
             return Container();
           }
-          return SizeProviderWidget(
-            onChildSize: (size) {
-              if (size.height <
-                  MediaQuery.of(context).size.height -
-                      MediaQuery.of(context).padding.top -
-                      MediaQuery.of(context).padding.bottom -
-                      56 /*Appbar*/
-                      -
-                      50 /*BottomNav*/) {
-                isAtTop = true;
-                setState(() {});
-              }
-            },
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                  padding: const EdgeInsets.only(top: 8, bottom: 8, left: 24, right: 16),
-                  alignment: Alignment.centerLeft,
-                  child: Row(
-                    children: [
-                      Text(
-                        getSiteTitleText(_homeViewModel.whatTuduBussinessFilterType),
-                        style: TextStyle(
-                          color: ColorStyle.getDarkLabel(),
-                          fontSize: FontSizeConst.font16,
-                          fontWeight: FontWeight.w400,
-                          fontFamily: FontStyles.mouser,
-                        ),
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.only(top: 8, bottom: 8, left: 24, right: 16),
+                alignment: Alignment.centerLeft,
+                child: Row(
+                  children: [
+                    Text(
+                      getSiteTitleText(_homeViewModel.whatTuduBussinessFilterType),
+                      style: TextStyle(
+                        color: ColorStyle.getDarkLabel(),
+                        fontSize: FontSizeConst.font16,
+                        fontWeight: FontWeight.w400,
+                        fontFamily: FontStyles.mouser,
                       ),
-                      const Spacer(),
-                      InkWell(
-                        hoverColor: Colors.transparent,
-                        focusColor: Colors.transparent,
-                        splashColor: Colors.transparent,
-                        onTap: () {
-                          print("PermissionRequest -> START");
-                          // _homeViewModel.redirectTab(5); // Map tab
-                          Navigator.of(context).push(
-                              MaterialPageRoute(builder: (context) => const MapScreenView())
-                          );
-                        },
-                        child: Column(
-                          children: [
-                            Image.asset(
-                              ImagePath.pinMapIcon,
-                              width: 16,
-                              height: 16,
-                            ),
-                            Text(
-                              S.current.map,
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontFamily: FontStyles.raleway,
-                                  fontSize: FontSizeConst.font10,
-                                  color: ColorStyle.primary),
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
+                    ),
+                    const Spacer(),
+                    InkWell(
+                      hoverColor: Colors.transparent,
+                      focusColor: Colors.transparent,
+                      splashColor: Colors.transparent,
+                      onTap: () {
+                        print("PermissionRequest -> START");
+                        // _homeViewModel.redirectTab(5); // Map tab
+                        Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) => const MapScreenView())
+                        );
+                      },
+                      child: Column(
+                        children: [
+                          Image.asset(
+                            ImagePath.pinMapIcon,
+                            width: 16,
+                            height: 16,
+                          ),
+                          Text(
+                            S.current.map,
+                            style: const TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontFamily: FontStyles.raleway,
+                                fontSize: FontSizeConst.font10,
+                                color: ColorStyle.primary),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
                 ),
-                getExploreAllLocationView(snapshot.data!),
-              ],
-            ),
+              ),
+              getExploreAllLocationView(snapshot.data!),
+            ],
           );
         }
       },
