@@ -1,5 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:custom_marker/marker_icon.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:tudu/models/site.dart';
 import 'package:tudu/viewmodels/bookmarks_viewmodel.dart';
@@ -21,8 +23,9 @@ import 'package:tudu/views/what_tudu/what_tudu_site_content_detail_view.dart';
 class MapBookmarkView extends StatefulWidget {
   final int? businessId;
   final List<Business> business;
+  final Function(int? business)? businessUpdate;
 
-  const MapBookmarkView({super.key, this.businessId, this.business = const []});
+  const MapBookmarkView({super.key, this.businessId, this.business = const [], this.businessUpdate});
 
   @override
   State<StatefulWidget> createState() {
@@ -89,6 +92,9 @@ class _MapBookmarkView extends State<MapBookmarkView> {
                   children: [
                     InkWell(
                       onTap: () {
+                        if (widget.businessUpdate != null) {
+                          widget.businessUpdate!(_businessId);
+                        }
                         Navigator.of(context).pop();
                       },
                       child: Row(
@@ -200,9 +206,26 @@ class _MapBookmarkView extends State<MapBookmarkView> {
             ),
 
           ),
-          iconWidget: Image.asset(
-            ImagePath.cenoteIcon,
-            width: 28, height: 28,
+          iconWidget: CachedNetworkImage(
+            cacheManager: CacheManager(
+              Config(
+                "cachedImg", //featureStoreKey
+                stalePeriod: const Duration(seconds: 15),
+                maxNrOfCacheObjects: 1,
+                repo: JsonCacheInfoRepository(databaseName: "cachedImg"),
+                fileService: HttpFileService(),
+              ),
+            ),
+            imageUrl: business.icon,
+            fit: BoxFit.cover,
+            width: 28,
+            height: 28,
+            imageBuilder: (context, imageProvider) => Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+              ),
+            ),
+            errorWidget: (context, url, error) => const Icon(Icons.error),
           ),
           onTap: () {
             _bookmarkViewModel.searchWithParam(businessId: business.businessid);

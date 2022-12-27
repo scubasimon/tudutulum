@@ -389,6 +389,10 @@ class _DealsView extends State<DealsView> {
                       MaterialPageRoute(builder: (context) => MapDealView(
                         businessId: _businessId,
                         business: _dealsViewModel.business,
+                        businessUpdate: (id) {
+                          _businessId = id;
+                          _dealsViewModel.searchWithParam(title: _searchController.text, businessId: id, order: _order);
+                        },
                       ))
                   );
                 },
@@ -614,9 +618,26 @@ class _DealsView extends State<DealsView> {
             ),
 
           ),
-          iconWidget: Image.asset(
-            ImagePath.cenoteIcon,
-            width: 28, height: 28,
+          iconWidget: CachedNetworkImage(
+            cacheManager: CacheManager(
+              Config(
+                "cachedImg", //featureStoreKey
+                stalePeriod: const Duration(seconds: 15),
+                maxNrOfCacheObjects: 1,
+                repo: JsonCacheInfoRepository(databaseName: "cachedImg"),
+                fileService: HttpFileService(),
+              ),
+            ),
+            imageUrl: business.icon,
+            fit: BoxFit.cover,
+            width: 28,
+            height: 28,
+            imageBuilder: (context, imageProvider) => Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+              ),
+            ),
+            errorWidget: (context, url, error) => const Icon(Icons.error),
           ),
           onTap: () {
             _dealsViewModel.searchWithParam(businessId: business.businessid);
