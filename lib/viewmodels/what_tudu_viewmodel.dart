@@ -7,7 +7,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart';
 import 'package:tudu/base/base_viewmodel.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:tudu/models/article.dart';
 import 'package:tudu/models/business.dart';
 import 'package:tudu/models/site.dart';
 import 'package:tudu/utils/func_utils.dart';

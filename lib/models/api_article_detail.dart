@@ -1,162 +1,166 @@
-class APIArticleDetail {
-  late String sId;
-  late String lastUpdated;
-  late String createdOn;
-  late String name;
-  late String slug;
-  late String singularName;
-  late List<Fields> fields;
+class Article {
+  late List<Items> items;
+  late int count;
+  late int limit;
+  late int offset;
+  late int total;
 
-  APIArticleDetail({
-    required this.sId,
-    required this.lastUpdated,
-    required this.createdOn,
-    required this.name,
-    required this.slug,
-    required this.singularName,
-    required this.fields,
+  Article({
+    required this.items,
+    required this.count,
+    required this.limit,
+    required this.offset,
+    required this.total,
   });
 
-  APIArticleDetail.fromJson(Map<String, dynamic> json) {
-    sId = json['_id'];
-    lastUpdated = json['lastUpdated'];
-    createdOn = json['createdOn'];
-    name = json['name'];
-    slug = json['slug'];
-    singularName = json['singularName'];
-    if (json['fields'] != null) {
-      fields = <Fields>[];
-      json['fields'].forEach((v) {
-        fields.add(Fields.fromJson(v));
+  Article.fromJson(Map<String, dynamic> json) {
+    if (json['items'] != null) {
+      items = <Items>[];
+      json['items'].forEach((v) {
+        items.add(Items.fromJson(v));
       });
     }
+    count = json['count'];
+    limit = json['limit'];
+    offset = json['offset'];
+    total = json['total'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['_id'] = this.sId;
-    data['lastUpdated'] = this.lastUpdated;
-    data['createdOn'] = this.createdOn;
-    data['name'] = this.name;
-    data['slug'] = this.slug;
-    data['singularName'] = this.singularName;
-    if (this.fields != null) {
-      data['fields'] = this.fields.map((v) => v.toJson()).toList();
-    }
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['items'] = items.map((v) => v.toJson()).toList();
+    data['count'] = count;
+    data['limit'] = limit;
+    data['offset'] = offset;
+    data['total'] = total;
     return data;
   }
 }
 
-class Fields {
-  late String? name;
-  late String? slug;
-  late String? type;
-  late bool? required;
-  late bool? editable;
-  late String? helpText;
-  late String? id;
-  late Validations? validations;
-  late bool? unique;
-  late bool? defaultData;
+class Items {
+  late bool bArchived;
+  late bool bDraft;
+  late bool featured;
+  late String name;
+  late String postBody;
+  late String tags;
+  late String postSummary;
+  late APIArticleDetailImage? image;
+  late APIArticleDetailImage? thumbnailImage;
+  late String slug;
+  late String updatedOn;
+  late String updatedBy;
+  late String createdOn;
+  late String createdBy;
+  late String publishedOn;
+  late String publishedBy;
+  late String sCid;
+  late String sId;
+  late String? postBody2;
+  late APIArticleDetailImage? image2;
 
-  Fields(
-      {required this.name,
-      required this.slug,
-      required this.type,
-      required this.required,
-      required this.editable,
-      required this.helpText,
-      required this.id,
-      required this.validations,
-      required this.unique,
-      required this.defaultData});
+  Items(
+      {required this.bArchived,
+        required this.bDraft,
+        required this.featured,
+        required this.name,
+        required this.postBody,
+        required this.tags,
+        required this.postSummary,
+        required this.image,
+        required this.thumbnailImage,
+        required this.slug,
+        required this.updatedOn,
+        required this.updatedBy,
+        required this.createdOn,
+        required this.createdBy,
+        required this.publishedOn,
+        required this.publishedBy,
+        required this.sCid,
+        required this.sId,
+        required this.postBody2,
+        required this.image2});
 
-  Fields.fromJson(Map<String, dynamic> json) {
+  Items.fromJson(Map<String, dynamic> json) {
+    bArchived = json['_archived'];
+    bDraft = json['_draft'];
+    featured = json['featured'];
     name = json['name'];
+    postBody = json['post-body'];
+    tags = json['tags'];
+    postSummary = json['post-summary'];
+    image = json['image'] != null ? new APIArticleDetailImage.fromJson(json['image']) : null;
+    thumbnailImage = json['thumbnail-image'] != null ? new APIArticleDetailImage.fromJson(json['thumbnail-image']) : null;
     slug = json['slug'];
-    type = json['type'];
-    required = json['required'];
-    editable = json['editable'];
-    helpText = json['helpText'];
-    id = json['id'];
-    validations = json['validations'] != null ? Validations.fromJson(json['validations']) : null;
-    unique = json['unique'];
-    defaultData = json['default'];
+    updatedOn = json['updated-on'];
+    updatedBy = json['updated-by'];
+    createdOn = json['created-on'];
+    createdBy = json['created-by'];
+    publishedOn = json['published-on'];
+    publishedBy = json['published-by'];
+    sCid = json['_cid'];
+    sId = json['_id'];
+    postBody2 = json['post-body-2'];
+    image2 = json['image2'] != null ? new APIArticleDetailImage.fromJson(json['image2']) : null;
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['_archived'] = this.bArchived;
+    data['_draft'] = this.bDraft;
+    data['featured'] = this.featured;
     data['name'] = this.name;
+    data['post-body'] = this.postBody;
+    data['tags'] = this.tags;
+    data['post-summary'] = this.postSummary;
+    final image = this.image;
+    if (image != null) {
+      data['image'] = image.toJson();
+    }
+    final thumbnailImage = this.thumbnailImage;
+    if (thumbnailImage != null) {
+      data['thumbnail-image'] = thumbnailImage.toJson();
+    }
     data['slug'] = this.slug;
-    data['type'] = this.type;
-    data['required'] = this.required;
-    data['editable'] = this.editable;
-    data['helpText'] = this.helpText;
-    data['id'] = this.id;
-    if (this.validations != null) {
-      data['validations'] = this.validations!.toJson();
-    }
-    data['unique'] = this.unique;
-    data['default'] = this.defaultData;
-    return data;
-  }
-}
-
-class Validations {
-  late bool? singleLine;
-  late int? maxLength;
-  late Pattern? pattern;
-  late Messages? messages;
-
-  Validations({required this.singleLine, required this.maxLength, required this.pattern, required this.messages});
-
-  Validations.fromJson(Map<String, dynamic> json) {
-    singleLine = json['singleLine'];
-    maxLength = json['maxLength'];
-    pattern = json['pattern'] != null ? new Pattern.fromJson(json['pattern']) : null;
-    messages = json['messages'] != null ? new Messages.fromJson(json['messages']) : null;
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['singleLine'] = this.singleLine;
-    data['maxLength'] = this.maxLength;
-    if (this.pattern != null) {
-      data['pattern'] = this.pattern!.toJson();
-    }
-    if (this.messages != null) {
-      data['messages'] = this.messages!.toJson();
+    data['updated-on'] = this.updatedOn;
+    data['updated-by'] = this.updatedBy;
+    data['created-on'] = this.createdOn;
+    data['created-by'] = this.createdBy;
+    data['published-on'] = this.publishedOn;
+    data['published-by'] = this.publishedBy;
+    data['_cid'] = this.sCid;
+    data['_id'] = this.sId;
+    data['post-body-2'] = this.postBody2;
+    final image2 = this.image2;
+    if (image2 != null) {
+      data['image2'] = image2.toJson();
     }
     return data;
   }
 }
 
-class Pattern {
-  Pattern();
+class APIArticleDetailImage {
+  late String fileId;
+  late String url;
+  late Null alt;
 
-  Pattern.fromJson(Map<String, dynamic> json) {}
+  APIArticleDetailImage({
+    required this.fileId,
+    required this.url,
+    required this.alt,
+  });
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    return data;
-  }
-}
-
-class Messages {
-  late String? pattern;
-  late String? maxLength;
-
-  Messages({required this.pattern, required this.maxLength});
-
-  Messages.fromJson(Map<String, dynamic> json) {
-    pattern = json['pattern'];
-    maxLength = json['maxLength'];
+  APIArticleDetailImage.fromJson(Map<String, dynamic> json) {
+    fileId = json['fileId'];
+    url = json['url'];
+    alt = json['alt'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['pattern'] = this.pattern;
-    data['maxLength'] = this.maxLength;
+    data['fileId'] = this.fileId;
+    data['url'] = this.url;
+    data['alt'] = this.alt;
     return data;
   }
 }
