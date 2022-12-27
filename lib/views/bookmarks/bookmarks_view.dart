@@ -356,6 +356,10 @@ class _BookmarksView extends State<BookmarksView> {
                         MaterialPageRoute(builder: (context) => MapBookmarkView(
                           businessId: _businessId,
                           business: _bookmarksViewModel.business,
+                          businessUpdate: (id) {
+                            _businessId = id;
+                            _bookmarksViewModel.searchWithParam(businessId: id, order: _order, title: _searchController.text);
+                          },
                         ))
                     );
                   },
@@ -595,9 +599,26 @@ class _BookmarksView extends State<BookmarksView> {
             ),
 
           ),
-          iconWidget: Image.asset(
-            ImagePath.cenoteIcon,
-            width: 28, height: 28,
+          iconWidget: CachedNetworkImage(
+            cacheManager: CacheManager(
+              Config(
+                "cachedImg", //featureStoreKey
+                stalePeriod: const Duration(seconds: 15),
+                maxNrOfCacheObjects: 1,
+                repo: JsonCacheInfoRepository(databaseName: "cachedImg"),
+                fileService: HttpFileService(),
+              ),
+            ),
+            imageUrl: business.icon,
+            fit: BoxFit.cover,
+            width: 28,
+            height: 28,
+            imageBuilder: (context, imageProvider) => Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+              ),
+            ),
+            errorWidget: (context, url, error) => const Icon(Icons.error),
           ),
           onTap: () {
             _bookmarksViewModel.searchWithParam(businessId: business.businessid);

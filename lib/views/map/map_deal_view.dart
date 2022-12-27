@@ -1,7 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:custom_marker/marker_icon.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:tudu/viewmodels/map_deals_viewmodel.dart';
@@ -20,8 +22,9 @@ import 'package:tudu/views/deals/deal_details_view.dart';
 class MapDealView extends StatefulWidget {
   final int? businessId;
   final List<Business> business;
+  final Function(int? business)? businessUpdate;
 
-  const MapDealView({super.key, this.businessId, this.business = const []});
+  const MapDealView({super.key, this.businessId, this.business = const [], this.businessUpdate});
 
   @override
   State<StatefulWidget> createState() {
@@ -88,6 +91,9 @@ class _MapDealView extends State<MapDealView> {
                   children: [
                     InkWell(
                       onTap: () {
+                        if (widget.businessUpdate != null) {
+                          widget.businessUpdate!(_businessId);
+                        }
                         Navigator.of(context).pop();
                       },
                       child: Row(
@@ -207,9 +213,26 @@ class _MapDealView extends State<MapDealView> {
             ),
 
           ),
-          iconWidget: Image.asset(
-            ImagePath.cenoteIcon,
-            width: 28, height: 28,
+          iconWidget: CachedNetworkImage(
+            cacheManager: CacheManager(
+              Config(
+                "cachedImg", //featureStoreKey
+                stalePeriod: const Duration(seconds: 15),
+                maxNrOfCacheObjects: 1,
+                repo: JsonCacheInfoRepository(databaseName: "cachedImg"),
+                fileService: HttpFileService(),
+              ),
+            ),
+            imageUrl: business.icon,
+            fit: BoxFit.cover,
+            width: 28,
+            height: 28,
+            imageBuilder: (context, imageProvider) => Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+              ),
+            ),
+            errorWidget: (context, url, error) => const Icon(Icons.error),
           ),
           onTap: () {
             _mapDealsViewModel.searchWithParam(businessId: business.businessid);
