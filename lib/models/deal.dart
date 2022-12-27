@@ -71,7 +71,7 @@ class Deal {
         active: true,
         images: [],
         siteId: site["siteid"] as int,
-        title: site["title"] as String,
+        title: "",
         subTitle: "",
         business: [],
         siteContent: SiteContent(),
