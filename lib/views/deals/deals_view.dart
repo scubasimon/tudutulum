@@ -46,7 +46,7 @@ class _DealsView extends State<DealsView> {
   StreamSubscription<bool>? _subscription;
 
   var _order = Order.distance;
-  bool _isAtTop = true;
+  bool _isAtTop = false;
   int? _businessId;
   var _enableRefresh = true;
 
@@ -55,7 +55,6 @@ class _DealsView extends State<DealsView> {
 
   @override
   void initState() {
-    _isAtTop = false;
     _dealsViewModel.getData();
     _scrollController.addListener(() {
       if (_scrollController.offset <= 0.0) {
@@ -334,31 +333,16 @@ class _DealsView extends State<DealsView> {
                         header: const WaterDropHeader(),
                         controller: _refreshController,
                         onRefresh: _refresh,
-                        child: SizeProviderWidget(
-                          onChildSize: (size) {
-                            if (size.height < MediaQuery.of(context).size.height
-                                - MediaQuery.of(context).padding.top
-                                - MediaQuery.of(context).padding.bottom
-                                - 56 /*Appbar*/
-                                - 50 /*BottomNav*/) {
-                              _isAtTop = true;
-                              setState(() {});
-                            }
-                          },
-                          child: Container(
-                            color: ColorStyle.getSystemBackground(),
-                            child: ListView(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              controller: _scrollController,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
-                                  child: createDealsView(),
-                                ),
-                              ],
+                        child: ListView(
+                          // shrinkWrap: true,
+                          // physics: const NeverScrollableScrollPhysics(),
+                          controller: _scrollController,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
+                              child: createDealsView(),
                             ),
-                          ),
+                          ],
                         ),
                       );
                     } else {
