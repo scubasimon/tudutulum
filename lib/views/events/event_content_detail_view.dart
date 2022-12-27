@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -34,6 +36,7 @@ import 'package:url_launcher/url_launcher_string.dart';
 import '../../models/error.dart';
 import '../../services/observable/observable_serivce.dart';
 import '../../services/location/permission_request.dart';
+import '../../utils/pref_util.dart';
 import '../../viewmodels/event_content_detail_viewmodel.dart';
 
 class EventContentDetailView extends StatefulWidget {
@@ -313,7 +316,7 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
                       PermissionRequest.isResquestPermission = true;
                       PermissionRequest().permissionServiceCall(
                         context,
-                        _eventContentDetailViewModel.directionWithGoogleMap,
+                        _openNavigationApp,
                       );
                     },
                     child: Padding(
@@ -614,4 +617,75 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
     }
   }
 
+  void _openNavigationApp() async {
+    var map = PrefUtil.getValue(StrConst.selectMap, "") as String;
+    if (map.isNotEmpty) {
+      try {
+        final availableMaps = await MapLauncher.installedMaps;
+        await availableMaps.firstWhere((element) {
+          return element.mapName == map;
+        }).showDirections(
+            destination: Coords(
+              _eventContentDetailViewModel.eventContentDetail.locationLat!,
+              _eventContentDetailViewModel.eventContentDetail.locationLon!,
+            ));
+        return;
+      } catch (e) {
+        print(e);
+      }
+    }
+    if (Platform.isAndroid) {
+      _openMap("Google Maps", _eventContentDetailViewModel.eventContentDetail);
+    } else {
+      showCupertinoModalPopup(
+          context: context,
+          builder: (context) => _sheetNavigation(
+            _eventContentDetailViewModel.eventContentDetail,
+          ));
+    }
+  }
+
+  void _openMap(String name, Event event) async {
+    try {
+      PrefUtil.setValue(StrConst.selectMap, name);
+      final availableMaps = await MapLauncher.installedMaps;
+      await availableMaps.firstWhere((element) {
+        return element.mapName == name;
+      }).showDirections(destination: Coords(event.locationLat!, event.locationLon!));
+    } catch (e) {
+      print(e);
+      showDialog(context: context, builder: (context) => ErrorAlert.alert(context, S.current.app_not_installed(name)));
+    }
+  }
+
+  Widget _sheetNavigation(Event event) {
+    return CupertinoActionSheet(
+      message: Text(S.current.select_navigation_app),
+      actions: [
+        CupertinoActionSheetAction(
+          isDefaultAction: true,
+          onPressed: () async {
+            Navigator.of(context).pop();
+            _openMap("Apple Maps", event);
+          },
+          child: const Text("Apple Maps"),
+        ),
+        CupertinoActionSheetAction(
+          isDefaultAction: true,
+          onPressed: () async {
+            Navigator.of(context).pop();
+            _openMap("Google Maps", event);
+          },
+          child: const Text("Google Maps"),
+        ),
+        CupertinoActionSheetAction(
+          isDestructiveAction: true,
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Text(S.current.cancel),
+        )
+      ],
+    );
+  }
 }
