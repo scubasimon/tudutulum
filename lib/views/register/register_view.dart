@@ -50,7 +50,7 @@ class _RegisterStateView extends State<RegisterView> {
 
   @override
   Widget build(BuildContext context) {
-    var darkMode = PrefUtil.getValue(StrConst.darkMode, false) as bool;
+    var darkMode = PrefUtil.getValue(StrConst.isDarkMode, false) as bool;
     return ExitAppScope(
       child: Container(
         color: ColorStyle.getSystemBackground(),
