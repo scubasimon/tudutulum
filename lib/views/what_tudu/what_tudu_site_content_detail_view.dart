@@ -45,8 +45,7 @@ class WhatTuduSiteContentDetailView extends StatefulWidget {
 class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView> with WidgetsBindingObserver {
   final WhatTuduSiteContentDetailViewModel _whatTuduSiteContentDetailViewModel = WhatTuduSiteContentDetailViewModel();
   final HomeViewModel _homeViewModel = HomeViewModel();
-  final EventsViewModel _eventsViewModel = EventsViewModel();
-  ObservableService _observableService = ObservableService();
+  final ObservableService _observableService = ObservableService();
 
   final PageController controller = PageController();
 
@@ -180,11 +179,6 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                     ),
                     onTap: () {
                       Navigator.of(context).pop();
-                      // Navigator.of(context).popUntil((route) {
-                      //   return (route.settings.name == StrConst.whatTuduScene ||
-                      //       route.settings.name == StrConst.mapScene ||
-                      //       route.isFirst);
-                      // });
                     },
                   ),
                   StreamBuilder(
@@ -219,7 +213,6 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
             onRefresh: _onRefresh,
             child: ListView(
               shrinkWrap: true,
-              // physics: const NeverScrollableScrollPhysics(),
               children: <Widget>[
                 getExploreAllLocationView(),
               ],
@@ -264,6 +257,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
         getIntouch(
           _whatTuduSiteContentDetailViewModel.siteContentDetail.siteContent.getIntouch,
           _whatTuduSiteContentDetailViewModel.siteContentDetail.siteContent.logo,
+          _whatTuduSiteContentDetailViewModel.siteContentDetail.title,
         ),
         Container(
           height: 0.5,
@@ -329,7 +323,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                         radius: 20,
                         color: ColorStyle.primary,
                       ),
-                      errorWidget: (context, url, error) => Icon(Icons.error),
+                      errorWidget: (context, url, error) => const Icon(Icons.error),
                     ),
                   );
                 },
@@ -386,8 +380,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                         DateTime.now(),
                         "",
                         "",
-                        "",
-                        "");
+                        "",);
                     Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -797,7 +790,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
     }
   }
 
-  Widget getIntouch(Map<String, String>? getIntouch, String? logo) {
+  Widget getIntouch(Map<String, String>? getIntouch, String? logo, title) {
     if (getIntouch != null && logo != null) {
       return Stack(
         children: [
@@ -855,7 +848,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                   SizedBox(
                     height: 20,
                     child: Text(
-                      getIntouch["title"].toString(),
+                      title.toString(),
                       style: TextStyle(
                         fontFamily: FontStyles.mouser,
                         fontSize: FontSizeConst.font12,
@@ -924,7 +917,6 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                                 child: Image.asset(ImagePath.internetIcon, fit: BoxFit.contain, height: 42.0),
                               ),
                               onTap: () {
-                                print("getIntouch[" "] ${getIntouch["website"]}");
                                 FuncUlti.redirectToBrowserWithUrl("${getIntouch["website"]}");
                               },
                             )
@@ -1223,7 +1215,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
   Widget getEventsAndExps(String iconUrl, String iconLink) {
     return InkWell(
       onTap: () {
-        FuncUlti.redirectToBrowserWithUrl("$iconLink");
+        FuncUlti.redirectToBrowserWithUrl(iconLink);
       },
       child: Container(
         padding: const EdgeInsets.only(top: 4.0, right: 4.0, bottom: 4.0),
@@ -1250,7 +1242,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
             radius: 20,
             color: ColorStyle.primary,
           ),
-          errorWidget: (context, url, error) => Icon(Icons.error),
+          errorWidget: (context, url, error) => const Icon(Icons.error),
         ),
       ),
     );
@@ -1311,7 +1303,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
               child: Container(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  "${FuncUlti.getDayInWeekFromKeyword(dayInWeek)}",
+                  FuncUlti.getDayInWeekFromKeyword(dayInWeek),
                   style: TextStyle(
                     color: ColorStyle.getDarkLabel(),
                     fontWeight: FontWeight.w500,
@@ -1401,10 +1393,10 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                     mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      ("${amenity.title}".isNotEmpty)
+                      (amenity.title.isNotEmpty)
                           ? Text(
-                              "${amenity.title}",
-                              style: TextStyle(
+                              amenity.title,
+                              style: const TextStyle(
                                 color: ColorStyle.secondaryDarkLabel94,
                                 fontWeight: FontWeight.bold,
                                 fontSize: FontSizeConst.font12,
@@ -1413,11 +1405,11 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                               ),
                             )
                           : Container(),
-                      Container(height: ("${amenity.title}".isNotEmpty && "${amenity.description}".isNotEmpty) ? 8 : 0),
-                      ("${amenity.description}".isNotEmpty)
+                      Container(height: (amenity.title.isNotEmpty && amenity.description.isNotEmpty) ? 8 : 0),
+                      (amenity.description.isNotEmpty)
                           ? Text(
-                              "${amenity.description}",
-                              style: TextStyle(
+                              amenity.description,
+                              style: const TextStyle(
                                 color: ColorStyle.secondaryDarkLabel94,
                                 fontWeight: FontWeight.w400,
                                 fontSize: FontSizeConst.font12,

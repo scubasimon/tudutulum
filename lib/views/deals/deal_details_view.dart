@@ -38,6 +38,8 @@ class _DealDetailView extends State<DealDetailView> {
 
   final _dealViewModel = DealViewModel();
   final _refreshController = RefreshController(initialRefresh: false);
+  final _controller = PageController();
+
 
   @override
   void initState() {
@@ -173,30 +175,47 @@ class _DealDetailView extends State<DealDetailView> {
         child: Container(
           alignment: Alignment.centerLeft,
           width: MediaQuery.of(context).size.width,
-          child: CachedNetworkImage(
-            cacheManager: CacheManager(
-              Config(
-                "cachedImg", //featureStoreKey
-                stalePeriod: const Duration(seconds: 15),
-                maxNrOfCacheObjects: 1,
-                repo: JsonCacheInfoRepository(databaseName: "cachedImg"),
-                fileService: HttpFileService(),
-              ),
+          height: 300,
+          child: WillPopScope(
+            onWillPop: () async {
+              return true;
+            },
+            child: PageView.builder(
+              pageSnapping: false,
+              physics: const PageOverscrollPhysics(velocityPerOverscroll: 10),
+              controller: _controller,
+              itemCount: deal.images.length,
+              itemBuilder: (context, i) {
+                return GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  child: CachedNetworkImage(
+                    cacheManager: CacheManager(
+                      Config(
+                        "cachedImg", //featureStoreKey
+                        stalePeriod: const Duration(seconds: 15),
+                        maxNrOfCacheObjects: 1,
+                        repo: JsonCacheInfoRepository(databaseName: "cachedImg"),
+                        fileService: HttpFileService(),
+                      ),
+                    ),
+                    imageUrl: deal.images[i],
+                    width: MediaQuery.of(context).size.width,
+                    height: 300,
+                    fit: BoxFit.cover,
+                    imageBuilder: (context, imageProvider) => Container(
+                      decoration: BoxDecoration(
+                        image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                      ),
+                    ),
+                    placeholder: (context, url) => const CupertinoActivityIndicator(
+                      radius: 20,
+                      color: ColorStyle.primary,
+                    ),
+                    errorWidget: (context, url, error) => const Icon(Icons.error),
+                  ),
+                );
+              },
             ),
-            imageUrl: deal.images.first,
-            width: MediaQuery.of(context).size.width,
-            height: 300,
-            fit: BoxFit.cover,
-            imageBuilder: (context, imageProvider) => Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
-              ),
-            ),
-            placeholder: (context, url) => const CupertinoActivityIndicator(
-              radius: 20,
-              color: ColorStyle.primary,
-            ),
-            errorWidget: (context, url, error) => const Icon(Icons.error),
           ),
         ),
       ),
@@ -347,8 +366,18 @@ class _DealDetailView extends State<DealDetailView> {
                       fileService: HttpFileService(),
                     ),
                   ),
-                  imageUrl: deal.logo,
+                  imageUrl: deal.site.siteContent.logo ?? "",
                   fit: BoxFit.cover,
+                  imageBuilder: (context, imageProvider) => Container(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                    ),
+                  ),
+                  placeholder: (context, url) => const CupertinoActivityIndicator(
+                    radius: 20,
+                    color: ColorStyle.primary,
+                  ),
+                  errorWidget: (context, url, error) => const Icon(Icons.error),
                 ),
               ),
             ],

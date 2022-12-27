@@ -192,8 +192,9 @@ class LocalDatabaseServiceImpl extends LocalDatabaseService {
     }
 
     List<Site> listLocalDeal = listRemoteEvents.map((site){
-      final siteContent = site["siteContent"] as Map<String, dynamic>? ?? {};
+
       return Site(
+        dealId: site["dealId"],
         active: site["active"],
         images: (site["image"] as List<dynamic>? ?? []).map((e) => e as String).toList(),
         siteId: site["siteid"] as int,
@@ -201,19 +202,19 @@ class LocalDatabaseServiceImpl extends LocalDatabaseService {
         subTitle: site["subTitle"],
         business:  (site["business"] as List<dynamic>? ?? []).map((e) => e as int).toList(),
         siteContent: SiteContent(
-            description: siteContent["contentDescription"],
-            moreInformation: siteContent["moreInformation"],
-            advisory: siteContent["advisory"],
-            amenities: (siteContent["amenities"] as List<dynamic>? ??[]).map((e) => e as int).toList(),
-            amentityDescriptions: (siteContent["amentityDescriptions"] as List<dynamic>? ?? []).map((e) => e as String).toList(),
-            openingTimes: siteContent["openingTimes"],
-            fees: siteContent["fees"],
-            capacity: siteContent["capacity"],
-            eventIcons: (siteContent["eventIcons"] as List<dynamic>? ?? []).map((e) => e as String).toList(),
-            eventLinks: (siteContent["eventLinks"] as List<dynamic>? ?? []).map((e) => e as String).toList(),
-            getIntouch: siteContent["getIntouch"],
-            logo: siteContent["logo"],
-            partner: siteContent["partner"]
+            description: site["contentDescription"],
+            moreInformation: site["moreInformation"],
+            advisory: site["advisory"],
+            amenities: (site["amenities"] as List<dynamic>? ??[]).map((e) => e as int).toList(),
+            amentityDescriptions: (site["amentityDescriptions"] as List<dynamic>? ?? []).map((e) => e as String).toList(),
+            openingTimes: site["openingTimes"],
+            fees: site["fees"],
+            capacity: site["capacity"],
+            eventIcons: (site["eventIcons"] as List<dynamic>? ?? []).map((e) => e as String).toList(),
+            eventLinks: (site["eventLinks"] as List<dynamic>? ?? []).map((e) => e as String).toList(),
+            getIntouch: site["getIntouch"],
+            logo: site["logo"],
+            partner: site["partner"]
         ),
         locationLat: site["locationLat"] as double?,
         locationLon: site["locationLon"] as double?,

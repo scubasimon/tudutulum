@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:localstore/localstore.dart';
 import 'package:notification_center/notification_center.dart';
 import 'package:pull_down_button/pull_down_button.dart';
@@ -71,7 +72,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
   StopWatchTimer? stopWatchTimerShowHideSearch;
 
   bool isShowing = true;
-  final int searchAnimationDuration = 300;
+  final int searchAnimationDuration = 500;
   double calculateSearchHeight = 56;
 
   DataLoadingType _isArticleZeroDataResult = DataLoadingType.LOADING;
@@ -451,10 +452,30 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                                                     fontSize: 17,
                                                     color: ColorStyle.menuLabel),
                                               ),
-                                              iconWidget: Image.asset(
-                                                ImagePath.cenoteIcon,
+                                              iconWidget: CachedNetworkImage(
+                                                cacheManager: CacheManager(
+                                                  Config(
+                                                    "cachedImg", //featureStoreKey
+                                                    stalePeriod: const Duration(seconds: 15),
+                                                    maxNrOfCacheObjects: 1,
+                                                    repo: JsonCacheInfoRepository(databaseName: "cachedImg"),
+                                                    fileService: HttpFileService(),
+                                                  ),
+                                                ),
+                                                imageUrl: _homeViewModel.listBusiness[((counter) / 2).round()].icon,
                                                 width: 28,
                                                 height: 28,
+                                                fit: BoxFit.cover,
+                                                imageBuilder: (context, imageProvider) => Container(
+                                                  decoration: BoxDecoration(
+                                                    image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                                                  ),
+                                                ),
+                                                placeholder: (context, url) => const CupertinoActivityIndicator(
+                                                  radius: 20,
+                                                  color: ColorStyle.primary,
+                                                ),
+                                                errorWidget: (context, url, error) => Icon(Icons.error),
                                               ),
                                               enabled:
                                                   _homeViewModel.whatTuduBussinessFilterType != ((counter) / 2).round(),
@@ -919,7 +940,6 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                     images: []),
                 DateTime.now(),
                 DateTime.now(),
-                "",
                 "",
                 "",
                 "");

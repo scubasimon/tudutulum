@@ -57,7 +57,7 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
   StopWatchTimer? stopWatchTimerShowHideSearch;
 
   bool isShowing = true;
-  final int searchAnimationDuration = 300;
+  final int searchAnimationDuration = 500;
   double calculateSearchHeight = 56;
 
   @override
