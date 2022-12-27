@@ -56,7 +56,7 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
 
   StopWatchTimer? stopWatchTimerShowHideSearch;
 
-  bool isShowing = false;
+  bool isShowing = true;
   final int searchAnimationDuration = 300;
   double calculateSearchHeight = 56;
 
@@ -119,6 +119,10 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      Timer(const Duration(seconds: 1), () {
+        isShowing = false;
+      });
+
       if ((PrefUtil.getValue(StrConst.isEventDataBinded, true) as bool == false)) {
         _homeViewModel.eventEventFilterType = _homeViewModel.listEventTypes.length;
         setState(() {});

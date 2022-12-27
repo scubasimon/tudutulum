@@ -70,7 +70,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
 
   StopWatchTimer? stopWatchTimerShowHideSearch;
 
-  bool isShowing = false;
+  bool isShowing = true;
   final int searchAnimationDuration = 300;
   double calculateSearchHeight = 56;
 
@@ -136,6 +136,10 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      Timer(const Duration(seconds: 1), () {
+        isShowing = false;
+      });
+
       if ((PrefUtil.getValue(StrConst.isWhatTuduDataBinded, true) as bool == false)) {
         await loadRemoteData(true);
       }
@@ -295,6 +299,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    print("buind -> $calculateSearchHeight");
     return ExitAppScope(
       child: Scaffold(
           appBar: AppBar(
