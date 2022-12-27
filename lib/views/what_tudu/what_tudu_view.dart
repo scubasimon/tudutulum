@@ -921,7 +921,6 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                 DateTime.now(),
                 "",
                 "",
-                "",
                 "");
             Navigator.push(
                 context,

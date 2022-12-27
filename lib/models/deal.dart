@@ -12,10 +12,9 @@ class Deal {
   String? terms;
   late String title;
   late String titleShort;
-  late String logo;
   late List<int> businesses = [];
 
-  Deal(this.dealsId, this.active, this.description, this.images, this.site, this.startDate, this.endDate, this.terms, this.title, this.titleShort, this.logo);
+  Deal(this.dealsId, this.active, this.description, this.images, this.site, this.startDate, this.endDate, this.terms, this.title, this.titleShort);
 
   Deal.from(Map<String, dynamic> data) {
     dealsId = data["dealsid"] as int? ?? 0;
@@ -35,12 +34,11 @@ class Deal {
     terms = data["terms"] as String?;
     title = data["title"] as String? ?? "";
     titleShort = data["titleshort"] as String? ?? "";
-    logo = data["logo"] as String? ?? "";
     businesses = (data["business"] as List<dynamic>? ?? []).map((e) => e as int).toList();
 
     var site = data["site"] as Map<String, dynamic>? ?? {};
     final siteContent = site["siteContent"] as Map<String, dynamic>? ?? {};
-    if (site["titles"] != null) {
+    if (site["title"] != null) {
       this.site = Site(
         active: site["active"],
         images: (site["image"] as List<dynamic>? ?? []).map((e) => e as String).toList(),
@@ -106,7 +104,6 @@ class Deal {
       "terms": terms,
       "title": title,
       "titleshort": titleShort,
-      "logo": logo,
       "business": businesses,
       "site": siteMap,
     };

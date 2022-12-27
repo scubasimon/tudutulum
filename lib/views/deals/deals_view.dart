@@ -575,7 +575,7 @@ class _DealsView extends State<DealsView> {
                                 fileService: HttpFileService(),
                               ),
                             ),
-                            imageUrl: snapshot.data![index].logo,
+                            imageUrl: snapshot.data![index].site.siteContent.logo ?? "",
                             fit: BoxFit.cover,
                             imageBuilder: (context, imageProvider) => Container(
                               decoration: BoxDecoration(

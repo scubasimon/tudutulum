@@ -79,6 +79,7 @@ class BookmarkRepositoryImpl extends BookmarkRepository {
           print(e);
         }
         for (var site in _results) {
+          print(site.toJson());
           await Localstore.instance.collection('bookmarks').doc(_results.indexOf(site).toString()).set(site.toJson());
         }
       } catch (e) {
