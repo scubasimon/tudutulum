@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:map_launcher/map_launcher.dart';
+import 'package:photo_view/photo_view.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:tudu/consts/color/Colors.dart';
 import 'package:tudu/consts/font/Fonts.dart';
@@ -47,6 +48,8 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
   final EventsViewModel _eventsViewModel = EventsViewModel();
   ObservableService _observableService = ObservableService();
 
+  final PageController controller = PageController();
+
   Offset _tapPosition = Offset.zero;
 
   final RefreshController _refreshController = RefreshController(initialRefresh: false);
@@ -56,6 +59,9 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
 
   @override
   void initState() {
+    print("initState -> SiteContent");
+    print("initState -> ${_whatTuduSiteContentDetailViewModel.siteContentDetail.title}");
+
     _textKey.clear();
 
     if (_whatTuduSiteContentDetailViewModel.siteContentDetail.siteContent.fees != null) {
@@ -92,11 +98,8 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
     } catch (e) {
       _refreshController.refreshFailed();
       _observableService.homeProgressLoadingController.sink.add(false);
-      _observableService.homeErrorController.sink.add(CustomError(
-        "Refresh FAIL",
-        message: e.toString(),
-        data: const {}
-      ));
+      _observableService.homeErrorController.sink
+          .add(CustomError("Refresh FAIL", message: e.toString(), data: const {}));
     }
   }
 
@@ -131,11 +134,8 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
     } else {
       _refreshController.refreshFailed();
       _observableService.homeProgressLoadingController.sink.add(false);
-      _observableService.homeErrorController.sink.add(CustomError(
-          "Refresh FAIL",
-          message: "Facing error",
-          data: const {}
-      ));
+      _observableService.homeErrorController.sink
+          .add(CustomError("Refresh FAIL", message: "Facing error", data: const {}));
     }
   }
 
@@ -195,7 +195,9 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                         child: InkWell(
                           onTap: _whatTuduSiteContentDetailViewModel.bookmarkAction,
                           child: Image.asset(
-                            (snapshot.hasData && snapshot.data!) ? ImagePath.tab4thActiveIcon: ImagePath.markDeactiveIcon,
+                            (snapshot.hasData && snapshot.data!)
+                                ? ImagePath.tab4thActiveIcon
+                                : ImagePath.markDeactiveIcon,
                             fit: BoxFit.contain,
                             width: 16.0,
                           ),
@@ -290,8 +292,50 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
           },
           child: Container(
             alignment: Alignment.centerLeft,
+            height: 300,
             width: MediaQuery.of(context).size.width,
-            child: CachedNetworkImage(
+            child: WillPopScope(
+              onWillPop: () async {
+                return true;
+              },
+              child: PageView.builder(
+                pageSnapping: false,
+                physics: const PageOverscrollPhysics(velocityPerOverscroll: 1000),
+                controller: controller,
+                itemBuilder: (context, i) {
+                  return GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    child: CachedNetworkImage(
+                      cacheManager: CacheManager(
+                        Config(
+                          "cachedImg",
+                          stalePeriod: const Duration(seconds: 15),
+                          maxNrOfCacheObjects: 1,
+                          repo: JsonCacheInfoRepository(databaseName: "cachedImg"),
+                          fileService: HttpFileService(),
+                        ),
+                      ),
+                      imageUrl:  _whatTuduSiteContentDetailViewModel.siteContentDetail
+                          .images[i % _whatTuduSiteContentDetailViewModel.siteContentDetail.images.length],
+                      width: MediaQuery.of(context).size.width,
+                      height: 300,
+                      fit: BoxFit.cover,
+                      imageBuilder: (context, imageProvider) => Container(
+                        decoration: BoxDecoration(
+                          image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                        ),
+                      ),
+                      placeholder: (context, url) => const CupertinoActivityIndicator(
+                        radius: 20,
+                        color: ColorStyle.primary,
+                      ),
+                      errorWidget: (context, url, error) => Icon(Icons.error),
+                    ),
+                  );
+                },
+              ),
+            ),
+            /*child: CachedNetworkImage(
               cacheManager: CacheManager(
                 Config(
                   "cachedImg", //featureStoreKey
@@ -315,7 +359,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                 color: ColorStyle.primary,
               ),
               errorWidget: (context, url, error) => Icon(Icons.error),
-            ),
+            ),*/
           ),
         ),
         (dealId != null)
@@ -325,12 +369,29 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                 splashColor: Colors.transparent,
                 onTap: () {
                   if (FirebaseAuth.instance.currentUser != null) {
-                    final dealData = Deal(dealId, false, "", [], Site(active: true, title: "", subTitle: "", siteId: 0, business: [], siteContent: SiteContent(), images: []), DateTime.now(), DateTime.now(), "", "", "", "");
+                    final dealData = Deal(
+                        dealId,
+                        false,
+                        "",
+                        [],
+                        Site(
+                            active: true,
+                            title: "",
+                            subTitle: "",
+                            siteId: 0,
+                            business: [],
+                            siteContent: SiteContent(),
+                            images: []),
+                        DateTime.now(),
+                        DateTime.now(),
+                        "",
+                        "",
+                        "",
+                        "");
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) =>
-                                DealDetailView(deal: dealData, preview: true),
+                            builder: (context) => DealDetailView(deal: dealData, preview: true),
                             settings: const RouteSettings(name: StrConst.detalDetailView)));
                   } else {
                     showDialog(
@@ -565,7 +626,8 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: listOpenTimes.values.toList().length - 1,
                 itemBuilder: (BuildContext context, int index) {
-                  print("listOpenTimes ${listOpenTimes.keys.toList()[index]} - ${listOpenTimes.values.toList()[index]}");
+                  print(
+                      "listOpenTimes ${listOpenTimes.keys.toList()[index]} - ${listOpenTimes.values.toList()[index]}");
                   return getOpeningTime(listOpenTimes, index);
                 },
               )
@@ -720,10 +782,10 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                   children: [
                     getFirstEventsAndExps(siteId), // Logic for Calendar icon and Calendar logic
                     Wrap(
-                      children: eventIcons!.map((eventIcon) => getEventsAndExps(
-                          eventIcons[eventIcons.indexOf(eventIcon)],
-                          eventLinks![eventIcons.indexOf(eventIcon)]
-                      )).toList(),
+                      children: eventIcons!
+                          .map((eventIcon) => getEventsAndExps(
+                              eventIcons[eventIcons.indexOf(eventIcon)], eventLinks![eventIcons.indexOf(eventIcon)]))
+                          .toList(),
                     ),
                   ],
                 ),
@@ -804,55 +866,69 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                   ),
                   Row(
                     children: [
-                      (getIntouch["phone"] != null) ? InkWell(
-                        child: Container(
-                          padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                          child: Image.asset(ImagePath.phoneIcon, fit: BoxFit.contain, height: 42.0),
-                        ),
-                        onTap: () {
-                          UrlLauncher.launch("tel://${getIntouch["phone"].toString()}");
-                        },
-                      ) : Container(),
-                      (getIntouch["email"] != null) ? InkWell(
-                        child: Container(
-                          padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                          child: Image.asset(ImagePath.emailIcon, fit: BoxFit.contain, height: 42.0),
-                        ),
-                        onTap: () async {
-                          // UrlLauncher.launch("mailto:${getIntouch["email"].toString()}");
-                          final url = Uri.parse("mailto:${getIntouch["email"]}");
-                          if (await canLaunchUrl(url)) {
-                            await launchUrl(url);
-                          } else {
-                            showDialog(context: context, builder: (context) => ErrorAlert.alert(context, S.current.app_not_installed("Mail")));
-                          }
-                        },
-                      ) : Container(),
-                      (getIntouch["whatsapp"] != null) ? InkWell(
-                        child: Container(
-                          padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                          child: Image.asset(ImagePath.whatsAppIcon, fit: BoxFit.contain, height: 42.0),
-                        ),
-                        onTap: () async {
-                          // UrlLauncher.launch("https://wa.me/${getIntouch["whatsapp"].toString()}?text=Hello");
-                          final url = Uri.parse("whatsapp://send?phone=${getIntouch["whatsapp"]}");
-                          if (await canLaunchUrl(url)) {
-                            await launchUrl(url);
-                          } else {
-                            showDialog(context: context, builder: (context) => ErrorAlert.alert(context, S.current.app_not_installed("Whatsapp")));
-                          }
-                        },
-                      ) : Container(),
-                      (getIntouch["website"] != null) ? InkWell(
-                        child: Container(
-                          padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                          child: Image.asset(ImagePath.internetIcon, fit: BoxFit.contain, height: 42.0),
-                        ),
-                        onTap: () {
-                          print("getIntouch[""] ${getIntouch["website"]}");
-                          FuncUlti.redirectToBrowserWithUrl("${getIntouch["website"]}");
-                        },
-                      ) : Container(),
+                      (getIntouch["phone"] != null)
+                          ? InkWell(
+                              child: Container(
+                                padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
+                                child: Image.asset(ImagePath.phoneIcon, fit: BoxFit.contain, height: 42.0),
+                              ),
+                              onTap: () {
+                                UrlLauncher.launch("tel://${getIntouch["phone"].toString()}");
+                              },
+                            )
+                          : Container(),
+                      (getIntouch["email"] != null)
+                          ? InkWell(
+                              child: Container(
+                                padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
+                                child: Image.asset(ImagePath.emailIcon, fit: BoxFit.contain, height: 42.0),
+                              ),
+                              onTap: () async {
+                                // UrlLauncher.launch("mailto:${getIntouch["email"].toString()}");
+                                final url = Uri.parse("mailto:${getIntouch["email"]}");
+                                if (await canLaunchUrl(url)) {
+                                  await launchUrl(url);
+                                } else {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) =>
+                                          ErrorAlert.alert(context, S.current.app_not_installed("Mail")));
+                                }
+                              },
+                            )
+                          : Container(),
+                      (getIntouch["whatsapp"] != null)
+                          ? InkWell(
+                              child: Container(
+                                padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
+                                child: Image.asset(ImagePath.whatsAppIcon, fit: BoxFit.contain, height: 42.0),
+                              ),
+                              onTap: () async {
+                                // UrlLauncher.launch("https://wa.me/${getIntouch["whatsapp"].toString()}?text=Hello");
+                                final url = Uri.parse("whatsapp://send?phone=${getIntouch["whatsapp"]}");
+                                if (await canLaunchUrl(url)) {
+                                  await launchUrl(url);
+                                } else {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) =>
+                                          ErrorAlert.alert(context, S.current.app_not_installed("Whatsapp")));
+                                }
+                              },
+                            )
+                          : Container(),
+                      (getIntouch["website"] != null)
+                          ? InkWell(
+                              child: Container(
+                                padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
+                                child: Image.asset(ImagePath.internetIcon, fit: BoxFit.contain, height: 42.0),
+                              ),
+                              onTap: () {
+                                print("getIntouch[" "] ${getIntouch["website"]}");
+                                FuncUlti.redirectToBrowserWithUrl("${getIntouch["website"]}");
+                              },
+                            )
+                          : Container(),
                     ],
                   ),
                   const SizedBox(
@@ -870,54 +946,62 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                   ),
                   Row(
                     children: [
-                      (getIntouch["instagram"] != null) ? InkWell(
-                        child: Container(
-                          padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                          child: Image.asset(ImagePath.instagramIcon, fit: BoxFit.contain, height: 42.0),
-                        ),
-                        onTap: () {
-                          UrlLauncher.launch(
-                            getIntouch["instagram"].toString(),
-                            universalLinksOnly: true,
-                          );
-                        },
-                      ) : Container(),
-                      (getIntouch["facebook"] != null) ? InkWell(
-                        child: Container(
-                          padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                          child: Image.asset(ImagePath.facebookIcon, fit: BoxFit.contain, height: 42.0),
-                        ),
-                        onTap: () {
-                          UrlLauncher.launch(
-                            getIntouch["facebook"].toString(),
-                            universalLinksOnly: true,
-                          );
-                        },
-                      ) : Container(),
-                      (getIntouch["owl"] != null) ? InkWell(
-                        child: Container(
-                          padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                          child: Image.asset(ImagePath.owlIcon, fit: BoxFit.contain, height: 42.0),
-                        ),
-                        onTap: () {
-                          UrlLauncher.launch(
-                            getIntouch["owl"].toString(),
-                            universalLinksOnly: true,
-                          );
-                        },
-                      ) : Container(),
-                      (getIntouch["twitter"] != null) ? InkWell(
-                        child: Container(
-                          padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                          child: Image.asset(ImagePath.twitterIcon, fit: BoxFit.contain, height: 42.0),
-                        ),
-                        onTap: () {
-                          UrlLauncher.launch(
-                            getIntouch["twitter"].toString(),
-                            universalLinksOnly: true,
-                          );
-                        },
-                      ) : Container()
+                      (getIntouch["instagram"] != null)
+                          ? InkWell(
+                              child: Container(
+                                padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
+                                child: Image.asset(ImagePath.instagramIcon, fit: BoxFit.contain, height: 42.0),
+                              ),
+                              onTap: () {
+                                UrlLauncher.launch(
+                                  getIntouch["instagram"].toString(),
+                                  universalLinksOnly: true,
+                                );
+                              },
+                            )
+                          : Container(),
+                      (getIntouch["facebook"] != null)
+                          ? InkWell(
+                              child: Container(
+                                padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
+                                child: Image.asset(ImagePath.facebookIcon, fit: BoxFit.contain, height: 42.0),
+                              ),
+                              onTap: () {
+                                UrlLauncher.launch(
+                                  getIntouch["facebook"].toString(),
+                                  universalLinksOnly: true,
+                                );
+                              },
+                            )
+                          : Container(),
+                      (getIntouch["owl"] != null)
+                          ? InkWell(
+                              child: Container(
+                                padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
+                                child: Image.asset(ImagePath.owlIcon, fit: BoxFit.contain, height: 42.0),
+                              ),
+                              onTap: () {
+                                UrlLauncher.launch(
+                                  getIntouch["owl"].toString(),
+                                  universalLinksOnly: true,
+                                );
+                              },
+                            )
+                          : Container(),
+                      (getIntouch["twitter"] != null)
+                          ? InkWell(
+                              child: Container(
+                                padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
+                                child: Image.asset(ImagePath.twitterIcon, fit: BoxFit.contain, height: 42.0),
+                              ),
+                              onTap: () {
+                                UrlLauncher.launch(
+                                  getIntouch["twitter"].toString(),
+                                  universalLinksOnly: true,
+                                );
+                              },
+                            )
+                          : Container()
                     ],
                   ),
                 ],
@@ -1100,7 +1184,8 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
     bool isHaveEvent = false;
     for (var event in _homeViewModel.listEvents) {
       if (event.sites != null) {
-        if (event.sites!.contains(siteId) && !(event.dateend.millisecondsSinceEpoch < DateTime.now().millisecondsSinceEpoch)) {
+        if (event.sites!.contains(siteId) &&
+            !(event.dateend.millisecondsSinceEpoch < DateTime.now().millisecondsSinceEpoch)) {
           isHaveEvent = true;
         }
       }
@@ -1112,7 +1197,8 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
     bool isHaveEvent = false;
     for (var event in _homeViewModel.listEvents) {
       if (event.sites != null) {
-        if (event.sites!.contains(siteId) && !(event.dateend.millisecondsSinceEpoch < DateTime.now().millisecondsSinceEpoch)) {
+        if (event.sites!.contains(siteId) &&
+            !(event.dateend.millisecondsSinceEpoch < DateTime.now().millisecondsSinceEpoch)) {
           isHaveEvent = true;
         }
       }
@@ -1291,8 +1377,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
     if (amenity != null) {
       final RenderObject? overlay = Overlay.of(context)?.context.findRenderObject();
       showMenu(
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           context: context,
           position: RelativeRect.fromRect(
               Rect.fromLTWH(
@@ -1316,27 +1401,31 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                     mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      ("${amenity.title}".isNotEmpty) ? Text(
-                        "${amenity.title}",
-                        style: TextStyle(
-                          color: ColorStyle.secondaryDarkLabel94,
-                          fontWeight: FontWeight.bold,
-                          fontSize: FontSizeConst.font12,
-                          fontFamily: FontStyles.raleway,
-                          height: 1,
-                        ),
-                      ) : Container(),
+                      ("${amenity.title}".isNotEmpty)
+                          ? Text(
+                              "${amenity.title}",
+                              style: TextStyle(
+                                color: ColorStyle.secondaryDarkLabel94,
+                                fontWeight: FontWeight.bold,
+                                fontSize: FontSizeConst.font12,
+                                fontFamily: FontStyles.raleway,
+                                height: 1,
+                              ),
+                            )
+                          : Container(),
                       Container(height: ("${amenity.title}".isNotEmpty && "${amenity.description}".isNotEmpty) ? 8 : 0),
-                      ("${amenity.description}".isNotEmpty) ? Text(
-                        "${amenity.description}",
-                        style: TextStyle(
-                          color: ColorStyle.secondaryDarkLabel94,
-                          fontWeight: FontWeight.w400,
-                          fontSize: FontSizeConst.font12,
-                          fontFamily: FontStyles.raleway,
-                          height: 1,
-                        ),
-                      ) : Container(),
+                      ("${amenity.description}".isNotEmpty)
+                          ? Text(
+                              "${amenity.description}",
+                              style: TextStyle(
+                                color: ColorStyle.secondaryDarkLabel94,
+                                fontWeight: FontWeight.w400,
+                                fontSize: FontSizeConst.font12,
+                                fontFamily: FontStyles.raleway,
+                                height: 1,
+                              ),
+                            )
+                          : Container(),
                     ],
                   ),
                 )),
@@ -1353,9 +1442,10 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
     if (map.isNotEmpty) {
       try {
         final availableMaps = await MapLauncher.installedMaps;
-        await availableMaps.firstWhere((element){
+        await availableMaps.firstWhere((element) {
           return element.mapName == map;
-        }).showDirections(destination: Coords(
+        }).showDirections(
+            destination: Coords(
           _whatTuduSiteContentDetailViewModel.siteContentDetail.locationLat!,
           _whatTuduSiteContentDetailViewModel.siteContentDetail.locationLon!,
         ));
@@ -1367,9 +1457,11 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
     if (Platform.isAndroid) {
       _openMap("Google Maps", _whatTuduSiteContentDetailViewModel.siteContentDetail);
     } else {
-      showCupertinoModalPopup(context: context, builder: (context) => _sheetNavigation(
-          _whatTuduSiteContentDetailViewModel.siteContentDetail,
-      ));
+      showCupertinoModalPopup(
+          context: context,
+          builder: (context) => _sheetNavigation(
+                _whatTuduSiteContentDetailViewModel.siteContentDetail,
+              ));
     }
   }
 
@@ -1377,7 +1469,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
     try {
       PrefUtil.setValue(StrConst.selectMap, name);
       final availableMaps = await MapLauncher.installedMaps;
-      await availableMaps.firstWhere((element){
+      await availableMaps.firstWhere((element) {
         return element.mapName == name;
       }).showDirections(destination: Coords(site.locationLat!, site.locationLon!));
     } catch (e) {
@@ -1416,5 +1508,4 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
       ],
     );
   }
-
 }
