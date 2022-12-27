@@ -316,7 +316,7 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
                       PermissionRequest.isResquestPermission = true;
                       PermissionRequest().permissionServiceCall(
                         context,
-                        _eventContentDetailViewModel.directionWithGoogleMap,
+                        _openNavigationApp,
                       );
                     },
                     child: Padding(
