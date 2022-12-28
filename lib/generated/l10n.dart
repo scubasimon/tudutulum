@@ -1560,10 +1560,10 @@ class S {
     );
   }
 
-  /// `Delete all images cached locally on your device t free up space`
+  /// `Delete all images cached locally on your device to free up space`
   String get clear_saved_data_info {
     return Intl.message(
-      'Delete all images cached locally on your device t free up space',
+      'Delete all images cached locally on your device to free up space',
       name: 'clear_saved_data_info',
       desc: '',
       args: [],

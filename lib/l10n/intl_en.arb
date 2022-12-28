@@ -150,7 +150,7 @@
   "hide_articles_info": "Enable this setting to hide the articles from the directory screen",
   "show_articles_info": "Disable this setting to show the articles from the directory screen",
   "clear_saved_data": "Clear Saved Data",
-  "clear_saved_data_info": "Delete all images cached locally on your device t free up space",
+  "clear_saved_data_info": "Delete all images cached locally on your device to free up space",
   "hide_ads": "Hide ads",
   "hide_ads_info": "In App Purchase option (also available with subscription)",
   "choose_your_plan": "Choose your plan",
