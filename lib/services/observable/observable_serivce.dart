@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:tudu/models/event.dart';
 
-import '../../models/article.dart';
+import '../../models/api_article_detail.dart';
 import '../../models/error.dart';
 import '../../models/site.dart';
 

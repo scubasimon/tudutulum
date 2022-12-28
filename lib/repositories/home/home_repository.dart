@@ -5,12 +5,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tudu/models/business.dart';
 import 'package:tudu/models/event.dart';
 import 'package:tudu/models/event_type.dart';
+import 'package:tudu/repositories/api_repository/api_repository.dart';
 import 'package:tudu/services/local_datatabase/local_database_service.dart';
 import 'package:tudu/utils/func_utils.dart';
 
 import '../../consts/number/number_const.dart';
 import '../../models/amenity.dart';
-import '../../models/article.dart';
+import '../../models/api_article_detail.dart';
 import '../../models/error.dart';
 import '../../models/partner.dart';
 import '../../models/site.dart';
@@ -45,6 +46,7 @@ abstract class HomeRepository {
 
 class HomeRepositoryImpl extends HomeRepository {
   final FirebaseService _firebaseService = FirebaseServiceImpl();
+  final APIRepository _apiRepository = APIRepositoryImpl();
   final LocalDatabaseService _localDatabaseService = LocalDatabaseServiceImpl();
 
   List<int> _allBookmarkedSiteId = [];
@@ -129,21 +131,12 @@ class HomeRepositoryImpl extends HomeRepository {
 
   @override
   Future<List<Article>> getListArticles() async {
-    List<Article> listArticles = [];
-    var listRemoteArticles = await _firebaseService.getArticles();
-    if (listRemoteArticles != null) {
-      for (var remoteArticle in listRemoteArticles) {
-        listArticles.add(Article(
-          articleId: remoteArticle["articleId"],
-          banner: remoteArticle["banner"],
-          title: remoteArticle["title"],
-          rating: double.parse(remoteArticle["rating"].toString()),
-          business: FuncUlti.getListIntFromListDynamic(remoteArticle["business"]),
-          listContent: FuncUlti.getMapStringListFromStringDynamic(remoteArticle["listContent"]),
-        ));
-      }
-    }
-    return listArticles;
+    await _apiRepository.getListSite();
+    await _apiRepository.getListArticle();
+    await _apiRepository.getArticleDetail();
+
+    var listRemoteArticles = _apiRepository.getListAPIArticleDetail();
+    return listRemoteArticles;
   }
 
   @override
@@ -272,21 +265,10 @@ class HomeRepositoryImpl extends HomeRepository {
 
   @override
   Future<List<Article>> getLocalListArticles() async {
-    List<Article> listArticles = [];
-    var listRemoteArticles = await _localDatabaseService.getArticles();
-    if (listRemoteArticles != null) {
-      for (var remoteArticle in listRemoteArticles) {
-        listArticles.add(Article(
-          articleId: remoteArticle["articleId"],
-          banner: remoteArticle["banner"],
-          title: remoteArticle["title"],
-          rating: double.parse(remoteArticle["rating"].toString()),
-          business: FuncUlti.getListIntFromListDynamic(remoteArticle["business"]),
-          listContent: FuncUlti.getMapStringListFromStringDynamic(remoteArticle["listContent"]),
-        ));
-      }
-    }
-    return listArticles;
+    await _apiRepository.getLocalArticleDetail();
+
+    var listRemoteArticles = _apiRepository.getListAPIArticleDetail();
+    return listRemoteArticles;
   }
 
   @override

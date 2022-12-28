@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:tudu/consts/color/Colors.dart';
@@ -16,7 +17,10 @@ import 'package:tudu/consts/font/font_size_const.dart';
 import 'package:tudu/consts/strings/str_const.dart';
 import 'package:tudu/generated/l10n.dart';
 
+import '../../models/api_article_detail.dart';
+import '../../models/error.dart';
 import '../../models/site.dart';
+import '../../services/observable/observable_serivce.dart';
 import '../photo/photo_view.dart';
 import '../../viewmodels/home_viewmodel.dart';
 import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
@@ -33,18 +37,66 @@ class WhatTuduArticleContentDetailView extends StatefulWidget {
 class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDetailView> {
   WhatTuduArticleContentDetailViewModel _whatTuduArticleContentDetailViewModel = WhatTuduArticleContentDetailViewModel();
   HomeViewModel _homeViewModel = HomeViewModel();
+  ObservableService _observableService = ObservableService();
 
   RefreshController _refreshController = RefreshController(initialRefresh: false);
 
+  String _data = "";
+
   @override
   void initState() {
+    _data = _whatTuduArticleContentDetailViewModel.articleItemDetail.postBody;
+
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {});
   }
 
-  void _onRefresh() async{
-    setState(() {});
-    _refreshController.refreshCompleted();
+  void _onRefresh() async {
+    try {
+      _observableService.homeProgressLoadingController.sink.add(true);
+      await loadRemoteData();
+    } catch (e) {
+      _refreshController.refreshFailed();
+      _observableService.homeProgressLoadingController.sink.add(false);
+      _observableService.homeErrorController.sink
+          .add(CustomError("Refresh FAIL", message: e.toString(), data: const {}));
+    }
+  }
+
+  Future<void> loadRemoteData() async {
+    try {
+      await _homeViewModel.getListSites(true);
+      loadNewArticle();
+    } catch (e) {
+      print("loadRemoteData: $e");
+      // If network has prob -> Load data from local
+      await loadLocalData();
+    }
+  }
+
+  Future<void> loadLocalData() async {
+    try {
+      await _homeViewModel.getLocalListSites();
+      loadNewArticle();
+    } catch (e) {
+      _observableService.homeProgressLoadingController.sink.add(false);
+      _observableService.networkController.sink.add(e.toString());
+    }
+  }
+
+  void loadNewArticle() {
+    Items? currentSite = _homeViewModel.getArticleItemById(_whatTuduArticleContentDetailViewModel.articleItemDetail.sId);
+    if (currentSite != null) {
+      _refreshController.refreshCompleted();
+      _whatTuduArticleContentDetailViewModel.setSelectedArticle(currentSite);
+      _observableService.homeProgressLoadingController.sink.add(false);
+      setState(() {});
+    } else {
+      _refreshController.refreshFailed();
+      _observableService.homeProgressLoadingController.sink.add(false);
+      _observableService.homeErrorController.sink
+          .add(CustomError("Refresh FAIL", message: "Facing error", data: const {}));
+    }
   }
 
   @override
@@ -92,17 +144,77 @@ class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDeta
             ),
           ),
         ),
-        body: SmartRefresher(
-          enablePullDown: true,
-          header: WaterDropHeader(),
-          controller: _refreshController,
-          onRefresh: _onRefresh,
-          child: Container(
-            color: ColorStyle.getSystemBackground(),
-            child: ListView(
-              children: <Widget>[
-                getExploreAllLocationView(),
-              ],
+        body: Container(
+          color: ColorStyle.getSystemBackground(),
+          child: SmartRefresher(
+            enablePullDown: true,
+            header: WaterDropHeader(),
+            controller: _refreshController,
+            onRefresh: _onRefresh,
+            child: SingleChildScrollView(
+              child: Html(
+                data: _data,
+                style: {
+                  "p": Style(
+                    color: ColorStyle.getDarkLabel(),
+                    fontWeight: FontWeight.w400,
+                    fontFamily: FontStyles.raleway,
+                    fontSize: FontSize.medium,
+                  ),
+                  "em": Style(
+                    color: ColorStyle.secondaryDarkLabel,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: FontStyles.raleway,
+                    fontSize: FontSize.medium,
+                  ),
+                  "a": Style(
+                    color: ColorStyle.primary,
+                    fontWeight: FontWeight.w400,
+                    fontFamily: FontStyles.raleway,
+                    fontSize: FontSize.medium,
+                  ),
+                },
+                customRenders: {
+                  tagMatcher("img"): CustomRender.widget(
+                      widget: (context, buildChildren) {
+                        return CachedNetworkImage(
+                          height: 300,
+                          cacheManager: CacheManager(
+                            Config(
+                              "cachedImg", //featureStoreKey
+                              stalePeriod: const Duration(seconds: 15),
+                              maxNrOfCacheObjects: 1,
+                              repo: JsonCacheInfoRepository(databaseName: "cachedImg"),
+                              fileService: HttpFileService(),
+                            ),
+                          ),
+                          imageUrl: context.tree.element?.attributes["src"] ?? "",
+                          fit: BoxFit.cover,
+                          progressIndicatorBuilder: (context, value, progress) {
+                            return Container(
+                                decoration: const BoxDecoration(),
+                                child: const Center(
+                                  child: CupertinoActivityIndicator(
+                                    radius: 20,
+                                    color: ColorStyle.primary,
+                                  ),
+                                )
+                            );
+                          },
+                          imageBuilder: (context, imageProvider) => Container(
+                            decoration: BoxDecoration(
+                              image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                            ),
+                          ),
+                          errorWidget: (context, url, error) => const Icon(Icons.error),
+                        );
+                      }
+                  ),
+                },
+                onLinkTap: (url, context, attributes, element) {
+                  print(url);
+                },
+              ),
             ),
           ),
         ),
@@ -114,10 +226,7 @@ class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDeta
     return Column(
       children: [
         getCover(
-          _whatTuduArticleContentDetailViewModel.articleDetail.banner,
-        ),
-        getTitle(
-          _whatTuduArticleContentDetailViewModel.articleDetail.listContent,
+          "${_whatTuduArticleContentDetailViewModel.articleItemDetail.image?.url}",
         ),
       ],
     );
@@ -174,89 +283,6 @@ class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDeta
           ),
         ),
       ],
-    );
-  }
-
-  Widget getTitle(Map<String, List<String>> listContent) {
-    return Container(
-      padding: const EdgeInsets.only(top: 20.0),
-      child: Column(
-        children: listContent["title"]!.map((content) =>
-            getArticleContentView(listContent["title"]!.indexOf(content), listContent)).toList(),
-      ),
-    );
-  }
-
-  Widget getArticleContentView(int contentIndex, Map<String, List<String>> listContent) {
-    return Container(
-      padding: const EdgeInsets.only(left: 18, right: 18, bottom: 8),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-              alignment: Alignment.center,
-              height: 20,
-              child: Text(
-                listContent["title"]![contentIndex],
-                style: TextStyle(
-                  color: ColorStyle.getDarkLabel(),
-                  fontFamily: FontStyles.mouser,
-                  fontSize: FontSizeConst.font11,
-                  fontWeight: FontWeight.w400,
-                ),
-              )
-          ),
-          Text(
-            listContent["content"]![contentIndex],
-            style: TextStyle(
-              color: ColorStyle.getDarkLabel(),
-              fontWeight: FontWeight.w400,
-              fontSize: FontSizeConst.font12,
-              fontFamily: FontStyles.raleway,
-              height: 2,
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.only(top: 18),
-            alignment: Alignment.center,
-            child: InkWell(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            PhotoViewUtil(banner: [listContent["image"]![contentIndex]]),
-                        settings: const RouteSettings(name: StrConst.viewPhoto)));
-              },
-              child: CachedNetworkImage(
-                imageUrl: listContent["image"]![contentIndex],
-                width: MediaQuery.of(context).size.width - 88,
-                height: 140,
-                fit: BoxFit.fill,
-                imageBuilder: (context, imageProvider) => Container(
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: imageProvider,
-                        fit: BoxFit.cover),
-                  ),
-                ),
-                placeholder: (context, url) => const CupertinoActivityIndicator(
-                  radius: 20,
-                  color: ColorStyle.primary,
-                ),
-                errorWidget: (context, url, error) => Icon(Icons.error),
-              ),
-              // child: Image.network(
-              //   listContent["image"]![contentIndex],
-              //   width: MediaQuery.of(context).size.width - 88,
-              //   height: 140,
-              //   fit: BoxFit.fill,
-              // ),
-            ),
-          )
-        ],
-      ),
     );
   }
 }

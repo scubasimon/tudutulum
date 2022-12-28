@@ -12,7 +12,6 @@ import 'package:rounded_background_text/rounded_background_text.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:tudu/consts/color/Colors.dart';
 import 'package:tudu/consts/font/Fonts.dart';
-import 'package:tudu/models/article.dart';
 import 'package:tudu/models/error.dart';
 import 'package:tudu/utils/func_utils.dart';
 import 'package:tudu/utils/pref_util.dart';
@@ -35,6 +34,7 @@ import 'package:tudu/viewmodels/what_tudu_article_content_detail_viewmodel.dart'
 import 'package:tudu/views/common/alert.dart';
 import 'package:tudu/views/map/map_screen_view.dart';
 
+import '../../models/api_article_detail.dart';
 import '../../models/deal.dart';
 import '../../services/observable/observable_serivce.dart';
 import '../common/size_provider_widget.dart';
@@ -646,11 +646,11 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
           shrinkWrap: true,
-          itemCount: list.length,
+          itemCount: list.first.items.length,
           itemBuilder: (BuildContext context, int index) {
             return InkWell(
               onTap: () {
-                _whatTuduArticleDetailViewModel.setSelectedArticle(list[index]);
+                _whatTuduArticleDetailViewModel.setSelectedArticle(list.first.items[index]);
                 Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -671,7 +671,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                         children: [
                           ClipRRect(
                             child: CachedNetworkImage(
-                              imageUrl: list[index].banner,
+                              imageUrl: "${list.first.items[index].thumbnailImage?.url}",
                               width: MediaQuery.of(context).size.width,
                               fit: BoxFit.fill,
                               imageBuilder: (context, imageProvider) => Container(
@@ -695,7 +695,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                             top: 40,
                             child: Center(
                               child: RoundedBackgroundText(
-                                list[index].title,
+                                list.first.items[index].slug,
                                 style: TextStyle(
                                   fontFamily: FontStyles.raleway,
                                   fontSize: FontSizeConst.font12,

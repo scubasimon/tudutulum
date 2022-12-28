@@ -1,7 +1,7 @@
-import 'package:tudu/models/article.dart';
 import 'package:tudu/utils/func_utils.dart';
 
 import '../../consts/strings/str_const.dart';
+import '../../models/api_article_detail.dart';
 import '../../models/site.dart';
 import '../../services/firebase/firebase_service.dart';
 
@@ -19,7 +19,9 @@ class WhatTuduRepositoryImpl extends WhatTuduRepository {
       List<Article> listArtileInput, int? businessFilterId, String? keywordSearch) {
     // Clone data of input Sites
     List<Article> listArticleResult = listArtileInput.where((site) => true).toList();
-    // Filter with businessId (Filter function)
+
+    // Comment because listArticle's never change
+    /*// Filter with businessId (Filter function)
     if (businessFilterId != null) {
       if (businessFilterId != -1) {
         listArticleResult = listArticleResult.where((site) => site.business.contains(businessFilterId)).toList();
@@ -32,7 +34,7 @@ class WhatTuduRepositoryImpl extends WhatTuduRepository {
         listArticleResult =
             listArticleResult.where((site) => site.title.toLowerCase().contains(keywordSearch.toLowerCase())).toList();
       }
-    }
+    }*/
 
     return listArticleResult;
   }

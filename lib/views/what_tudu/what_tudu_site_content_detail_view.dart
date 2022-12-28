@@ -126,10 +126,10 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
   void loadNewSite() {
     Site? currentSite = _homeViewModel.getSiteById(_whatTuduSiteContentDetailViewModel.siteContentDetail.siteId);
     if (currentSite != null) {
-      setState(() {});
       _refreshController.refreshCompleted();
       _whatTuduSiteContentDetailViewModel.setSiteContentDetailCover(currentSite);
       _observableService.homeProgressLoadingController.sink.add(false);
+      setState(() {});
     } else {
       _refreshController.refreshFailed();
       _observableService.homeProgressLoadingController.sink.add(false);
