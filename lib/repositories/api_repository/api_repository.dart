@@ -12,7 +12,7 @@ abstract class APIRepository {
   Future<void> getListArticle();
   Future<void> getArticleDetail();
 
-  Future<void> getLocalArticleDetail();
+  // Future<void> getLocalArticleDetail();
 }
 
 class APIRepositoryImpl extends APIRepository {
@@ -24,6 +24,12 @@ class APIRepositoryImpl extends APIRepository {
 
   @override
   List<Article> getListAPIArticleDetail() {
+    listAPIArticleDetail.first.items.sort((a, b) {
+      if(!a.featured) {
+        return 1;
+      }
+      return -1;
+    });
     return listAPIArticleDetail;
   }
 
@@ -125,17 +131,17 @@ class APIRepositoryImpl extends APIRepository {
     // print("getArticleDetail -> done");
   }
 
-  @override
-  Future<void> getLocalArticleDetail() async {
-    List<Article> listAPIArticleDetailResult = [];
-    var listLocalAPIArticle = await _localDatabaseService.getAPIArticles();
-    if (listLocalAPIArticle != null) {
-      for (var localAPIArticle in listLocalAPIArticle) {
-        listAPIArticleDetailResult.add(
-            Article.fromJson(localAPIArticle)
-        );
-      }
-    }
-    listAPIArticleDetail = listAPIArticleDetailResult;
-  }
+  // @override
+  // Future<void> getLocalArticleDetail() async {
+  //   List<Article> listAPIArticleDetailResult = [];
+  //   var listLocalAPIArticle = await _localDatabaseService.getAPIArticles();
+  //   if (listLocalAPIArticle != null) {
+  //     for (var localAPIArticle in listLocalAPIArticle) {
+  //       listAPIArticleDetailResult.add(
+  //           Article.fromJson(localAPIArticle)
+  //       );
+  //     }
+  //   }
+  //   listAPIArticleDetail = listAPIArticleDetailResult;
+  // }
 }

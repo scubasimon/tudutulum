@@ -1,9 +1,9 @@
 class Article {
   late List<Items> items;
-  late int count;
-  late int limit;
-  late int offset;
-  late int total;
+  late int? count;
+  late int? limit;
+  late int? offset;
+  late int? total;
 
   Article({
     required this.items,

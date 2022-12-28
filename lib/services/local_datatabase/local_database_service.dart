@@ -6,7 +6,7 @@ import 'package:tudu/models/site.dart';
 abstract class LocalDatabaseService {
   Future<List<Map<String, dynamic>>?> getArticles();
 
-  Future<List<Map<String, dynamic>>?> getAPIArticles();
+  // Future<List<Map<String, dynamic>>?> getAPIArticles();
 
   Future<List<Map<String, dynamic>>?> getSites();
 
@@ -33,22 +33,22 @@ class LocalDatabaseServiceImpl extends LocalDatabaseService {
   }
   LocalDatabaseServiceImpl._internal();
 
-  @override
-  Future<List<Map<String, dynamic>>?> getAPIArticles() async {
-    int i = 0;
-    bool keepFetching = true;
-    List<Map<String, dynamic>> listResult = [];
-    while (keepFetching) {
-      final listArticlesResult = await Localstore.instance.collection("api_articles").doc(i.toString()).get();
-      if (listArticlesResult != null) {
-        listResult.add(listArticlesResult);
-        i++;
-      } else {
-        keepFetching = false;
-      }
-    }
-    return listResult;
-  }
+  // @override
+  // Future<List<Map<String, dynamic>>?> getAPIArticles() async {
+  //   int i = 0;
+  //   bool keepFetching = true;
+  //   List<Map<String, dynamic>> listResult = [];
+  //   while (keepFetching) {
+  //     final listArticlesResult = await Localstore.instance.collection("api_articles").doc(i.toString()).get();
+  //     if (listArticlesResult != null) {
+  //       listResult.add(listArticlesResult);
+  //       i++;
+  //     } else {
+  //       keepFetching = false;
+  //     }
+  //   }
+  //   return listResult;
+  // }
 
   @override
   Future<List<Map<String, dynamic>>?> getArticles() async {
