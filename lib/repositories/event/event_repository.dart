@@ -38,9 +38,8 @@ class EventRepositoryImpl extends EventRepository {
     if (keywordSort != null) {
       if (keywordSort == StrConst.sortDate) {
         // Sort with title
-        listEventResult.sort((a, b) => a.datestart.compareTo(b.datestart));
+        listEventResult.sort((b, a) => a.datestart.compareTo(b.datestart));
       } else if (keywordSort == StrConst.sortDistance) {
-        // Sort with distance ///TODO: IMPL LOGIC
         listEventResult.sort((a, b) => a.title.compareTo(b.title));
       } else {
         throw Exception("Sort type not found. Please check again");

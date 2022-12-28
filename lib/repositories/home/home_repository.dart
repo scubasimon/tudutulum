@@ -265,10 +265,14 @@ class HomeRepositoryImpl extends HomeRepository {
 
   @override
   Future<List<Article>> getLocalListArticles() async {
-    await _apiRepository.getLocalArticleDetail();
-
-    var listRemoteArticles = _apiRepository.getListAPIArticleDetail();
-    return listRemoteArticles;
+    List<Article> listArticle = [];
+    var listRemoteArticles = await _localDatabaseService.getArticles();
+    if (listRemoteArticles != null) {
+      for (var remoteSite in listRemoteArticles) {
+        listArticle.add(Article.fromJson(remoteSite));
+      }
+    }
+    return listArticle;
   }
 
   @override
