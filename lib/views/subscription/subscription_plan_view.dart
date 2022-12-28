@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:notification_center/notification_center.dart';
 import 'package:tudu/consts/urls/URLConst.dart';
 import 'package:tudu/utils/pref_util.dart';
@@ -72,6 +73,10 @@ class _SubscriptionPlanView extends State<SubscriptionPlanView> {
           toolbarHeight: 48,
           shadowColor: Colors.transparent,
           automaticallyImplyLeading: false,
+          systemOverlayStyle: SystemUiOverlayStyle(
+            statusBarBrightness: darkMode ? Brightness.dark : Brightness.light,
+            statusBarIconBrightness: darkMode ? Brightness.dark : Brightness.light,
+          ),
           flexibleSpace: Container(
             padding: EdgeInsets.only(
               top: MediaQuery.of(context).padding.top + 8,
