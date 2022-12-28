@@ -1809,6 +1809,16 @@ class S {
       args: [],
     );
   }
+
+  /// `To use this feature please allow Tudu app to always use location.\n Please go to 'Settings' to grant location alway access to the app`
+  String get location_always_permission_message {
+    return Intl.message(
+      'To use this feature please allow Tudu app to always use location.\n Please go to \'Settings\' to grant location alway access to the app',
+      name: 'location_always_permission_message',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
