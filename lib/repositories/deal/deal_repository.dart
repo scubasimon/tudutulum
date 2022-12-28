@@ -54,11 +54,15 @@ class DealRepositoryImpl extends DealRepository {
         }
 
       } catch (e) {
-        if (e is TimeoutException) {
-          throw CommonError.serverError;
-        } else {
-          rethrow;
+        _results = await _localDatabaseService.getDeals();
+        if (_results.isEmpty) {
+          if (e is TimeoutException) {
+            throw CommonError.serverError;
+          } else {
+            rethrow;
+          }
         }
+
       }
     } else {
       _results = await _localDatabaseService.getDeals();
@@ -113,6 +117,12 @@ class DealRepositoryImpl extends DealRepository {
       deal.site = Site.from(siteData);
       return deal;
     } catch (e) {
+      var deals = await _localDatabaseService.getDeals();
+      try {
+        return deals.firstWhere((element) => element.dealsId == id);
+      } catch (ex) {
+        print(ex);
+      }
       if (e is TimeoutException) {
         throw CommonError.serverError;
       } else {

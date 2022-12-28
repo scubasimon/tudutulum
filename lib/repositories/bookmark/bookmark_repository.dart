@@ -83,11 +83,15 @@ class BookmarkRepositoryImpl extends BookmarkRepository {
           await Localstore.instance.collection('bookmarks').doc(_results.indexOf(site).toString()).set(site.toJson());
         }
       } catch (e) {
-        if (e is TimeoutException) {
-          throw CommonError.serverError;
-        } else {
-          rethrow;
+        _results = await _localDatabaseService.getBookmarks();
+        if (_results.isEmpty) {
+          if (e is TimeoutException) {
+            throw CommonError.serverError;
+          } else {
+            rethrow;
+          }
         }
+
       }
     } else {
       _results = await _localDatabaseService.getBookmarks();

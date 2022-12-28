@@ -66,7 +66,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "clear_saved_data":
             MessageLookupByLibrary.simpleMessage("Clear Saved Data"),
         "clear_saved_data_info": MessageLookupByLibrary.simpleMessage(
-            "Delete all images cached locally on your device t free up space"),
+            "Delete all images cached locally on your device to free up space"),
         "coming_soon": MessageLookupByLibrary.simpleMessage("•  Coming soon"),
         "confirm_delete_account_message": MessageLookupByLibrary.simpleMessage(
             "Your account information will be completely removed from our system.\n\nYou will no longer be able to redeem any offers unless you sign up again.\n\nIf you are a subscriber, please ensure you also unsubscribe through Google Play/Appstore."),

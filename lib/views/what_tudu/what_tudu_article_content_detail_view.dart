@@ -4,28 +4,22 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:pull_down_button/pull_down_button.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:tudu/consts/color/Colors.dart';
 import 'package:tudu/consts/font/Fonts.dart';
 import 'package:tudu/consts/images/ImagePath.dart';
-import 'package:tudu/models/partner.dart';
-import 'package:tudu/viewmodels/what_tudu_site_content_detail_viewmodel.dart';
+import 'package:tudu/utils/pref_util.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
-import 'package:tudu/utils/colors_const.dart';
 import 'package:tudu/consts/font/font_size_const.dart';
 import 'package:tudu/consts/strings/str_const.dart';
 import 'package:tudu/generated/l10n.dart';
-
-import '../../models/api_article_detail.dart';
-import '../../models/error.dart';
-import '../../models/site.dart';
-import '../../services/observable/observable_serivce.dart';
-import '../photo/photo_view.dart';
-import '../../viewmodels/home_viewmodel.dart';
+import 'package:tudu/models/api_article_detail.dart';
+import 'package:tudu/models/error.dart';
+import 'package:tudu/services/observable/observable_serivce.dart';
+import 'package:tudu/views/photo/photo_view.dart';
+import 'package:tudu/viewmodels/home_viewmodel.dart';
 import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
-
-import '../../viewmodels/what_tudu_article_content_detail_viewmodel.dart';
+import 'package:tudu/viewmodels/what_tudu_article_content_detail_viewmodel.dart';
 
 class WhatTuduArticleContentDetailView extends StatefulWidget {
   const WhatTuduArticleContentDetailView({super.key});
@@ -35,11 +29,11 @@ class WhatTuduArticleContentDetailView extends StatefulWidget {
 }
 
 class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDetailView> {
-  WhatTuduArticleContentDetailViewModel _whatTuduArticleContentDetailViewModel = WhatTuduArticleContentDetailViewModel();
-  HomeViewModel _homeViewModel = HomeViewModel();
-  ObservableService _observableService = ObservableService();
+  final WhatTuduArticleContentDetailViewModel _whatTuduArticleContentDetailViewModel = WhatTuduArticleContentDetailViewModel();
+  final HomeViewModel _homeViewModel = HomeViewModel();
+  final ObservableService _observableService = ObservableService();
 
-  RefreshController _refreshController = RefreshController(initialRefresh: false);
+  final RefreshController _refreshController = RefreshController(initialRefresh: false);
 
   String _data = "";
 
@@ -101,6 +95,7 @@ class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDeta
 
   @override
   Widget build(BuildContext context) {
+    var darkMode = PrefUtil.getValue(StrConst.isDarkMode, false) as bool;
     return ExitAppScope(
       child: Scaffold(
         appBar: AppBar(
@@ -148,72 +143,109 @@ class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDeta
           color: ColorStyle.getSystemBackground(),
           child: SmartRefresher(
             enablePullDown: true,
-            header: WaterDropHeader(),
+            header: const WaterDropHeader(),
             controller: _refreshController,
             onRefresh: _onRefresh,
             child: SingleChildScrollView(
-              child: Html(
-                data: _data,
-                style: {
-                  "p": Style(
-                    color: ColorStyle.getDarkLabel(),
-                    fontWeight: FontWeight.w400,
-                    fontFamily: FontStyles.raleway,
-                    fontSize: FontSize.medium,
-                  ),
-                  "em": Style(
-                    color: ColorStyle.secondaryDarkLabel,
-                    fontWeight: FontWeight.w600,
-                    fontFamily: FontStyles.raleway,
-                    fontSize: FontSize.medium,
-                  ),
-                  "a": Style(
-                    color: ColorStyle.primary,
-                    fontWeight: FontWeight.w400,
-                    fontFamily: FontStyles.raleway,
-                    fontSize: FontSize.medium,
-                  ),
-                },
-                customRenders: {
-                  tagMatcher("img"): CustomRender.widget(
-                      widget: (context, buildChildren) {
-                        return CachedNetworkImage(
-                          height: 300,
-                          cacheManager: CacheManager(
-                            Config(
-                              "cachedImg", //featureStoreKey
-                              stalePeriod: const Duration(seconds: 15),
-                              maxNrOfCacheObjects: 1,
-                              repo: JsonCacheInfoRepository(databaseName: "cachedImg"),
-                              fileService: HttpFileService(),
+              child: Column(
+                children: [
+                  CachedNetworkImage(
+                    height: 300,
+                    cacheManager: CacheManager(
+                      Config(
+                        "cachedImg", //featureStoreKey
+                        stalePeriod: const Duration(seconds: 15),
+                        maxNrOfCacheObjects: 1,
+                        repo: JsonCacheInfoRepository(databaseName: "cachedImg"),
+                        fileService: HttpFileService(),
+                      ),
+                    ),
+                    imageUrl: _whatTuduArticleContentDetailViewModel.articleItemDetail.image?.url ?? "",
+                    fit: BoxFit.cover,
+                    progressIndicatorBuilder: (context, value, progress) {
+                      return Container(
+                          decoration: const BoxDecoration(),
+                          child: const Center(
+                            child: CupertinoActivityIndicator(
+                              radius: 20,
+                              color: ColorStyle.primary,
                             ),
-                          ),
-                          imageUrl: context.tree.element?.attributes["src"] ?? "",
-                          fit: BoxFit.cover,
-                          progressIndicatorBuilder: (context, value, progress) {
-                            return Container(
-                                decoration: const BoxDecoration(),
-                                child: const Center(
-                                  child: CupertinoActivityIndicator(
-                                    radius: 20,
-                                    color: ColorStyle.primary,
-                                  ),
-                                )
+                          )
+                      );
+                    },
+                    imageBuilder: (context, imageProvider) => Container(
+                      decoration: BoxDecoration(
+                        image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                      ),
+                    ),
+                    errorWidget: (context, url, error) => const Icon(Icons.error),
+                  ),
+                  Html(
+                    data: _data,
+                    style: {
+                      "p": Style(
+                        color: ColorStyle.getDarkLabel(),
+                        fontWeight: FontWeight.w400,
+                        fontFamily: FontStyles.raleway,
+                        fontSize: FontSize.medium,
+                      ),
+                      "em": Style(
+                        color: darkMode ? ColorStyle.secondaryLightLabel : ColorStyle.secondaryDarkLabel,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: FontStyles.raleway,
+                        fontSize: FontSize.medium,
+                      ),
+                      "a": Style(
+                        color: ColorStyle.primary,
+                        fontWeight: FontWeight.w400,
+                        fontFamily: FontStyles.raleway,
+                        fontSize: FontSize.medium,
+                      ),
+                    },
+                    customRenders: {
+                      tagMatcher("img"): CustomRender.widget(
+                          widget: (context, buildChildren) {
+                            return CachedNetworkImage(
+                              height: 300,
+                              cacheManager: CacheManager(
+                                Config(
+                                  "cachedImg", //featureStoreKey
+                                  stalePeriod: const Duration(seconds: 15),
+                                  maxNrOfCacheObjects: 1,
+                                  repo: JsonCacheInfoRepository(databaseName: "cachedImg"),
+                                  fileService: HttpFileService(),
+                                ),
+                              ),
+                              imageUrl: context.tree.element?.attributes["src"] ?? "",
+                              fit: BoxFit.cover,
+                              progressIndicatorBuilder: (context, value, progress) {
+                                return Container(
+                                    decoration: const BoxDecoration(),
+                                    child: const Center(
+                                      child: CupertinoActivityIndicator(
+                                        radius: 20,
+                                        color: ColorStyle.primary,
+                                      ),
+                                    )
+                                );
+                              },
+                              imageBuilder: (context, imageProvider) => Container(
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                                ),
+                              ),
+                              errorWidget: (context, url, error) => const Icon(Icons.error),
                             );
-                          },
-                          imageBuilder: (context, imageProvider) => Container(
-                            decoration: BoxDecoration(
-                              image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
-                            ),
-                          ),
-                          errorWidget: (context, url, error) => const Icon(Icons.error),
-                        );
+                          }
+                      ),
+                    },
+                    onLinkTap: (url, context, attributes, element) async {
+                      if (url != null) {
+                        await UrlLauncher.launchUrl(Uri.parse(url));
                       }
+                    },
                   ),
-                },
-                onLinkTap: (url, context, attributes, element) {
-                  print(url);
-                },
+                ],
               ),
             ),
           ),
