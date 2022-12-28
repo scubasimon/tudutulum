@@ -166,7 +166,7 @@ class _SettingView extends State<SettingView> {
                             await model.setAvailableOffer(value);
                           } catch (e) {
                             print(e);
-                            showDialog(context: context, builder: (context) => ErrorAlert.alertPermission(context, S.current.location_permission_message));
+                            showDialog(context: context, builder: (context) => ErrorAlert.alertPermission(context, S.current.location_always_permission_message));
                           }
                           setState(() {});
                         },

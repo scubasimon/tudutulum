@@ -174,5 +174,6 @@
   "venue_contact": "Venue Contact:",
   "try_a_week": "7 days free trial",
   "redeem_later": "Redeem Later",
-  "data_deleted": "Your data has been deleted"
+  "data_deleted": "Your data has been deleted",
+  "location_always_permission_message": "To use this feature please allow Tudu app to always use location.\n Please go to 'Settings' to grant location alway access to the app"
 }

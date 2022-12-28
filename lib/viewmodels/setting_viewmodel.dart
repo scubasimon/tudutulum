@@ -62,13 +62,13 @@ class SettingViewModel extends BaseViewModel {
   Future<void> setAvailableOffer(bool value) async {
     _enableAvailableOffer = value;
     if (value) {
-      if (await _permissionLocation.permission()) {
+      if (await _permissionLocation.permissionAlways()) {
         await _instance.setBool(StrConst.availableOffer, true);
         _isPushNotification = _enableAvailableOffer || _enableNewOffer;
       } else {
         _enableAvailableOffer = false;
         _isPushNotification = _enableAvailableOffer || _enableNewOffer;
-        throw LocationError.locationPermission;
+        throw LocationError.locationAlwaysPermission;
       }
     } else {
       await _instance.setBool(StrConst.availableOffer, false);

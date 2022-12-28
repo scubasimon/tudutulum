@@ -107,4 +107,8 @@ class LocationError {
   static CustomError locationPermission = CustomError(
     "E_LOCATION_101"
   );
+
+  static CustomError locationAlwaysPermission = CustomError(
+    "E_LOCATION_102"
+  );
 }

@@ -148,6 +148,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "issue": MessageLookupByLibrary.simpleMessage("There was an issue"),
         "local_fail": MessageLookupByLibrary.simpleMessage(
             "Please connect to the internet and or contact with admin"),
+        "location_always_permission_message": MessageLookupByLibrary.simpleMessage(
+            "To use this feature please allow Tudu app to always use location.\n Please go to \'Settings\' to grant location alway access to the app"),
         "location_permission_message": MessageLookupByLibrary.simpleMessage(
             "The \'Tudu\' app has not granted permission to access location.\nPlease go to \'Settings\' to grant location access to the app"),
         "login": MessageLookupByLibrary.simpleMessage("Welcome"),
