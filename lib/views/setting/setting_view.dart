@@ -165,7 +165,6 @@ class _SettingView extends State<SettingView> {
                           try {
                             await model.setAvailableOffer(value);
                           } catch (e) {
-                            print(e);
                             showDialog(context: context, builder: (context) => ErrorAlert.alertPermission(context, S.current.location_always_permission_message));
                           }
                           setState(() {});
@@ -173,10 +172,11 @@ class _SettingView extends State<SettingView> {
                       ),
                     ],
                   ),
-                  const Padding(
-                    padding: EdgeInsets.only(top: 16, bottom: 24),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 16, bottom: 24),
                     child: Divider(
                       height: 1.0,
+                      color: model.enableDarkMode ? Colors.white : Colors.black,
                     ),
                   ),
                   Text(
@@ -255,10 +255,11 @@ class _SettingView extends State<SettingView> {
                       fontStyle: FontStyle.italic,
                     ),
                   ),
-                  const Padding(
-                    padding: EdgeInsets.only(top: 20, bottom: 24),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20, bottom: 24),
                     child: Divider(
                       height: 1.0,
+                      color: model.enableDarkMode ? Colors.white : Colors.black,
                     ),
                   ),
                   Row(
