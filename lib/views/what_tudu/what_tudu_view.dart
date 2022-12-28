@@ -184,12 +184,11 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
           _searchController.text, // Search text
         );
       }
-
       // Prevent to reload data on every time open What tudu
       PrefUtil.setValue(StrConst.isWhatTuduDataBinded, true);
     } catch (e) {
       print("loadRemoteData: $e");
-      print("loadRemoteData: ${(e as CustomError).message}");
+      // print("loadRemoteData: ${(e as CustomError).message}");
       // If network has prob -> Load data from local
       await loadLocalData(isLoadOnInit);
     }
@@ -224,7 +223,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
       PrefUtil.setValue(StrConst.isWhatTuduDataBinded, true);
     } catch (e) {
       _observableService.homeProgressLoadingController.sink.add(false);
-      _observableService.networkController.sink.add(e.toString());
+      _observableService.networkController.sink.add("There is no cached data. ${e.toString()}");
     }
   }
 
@@ -300,7 +299,6 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    print("buind -> $calculateSearchHeight");
     return ExitAppScope(
       child: Scaffold(
           appBar: AppBar(
