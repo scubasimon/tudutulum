@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:localstore/localstore.dart';
 import 'package:notification_center/notification_center.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:tudu/base/base_viewmodel.dart';
@@ -83,6 +84,7 @@ class ProfileViewModel extends BaseViewModel {
   Future<void> deleteAccount() {
     PrefUtil.setValue(StrConst.isBookmarkBind, false);
     Purchases.logOut();
+    Localstore.instance.collection("bookmarks").delete();
     return _authRepository
         .deleteAccount();
   }
