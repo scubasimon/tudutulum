@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:tudu/consts/font/Fonts.dart';
 import 'package:tudu/consts/strings/str_const.dart';
 import 'package:tudu/consts/urls/URLConst.dart';
@@ -109,6 +110,15 @@ class _ProfileView extends State<ProfileView> {
       child: Container(
         color: ColorStyle.getSystemBackground(),
         child: Scaffold(
+          appBar: AppBar(
+            backgroundColor: ColorStyle.getSystemBackground(),
+            systemOverlayStyle: SystemUiOverlayStyle(
+              statusBarBrightness: darkMode ? Brightness.dark : Brightness.light,
+              statusBarIconBrightness: darkMode ? Brightness.dark : Brightness.light,
+            ),
+            toolbarHeight: 0,
+            shadowColor: Colors.transparent,
+          ),
           body: InkWell(
             hoverColor: Colors.transparent,
             focusColor: Colors.transparent,

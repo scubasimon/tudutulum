@@ -74,47 +74,63 @@ class _PhotoViewUtil extends State<PhotoViewUtil> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return ExitAppScope(
       child: Container(
-        color: ColorStyle.getSystemBackground(),
+        color: Colors.black,
         child: Scaffold(
+          appBar: AppBar(
+            backgroundColor: Colors.black,
+            systemOverlayStyle: const SystemUiOverlayStyle(
+              statusBarBrightness: Brightness.dark,
+              statusBarIconBrightness:Brightness.dark,
+            ),
+            shadowColor: Colors.transparent,
+            toolbarHeight: 0,
+            automaticallyImplyLeading: false,
+          ),
             body: Stack(
               children: [
                 WillPopScope(
                   onWillPop: () async {
                     return true;
                   },
-                  child: PageView.builder(
-                    pageSnapping: false,
-                    physics: const PageOverscrollPhysics(velocityPerOverscroll: 1000),
-                    controller: controller,
-                    itemBuilder: (context, i) {
-                      return GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        child: PhotoView(
-                          imageProvider: CachedNetworkImageProvider(
-                            cacheManager: CacheManager(
-                              Config(
-                                "cachedImg", //featureStoreKey
-                                stalePeriod: const Duration(seconds: 15),
-                                maxNrOfCacheObjects: 1,
-                                repo: JsonCacheInfoRepository(databaseName: "cachedImg"),
-                                fileService: HttpFileService(),
+                  child: Container(
+                    color: Colors.black,
+                    child: PageView.builder(
+                      pageSnapping: false,
+                      physics: const PageOverscrollPhysics(velocityPerOverscroll: 1000),
+                      controller: controller,
+                      itemBuilder: (context, i) {
+                        return GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          child: PhotoView(
+                            imageProvider: CachedNetworkImageProvider(
+                              cacheManager: CacheManager(
+                                Config(
+                                  "cachedImg", //featureStoreKey
+                                  stalePeriod: const Duration(seconds: 15),
+                                  maxNrOfCacheObjects: 1,
+                                  repo: JsonCacheInfoRepository(databaseName: "cachedImg"),
+                                  fileService: HttpFileService(),
+                                ),
+                              ),
+                              widget.banner[i % widget.banner.length],
+                            ),
+                            loadingBuilder: (context, event) => Container(
+                              color: Colors.black,
+                              child: const Center(
+                                child: SizedBox(
+                                  width: 20.0,
+                                  height: 20.0,
+                                  child: CupertinoActivityIndicator(
+                                    radius: 20,
+                                    color: ColorStyle.primary,
+                                  ),
+                                ),
                               ),
                             ),
-                            widget.banner[i % widget.banner.length],
                           ),
-                          loadingBuilder: (context, event) => const Center(
-                            child: SizedBox(
-                              width: 20.0,
-                              height: 20.0,
-                              child: CupertinoActivityIndicator(
-                                radius: 20,
-                                color: ColorStyle.primary,
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
-                    },
+                        );
+                      },
+                    ),
                   ),
                 ),
                 Positioned(
@@ -164,7 +180,7 @@ class _PhotoViewUtil extends State<PhotoViewUtil> with WidgetsBindingObserver {
                 ),
                 Positioned(
                   left: 20,
-                  top: 30 + MediaQuery.of(context).padding.top,
+                  top: 16,
                   child: InkWell(
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
