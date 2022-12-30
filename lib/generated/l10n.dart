@@ -450,10 +450,10 @@ class S {
     );
   }
 
-  /// `User not approve. Please try again`
+  /// `User not approved. Please try again.`
   String get user_not_approved_error {
     return Intl.message(
-      'User not approve. Please try again',
+      'User not approved. Please try again.',
       name: 'user_not_approved_error',
       desc: '',
       args: [],
@@ -1500,20 +1500,20 @@ class S {
     );
   }
 
-  /// `Enable this setting if you'ld like to continue to using app in dark mode`
+  /// `Enable this setting for dark mode`
   String get dark_mode_enable_info {
     return Intl.message(
-      'Enable this setting if you\'ld like to continue to using app in dark mode',
+      'Enable this setting for dark mode',
       name: 'dark_mode_enable_info',
       desc: '',
       args: [],
     );
   }
 
-  /// `Disable this setting if you you'ld to continue using the app in light mode`
+  /// `Disable this setting for dark mode`
   String get dark_mode_disable_info {
     return Intl.message(
-      'Disable this setting if you you\'ld to continue using the app in light mode',
+      'Disable this setting for dark mode',
       name: 'dark_mode_disable_info',
       desc: '',
       args: [],
@@ -1780,10 +1780,10 @@ class S {
     );
   }
 
-  /// `7 days free trial`
+  /// `7 days free trial and then…`
   String get try_a_week {
     return Intl.message(
-      '7 days free trial',
+      '7 days free trial and then…',
       name: 'try_a_week',
       desc: '',
       args: [],

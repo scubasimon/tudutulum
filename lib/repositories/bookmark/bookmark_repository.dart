@@ -74,12 +74,11 @@ class BookmarkRepositoryImpl extends BookmarkRepository {
           _results.add(Site.from(siteData));
         }
         try {
-          await Localstore.instance.collection("bookmarks").delete();
+          await _removeDataOneByOne("bookmarks");
         } catch (e) {
           print(e);
         }
         for (var site in _results) {
-          print(site.toJson());
           await Localstore.instance.collection('bookmarks').doc(_results.indexOf(site).toString()).set(site.toJson());
         }
       } catch (e) {
@@ -95,6 +94,7 @@ class BookmarkRepositoryImpl extends BookmarkRepository {
       }
     } else {
       _results = await _localDatabaseService.getBookmarks();
+      print(_results.length);
     }
     var results = _results.where((element) {
       if (param.title == null) {
@@ -197,6 +197,20 @@ class BookmarkRepositoryImpl extends BookmarkRepository {
       point.longitude,
     );
     return results;
+  }
+
+  Future<void> _removeDataOneByOne(String collectionName) async {
+    int i = 0;
+    bool keepFetching = true;
+    while (keepFetching) {
+      final listSitesResult = await Localstore.instance.collection(collectionName).doc(i.toString()).get();
+      if (listSitesResult != null) {
+        Localstore.instance.collection(collectionName).doc(i.toString()).delete();
+        i++;
+      } else {
+        keepFetching = false;
+      }
+    }
   }
 
 }

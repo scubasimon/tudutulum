@@ -46,6 +46,7 @@ class ProfileViewModel extends BaseViewModel {
     try {
       var customerInfo = await Purchases.getCustomerInfo();
       final active = customerInfo.entitlements.all["Pro"]?.isActive == true;
+      _updateSubscriber(active);
       if (active) {
         _subscription.add(S.current.account_type(S.current.pro));
       } else {
@@ -53,6 +54,7 @@ class ProfileViewModel extends BaseViewModel {
       }
     } catch (e) {
       print(e);
+      _updateSubscriber(false);
       _subscription.add(S.current.account_type(S.current.free));
     }
 
@@ -63,6 +65,7 @@ class ProfileViewModel extends BaseViewModel {
     try {
       PrefUtil.setValue(StrConst.isBookmarkBind, false);
       Purchases.logOut();
+      await _removeDataOneByOne("bookmarks");
       await _authRepository.signOut();
     } catch (e) {
       print(e);
@@ -84,7 +87,7 @@ class ProfileViewModel extends BaseViewModel {
   Future<void> deleteAccount() {
     PrefUtil.setValue(StrConst.isBookmarkBind, false);
     Purchases.logOut();
-    Localstore.instance.collection("bookmarks").delete();
+    _removeDataOneByOne("bookmarks");
     return _authRepository
         .deleteAccount();
   }
@@ -173,5 +176,33 @@ class ProfileViewModel extends BaseViewModel {
 
   _updateAccount() {
     _subscription.add(S.current.account_type(S.current.pro));
+  }
+
+  Future<void> _removeDataOneByOne(String collectionName) async {
+    int i = 0;
+    bool keepFetching = true;
+    while (keepFetching) {
+      final listSitesResult = await Localstore.instance.collection(collectionName).doc(i.toString()).get();
+      if (listSitesResult != null) {
+        Localstore.instance.collection(collectionName).doc(i.toString()).delete();
+        i++;
+      } else {
+        keepFetching = false;
+      }
+    }
+  }
+
+  _updateSubscriber(bool value) async {
+    final user = _profile.valueOrNull;
+    if (user == null) { return; }
+    if (user.subscriber == value) {
+      return;
+    }
+    user.subscriber = value;
+    try {
+      await _authRepository.updateProfile(user);
+    } catch (e) {
+      print(e);
+    }
   }
 }

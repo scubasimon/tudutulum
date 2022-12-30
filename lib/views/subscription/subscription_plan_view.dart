@@ -152,9 +152,9 @@ class _SubscriptionPlanView extends State<SubscriptionPlanView> {
                 child: Text(
                   S.current.try_a_week,
                   style: TextStyle(
-                    fontFamily: FontStyles.mouser,
-                    fontSize: FontSizeConst.font11,
-                    fontWeight: FontWeight.w400,
+                    fontFamily: FontStyles.sfProText,
+                    fontSize: FontSizeConst.font17,
+                    fontWeight: FontWeight.w600,
                     color: darkMode ? ColorStyle.tertiaryLightLabel : ColorStyle.tertiaryDarkLabel,
                   ),
                 ),

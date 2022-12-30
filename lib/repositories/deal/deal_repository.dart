@@ -45,7 +45,7 @@ class DealRepositoryImpl extends DealRepository {
         }
         // Save to local
         try {
-          await Localstore.instance.collection("deals").delete();
+          await _removeDataOneByOne("deals");
         } catch (e) {
           print(e);
         }
@@ -204,6 +204,20 @@ class DealRepositoryImpl extends DealRepository {
       point.longitude,
     );
     return results;
+  }
+
+  Future<void> _removeDataOneByOne(String collectionName) async {
+    int i = 0;
+    bool keepFetching = true;
+    while (keepFetching) {
+      final listSitesResult = await Localstore.instance.collection(collectionName).doc(i.toString()).get();
+      if (listSitesResult != null) {
+        Localstore.instance.collection(collectionName).doc(i.toString()).delete();
+        i++;
+      } else {
+        keepFetching = false;
+      }
+    }
   }
 
 }
