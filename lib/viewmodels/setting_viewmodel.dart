@@ -55,6 +55,7 @@ class SettingViewModel extends BaseViewModel {
     _enableNewOffer = value;
     await _instance.setBool(StrConst.newOffer, value);
     _isPushNotification = _enableAvailableOffer || _enableNewOffer;
+    notifyListeners();
     NotificationCenter().notify(StrConst.newOffer, data: value);
 
   }
@@ -74,6 +75,7 @@ class SettingViewModel extends BaseViewModel {
       await _instance.setBool(StrConst.availableOffer, false);
       _isPushNotification = _enableAvailableOffer || _enableNewOffer;
     }
+    notifyListeners();
   }
 
   void setDarkMode(bool value) async {
