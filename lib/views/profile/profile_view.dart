@@ -128,7 +128,6 @@ class _ProfileView extends State<ProfileView> {
             },
             child: Container(
               color: ColorStyle.getSystemBackground(),
-              padding: const EdgeInsets.only(left: 16, right: 16),
               child: ListView(
                 controller: _scrollController,
                 children: <Widget>[
@@ -148,7 +147,7 @@ class _ProfileView extends State<ProfileView> {
 
   Widget createIconView(bool useMobileLayout, bool darkMode) {
     return Container(
-      margin: EdgeInsets.only(bottom: useMobileLayout ? 30 : 80),
+      margin: EdgeInsets.only(bottom: useMobileLayout ? 30 : 80, left: 16, right: 16),
       child: Column(
         children: [
           Image.asset(
@@ -190,213 +189,216 @@ class _ProfileView extends State<ProfileView> {
   }
 
   Widget createProfileView(bool useMobileLayout, bool darkMode) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            StreamBuilder(
-              stream: _profileViewModel.subscription,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return Text(
-                    snapshot.data!,
-                    style: TextStyle(
-                      color: darkMode ? ColorStyle.tertiaryLightLabel: ColorStyle.tertiaryDarkLabel60,
-                      fontFamily: FontStyles.sfProText,
-                      fontSize: FontSizeConst.font17,
-                      fontWeight: FontWeight.w400,
-                    ),
+    return Padding(
+      padding: const EdgeInsets.only(left: 16, right: 16),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              StreamBuilder(
+                stream: _profileViewModel.subscription,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Text(
+                      snapshot.data!,
+                      style: TextStyle(
+                        color: darkMode ? ColorStyle.tertiaryLightLabel: ColorStyle.tertiaryDarkLabel60,
+                        fontFamily: FontStyles.sfProText,
+                        fontSize: FontSizeConst.font17,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    );
+                  } else {
+                    return Container();
+                  }
+                },
+              ),
+              const Spacer(),
+              InkWell(
+                onTap: () {
+                  Navigator.of(context).push(
+                      MaterialPageRoute(
+                          builder: (context) => const SubscriptionPlanView()
+                      )
                   );
-                } else {
-                  return Container();
-                }
-              },
-            ),
-            const Spacer(),
-            InkWell(
-              onTap: () {
-                Navigator.of(context).push(
-                    MaterialPageRoute(
-                        builder: (context) => const SubscriptionPlanView()
-                    )
-                );
-              },
-              child: Text(
-                S.current.change_plan,
-                style: const TextStyle(
-                  color: ColorStyle.primary,
-                  fontWeight: FontWeight.w600,
-                  fontFamily: FontStyles.sfProText,
-                  fontSize: FontSizeConst.font17,
+                },
+                child: Text(
+                  S.current.change_plan,
+                  style: const TextStyle(
+                    color: ColorStyle.primary,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: FontStyles.sfProText,
+                    fontSize: FontSizeConst.font17,
+                  ),
                 ),
               ),
-            ),
-          ],
-        ),
-        Padding(
-          padding: EdgeInsets.only(bottom: 12, top: useMobileLayout ? 12 : 36),
-          child: Text(
-            S.current.update_details,
-            style: TextStyle(
-              color: darkMode ? ColorStyle.tertiaryLightLabel: ColorStyle.tertiaryDarkLabel60,
-              fontFamily: FontStyles.sfProText,
-              fontSize: FontSizeConst.font17,
-              fontWeight: FontWeight.w400,
+            ],
+          ),
+          Padding(
+            padding: EdgeInsets.only(bottom: 12, top: useMobileLayout ? 12 : 36),
+            child: Text(
+              S.current.update_details,
+              style: TextStyle(
+                color: darkMode ? ColorStyle.tertiaryLightLabel: ColorStyle.tertiaryDarkLabel60,
+                fontFamily: FontStyles.sfProText,
+                fontSize: FontSizeConst.font17,
+                fontWeight: FontWeight.w400,
+              ),
             ),
           ),
-        ),
-        Row(
-          children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox.fromSize(
-                  size: Size(
-                    (MediaQuery.of(context).size.width - 42.0) / 2.0,
-                    useMobileLayout ? 30 : 36
-                  ),
-                  child: TextField(
-                    cursorColor: ColorStyle.primary,
-                    controller: _firstNameController,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w100,
-                      fontSize: FontSizeConst.font17,
-                      fontFamily: FontStyles.sfProText,
-                      color: darkMode ? ColorStyle.tertiaryLightLabel : ColorStyle.tertiaryDarkLabel,
+          Row(
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox.fromSize(
+                    size: Size(
+                        (MediaQuery.of(context).size.width - 42.0) / 2.0,
+                        useMobileLayout ? 30 : 36
                     ),
-                    decoration: InputDecoration(
-                        hintText: S.current.first_name,
-                        border: InputBorder.none,
-                        hintStyle: TextStyle(
-                          fontWeight: FontWeight.w100,
-                          fontSize: FontSizeConst.font17,
-                          fontFamily: FontStyles.sfProText,
-                          color: darkMode ? ColorStyle.tertiaryLightLabel60 : ColorStyle.tertiaryDarkLabel30,
-                        )
-                    ),
-                  ),
-                ),
-                Container(
-                  width: (MediaQuery.of(context).size.width - 32.0 - 10.0) / 2.0,
-                  height: 1,
-                  color: ColorStyle.tertiaryBackground,
-                )
-              ],
-            ),
-            Container(width: 10,),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox.fromSize(
-                  size: Size(
-                      (MediaQuery.of(context).size.width - 42.0) / 2.0,
-                      useMobileLayout ? 30 : 36
-                  ),
-                  child: TextField(
-                    cursorColor: ColorStyle.primary,
-                    controller: _familyNameController,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w100,
-                      fontSize: FontSizeConst.font17,
-                      fontFamily: FontStyles.sfProText,
-                      color: darkMode ? ColorStyle.tertiaryLightLabel : ColorStyle.tertiaryDarkLabel,
-                    ),
-                    decoration: InputDecoration(
-                        hintText: S.current.family_name,
-                        border: InputBorder.none,
-                        hintStyle: TextStyle(
-                          fontWeight: FontWeight.w100,
-                          fontSize: FontSizeConst.font17,
-                          fontFamily: FontStyles.sfProText,
-                          color: darkMode ? ColorStyle.tertiaryLightLabel60 : ColorStyle.tertiaryDarkLabel30,
-                        )
+                    child: TextField(
+                      cursorColor: ColorStyle.primary,
+                      controller: _firstNameController,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w100,
+                        fontSize: FontSizeConst.font17,
+                        fontFamily: FontStyles.sfProText,
+                        color: darkMode ? ColorStyle.tertiaryLightLabel : ColorStyle.tertiaryDarkLabel,
+                      ),
+                      decoration: InputDecoration(
+                          hintText: S.current.first_name,
+                          border: InputBorder.none,
+                          hintStyle: TextStyle(
+                            fontWeight: FontWeight.w100,
+                            fontSize: FontSizeConst.font17,
+                            fontFamily: FontStyles.sfProText,
+                            color: darkMode ? ColorStyle.tertiaryLightLabel60 : ColorStyle.tertiaryDarkLabel30,
+                          )
+                      ),
                     ),
                   ),
-                ),
-                Container(
-                  width: (MediaQuery.of(context).size.width - 32.0 - 10.0) / 2.0,
-                  height: 1,
-                  color: ColorStyle.tertiaryBackground,
-                )
-              ],
-            ),
-          ],
-        ),
-        const SizedBox(height: 12,),
-        SizedBox.fromSize(
-          size: Size.fromHeight(
-            useMobileLayout ? 30 : 36
+                  Container(
+                    width: (MediaQuery.of(context).size.width - 32.0 - 10.0) / 2.0,
+                    height: 1,
+                    color: ColorStyle.tertiaryBackground,
+                  )
+                ],
+              ),
+              Container(width: 10,),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox.fromSize(
+                    size: Size(
+                        (MediaQuery.of(context).size.width - 42.0) / 2.0,
+                        useMobileLayout ? 30 : 36
+                    ),
+                    child: TextField(
+                      cursorColor: ColorStyle.primary,
+                      controller: _familyNameController,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w100,
+                        fontSize: FontSizeConst.font17,
+                        fontFamily: FontStyles.sfProText,
+                        color: darkMode ? ColorStyle.tertiaryLightLabel : ColorStyle.tertiaryDarkLabel,
+                      ),
+                      decoration: InputDecoration(
+                          hintText: S.current.family_name,
+                          border: InputBorder.none,
+                          hintStyle: TextStyle(
+                            fontWeight: FontWeight.w100,
+                            fontSize: FontSizeConst.font17,
+                            fontFamily: FontStyles.sfProText,
+                            color: darkMode ? ColorStyle.tertiaryLightLabel60 : ColorStyle.tertiaryDarkLabel30,
+                          )
+                      ),
+                    ),
+                  ),
+                  Container(
+                    width: (MediaQuery.of(context).size.width - 32.0 - 10.0) / 2.0,
+                    height: 1,
+                    color: ColorStyle.tertiaryBackground,
+                  )
+                ],
+              ),
+            ],
           ),
-          child: TextField(
-            cursorColor: ColorStyle.primary,
-            keyboardType: TextInputType.emailAddress,
-            controller: _emailController,
-            style: TextStyle(
-              fontWeight: FontWeight.w100,
-              fontSize: FontSizeConst.font17,
-              fontFamily: FontStyles.sfProText,
-              color: darkMode ? ColorStyle.tertiaryLightLabel : ColorStyle.tertiaryDarkLabel,
+          const SizedBox(height: 12,),
+          SizedBox.fromSize(
+            size: Size.fromHeight(
+                useMobileLayout ? 30 : 36
             ),
-            decoration: InputDecoration(
-                hintText: S.current.email,
-                border: InputBorder.none,
-                hintStyle: TextStyle(
-                  fontWeight: FontWeight.w100,
-                  fontSize: FontSizeConst.font17,
-                  fontFamily: FontStyles.sfProText,
-                  color: darkMode ? ColorStyle.tertiaryLightLabel60 : ColorStyle.tertiaryDarkLabel30,
-                )
-            ),
-          ),
-        ),
-        Container(
-          width: MediaQuery.of(context).size.width - 32.0,
-          height: 1,
-          color: ColorStyle.tertiaryBackground,
-        ),
-        const SizedBox(height: 12,),
-        SizedBox.fromSize(
-          size: Size.fromHeight(
-            useMobileLayout ? 30 : 36
-          ),
-          child: TextField(
-            cursorColor: ColorStyle.primary,
-            keyboardType: TextInputType.phone,
-            controller: _mobileController,
-            style: TextStyle(
-              fontWeight: FontWeight.w100,
-              fontSize: FontSizeConst.font17,
-              fontFamily: FontStyles.sfProText,
-              color: darkMode ? ColorStyle.tertiaryLightLabel : ColorStyle.tertiaryDarkLabel,
-            ),
-            decoration: InputDecoration(
-                hintText: S.current.mobile,
-                border: InputBorder.none,
-                hintStyle: TextStyle(
-                  fontWeight: FontWeight.w100,
-                  fontSize: FontSizeConst.font17,
-                  fontFamily: FontStyles.sfProText,
-                  color: darkMode ? ColorStyle.tertiaryLightLabel60 : ColorStyle.tertiaryDarkLabel30,
-                )
+            child: TextField(
+              cursorColor: ColorStyle.primary,
+              keyboardType: TextInputType.emailAddress,
+              controller: _emailController,
+              style: TextStyle(
+                fontWeight: FontWeight.w100,
+                fontSize: FontSizeConst.font17,
+                fontFamily: FontStyles.sfProText,
+                color: darkMode ? ColorStyle.tertiaryLightLabel : ColorStyle.tertiaryDarkLabel,
+              ),
+              decoration: InputDecoration(
+                  hintText: S.current.email,
+                  border: InputBorder.none,
+                  hintStyle: TextStyle(
+                    fontWeight: FontWeight.w100,
+                    fontSize: FontSizeConst.font17,
+                    fontFamily: FontStyles.sfProText,
+                    color: darkMode ? ColorStyle.tertiaryLightLabel60 : ColorStyle.tertiaryDarkLabel30,
+                  )
+              ),
             ),
           ),
-        ),
-        Container(
-          width: MediaQuery.of(context).size.width - 32.0,
-          height: 1,
-          color: ColorStyle.tertiaryBackground,
-        ),
-      ],
+          Container(
+            width: MediaQuery.of(context).size.width - 32.0,
+            height: 1,
+            color: ColorStyle.tertiaryBackground,
+          ),
+          const SizedBox(height: 12,),
+          SizedBox.fromSize(
+            size: Size.fromHeight(
+                useMobileLayout ? 30 : 36
+            ),
+            child: TextField(
+              cursorColor: ColorStyle.primary,
+              keyboardType: TextInputType.phone,
+              controller: _mobileController,
+              style: TextStyle(
+                fontWeight: FontWeight.w100,
+                fontSize: FontSizeConst.font17,
+                fontFamily: FontStyles.sfProText,
+                color: darkMode ? ColorStyle.tertiaryLightLabel : ColorStyle.tertiaryDarkLabel,
+              ),
+              decoration: InputDecoration(
+                  hintText: S.current.mobile,
+                  border: InputBorder.none,
+                  hintStyle: TextStyle(
+                    fontWeight: FontWeight.w100,
+                    fontSize: FontSizeConst.font17,
+                    fontFamily: FontStyles.sfProText,
+                    color: darkMode ? ColorStyle.tertiaryLightLabel60 : ColorStyle.tertiaryDarkLabel30,
+                  )
+              ),
+            ),
+          ),
+          Container(
+            width: MediaQuery.of(context).size.width - 32.0,
+            height: 1,
+            color: ColorStyle.tertiaryBackground,
+          ),
+        ],
+      ),
     );
   }
 
   Widget createPasswordView(bool useMobileLayout, bool darkMode) {
     return Container(
-      padding: EdgeInsets.only(top: useMobileLayout ? 16 : 36),
+      padding: EdgeInsets.only(top: useMobileLayout ? 16 : 36, left: 16, right: 16),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -618,7 +620,7 @@ class _ProfileView extends State<ProfileView> {
 
   Widget getButton(bool useMobileLayout, bool darkMode) {
     return Container(
-      margin: EdgeInsets.only(top: useMobileLayout ? 20 : 48),
+      margin: EdgeInsets.only(top: useMobileLayout ? 20 : 48, left: 16, right: 16),
       child: Column(
         children: [
           Align(
