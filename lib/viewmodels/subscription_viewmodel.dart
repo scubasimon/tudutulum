@@ -1,13 +1,14 @@
 import 'dart:async';
-import 'package:notification_center/notification_center.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:tudu/base/base_viewmodel.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:tudu/consts/strings/str_const.dart';
 import 'package:tudu/models/error.dart';
 import 'package:tudu/models/subscription.dart';
+import 'package:tudu/repositories/auth/auth_repository.dart';
 
 class SubscriptionViewModel extends BaseViewModel {
+
+  final AuthRepository _authRepository = AuthRepositoryImpl();
 
   String _currentSubscription = "";
 
@@ -86,6 +87,7 @@ class SubscriptionViewModel extends BaseViewModel {
     _isLoading.add(true);
     try {
       var customerInfo = await Purchases.purchaseProduct(id);
+      _updateSubscription();
       if (customerInfo.entitlements.all["Pro"]?.isActive == true) {
         _isLoading.add(false);
         _subscriptionSuccess.add(true);
@@ -127,6 +129,7 @@ class SubscriptionViewModel extends BaseViewModel {
         active = subscriptionsActive.contains(result.id);
         if (active) {
           _currentSubscription = result.id;
+          _updateSubscription();
         }
         result.selection = active;
       }
@@ -138,6 +141,16 @@ class SubscriptionViewModel extends BaseViewModel {
       _isLoading.add(false);
       _subscriptionSuccess.add(false);
       _exception.add(CommonError.serverError);
+    }
+  }
+
+  void _updateSubscription() async {
+    try {
+      var user = await _authRepository.getCurrentUser();
+      user.subscriber = true;
+      await _authRepository.updateProfile(user);
+    } catch (e) {
+      print(e);
     }
   }
 }

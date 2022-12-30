@@ -78,9 +78,9 @@ class MessageLookup extends MessageLookupByLibrary {
             "Current password must be not empty"),
         "dark_mode": MessageLookupByLibrary.simpleMessage("Dark mode"),
         "dark_mode_disable_info": MessageLookupByLibrary.simpleMessage(
-            "Disable this setting if you you\'ld to continue using the app in light mode"),
+            "Disable this setting for dark mode"),
         "dark_mode_enable_info": MessageLookupByLibrary.simpleMessage(
-            "Enable this setting if you\'ld like to continue to using app in dark mode"),
+            "Enable this setting for dark mode"),
         "data_deleted":
             MessageLookupByLibrary.simpleMessage("Your data has been deleted"),
         "date": MessageLookupByLibrary.simpleMessage("Date"),
@@ -292,7 +292,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("•  Transport Locally"),
         "travel_to_tulum":
             MessageLookupByLibrary.simpleMessage("•  Travel to Tulum"),
-        "try_a_week": MessageLookupByLibrary.simpleMessage("7 days free trial"),
+        "try_a_week":
+            MessageLookupByLibrary.simpleMessage("7 days free trial and then…"),
         "un_authorized_error":
             MessageLookupByLibrary.simpleMessage("UnAuthorized"),
         "update_details":
@@ -300,7 +301,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "update_successful":
             MessageLookupByLibrary.simpleMessage("Update successful"),
         "user_not_approved_error": MessageLookupByLibrary.simpleMessage(
-            "User not approve. Please try again"),
+            "User not approved. Please try again."),
         "user_not_existed_error":
             MessageLookupByLibrary.simpleMessage("User not found"),
         "venue_contact": MessageLookupByLibrary.simpleMessage("Venue Contact:"),

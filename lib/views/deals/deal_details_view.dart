@@ -451,7 +451,7 @@ class _DealDetailView extends State<DealDetailView> {
         onPressed: () {
           Navigator.of(context).pop();
         },
-        child: Text(S.current.cancel),
+        child: Text(S.current.redeem_later),
       );
 
       var successful = TextButton(
@@ -502,7 +502,7 @@ class _DealDetailView extends State<DealDetailView> {
           ),
           CupertinoDialogAction(
             isDestructiveAction: true,
-            child: Text(S.current.cancel),
+            child: Text(S.current.redeem_later),
             onPressed: () {
               Navigator.of(context).pop();
             },
@@ -518,7 +518,7 @@ class _DealDetailView extends State<DealDetailView> {
         onPressed: () {
           Navigator.of(context).pop();
         },
-        child: Text(S.current.redeem_later),
+        child: Text(S.current.cancel),
       );
 
       var email = TextButton(
@@ -570,7 +570,7 @@ class _DealDetailView extends State<DealDetailView> {
             onPressed: () {
               Navigator.of(context).pop();
             },
-            child: Text(S.current.redeem_later),
+            child: Text(S.current.cancel),
           )
         ],
       );

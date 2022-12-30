@@ -120,6 +120,14 @@ class AuthRepositoryImpl extends AuthRepository {
     if (userCredentials.user == null && userCredentials.additionalUserInfo == null) {
       throw AuthenticationError.badCredentials({});
     }
+
+    try {
+      await Purchases.logIn(userCredentials.user!.uid);
+    } catch (e) {
+      print(e);
+      throw CommonError.serverError;
+    }
+    bool subscriber = await _isPurchases();
     bool userExist = false;
     try {
       userExist = await _firebaseService.userExists(userCredentials.user!.uid)
@@ -132,15 +140,21 @@ class AuthRepositoryImpl extends AuthRepository {
       }
     }
 
-    try {
-      await Purchases.logIn(userCredentials.user!.uid);
-    } catch (e) {
-      print(e);
-      throw CommonError.serverError;
-    }
-
     if (userExist) {
-      return;
+      try {
+        var user = await _firebaseService.getUser(userCredentials.user!.uid)
+            .timeout(const Duration(seconds: NumberConst.timeout));
+        user["subscriber"] = subscriber;
+        await _firebaseService.updateUser(userCredentials.user!.uid, user)
+            .timeout(const Duration(seconds: NumberConst.timeout));
+        return;
+      } catch (e) {
+        if (e is TimeoutException) {
+          throw CommonError.serverError;
+        } else {
+          rethrow;
+        }
+      }
     } else {
       String? firstName, familyName;
       if (userCredentials.user?.displayName != null) {
@@ -163,6 +177,7 @@ class AuthRepositoryImpl extends AuthRepository {
         firstName: firstName,
         familyName: familyName,
         telephone: userCredentials.user!.phoneNumber,
+        subscriber: subscriber,
       );
       try {
         return await _firebaseService
@@ -259,5 +274,17 @@ class AuthRepositoryImpl extends AuthRepository {
 
     await _firebaseService.removeUser(FirebaseAuth.instance.currentUser!.uid);
     await _firebaseService.deleteAccount();
+  }
+
+  Future<bool> _isPurchases() async {
+    try {
+      final customerInfo = await Purchases.getCustomerInfo();
+      print(customerInfo.activeSubscriptions);
+      print(customerInfo.entitlements);
+      return customerInfo.entitlements.all["Pro"]?.isActive == true;
+    } catch (e) {
+      print(e);
+      return false;
+    }
   }
 }

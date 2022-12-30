@@ -7,6 +7,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:tudu/consts/strings/str_const.dart';
 import 'package:tudu/models/deal.dart';
 import 'package:tudu/models/error.dart';
+import 'package:tudu/repositories/auth/auth_repository.dart';
 import 'package:tudu/repositories/deal/deal_repository.dart';
 import 'package:tudu/models/param.dart' as Param;
 import 'package:tudu/repositories/home/home_repository.dart';
@@ -21,6 +22,7 @@ class DealsViewModel extends BaseViewModel {
   final PermissionLocation _permissionLocation = PermissionLocation();
   final HomeRepository _homeRepository = HomeRepositoryImpl();
   final LocalDatabaseService _localDatabaseService = LocalDatabaseServiceImpl();
+  final AuthRepository _authRepository = AuthRepositoryImpl();
 
   List<Business> business = [];
 
@@ -69,6 +71,7 @@ class DealsViewModel extends BaseViewModel {
       print(e);
       active = false;
     }
+    _updateSubscription(active);
 
     _subscription.add(active);
     if (!active) {
@@ -148,6 +151,19 @@ class DealsViewModel extends BaseViewModel {
       } else {
         _exception.add(CommonError.serverError);
       }
+    }
+  }
+
+  void _updateSubscription(bool value) async {
+    try {
+      var user = await _authRepository.getCurrentUser();
+      if (user.subscriber == value) {
+        return;
+      }
+      user.subscriber = value;
+      await _authRepository.updateProfile(user);
+    } catch (e) {
+      print(e);
     }
   }
 }
