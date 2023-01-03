@@ -7,6 +7,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:notification_center/notification_center.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:tudu/viewmodels/bookmarks_viewmodel.dart';
 import 'package:tudu/views/bookmarks/map_bookmarks_view.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
@@ -25,7 +26,6 @@ import 'package:tudu/views/deals/deal_details_view.dart';
 import 'package:tudu/viewmodels/what_tudu_site_content_detail_viewmodel.dart';
 import 'package:tudu/views/what_tudu/what_tudu_site_content_detail_view.dart';
 import 'package:tudu/services/observable/observable_serivce.dart';
-import 'package:tudu/views/common/size_provider_widget.dart';
 
 class BookmarksView extends StatefulWidget {
   const BookmarksView({super.key});
@@ -34,7 +34,7 @@ class BookmarksView extends StatefulWidget {
   State<StatefulWidget> createState() => _BookmarksView();
 }
 
-class _BookmarksView extends State<BookmarksView> {
+class _BookmarksView extends State<BookmarksView> with WidgetsBindingObserver {
   final _bookmarksViewModel = BookmarksViewModel();
   final _whatTuduSiteContentDetailViewModel = WhatTuduSiteContentDetailViewModel();
   final _scrollController = ScrollController();
@@ -44,14 +44,47 @@ class _BookmarksView extends State<BookmarksView> {
 
   StreamSubscription<bool>? darkModeListener;
 
+  StopWatchTimer? stopWatchTimerShowHideSearch;
+  bool isShowing = true;
+  final int searchAnimationDuration = 500;
+  double calculateSearchHeight = 56;
+
   var _order = Order.distance;
-  bool _isAtTop = false;
   int? _businessId;
   var _enableRefresh = true;
 
   @override
   void initState() {
     listenToDarkMode();
+
+    stopWatchTimerShowHideSearch = StopWatchTimer(
+      mode: StopWatchMode.countDown,
+      presetMillisecond: searchAnimationDuration,
+      onStop: () { },
+      onChange: (value) {
+        slowlyShowOrHideSearch(value);
+      },
+      onChangeRawSecond: (value) {},
+      onChangeRawMinute: (value) {},
+    );
+
+    _scrollController.addListener(() async {
+      if (_scrollController.offset <= 0.0 && isShowing == false) {
+        isShowing = true;
+        if (stopWatchTimerShowHideSearch!.isRunning == false) {
+          stopWatchTimerShowHideSearch!.onExecute.add(StopWatchExecute.reset);
+          stopWatchTimerShowHideSearch!.onExecute.add(StopWatchExecute.start);
+        }
+      }
+
+      if (_scrollController.offset > 0.0 && isShowing == true) {
+        isShowing = false;
+        if (stopWatchTimerShowHideSearch!.isRunning == false) {
+          stopWatchTimerShowHideSearch!.onExecute.add(StopWatchExecute.reset);
+          stopWatchTimerShowHideSearch!.onExecute.add(StopWatchExecute.start);
+        }
+      }
+    });
 
     _bookmarksViewModel.userLoginStream.listen((event) {
       if (!event) {
@@ -68,15 +101,7 @@ class _BookmarksView extends State<BookmarksView> {
         Navigator.of(context).pop();
       }
     });
-    _scrollController.addListener(() {
-      if (_scrollController.offset <= 0.0) {
-        _isAtTop = true;
-        setState(() {});
-      } else {
-        _isAtTop = false;
-        setState(() {});
-      }
-    });
+
     _searchController.addListener(() {
       setState(() {
         _enableRefresh = false;
@@ -101,6 +126,14 @@ class _BookmarksView extends State<BookmarksView> {
 
     });
     super.initState();
+
+    WidgetsBinding.instance.addObserver(this);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      Timer(const Duration(seconds: 1), () {
+        isShowing = false;
+      });
+    });
   }
 
   void listenToDarkMode() {
@@ -109,11 +142,21 @@ class _BookmarksView extends State<BookmarksView> {
     });
   }
 
-    @override
-    void dispose() {
-      darkModeListener?.cancel();
-      super.dispose();
+  @override
+  void dispose() {
+    darkModeListener?.cancel();
+    super.dispose();
+  }
+
+  void slowlyShowOrHideSearch(int value) async {
+    final double searchHeightPercent = value/searchAnimationDuration.toDouble();
+    if (isShowing == true) {
+      calculateSearchHeight = 94 - 38 * searchHeightPercent;
+    } else {
+      calculateSearchHeight = 56 + 38 * searchHeightPercent;
     }
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -237,7 +280,7 @@ class _BookmarksView extends State<BookmarksView> {
         ),
       )
     ];
-    if (_isAtTop) {
+    if (calculateSearchHeight > 90) {
       array.add(CupertinoSearchTextField(
         controller: _searchController,
         onSubmitted: (value) {
@@ -263,7 +306,7 @@ class _BookmarksView extends State<BookmarksView> {
     return ExitAppScope(
       child: Scaffold(
         appBar: AppBar(
-          toolbarHeight: (_isAtTop) ? 94 : 56,
+          toolbarHeight: calculateSearchHeight,
           automaticallyImplyLeading: false,
           flexibleSpace: Container(
             padding: EdgeInsets.only(
