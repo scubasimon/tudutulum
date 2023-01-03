@@ -66,7 +66,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
 
   StreamSubscription<bool>? darkModeListener;
   // StreamSubscription<bool>? loadingListener;
-  StreamSubscription<List<Article>?>? zeroDataArticleListener;
+  StreamSubscription<List<Items>?>? zeroDataArticleListener;
   StreamSubscription<List<Site>?>? zeroDataSiteListener;
 
   StopWatchTimer? stopWatchTimerShowHideSearch;
@@ -601,7 +601,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
   }
 
   Widget createAllLocationArticlesView() {
-    return StreamBuilder<List<Article>?>(
+    return StreamBuilder<List<Items>?>(
       stream: _observableService.listArticlesStream,
       builder: (_, snapshot) {
         if (!snapshot.hasData) {
@@ -617,11 +617,11 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                padding: const EdgeInsets.only(top: 8, bottom: 8, left: 24, right: 16),
+                padding: const EdgeInsets.only(top: 8, bottom: 8, left: 16, right: 16),
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  // getArticleTitleText(_homeViewModel.whatTuduBussinessFilterType),
-                  S.current.articles,
+                  getArticleTitleText(_homeViewModel.whatTuduBussinessFilterType),
+                  // S.current.articles,
                   style: TextStyle(
                       color: ColorStyle.getDarkLabel(),
                       fontSize: FontSizeConst.font16,
@@ -637,18 +637,18 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
     );
   }
 
-  Widget getAllLocationArticlesView(List<Article> list) {
+  Widget getAllLocationArticlesView(List<Items> list) {
     return Container(
         margin: const EdgeInsets.only(left: 16, right: 16),
         height: 108.0,
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
           shrinkWrap: true,
-          itemCount: list.first.items.length,
+          itemCount: list.length,
           itemBuilder: (BuildContext context, int index) {
             return InkWell(
               onTap: () {
-                _whatTuduArticleDetailViewModel.setSelectedArticle(list.first.items[index]);
+                _whatTuduArticleDetailViewModel.setSelectedArticle(list[index]);
                 Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -669,7 +669,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                         children: [
                           ClipRRect(
                             child: CachedNetworkImage(
-                              imageUrl: "${list.first.items[index].thumbnailImage?.url}",
+                              imageUrl: "${list[index].thumbnailImage?.url}",
                               width: MediaQuery.of(context).size.width,
                               fit: BoxFit.fill,
                               imageBuilder: (context, imageProvider) => Container(
@@ -693,7 +693,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                             top: 40,
                             child: Center(
                               child: RoundedBackgroundText(
-                                list.first.items[index].slug,
+                                list[index].slug,
                                 style: TextStyle(
                                   fontFamily: FontStyles.raleway,
                                   fontSize: FontSizeConst.font12,
@@ -730,7 +730,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
-                padding: const EdgeInsets.only(top: 8, bottom: 8, left: 24, right: 16),
+                padding: const EdgeInsets.only(top: 8, bottom: 8, left: 18, right: 16),
                 alignment: Alignment.centerLeft,
                 child: Row(
                   children: [
@@ -1003,7 +1003,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
 
   String getArticleTitleText(int index) {
     if (index >= _homeViewModel.listBusiness.length) {
-      return S.current.all_location_articles;
+      return S.current.articles;
     } else {
       return "${_homeViewModel.listBusiness[index].type} ${S.current.articles}";
     }

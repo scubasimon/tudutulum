@@ -25,8 +25,8 @@ class ObservableService {
   final StreamController<int> redirectTabController = BehaviorSubject<int>();
   Stream<int> get redirectTabStream => redirectTabController.stream;
 
-  final StreamController<List<Article>?> listArticlesController = BehaviorSubject<List<Article>?>();
-  Stream<List<Article>?> get listArticlesStream => listArticlesController.stream;
+  final StreamController<List<Items>?> listArticlesController = BehaviorSubject<List<Items>?>();
+  Stream<List<Items>?> get listArticlesStream => listArticlesController.stream;
 
   final StreamController<List<Site>?> listSitesController = BehaviorSubject<List<Site>?>();
   Stream<List<Site>?> get listSitesStream => listSitesController.stream;

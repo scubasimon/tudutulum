@@ -2,12 +2,16 @@ import 'package:tudu/utils/func_utils.dart';
 
 import '../../consts/strings/str_const.dart';
 import '../../models/api_article_detail.dart';
+import '../../models/business.dart';
 import '../../models/site.dart';
 import '../../services/firebase/firebase_service.dart';
 
 abstract class WhatTuduRepository {
-  List<Article> getArticlesWithFilterSortSearch(
-      List<Article> listArticleInput, int? businessFilterId, String? keywordSearch);
+  List<Items> getArticlesWithFilterSortSearch(
+    List<Items> listArticleInput,
+    Business? businessFilterId,
+    // String? keywordSearch,
+  );
 
   List<Site> getSitesWithFilterSortSearch(
       List<Site> listSiteInput, int? businessFilterId, String? keywordSort, String? keywordSearch);
@@ -15,21 +19,28 @@ abstract class WhatTuduRepository {
 
 class WhatTuduRepositoryImpl extends WhatTuduRepository {
   @override
-  List<Article> getArticlesWithFilterSortSearch(
-      List<Article> listArtileInput, int? businessFilterId, String? keywordSearch) {
-    // Clone data of input Sites
-    List<Article> listArticleResult = listArtileInput.where((site) => true).toList();
+  List<Items> getArticlesWithFilterSortSearch(
+    List<Items> listArticleInput,
+    Business? businessFilterId,
+    // String? keywordSearch,
+  ) {
+    // Clone data of input Articles
+    List<Items> listArticleResult = listArticleInput.where((site) => true).toList();
 
-    // Comment because listArticle's never change
-    /*// Filter with businessId (Filter function)
-    if (businessFilterId != null) {
-      if (businessFilterId != -1) {
-        listArticleResult = listArticleResult.where((site) => site.business.contains(businessFilterId)).toList();
-      }
+    // Filter with businessId (Filter function)
+    for (var value in listArticleResult) {
+      print("getArticlesWithFilterSortSearch -> ${businessFilterId?.type} - ${value.tags}");
     }
 
+    if (businessFilterId != null) {
+      listArticleResult = listArticleResult
+          .where((site) => site.tags.toLowerCase().contains(businessFilterId.type.toLowerCase()))
+          .toList();
+    }
+
+    // Comment because listArticle's never change by search
     // Filter with keywordSearch (Search function)
-    if (keywordSearch != null) {
+    /*if (keywordSearch != null) {
       if (keywordSearch.isNotEmpty) {
         listArticleResult =
             listArticleResult.where((site) => site.title.toLowerCase().contains(keywordSearch.toLowerCase())).toList();

@@ -12,6 +12,7 @@ import 'package:tudu/models/site.dart';
 import 'package:tudu/utils/func_utils.dart';
 import 'package:tudu/viewmodels/home_viewmodel.dart';
 
+import '../models/api_article_detail.dart';
 import '../models/auth.dart';
 import '../repositories/what_tudu/what_tudu_repository.dart';
 import 'package:location/location.dart' as locationLib;
@@ -54,6 +55,16 @@ class WhatTuduViewModel extends BaseViewModel {
         keywordSearch,
       );
 
+      print("_homeViewModel.listArticles -> ${_homeViewModel.listArticles.length}");
+      print("_homeViewModel.listArticles -> ${businessFilter}");
+
+      List<Items> listArticlesResult = _whatTuduRepository.getArticlesWithFilterSortSearch(
+        _homeViewModel.listArticles,
+        businessFilter, // (businessFilter != null) ? businessFilter.businessid : -1,
+        // keywordSearch,
+      );
+
+      _observableService.listArticlesController.sink.add(listArticlesResult);
       _observableService.listSitesController.sink.add(listSitesResult);
       _observableService.homeProgressLoadingController.sink.add(false);
     } catch (e) {
