@@ -92,6 +92,7 @@ class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDeta
 
   @override
   Widget build(BuildContext context) {
+    print( _whatTuduArticleContentDetailViewModel.articleItemDetail.postBody);
     var darkMode = PrefUtil.getValue(StrConst.isDarkMode, false) as bool;
     return ExitAppScope(
       child: Scaffold(
@@ -199,6 +200,36 @@ class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDeta
                           fontWeight: FontWeight.w400,
                           fontFamily: FontStyles.raleway,
                           fontSize: FontSize.medium,
+                        ),
+                        "h1": Style(
+                          color: ColorStyle.getDarkLabel(),
+                          fontWeight: FontWeight.w400,
+                          fontFamily: FontStyles.raleway,
+                        ),
+                        "h2": Style(
+                          color: ColorStyle.getDarkLabel(),
+                          fontWeight: FontWeight.w400,
+                          fontFamily: FontStyles.raleway,
+                        ),
+                        "h3": Style(
+                          color: ColorStyle.getDarkLabel(),
+                          fontWeight: FontWeight.w400,
+                          fontFamily: FontStyles.raleway,
+                        ),
+                        "h4": Style(
+                          color: ColorStyle.getDarkLabel(),
+                          fontWeight: FontWeight.w400,
+                          fontFamily: FontStyles.raleway,
+                        ),
+                        "h5": Style(
+                          color: ColorStyle.getDarkLabel(),
+                          fontWeight: FontWeight.w400,
+                          fontFamily: FontStyles.raleway,
+                        ),
+                        "h6": Style(
+                          color: ColorStyle.getDarkLabel(),
+                          fontWeight: FontWeight.w400,
+                          fontFamily: FontStyles.raleway,
                         ),
                       },
                       customRenders: {
