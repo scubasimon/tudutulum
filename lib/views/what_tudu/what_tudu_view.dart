@@ -693,7 +693,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                             top: 40,
                             child: Center(
                               child: RoundedBackgroundText(
-                                list[index].slug,
+                                list[index].name,
                                 style: TextStyle(
                                   fontFamily: FontStyles.raleway,
                                   fontSize: FontSizeConst.font12,
