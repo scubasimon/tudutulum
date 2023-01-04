@@ -6,6 +6,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:notification_center/notification_center.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:tudu/consts/color/Colors.dart';
 import 'package:tudu/models/deal.dart';
 import 'package:tudu/models/error.dart';
@@ -22,7 +23,6 @@ import 'package:tudu/views/deals/deal_details_view.dart';
 import 'package:tudu/views/map/map_deal_view.dart';
 import 'package:tudu/views/subscription/subscription_plan_view.dart';
 import 'package:tudu/services/observable/observable_serivce.dart';
-import 'package:tudu/views/common/size_provider_widget.dart';
 
 class DealsView extends StatefulWidget {
   const DealsView({super.key});
@@ -31,7 +31,7 @@ class DealsView extends StatefulWidget {
   State<StatefulWidget> createState() => _DealsView();
 }
 
-class _DealsView extends State<DealsView> {
+class _DealsView extends State<DealsView> with WidgetsBindingObserver {
   final _dealsViewModel = DealsViewModel();
   final ObservableService _observableService = ObservableService();
 
@@ -45,8 +45,12 @@ class _DealsView extends State<DealsView> {
   StreamSubscription<CustomError>? _error;
   StreamSubscription<bool>? _subscription;
 
+  StopWatchTimer? stopWatchTimerShowHideSearch;
+  bool isShowing = true;
+  final int searchAnimationDuration = 500;
+  double calculateSearchHeight = 56;
+
   var _order = Order.distance;
-  bool _isAtTop = false;
   int? _businessId;
   var _enableRefresh = true;
 
@@ -56,15 +60,36 @@ class _DealsView extends State<DealsView> {
   @override
   void initState() {
     _dealsViewModel.getData();
-    _scrollController.addListener(() {
-      if (_scrollController.offset <= 0.0) {
-        _isAtTop = true;
-        setState(() {});
-      } else {
-        _isAtTop = false;
-        setState(() {});
+
+    stopWatchTimerShowHideSearch = StopWatchTimer(
+      mode: StopWatchMode.countDown,
+      presetMillisecond: searchAnimationDuration,
+      onStop: () { },
+      onChange: (value) {
+        slowlyShowOrHideSearch(value);
+      },
+      onChangeRawSecond: (value) {},
+      onChangeRawMinute: (value) {},
+    );
+
+    _scrollController.addListener(() async {
+      if (_scrollController.offset <= 0.0 && isShowing == false) {
+        isShowing = true;
+        if (stopWatchTimerShowHideSearch!.isRunning == false) {
+          stopWatchTimerShowHideSearch!.onExecute.add(StopWatchExecute.reset);
+          stopWatchTimerShowHideSearch!.onExecute.add(StopWatchExecute.start);
+        }
+      }
+
+      if (_scrollController.offset > 0.0 && isShowing == true) {
+        isShowing = false;
+        if (stopWatchTimerShowHideSearch!.isRunning == false) {
+          stopWatchTimerShowHideSearch!.onExecute.add(StopWatchExecute.reset);
+          stopWatchTimerShowHideSearch!.onExecute.add(StopWatchExecute.start);
+        }
       }
     });
+
     _searchController.addListener(() {
       setState(() {
         _enableRefresh = false;
@@ -115,12 +140,30 @@ class _DealsView extends State<DealsView> {
     });
     listenToDarkMode();
     super.initState();
+
+    WidgetsBinding.instance.addObserver(this);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      Timer(const Duration(seconds: 1), () {
+        isShowing = false;
+      });
+    });
   }
 
   void listenToDarkMode() {
     darkModeListener ??= _observableService.darkModeStream.asBroadcastStream().listen((data) {
       setState(() {});
     });
+  }
+
+  void slowlyShowOrHideSearch(int value) async {
+    final double searchHeightPercent = value/searchAnimationDuration.toDouble();
+    if (isShowing == true) {
+      calculateSearchHeight = 94 - 38 * searchHeightPercent;
+    } else {
+      calculateSearchHeight = 56 + 38 * searchHeightPercent;
+    }
+    setState(() {});
   }
 
   @override
@@ -276,7 +319,7 @@ class _DealsView extends State<DealsView> {
         ),
       )
     ];
-    if (_isAtTop) {
+    if ((calculateSearchHeight > 90)) {
       array.add(CupertinoSearchTextField(
         controller: _searchController,
         onSubmitted: (value) {
@@ -302,7 +345,7 @@ class _DealsView extends State<DealsView> {
     return ExitAppScope(
       child: Scaffold(
         appBar: AppBar(
-          toolbarHeight: (_isAtTop) ? 94 : 56,
+          toolbarHeight: calculateSearchHeight,
           automaticallyImplyLeading: false,
           flexibleSpace: Container(
             padding: EdgeInsets.only(

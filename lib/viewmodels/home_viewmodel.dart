@@ -43,7 +43,7 @@ class HomeViewModel extends BaseViewModel {
   int eventOrderType = 0;
 
 
-  List<Article> listArticles = [];
+  List<Items> listArticles = [];
   List<Site> listSites = [];
   List<Event> listEvents = [];
   List<Partner> listPartners = [];
@@ -107,7 +107,7 @@ class HomeViewModel extends BaseViewModel {
   }
 
   Items? getArticleItemById(String idInput) {
-    for (var element in listArticles.first.items) {
+    for (var element in listArticles) {
       if (idInput == element.sId) {
         return element;
       }
@@ -182,6 +182,8 @@ class HomeViewModel extends BaseViewModel {
   Future<void> getDataFromFireStore(bool isLoadOnInit) async {
     _observableService.homeProgressLoadingController.sink.add(true);
 
+    await requestAllBookmarkedSiteId();
+
     await getListBusinesses();
     await getListPartners();
     await getListAmenities();
@@ -192,7 +194,6 @@ class HomeViewModel extends BaseViewModel {
     if ((PrefUtil.getValue(StrConst.isHideArticle, false) as bool) == false) {
       await getListArticles(isLoadOnInit);
     }
-    await requestAllBookmarkedSiteId();
 
     _observableService.homeProgressLoadingController.sink.add(false);
   }
@@ -293,9 +294,11 @@ class HomeViewModel extends BaseViewModel {
   }
 
   Future<void> getListArticles(bool isLoadOnInit) async {
-    listArticles = await _homeRepository.getListArticles();
-    if (isLoadOnInit) _observableService.listArticlesController.sink.add(listArticles);
-    notifyListeners();
+    await _homeRepository.getListArticles().then((value) {
+      listArticles = value.first.items;
+      if (isLoadOnInit) _observableService.listArticlesController.sink.add(listArticles);
+      notifyListeners();
+    });
   }
 
   Future<void> getListSites(bool isLoadOnInit) async {
@@ -340,9 +343,11 @@ class HomeViewModel extends BaseViewModel {
   }
 
   Future<void> getLocalListArticles() async {
-    listArticles = await _homeRepository.getLocalListArticles();
-    _observableService.listArticlesController.sink.add(listArticles);
-    notifyListeners();
+    await _homeRepository.getLocalListArticles().then((value) {
+      listArticles = value.first.items;
+      _observableService.listArticlesController.sink.add(listArticles);
+      notifyListeners();
+    });
   }
 
   Future<void> getLocalListSites() async {

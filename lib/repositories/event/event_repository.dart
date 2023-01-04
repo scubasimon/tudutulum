@@ -38,7 +38,7 @@ class EventRepositoryImpl extends EventRepository {
     if (keywordSort != null) {
       if (keywordSort == StrConst.sortDate) {
         // Sort with title
-        listEventResult.sort((b, a) => a.datestart.compareTo(b.datestart));
+        listEventResult.sort((a, b) => a.datestart.compareTo(b.datestart));
       } else if (keywordSort == StrConst.sortDistance) {
         listEventResult.sort((a, b) => a.title.compareTo(b.title));
       } else {

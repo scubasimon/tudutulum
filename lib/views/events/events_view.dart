@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -53,6 +54,7 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
   final RefreshController _refreshController = RefreshController(initialRefresh: false);
 
   StreamSubscription<bool>? darkModeListener;
+  StreamSubscription<List<Event>?>? eventListener;
 
   StopWatchTimer? stopWatchTimerShowHideSearch;
 
@@ -70,18 +72,18 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
     ]);
 
     listenToDarkMode();
+    listenToEvents();
 
     stopWatchTimerShowHideSearch = StopWatchTimer(
       mode: StopWatchMode.countDown,
       presetMillisecond: searchAnimationDuration,
-      onStop: () { },
+      onStop: () {},
       onChange: (value) {
         slowlyShowOrHideSearch(value);
       },
       onChangeRawSecond: (value) {},
       onChangeRawMinute: (value) {},
     );
-
 
     _scrollController.addListener(() async {
       if (_scrollController.offset <= 0.0 && isShowing == false) {
@@ -110,7 +112,7 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
                 : null, // Get current filterType
             FuncUlti.getSortEventTypeByInt(_homeViewModel.eventOrderType), // Get current OrderType
             _searchController.text // Search text
-        );
+            );
       }
     });
 
@@ -152,8 +154,71 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
     });
   }
 
+  void listenToEvents() {
+    eventListener ??= _observableService.listEventsStream.asBroadcastStream().listen((data) {
+      print("listenToEvents -> new event");
+      if (data != null) {
+        List<Event> listEventDate = [];
+
+        for (var event in data) {
+          int newHour = 23;
+          int newMinute = 59;
+          int newSecond = 59;
+          DateTime startDate = DateTime.now();
+          DateTime endDate = DateTime.fromMillisecondsSinceEpoch(event.dateend.millisecondsSinceEpoch);
+          startDate = DateTime(
+            startDate.year,
+            startDate.month,
+            startDate.day,
+            newHour,
+            newMinute,
+            newSecond,
+          );
+          endDate = DateTime(
+            endDate.year,
+            endDate.month,
+            endDate.day,
+            newHour,
+            newMinute,
+            newSecond,
+          );
+
+          final daysToGenerate = endDate.difference(startDate).inDays + 1;
+          var days =
+              List.generate(daysToGenerate, (i) => DateTime(startDate.year, startDate.month, startDate.day + (i)));
+          print("Event -> ${event.eventid}");
+          for (var day in days) {
+            print("${DateFormat('dd MM yy').format(day).toString()}");
+            Event cloneEvent = Event.fromClone(event);
+            cloneEvent.datestart = Timestamp.fromDate(
+                DateTime(
+                  day.year,
+                  day.month,
+                  day.day,
+                  DateTime.fromMillisecondsSinceEpoch(event.dateend.millisecondsSinceEpoch).hour,
+                  DateTime.fromMillisecondsSinceEpoch(event.dateend.millisecondsSinceEpoch).minute,
+                  DateTime.fromMillisecondsSinceEpoch(event.dateend.millisecondsSinceEpoch).second,
+                )
+            );
+            listEventDate.add(cloneEvent);
+          }
+        }
+
+        listEventDate.sort((a, b) => a.datestart.compareTo(b.datestart));
+
+        _observableService.listEventsDateController.sink.add(listEventDate);
+      }
+    });
+  }
+
+  int daysBetween(DateTime from, DateTime to) {
+    from = DateTime(from.year, from.month, from.day);
+    to = DateTime(to.year, to.month, to.day);
+    return (to.difference(from).inHours / 24).round() + 1;
+  }
+
   void slowlyShowOrHideSearch(int value) async {
-    final double searchHeightPercent = value/searchAnimationDuration.toDouble();
+    final double searchHeightPercent = value / searchAnimationDuration.toDouble();
     if (isShowing == true) {
       calculateSearchHeight = 94 - 38 * searchHeightPercent;
     } else {
@@ -166,6 +231,7 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
   void dispose() {
     print("dispose -> events_view");
     darkModeListener?.cancel();
+    eventListener?.cancel();
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(statusBarColor: Colors.transparent));
     super.dispose();
@@ -288,7 +354,7 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
                           },
                         ),
                         const Spacer(),
-                        PullDownButton (
+                        PullDownButton(
                           itemBuilder: (context) => [
                             PullDownMenuItem(
                               title: S.current.date,
@@ -326,7 +392,7 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
                                 PermissionRequest.isResquestPermission = true;
                                 PermissionRequest().permissionServiceCall(
                                   context,
-                                      () {
+                                  () {
                                     _eventsViewModel.sortWithLocation();
                                     _homeViewModel.changeEventOrderType(1);
                                   },
@@ -364,83 +430,83 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
                         PullDownButton(
                           itemBuilder: (context) => List<PullDownMenuEntry>.generate(
                               _homeViewModel.listEventTypes.length * 2 + 1,
-                                  (counter) => (counter == _homeViewModel.listEventTypes.length * 2)
+                              (counter) => (counter == _homeViewModel.listEventTypes.length * 2)
                                   ? PullDownMenuItem(
-                                title: S.current.all_location,
-                                itemTheme: const PullDownMenuItemTheme(
-                                  textStyle: TextStyle(
-                                      fontFamily: FontStyles.sfProText,
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 17,
-                                      color: ColorStyle.menuLabel),
-                                ),
-                                iconWidget: Image.asset(
-                                  _homeViewModel.eventEventFilterType != _homeViewModel.listEventTypes.length
-                                      ? ImagePath.mappinIcon
-                                      : ImagePath.mappinDisableIcon,
-                                  width: 28,
-                                  height: 28,
-                                ),
-                                enabled: _homeViewModel.eventEventFilterType != ((counter) / 2).round(),
-                                onTap: () {
-                                  _eventsViewModel.getDataWithFilterSortSearch(
-                                    null,
-                                    FuncUlti.getSortEventTypeByInt(_homeViewModel.eventOrderType),
-                                    _searchController.text,
-                                  );
-                                  _homeViewModel.eventEventFilterType = ((counter) / 2).round();
-                                },
-                              )
+                                      title: S.current.all_location,
+                                      itemTheme: const PullDownMenuItemTheme(
+                                        textStyle: TextStyle(
+                                            fontFamily: FontStyles.sfProText,
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 17,
+                                            color: ColorStyle.menuLabel),
+                                      ),
+                                      iconWidget: Image.asset(
+                                        _homeViewModel.eventEventFilterType != _homeViewModel.listEventTypes.length
+                                            ? ImagePath.mappinIcon
+                                            : ImagePath.mappinDisableIcon,
+                                        width: 28,
+                                        height: 28,
+                                      ),
+                                      enabled: _homeViewModel.eventEventFilterType != ((counter) / 2).round(),
+                                      onTap: () {
+                                        _eventsViewModel.getDataWithFilterSortSearch(
+                                          null,
+                                          FuncUlti.getSortEventTypeByInt(_homeViewModel.eventOrderType),
+                                          _searchController.text,
+                                        );
+                                        _homeViewModel.eventEventFilterType = ((counter) / 2).round();
+                                      },
+                                    )
                                   : (counter == _homeViewModel.listEventTypes.length * 2 - 1)
-                                  ? const PullDownMenuDivider.large()
-                                  : (counter % 2 == 0)
-                                  ? PullDownMenuItem(
-                                title: (counter % 2 == 0)
-                                    ? _homeViewModel.listEventTypes[((counter) / 2).round()].type
-                                    : "",
-                                itemTheme: const PullDownMenuItemTheme(
-                                  textStyle: TextStyle(
-                                      fontFamily: FontStyles.sfProText,
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 17,
-                                      color: ColorStyle.menuLabel),
-                                ),
-                                iconWidget: CachedNetworkImage(
-                                  cacheManager: CacheManager(
-                                    Config(
-                                      "cachedImg", //featureStoreKey
-                                      stalePeriod: const Duration(seconds: 15),
-                                      maxNrOfCacheObjects: 1,
-                                      repo: JsonCacheInfoRepository(databaseName: "cachedImg"),
-                                      fileService: HttpFileService(),
-                                    ),
-                                  ),
-                                  imageUrl: _homeViewModel.listEventTypes[((counter) / 2).round()].icon,
-                                  width: 28,
-                                  height: 28,
-                                  fit: BoxFit.cover,
-                                  imageBuilder: (context, imageProvider) => Container(
-                                    decoration: BoxDecoration(
-                                      image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
-                                    ),
-                                  ),
-                                  placeholder: (context, url) => const CupertinoActivityIndicator(
-                                    radius: 20,
-                                    color: ColorStyle.primary,
-                                  ),
-                                  errorWidget: (context, url, error) => Icon(Icons.error),
-                                ),
-                                enabled: _homeViewModel.eventEventFilterType != ((counter) / 2).round(),
-                                onTap: () {
-                                  _eventsViewModel.getDataWithFilterSortSearch(
-                                    _homeViewModel.listEventTypes[((counter) / 2).round()],
-                                    FuncUlti.getSortEventTypeByInt(_homeViewModel.eventOrderType),
-                                    _searchController.text,
-                                  );
-                                  _homeViewModel.eventEventFilterType = ((counter) / 2).round();
-                                },
-                              )
-                                  : const PullDownMenuDivider(),
+                                      ? const PullDownMenuDivider.large()
+                                      : (counter % 2 == 0)
+                                          ? PullDownMenuItem(
+                                              title: (counter % 2 == 0)
+                                                  ? _homeViewModel.listEventTypes[((counter) / 2).round()].type
+                                                  : "",
+                                              itemTheme: const PullDownMenuItemTheme(
+                                                textStyle: TextStyle(
+                                                    fontFamily: FontStyles.sfProText,
+                                                    fontWeight: FontWeight.w500,
+                                                    fontSize: 17,
+                                                    color: ColorStyle.menuLabel),
+                                              ),
+                                              iconWidget: CachedNetworkImage(
+                                                cacheManager: CacheManager(
+                                                  Config(
+                                                    "cachedImg", //featureStoreKey
+                                                    stalePeriod: const Duration(seconds: 15),
+                                                    maxNrOfCacheObjects: 1,
+                                                    repo: JsonCacheInfoRepository(databaseName: "cachedImg"),
+                                                    fileService: HttpFileService(),
+                                                  ),
+                                                ),
+                                                imageUrl: _homeViewModel.listEventTypes[((counter) / 2).round()].icon,
+                                                width: 28,
+                                                height: 28,
+                                                fit: BoxFit.cover,
+                                                imageBuilder: (context, imageProvider) => Container(
+                                                  decoration: BoxDecoration(
+                                                    image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                                                  ),
+                                                ),
+                                                placeholder: (context, url) => const CupertinoActivityIndicator(
+                                                  radius: 20,
+                                                  color: ColorStyle.primary,
+                                                ),
+                                                errorWidget: (context, url, error) => Icon(Icons.error),
+                                              ),
+                                              enabled: _homeViewModel.eventEventFilterType != ((counter) / 2).round(),
+                                              onTap: () {
+                                                _eventsViewModel.getDataWithFilterSortSearch(
+                                                  _homeViewModel.listEventTypes[((counter) / 2).round()],
+                                                  FuncUlti.getSortEventTypeByInt(_homeViewModel.eventOrderType),
+                                                  _searchController.text,
+                                                );
+                                                _homeViewModel.eventEventFilterType = ((counter) / 2).round();
+                                              },
+                                            )
+                                          : const PullDownMenuDivider(),
                               growable: false),
                           position: PullDownMenuPosition.automatic,
                           buttonBuilder: (context, showMenu) => Container(
@@ -476,20 +542,20 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
                   ),
                   (calculateSearchHeight > 90)
                       ? CupertinoSearchTextField(
-                    controller: _searchController,
-                    style: TextStyle(
-                        color: ColorStyle.getDarkLabel(),
-                        fontFamily: FontStyles.sfProText,
-                        fontSize: FontSizeConst.font17,
-                        fontWeight: FontWeight.w400),
-                    placeholder: S.current.search_placeholder,
-                    placeholderStyle: const TextStyle(
-                      color: ColorStyle.placeHolder,
-                      fontWeight: FontWeight.w400,
-                      fontSize: FontSizeConst.font17,
-                      fontFamily: FontStyles.sfProText,
-                    ),
-                  )
+                          controller: _searchController,
+                          style: TextStyle(
+                              color: ColorStyle.getDarkLabel(),
+                              fontFamily: FontStyles.sfProText,
+                              fontSize: FontSizeConst.font17,
+                              fontWeight: FontWeight.w400),
+                          placeholder: S.current.search_placeholder,
+                          placeholderStyle: const TextStyle(
+                            color: ColorStyle.placeHolder,
+                            fontWeight: FontWeight.w400,
+                            fontSize: FontSizeConst.font17,
+                            fontFamily: FontStyles.sfProText,
+                          ),
+                        )
                       : Container(),
                 ],
               ),
@@ -505,9 +571,7 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
               onRefresh: _onRefresh,
               child: ListView(
                 controller: _scrollController,
-                children: <Widget>[
-                  createExploreEventsView()
-                ],
+                children: <Widget>[createExploreEventsView()],
               ),
             ),
           )),
@@ -543,7 +607,7 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
 
   Widget getExploreAllLocationView() {
     return StreamBuilder<List<Event>?>(
-      stream: _observableService.listEventsStream,
+      stream: _observableService.listEventsDateStream,
       builder: (_, snapshot) {
         if (!snapshot.hasData) {
           return const Center(
@@ -571,31 +635,31 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
                       child: Column(
                         children: [
                           (index == 0 ||
-                              DateFormat('MM')
-                                  .format(DateTime.fromMicrosecondsSinceEpoch(
-                                  snapshot.data![index].datestart.millisecondsSinceEpoch*1000))
-                                  .toString()
-                                  !=
                                   DateFormat('MM')
-                                      .format(DateTime.fromMicrosecondsSinceEpoch(
-                                      snapshot.data![index-1].datestart.millisecondsSinceEpoch*1000))
-                                      .toString()) ?
-                          Container(
-                            alignment: Alignment.centerLeft,
-                            margin: const EdgeInsets.only(bottom: 8.0),
-                            child: Text(
-                              DateFormat('MMMM')
-                                  .format(DateTime.fromMicrosecondsSinceEpoch(
-                                  snapshot.data![index].datestart.millisecondsSinceEpoch*1000))
-                                  .toString(),
-                              style: TextStyle(
-                                color: ColorStyle.getDarkLabel(),
-                                fontFamily: FontStyles.raleway,
-                                fontSize: FontSizeConst.font12,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ) : Container(),
+                                          .format(DateTime.fromMicrosecondsSinceEpoch(
+                                              snapshot.data![index].datestart.millisecondsSinceEpoch * 1000))
+                                          .toString() !=
+                                      DateFormat('MM')
+                                          .format(DateTime.fromMicrosecondsSinceEpoch(
+                                              snapshot.data![index - 1].datestart.millisecondsSinceEpoch * 1000))
+                                          .toString())
+                              ? Container(
+                                  alignment: Alignment.centerLeft,
+                                  margin: const EdgeInsets.only(bottom: 8.0),
+                                  child: Text(
+                                    DateFormat('MMMM')
+                                        .format(DateTime.fromMicrosecondsSinceEpoch(
+                                            snapshot.data![index].datestart.millisecondsSinceEpoch * 1000))
+                                        .toString(),
+                                    style: TextStyle(
+                                      color: ColorStyle.getDarkLabel(),
+                                      fontFamily: FontStyles.raleway,
+                                      fontSize: FontSizeConst.font12,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                )
+                              : Container(),
                           Row(
                             children: [
                               Container(
@@ -635,7 +699,7 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
                                     Text(
                                         DateFormat('EEE dd')
                                             .format(DateTime.fromMicrosecondsSinceEpoch(
-                                            snapshot.data![index].datestart.millisecondsSinceEpoch*1000))
+                                                snapshot.data![index].datestart.millisecondsSinceEpoch * 1000))
                                             .toString(),
                                         style: TextStyle(
                                           color: ColorStyle.getDarkLabel(),
@@ -646,7 +710,7 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
                                     Text(
                                         DateFormat.Hm()
                                             .format(DateTime.fromMicrosecondsSinceEpoch(
-                                            snapshot.data![index].datestart.millisecondsSinceEpoch*1000))
+                                                snapshot.data![index].datestart.millisecondsSinceEpoch * 1000))
                                             .toString(),
                                         style: TextStyle(
                                           color: ColorStyle.getDarkLabel(),
@@ -663,79 +727,69 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                        snapshot.data![index].title,
+                                    Text(snapshot.data![index].title,
                                         overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
                                           color: ColorStyle.getDarkLabel(),
                                           fontFamily: FontStyles.raleway,
                                           fontSize: FontSizeConst.font12,
                                           fontWeight: FontWeight.w600,
-                                        )
-                                    ),
-                                    Text(
-                                        snapshot.data![index].description,
+                                        )),
+                                    Text(snapshot.data![index].description,
                                         overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
                                           color: ColorStyle.getDarkLabel(),
                                           fontFamily: FontStyles.raleway,
                                           fontSize: FontSizeConst.font12,
                                           fontWeight: FontWeight.w400,
-                                        )
-                                    )
+                                        ))
                                   ],
                                 ),
                               ),
                               Container(
                                   margin: EdgeInsets.only(left: 16, right: 16),
                                   child: (snapshot.data![index].cost == "Free" || snapshot.data![index].cost == "0")
-                                      ? Text(
-                                      snapshot.data![index].cost,
-                                      maxLines: 1,
-                                      style: TextStyle(
-                                        color: ColorStyle.getDarkLabel(),
-                                        fontFamily: FontStyles.raleway,
-                                        fontSize: FontSizeConst.font12,
-                                        fontWeight: FontWeight.w600,
-                                      ))
-                                      : Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                          snapshot.data![index].cost,
+                                      ? Text(snapshot.data![index].cost,
                                           maxLines: 1,
                                           style: TextStyle(
                                             color: ColorStyle.getDarkLabel(),
                                             fontFamily: FontStyles.raleway,
                                             fontSize: FontSizeConst.font12,
                                             fontWeight: FontWeight.w600,
-                                          )
-                                      ),
-                                      Text(
-                                          snapshot.data![index].currency,
-                                          maxLines: 1,
-                                          style: TextStyle(
-                                            color: ColorStyle.getDarkLabel(),
-                                            fontFamily: FontStyles.raleway,
-                                            fontSize: FontSizeConst.font12,
-                                            fontWeight: FontWeight.w400,
-                                          )
-                                      ),
-                                    ],
-                                  )
-                              ),
+                                          ))
+                                      : Column(
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(snapshot.data![index].cost,
+                                                maxLines: 1,
+                                                style: TextStyle(
+                                                  color: ColorStyle.getDarkLabel(),
+                                                  fontFamily: FontStyles.raleway,
+                                                  fontSize: FontSizeConst.font12,
+                                                  fontWeight: FontWeight.w600,
+                                                )),
+                                            Text(snapshot.data![index].currency,
+                                                maxLines: 1,
+                                                style: TextStyle(
+                                                  color: ColorStyle.getDarkLabel(),
+                                                  fontFamily: FontStyles.raleway,
+                                                  fontSize: FontSizeConst.font12,
+                                                  fontWeight: FontWeight.w400,
+                                                )),
+                                          ],
+                                        )),
                               (snapshot.data![index].repeating == true)
                                   ? Image.asset(
-                                ImagePath.eventRepeatIcon,
-                                width: 22,
-                                fit: BoxFit.contain,
-                              )
+                                      ImagePath.eventRepeatIcon,
+                                      width: 22,
+                                      fit: BoxFit.contain,
+                                    )
                                   : Image.asset(
-                                ImagePath.eventNotRepeatIcon,
-                                width: 22,
-                                fit: BoxFit.contain,
-                              ),
+                                      ImagePath.eventNotRepeatIcon,
+                                      width: 22,
+                                      fit: BoxFit.contain,
+                                    ),
                             ],
                           ),
                         ],

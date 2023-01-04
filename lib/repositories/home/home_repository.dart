@@ -335,37 +335,37 @@ class HomeRepositoryImpl extends HomeRepository {
   Future<List<int>> requestAllBookmarkedSiteId() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      if (_allBookmarkedSiteId.isEmpty) {
-        List<int> listResult = [];
-        try {
-          var data = (await _firebaseService.bookmarks(user.uid)
-              .timeout(const Duration(seconds: NumberConst.timeout)))
-              .map((e) => e["siteid"] as int?)
-              .where((element) => element != null)
-              .toList();
-          for (var result in data) {
-            var siteData = await _firebaseService.getSite(result!);
-            if (siteData["siteid"] != null) {
-              listResult.add(siteData["siteid"]);
-            }
+      List<int> listResult = [];
+      try {
+        var data = (await _firebaseService.bookmarks(user.uid)
+            .timeout(const Duration(seconds: NumberConst.timeout)))
+            .map((e) => e["siteid"] as int?)
+            .where((element) => element != null)
+            .toList();
+        for (var result in data) {
+          var siteData = await _firebaseService.getSite(result!);
+          if (siteData["siteid"] != null) {
+            listResult.add(siteData["siteid"]);
           }
+        }
 
-          _allBookmarkedSiteId = listResult;
-        } catch (e) {
-          if (e is TimeoutException) {
-            throw CommonError.serverError;
-          } else {
-            rethrow;
-          }
+        _allBookmarkedSiteId = listResult;
+      } catch (e) {
+        if (e is TimeoutException) {
+          throw CommonError.serverError;
+        } else {
+          rethrow;
         }
       }
     }
 
+    print("_allBookmarkedSiteId $_allBookmarkedSiteId");
+
     return _allBookmarkedSiteId;
   }
 
-  Map<String, String>? getListEventContact(Map<String, dynamic> remoteEvent) {
-    Map<String, String> result = {};
+  Map<String, dynamic>? getListEventContact(Map<String, dynamic> remoteEvent) {
+    Map<String, dynamic> result = {};
     result["whatsapp"] = remoteEvent["whatsapp"];
     result["website"] = remoteEvent["website"];
     result["telephone"] = remoteEvent["telephone"];

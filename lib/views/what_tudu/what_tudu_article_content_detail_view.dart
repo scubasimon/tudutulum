@@ -35,11 +35,8 @@ class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDeta
 
   final RefreshController _refreshController = RefreshController(initialRefresh: false);
 
-  String _data = "";
-
   @override
   void initState() {
-    _data = _whatTuduArticleContentDetailViewModel.articleItemDetail.postBody;
 
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {});
@@ -183,7 +180,7 @@ class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDeta
                   Padding(
                     padding: const EdgeInsets.only(left: 8, right: 8, top: 8, bottom: 16),
                     child: Html(
-                      data: _data,
+                      data: _whatTuduArticleContentDetailViewModel.articleItemDetail.postBody ?? "",
                       style: {
                         "p": Style(
                           color: ColorStyle.getDarkLabel(),
@@ -248,6 +245,106 @@ class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDeta
                       },
                     ),
                   ),
+                  (_whatTuduArticleContentDetailViewModel.articleItemDetail.image2?.url != null) ? CachedNetworkImage(
+                    height: 300,
+                    cacheManager: CacheManager(
+                      Config(
+                        "cachedImg", //featureStoreKey
+                        stalePeriod: const Duration(seconds: 15),
+                        maxNrOfCacheObjects: 1,
+                        repo: JsonCacheInfoRepository(databaseName: "cachedImg"),
+                        fileService: HttpFileService(),
+                      ),
+                    ),
+                    imageUrl: _whatTuduArticleContentDetailViewModel.articleItemDetail.image2?.url ?? "",
+                    fit: BoxFit.cover,
+                    progressIndicatorBuilder: (context, value, progress) {
+                      return Container(
+                          decoration: const BoxDecoration(),
+                          child: const Center(
+                            child: CupertinoActivityIndicator(
+                              radius: 20,
+                              color: ColorStyle.primary,
+                            ),
+                          )
+                      );
+                    },
+                    imageBuilder: (context, imageProvider) => Container(
+                      decoration: BoxDecoration(
+                        image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                      ),
+                    ),
+                    errorWidget: (context, url, error) => const Icon(Icons.error),
+                  ) : Container(),
+                  (_whatTuduArticleContentDetailViewModel.articleItemDetail.postBody2 != null) ? Padding(
+                    padding: const EdgeInsets.only(left: 8, right: 8, top: 8, bottom: 16),
+                    child: Html(
+                      data: _whatTuduArticleContentDetailViewModel.articleItemDetail.postBody2,
+                      style: {
+                        "p": Style(
+                          color: ColorStyle.getDarkLabel(),
+                          fontWeight: FontWeight.w400,
+                          fontFamily: FontStyles.raleway,
+                          fontSize: FontSize.medium,
+                        ),
+                        "em": Style(
+                          color: darkMode ? ColorStyle.secondaryLightLabel : ColorStyle.secondaryDarkLabel,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: FontStyles.raleway,
+                          fontSize: FontSize.medium,
+                        ),
+                        "a": Style(
+                          color: ColorStyle.primary,
+                          fontWeight: FontWeight.w400,
+                          fontFamily: FontStyles.raleway,
+                          fontSize: FontSize.medium,
+                        ),
+                      },
+                      customRenders: {
+                        tagMatcher("img"): CustomRender.widget(
+                            widget: (context, buildChildren) {
+                              return CachedNetworkImage(
+                                height: 300,
+                                cacheManager: CacheManager(
+                                  Config(
+                                    "cachedImg", //featureStoreKey
+                                    stalePeriod: const Duration(seconds: 15),
+                                    maxNrOfCacheObjects: 1,
+                                    repo: JsonCacheInfoRepository(databaseName: "cachedImg"),
+                                    fileService: HttpFileService(),
+                                  ),
+                                ),
+                                imageUrl: context.tree.element?.attributes["src"] ?? "",
+                                fit: BoxFit.cover,
+                                progressIndicatorBuilder: (context, value, progress) {
+                                  return Container(
+                                      decoration: const BoxDecoration(),
+                                      child: const Center(
+                                        child: CupertinoActivityIndicator(
+                                          radius: 20,
+                                          color: ColorStyle.primary,
+                                        ),
+                                      )
+                                  );
+                                },
+                                imageBuilder: (context, imageProvider) => Container(
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                                  ),
+                                ),
+                                errorWidget: (context, url, error) => const Icon(Icons.error),
+                              );
+                            }
+                        ),
+                      },
+                      onLinkTap: (url, context, attributes, element) async {
+                        if (url != null) {
+                          await UrlLauncher.launchUrl(Uri.parse(url));
+                        }
+                      },
+                    ),
+                  )
+                  : Container(),
                 ],
               ),
             ),
