@@ -46,6 +46,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
   final WhatTuduSiteContentDetailViewModel _whatTuduSiteContentDetailViewModel = WhatTuduSiteContentDetailViewModel();
   final HomeViewModel _homeViewModel = HomeViewModel();
   final ObservableService _observableService = ObservableService();
+  final EventsViewModel _eventsViewModel = EventsViewModel();
 
   final PageController controller = PageController();
 
@@ -859,7 +860,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                   ),
                   Row(
                     children: [
-                      (getIntouch["phone"] != null)
+                      (getIntouch["phone"] != null && getIntouch["phone"] != "")
                           ? InkWell(
                               child: Container(
                                 padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
@@ -870,7 +871,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                               },
                             )
                           : Container(),
-                      (getIntouch["email"] != null)
+                      (getIntouch["email"] != null && getIntouch["email"] != "")
                           ? InkWell(
                               child: Container(
                                 padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
@@ -890,7 +891,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                               },
                             )
                           : Container(),
-                      (getIntouch["whatsapp"] != null)
+                      (getIntouch["whatsapp"] != null && getIntouch["whatsapp"] != "")
                           ? InkWell(
                               child: Container(
                                 padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
@@ -910,7 +911,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                               },
                             )
                           : Container(),
-                      (getIntouch["website"] != null)
+                      (getIntouch["website"] != null && getIntouch["website"] != "")
                           ? InkWell(
                               child: Container(
                                 padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
@@ -938,7 +939,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                   ),
                   Row(
                     children: [
-                      (getIntouch["instagram"] != null)
+                      (getIntouch["instagram"] != null && getIntouch["instagram"] != "")
                           ? InkWell(
                               child: Container(
                                 padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
@@ -952,7 +953,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                               },
                             )
                           : Container(),
-                      (getIntouch["facebook"] != null)
+                      (getIntouch["facebook"] != null && getIntouch["facebook"] != "")
                           ? InkWell(
                               child: Container(
                                 padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
@@ -966,7 +967,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                               },
                             )
                           : Container(),
-                      (getIntouch["owl"] != null)
+                      (getIntouch["owl"] != null && getIntouch["owl"] != "")
                           ? InkWell(
                               child: Container(
                                 padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
@@ -980,7 +981,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                               },
                             )
                           : Container(),
-                      (getIntouch["twitter"] != null)
+                      (getIntouch["twitter"] != null && getIntouch["twitter"] != "")
                           ? InkWell(
                               child: Container(
                                 padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
@@ -1198,9 +1199,9 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
     if (isHaveEvent) {
       return InkWell(
         onTap: () {
-          // _eventsViewModel.setEvetRedirectedFromSite(siteId);
-          // _homeViewModel.redirectTab(1);
-          Navigator.of(context).pop();
+          _eventsViewModel.setEvetRedirectedFromSite(siteId);
+          _homeViewModel.redirectTab(1);
+          // Navigator.of(context).pop();
         },
         child: Container(
           padding: const EdgeInsets.only(top: 4.0, right: 4.0, bottom: 4.0),

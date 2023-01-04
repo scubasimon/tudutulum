@@ -28,10 +28,6 @@ class WhatTuduRepositoryImpl extends WhatTuduRepository {
     List<Items> listArticleResult = listArticleInput.where((site) => true).toList();
 
     // Filter with businessId (Filter function)
-    for (var value in listArticleResult) {
-      print("getArticlesWithFilterSortSearch -> ${businessFilterId?.type} - ${value.tags}");
-    }
-
     if (businessFilterId != null) {
       listArticleResult = listArticleResult
           .where((site) => site.tags.toLowerCase().contains(businessFilterId.type.toLowerCase()))

@@ -182,6 +182,8 @@ class HomeViewModel extends BaseViewModel {
   Future<void> getDataFromFireStore(bool isLoadOnInit) async {
     _observableService.homeProgressLoadingController.sink.add(true);
 
+    await requestAllBookmarkedSiteId();
+
     await getListBusinesses();
     await getListPartners();
     await getListAmenities();
@@ -192,7 +194,6 @@ class HomeViewModel extends BaseViewModel {
     if ((PrefUtil.getValue(StrConst.isHideArticle, false) as bool) == false) {
       await getListArticles(isLoadOnInit);
     }
-    await requestAllBookmarkedSiteId();
 
     _observableService.homeProgressLoadingController.sink.add(false);
   }

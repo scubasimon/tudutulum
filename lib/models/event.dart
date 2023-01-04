@@ -17,11 +17,10 @@ class Event {
   List<int>? eventTypes;
   Map<String, bool>? listEventDayInWeek;
   bool? repeating;
-  Map<String, String>? contacts;
+  Map<String, dynamic>? contacts;
   double? locationLat;
   double? locationLon;
   List<int>? sites;
-
 
   Event(
       {
@@ -72,5 +71,30 @@ class Event {
     };
 
     return result;
+  }
+
+  factory Event.fromClone(Event objectClone){
+    return Event(
+      eventid: objectClone.eventid,
+      active: objectClone.active,
+      image: objectClone.image,
+      title: objectClone.title,
+      description: objectClone.description,
+      eventDescriptions: objectClone.eventDescriptions,
+      cost: objectClone.cost,
+      currency: objectClone.currency,
+      moreInfo: objectClone.moreInfo,
+      dateend: objectClone.dateend,
+      datestart: objectClone.datestart,
+      booking: objectClone.booking,
+      primaryType: objectClone.primaryType,
+      eventTypes: objectClone.eventTypes,
+      listEventDayInWeek: objectClone.listEventDayInWeek,
+      repeating: objectClone.repeating,
+      contacts: objectClone.contacts,
+      locationLat: objectClone.locationLat,
+      locationLon: objectClone.locationLon,
+      sites: objectClone.sites
+    );
   }
 }

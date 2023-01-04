@@ -59,7 +59,6 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
 
   @override
   void initState() {
-
     super.initState();
 
     WidgetsBinding.instance.addObserver(this);
@@ -76,11 +75,8 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
     } catch (e) {
       _refreshController.refreshFailed();
       _observableService.homeProgressLoadingController.sink.add(false);
-      _observableService.homeErrorController.sink.add(CustomError(
-          "Refresh FAIL",
-          message: e.toString(),
-          data: const {}
-      ));
+      _observableService.homeErrorController.sink
+          .add(CustomError("Refresh FAIL", message: e.toString(), data: const {}));
     }
   }
 
@@ -115,11 +111,8 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
     } else {
       _refreshController.refreshFailed();
       _observableService.homeProgressLoadingController.sink.add(false);
-      _observableService.homeErrorController.sink.add(CustomError(
-          "Refresh FAIL",
-          message: "Facing error",
-          data: const {}
-      ));
+      _observableService.homeErrorController.sink
+          .add(CustomError("Refresh FAIL", message: "Facing error", data: const {}));
     }
   }
 
@@ -227,12 +220,15 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
           _eventContentDetailViewModel.eventContentDetail.currency,
         ),
         getFurtherInformation(_eventContentDetailViewModel.eventContentDetail.moreInfo),
-        Container(
-          height: 0.5,
-          width: MediaQuery.of(context).size.width,
-          margin: const EdgeInsets.only(top: 16, left: 18, right: 18, bottom: 16),
-          color: ColorsConst.blackOpacity20,
-        ),
+        (_eventContentDetailViewModel.eventContentDetail.contacts != null &&
+                isHaveAnyContact(_eventContentDetailViewModel.eventContentDetail.contacts))
+            ? Container(
+                height: 0.5,
+                width: MediaQuery.of(context).size.width,
+                margin: const EdgeInsets.only(top: 16, left: 18, right: 18, bottom: 16),
+                color: ColorsConst.blackOpacity20,
+              )
+            : Container(),
         getContact(
           _eventContentDetailViewModel.eventContentDetail.contacts,
           _eventContentDetailViewModel.eventContentDetail.sites,
@@ -297,12 +293,12 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(
-              height: 20,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SizedBox(
+                  width: MediaQuery.of(context).size.width - 80,
+                  child: Text(
                     title,
                     style: TextStyle(
                       fontFamily: FontStyles.mouser,
@@ -311,21 +307,21 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
                       color: ColorStyle.getDarkLabel(),
                     ),
                   ),
-                  InkWell(
-                    onTap: () {
-                      PermissionRequest.isResquestPermission = true;
-                      PermissionRequest().permissionServiceCall(
-                        context,
-                        _openNavigationApp,
-                      );
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
-                      child: Image.asset(ImagePath.mapIcon, fit: BoxFit.contain, height: 20.0),
-                    ),
+                ),
+                InkWell(
+                  onTap: () {
+                    PermissionRequest.isResquestPermission = true;
+                    PermissionRequest().permissionServiceCall(
+                      context,
+                      _openNavigationApp,
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: Image.asset(ImagePath.mapIcon, fit: BoxFit.contain, height: 20.0),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
             const SizedBox(
               height: 8,
@@ -359,17 +355,16 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
           physics: const NeverScrollableScrollPhysics(),
           itemCount: eventDescrip.length,
           itemBuilder: (BuildContext context, int index) {
-            return
-              Text(
-                eventDescrip[index],
-                style: TextStyle(
-                  color: ColorStyle.getDarkLabel(),
-                  fontWeight: FontWeight.w400,
-                  fontSize: FontSizeConst.font12,
-                  fontFamily: FontStyles.raleway,
-                  height: 2,
-                ),
-              );
+            return Text(
+              eventDescrip[index],
+              style: TextStyle(
+                color: ColorStyle.getDarkLabel(),
+                fontWeight: FontWeight.w400,
+                fontSize: FontSizeConst.font12,
+                fontFamily: FontStyles.raleway,
+                height: 2,
+              ),
+            );
           },
         ),
       );
@@ -417,7 +412,7 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
   }
 
   Widget getPrice(String? cost, String? currentcy) {
-    if (currentcy != null && cost != null ) {
+    if (currentcy != null && cost != null) {
       return Container(
           alignment: Alignment.centerLeft,
           padding: const EdgeInsets.only(left: 18, right: 18, bottom: 8),
@@ -457,8 +452,20 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
     }
   }
 
-  Widget getContact(Map<String, String>? getContact, List<int>? sites) {
+  bool isHaveAnyContact(Map<String, dynamic>? getContact) {
+    bool havingContact = false;
     if (getContact != null) {
+      for (var data in getContact.values.toList()) {
+        if (data.toString() != "null" && data.toString().isNotEmpty) {
+          havingContact = true;
+        }
+      }
+    }
+    return havingContact;
+  }
+
+  Widget getContact(Map<String, dynamic>? getContact, List<int>? sites) {
+    if (getContact != null && isHaveAnyContact(getContact)) {
       return Stack(
         children: [
           Container(
@@ -470,8 +477,7 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
                 children: [
                   SizedBox(
                     height: 20,
-                    child: Text(
-                        S.current.venue_contact,
+                    child: Text(S.current.venue_contact,
                         style: TextStyle(
                           color: ColorStyle.getDarkLabel(),
                           fontSize: FontSizeConst.font12,
@@ -479,96 +485,118 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
                           fontFamily: FontStyles.raleway,
                         )),
                   ),
-                  (sites != null) ? Container(
-                    alignment: Alignment.topLeft,
-                    child: Wrap(
-                      children: sites.map((site) => getSites(site)).toList(),
-                    ),
-                  ) : Container(),
+                  (sites != null)
+                      ? Container(
+                          alignment: Alignment.topLeft,
+                          child: Wrap(
+                            children: sites.map((site) => getSites(site)).toList(),
+                          ),
+                        )
+                      : Container(),
                   Row(
                     children: [
-                      (getContact["telephone"] != null) ? InkWell(
-                        child: Container(
-                          padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                          child: Image.asset(ImagePath.phoneIcon, fit: BoxFit.contain, height: 32.0),
-                        ),
-                        onTap: () {
-                          UrlLauncher.launch("tel://${getContact["phone"].toString()}");
-                        },
-                      ) : Container(),
-                      (getContact["email"] != null) ? InkWell(
-                        child: Container(
-                          padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                          child: Image.asset(ImagePath.emailIcon, fit: BoxFit.contain, height: 32.0),
-                        ),
-                        onTap: () async {
-                          // UrlLauncher.launch("mailto:${getContact["email"].toString()}");
-                          final url = Uri.parse("mailto:${getContact["email"].toString()}");
-                          if (await canLaunchUrl(url)) {
-                            await launchUrl(url);
-                          } else {
-                            showDialog(context: context, builder: (context) => ErrorAlert.alert(context, S.current.app_not_installed("Whatsapp")));
-                          }
-                        },
-                      ) : Container(),
-                      (getContact["whatsapp"] != null) ? InkWell(
-                        child: Container(
-                          padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                          child: Image.asset(ImagePath.whatsAppIcon, fit: BoxFit.contain, height: 32.0),
-                        ),
-                        onTap: () async {
-                          // UrlLauncher.launch("https://wa.me/${getContact["whatsapp"].toString()}?text=Hello");
-                          final url = Uri.parse("whatsapp://send?phone=${getContact["whatsapp"]}");
-                          if (await canLaunchUrl(url)) {
-                            await launchUrl(url);
-                          } else {
-                            showDialog(context: context, builder: (context) => ErrorAlert.alert(context, S.current.app_not_installed("Whatsapp")));
-                          }
-                        },
-                      ) : Container(),
-                      (getContact["website"] != null) ? InkWell(
-                        child: Container(
-                          padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                          child: Image.asset(ImagePath.internetIcon, fit: BoxFit.contain, height: 32.0),
-                        ),
-                        onTap: () {
-                          print("getIntouch[""] ${getContact["website"]}");
-                          FuncUlti.redirectToBrowserWithUrl("${getContact["website"]}");
-                        },
-                      ) : Container(),
-                      (getContact["instagram"] != null) ? InkWell(
-                        child: Container(
-                          padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                          child: Image.asset(ImagePath.instagramIcon, fit: BoxFit.contain, height: 32.0),
-                        ),
-                        onTap: () {
-                          UrlLauncher.launch(
-                            getContact["instagram"].toString(),
-                            universalLinksOnly: true,
-                          );
-                        },
-                      ) : Container(),
-                      (getContact["facebook"] != null) ? InkWell(
-                        child: Container(
-                          padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                          child: Image.asset(ImagePath.facebookIcon, fit: BoxFit.contain, height: 32.0),
-                        ),
-                        onTap: () {
-                          UrlLauncher.launch(
-                            getContact["facebook"].toString(),
-                            universalLinksOnly: true,
-                          );
-                        },
-                      ) : Container(),
-                      (getContact["google"] != null) ? InkWell(
-                        child: Container(
-                          padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                          child: Image.asset(ImagePath.googleIcon, fit: BoxFit.contain, height: 32.0),
-                        ),
-                        onTap: () {
-                          FuncUlti.redirectToBrowserWithUrl("${getContact["google"]}");
-                        },
-                      ) : Container()
+                      (getContact["telephone"] != null && getContact["telephone"] != "")
+                          ? InkWell(
+                              child: Container(
+                                padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
+                                child: Image.asset(ImagePath.phoneIcon, fit: BoxFit.contain, height: 32.0),
+                              ),
+                              onTap: () {
+                                UrlLauncher.launch("tel://${getContact["phone"].toString()}");
+                              },
+                            )
+                          : Container(),
+                      (getContact["email"] != null && getContact["email"] != "")
+                          ? InkWell(
+                              child: Container(
+                                padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
+                                child: Image.asset(ImagePath.emailIcon, fit: BoxFit.contain, height: 32.0),
+                              ),
+                              onTap: () async {
+                                // UrlLauncher.launch("mailto:${getContact["email"].toString()}");
+                                final url = Uri.parse("mailto:${getContact["email"].toString()}");
+                                if (await canLaunchUrl(url)) {
+                                  await launchUrl(url);
+                                } else {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) =>
+                                          ErrorAlert.alert(context, S.current.app_not_installed("Whatsapp")));
+                                }
+                              },
+                            )
+                          : Container(),
+                      (getContact["whatsapp"] != null && getContact["whatsapp"] != "")
+                          ? InkWell(
+                              child: Container(
+                                padding: const EdgeInsets.only(top: 4.0, right: 5.0, bottom: 4.0),
+                                child: Image.asset(ImagePath.whatsAppIcon, fit: BoxFit.contain, height: 32.0),
+                              ),
+                              onTap: () async {
+                                // UrlLauncher.launch("https://wa.me/${getContact["whatsapp"].toString()}?text=Hello");
+                                final url = Uri.parse("whatsapp://send?phone=${getContact["whatsapp"]}");
+                                if (await canLaunchUrl(url)) {
+                                  await launchUrl(url);
+                                } else {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) =>
+                                          ErrorAlert.alert(context, S.current.app_not_installed("Whatsapp")));
+                                }
+                              },
+                            )
+                          : Container(),
+                      (getContact["website"] != null && getContact["website"] != "")
+                          ? InkWell(
+                              child: Container(
+                                padding: const EdgeInsets.only(top: 4.0, right: 5.0, bottom: 4.0),
+                                child: Image.asset(ImagePath.internetIcon, fit: BoxFit.contain, height: 36.0),
+                              ),
+                              onTap: () {
+                                print("getIntouch[" "] ${getContact["website"]}");
+                                FuncUlti.redirectToBrowserWithUrl("${getContact["website"]}");
+                              },
+                            )
+                          : Container(),
+                      (getContact["instagram"] != null && getContact["instagram"] != "")
+                          ? InkWell(
+                              child: Container(
+                                padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
+                                child: Image.asset(ImagePath.instagramIcon, fit: BoxFit.contain, height: 32.0),
+                              ),
+                              onTap: () {
+                                UrlLauncher.launch(
+                                  getContact["instagram"].toString(),
+                                  universalLinksOnly: true,
+                                );
+                              },
+                            )
+                          : Container(),
+                      (getContact["facebook"] != null && getContact["facebook"] != "")
+                          ? InkWell(
+                              child: Container(
+                                padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
+                                child: Image.asset(ImagePath.facebookIcon, fit: BoxFit.contain, height: 32.0),
+                              ),
+                              onTap: () {
+                                UrlLauncher.launch(
+                                  getContact["facebook"].toString(),
+                                  universalLinksOnly: true,
+                                );
+                              },
+                            )
+                          : Container(),
+                      (getContact["google"] != null && getContact["google"] != "")
+                          ? InkWell(
+                              child: Container(
+                                padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
+                                child: Image.asset(ImagePath.googleIcon, fit: BoxFit.contain, height: 32.0),
+                              ),
+                              onTap: () {
+                                FuncUlti.redirectToBrowserWithUrl("${getContact["google"]}");
+                              },
+                            )
+                          : Container()
                     ],
                   ),
                 ],
@@ -576,7 +604,149 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
         ],
       );
     } else {
-      return Container();
+      if (sites != null && sites != []) {
+        var site = _homeViewModel.getSiteById(sites.first);
+        var getIntouch = site?.siteContent.getIntouch;
+        if (getIntouch != null && isHaveAnyContact(getIntouch)) {
+          return Stack(
+            children: [
+              Container(
+                  alignment: Alignment.centerLeft,
+                  padding: const EdgeInsets.only(top: 8.0, left: 18, right: 18, bottom: 8),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: 20,
+                        child: Text(S.current.venue_contact,
+                            style: TextStyle(
+                              color: ColorStyle.getDarkLabel(),
+                              fontSize: FontSizeConst.font12,
+                              fontWeight: FontWeight.w500,
+                              fontFamily: FontStyles.raleway,
+                            )),
+                      ),
+                      Container(
+                        alignment: Alignment.topLeft,
+                        child: Wrap(
+                          children: sites.map((site) => getSites(site)).toList(),
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          (getIntouch["phone"] != null && getIntouch["phone"] != "")
+                              ? InkWell(
+                                  child: Container(
+                                    padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
+                                    child: Image.asset(ImagePath.phoneIcon, fit: BoxFit.contain, height: 32.0),
+                                  ),
+                                  onTap: () {
+                                    UrlLauncher.launch("tel://${getIntouch["phone"].toString()}");
+                                  },
+                                )
+                              : Container(),
+                          (getIntouch["email"] != null && getIntouch["email"] != "")
+                              ? InkWell(
+                                  child: Container(
+                                    padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
+                                    child: Image.asset(ImagePath.emailIcon, fit: BoxFit.contain, height: 32.0),
+                                  ),
+                                  onTap: () async {
+                                    final url = Uri.parse("mailto:${getIntouch["email"].toString()}");
+                                    if (await canLaunchUrl(url)) {
+                                      await launchUrl(url);
+                                    } else {
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) =>
+                                              ErrorAlert.alert(context, S.current.app_not_installed("Whatsapp")));
+                                    }
+                                  },
+                                )
+                              : Container(),
+                          (getIntouch["whatsapp"] != null && getIntouch["whatsapp"] != "")
+                              ? InkWell(
+                                  child: Container(
+                                    padding: const EdgeInsets.only(top: 4.0, right: 5.0, bottom: 4.0),
+                                    child: Image.asset(ImagePath.whatsAppIcon, fit: BoxFit.contain, height: 32.0),
+                                  ),
+                                  onTap: () async {
+                                    final url = Uri.parse("whatsapp://send?phone=${getIntouch["whatsapp"]}");
+                                    if (await canLaunchUrl(url)) {
+                                      await launchUrl(url);
+                                    } else {
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) =>
+                                              ErrorAlert.alert(context, S.current.app_not_installed("Whatsapp")));
+                                    }
+                                  },
+                                )
+                              : Container(),
+                          (getIntouch["website"] != null && getIntouch["website"] != "")
+                              ? InkWell(
+                                  child: Container(
+                                    padding: const EdgeInsets.only(top: 4.0, right: 5.0, bottom: 4.0),
+                                    child: Image.asset(ImagePath.internetIcon, fit: BoxFit.contain, height: 36.0),
+                                  ),
+                                  onTap: () {
+                                    print("getIntouch[" "] ${getIntouch["website"]}");
+                                    FuncUlti.redirectToBrowserWithUrl("${getIntouch["website"]}");
+                                  },
+                                )
+                              : Container(),
+                          (getIntouch["instagram"] != null && getIntouch["instagram"] != "")
+                              ? InkWell(
+                                  child: Container(
+                                    padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
+                                    child: Image.asset(ImagePath.instagramIcon, fit: BoxFit.contain, height: 32.0),
+                                  ),
+                                  onTap: () {
+                                    UrlLauncher.launch(
+                                      getIntouch["instagram"].toString(),
+                                      universalLinksOnly: true,
+                                    );
+                                  },
+                                )
+                              : Container(),
+                          (getIntouch["facebook"] != null && getIntouch["facebook"] != "")
+                              ? InkWell(
+                                  child: Container(
+                                    padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
+                                    child: Image.asset(ImagePath.facebookIcon, fit: BoxFit.contain, height: 32.0),
+                                  ),
+                                  onTap: () {
+                                    UrlLauncher.launch(
+                                      getIntouch["facebook"].toString(),
+                                      universalLinksOnly: true,
+                                    );
+                                  },
+                                )
+                              : Container(),
+                          (getIntouch["google"] != null && getIntouch["google"] != "")
+                              ? InkWell(
+                                  child: Container(
+                                    padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
+                                    child: Image.asset(ImagePath.googleIcon, fit: BoxFit.contain, height: 32.0),
+                                  ),
+                                  onTap: () {
+                                    FuncUlti.redirectToBrowserWithUrl("${getIntouch["google"]}");
+                                  },
+                                )
+                              : Container()
+                        ],
+                      ),
+                    ],
+                  )),
+            ],
+          );
+        } else {
+          return Container();
+        }
+      } else {
+        return Container();
+      }
     }
   }
 
@@ -609,7 +779,13 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
       return Container(
         padding: const EdgeInsets.only(top: 4.0, right: 4.0, bottom: 4.0),
         child: Text(
-            "${_homeViewModel.getSiteById(siteIndex)!.title}"
+            "${_homeViewModel.getSiteById(siteIndex)!.title}",
+            style: TextStyle(
+              color: ColorStyle.getDarkLabel(),
+              fontSize: FontSizeConst.font12,
+              fontWeight: FontWeight.w600,
+              fontFamily: FontStyles.raleway,
+            )
         ),
       );
     } else {
@@ -626,9 +802,9 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
           return element.mapName == map;
         }).showDirections(
             destination: Coords(
-              _eventContentDetailViewModel.eventContentDetail.locationLat!,
-              _eventContentDetailViewModel.eventContentDetail.locationLon!,
-            ));
+          _eventContentDetailViewModel.eventContentDetail.locationLat!,
+          _eventContentDetailViewModel.eventContentDetail.locationLon!,
+        ));
         return;
       } catch (e) {
         print(e);
@@ -640,8 +816,8 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
       showCupertinoModalPopup(
           context: context,
           builder: (context) => _sheetNavigation(
-            _eventContentDetailViewModel.eventContentDetail,
-          ));
+                _eventContentDetailViewModel.eventContentDetail,
+              ));
     }
   }
 

@@ -34,6 +34,9 @@ class ObservableService {
   final StreamController<List<Event>?> listEventsController = BehaviorSubject<List<Event>?>();
   Stream<List<Event>?> get listEventsStream => listEventsController.stream;
 
+  final StreamController<List<Event>?> listEventsDateController = BehaviorSubject<List<Event>?>();
+  Stream<List<Event>?> get listEventsDateStream => listEventsDateController.stream;
+
   final StreamController<String> networkController = BehaviorSubject<String>();
   Stream<String> get networkStream => networkController.stream;
 
