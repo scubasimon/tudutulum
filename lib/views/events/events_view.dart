@@ -186,9 +186,7 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
           final daysToGenerate = endDate.difference(startDate).inDays + 1;
           var days =
               List.generate(daysToGenerate, (i) => DateTime(startDate.year, startDate.month, startDate.day + (i)));
-          print("Event -> ${event.eventid}");
           for (var day in days) {
-            print("${DateFormat('dd MM yy').format(day).toString()}");
             Event cloneEvent = Event.fromClone(event);
             cloneEvent.datestart = Timestamp.fromDate(
                 DateTime(
@@ -621,6 +619,12 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
               physics: const NeverScrollableScrollPhysics(),
               itemCount: snapshot.data!.length,
               itemBuilder: (BuildContext context, int index) {
+                String siteTitle = "";
+                if (snapshot.data![index].sites != null) {
+                  if (snapshot.data![index].sites! != []) {
+                    siteTitle = "${_homeViewModel.getSiteById(snapshot.data![index].sites!.first)?.title}";
+                  }
+                }
                 return InkWell(
                   onTap: () {
                     _eventContentDetailViewModel.setEventContentDetailCover(snapshot.data![index]);
@@ -735,7 +739,7 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
                                           fontSize: FontSizeConst.font12,
                                           fontWeight: FontWeight.w600,
                                         )),
-                                    Text(snapshot.data![index].description,
+                                    Text(siteTitle,
                                         overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
                                           color: ColorStyle.getDarkLabel(),

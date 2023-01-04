@@ -55,9 +55,6 @@ class WhatTuduViewModel extends BaseViewModel {
         keywordSearch,
       );
 
-      print("_homeViewModel.listArticles -> ${_homeViewModel.listArticles.length}");
-      print("_homeViewModel.listArticles -> ${businessFilter}");
-
       List<Items> listArticlesResult = _whatTuduRepository.getArticlesWithFilterSortSearch(
         _homeViewModel.listArticles,
         businessFilter, // (businessFilter != null) ? businessFilter.businessid : -1,
