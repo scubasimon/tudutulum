@@ -25,7 +25,7 @@
   "name": "Name",
   "mobile": "Mobile",
   "required_message": "*Email and password are required",
-  "term_and_conditions": "Term and Conditions",
+  "term_and_conditions": "Terms and Conditions",
   "agree_message": "I agree with our",
   "account_exist_message": "Already have an account?",
   "sign_in": "Sign In",

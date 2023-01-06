@@ -310,10 +310,10 @@ class S {
     );
   }
 
-  /// `Term and Conditions`
+  /// `Terms and Conditions`
   String get term_and_conditions {
     return Intl.message(
-      'Term and Conditions',
+      'Terms and Conditions',
       name: 'term_and_conditions',
       desc: '',
       args: [],

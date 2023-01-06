@@ -247,7 +247,7 @@ class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDeta
                                   ),
                                 ),
                                 imageUrl: context.tree.element?.attributes["src"] ?? "",
-                                fit: BoxFit.cover,
+                                fit: BoxFit.contain,
                                 progressIndicatorBuilder: (context, value, progress) {
                                   return Container(
                                       decoration: const BoxDecoration(),
@@ -261,7 +261,7 @@ class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDeta
                                 },
                                 imageBuilder: (context, imageProvider) => Container(
                                   decoration: BoxDecoration(
-                                    image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                                    image: DecorationImage(image: imageProvider, fit: BoxFit.contain),
                                   ),
                                 ),
                                 errorWidget: (context, url, error) => const Icon(Icons.error),
@@ -346,7 +346,7 @@ class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDeta
                                   ),
                                 ),
                                 imageUrl: context.tree.element?.attributes["src"] ?? "",
-                                fit: BoxFit.cover,
+                                fit: BoxFit.contain,
                                 progressIndicatorBuilder: (context, value, progress) {
                                   return Container(
                                       decoration: const BoxDecoration(),
@@ -360,7 +360,7 @@ class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDeta
                                 },
                                 imageBuilder: (context, imageProvider) => Container(
                                   decoration: BoxDecoration(
-                                    image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                                    image: DecorationImage(image: imageProvider, fit: BoxFit.contain),
                                   ),
                                 ),
                                 errorWidget: (context, url, error) => const Icon(Icons.error),
@@ -423,19 +423,19 @@ class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDeta
                 imageUrl: urlImage,
                 width: MediaQuery.of(context).size.width,
                 height: 300,
-                fit: BoxFit.cover,
+                fit: BoxFit.contain,
                 imageBuilder: (context, imageProvider) => Container(
                   decoration: BoxDecoration(
                     image: DecorationImage(
                         image: imageProvider,
-                        fit: BoxFit.cover),
+                        fit: BoxFit.contain),
                   ),
                 ),
                 placeholder: (context, url) => const CupertinoActivityIndicator(
                   radius: 20,
                   color: ColorStyle.primary,
                 ),
-                errorWidget: (context, url, error) => Icon(Icons.error),
+                errorWidget: (context, url, error) => const Icon(Icons.error),
               ),
               // child: Image.network(
               //   urlImage,

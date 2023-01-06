@@ -202,7 +202,9 @@ class ProfileViewModel extends BaseViewModel {
     try {
       await _authRepository.updateProfile(user);
     } catch (e) {
-      print(e);
+      if (e is CustomError) {
+        print(e.message);
+      }
     }
   }
 }
