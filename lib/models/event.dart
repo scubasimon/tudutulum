@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:tudu/models/site.dart';
 
 class Event {
   String eventid;
@@ -20,7 +21,7 @@ class Event {
   Map<String, dynamic>? contacts;
   double? locationLat;
   double? locationLon;
-  List<int>? sites;
+  List<Site>? sites;
 
   Event(
       {
@@ -67,7 +68,7 @@ class Event {
       "contacts": contacts,
       "locationLat": locationLat,
       "locationLon": locationLon,
-      "sites": sites,
+      "sites": sites?.map((e) => e.toJson()),
     };
 
     return result;
@@ -96,5 +97,34 @@ class Event {
       locationLon: objectClone.locationLon,
       sites: objectClone.sites
     );
+  }
+
+  Map<int, bool>? getEventDayInWeek() {
+    return listEventDayInWeek?.map((key, value) {
+      int k = -1;
+      switch (key.toLowerCase()) {
+        case "monday":
+          k = DateTime.monday;
+          break;
+        case "tuesday":
+          k = DateTime.tuesday;
+          break;
+        case "wednesday":
+          k = DateTime.wednesday;
+          break;
+        case "thursday":
+          k = DateTime.thursday;
+          break;
+        case "friday":
+          k = DateTime.friday;
+          break;
+        case "saturday":
+          k = DateTime.saturday;
+          break;
+        case "sunday":
+          k = DateTime.sunday;
+      }
+      return MapEntry(k, value);
+    });
   }
 }

@@ -13,10 +13,12 @@ class Deal {
   late String title;
   late String titleShort;
   late List<int> businesses = [];
+  late String logo;
 
-  Deal(this.dealsId, this.active, this.description, this.images, this.site, this.startDate, this.endDate, this.terms, this.title, this.titleShort);
+  Deal(this.dealsId, this.active, this.description, this.images, this.site, this.startDate, this.endDate, this.terms, this.title, this.titleShort, this.logo);
 
   Deal.from(Map<String, dynamic> data) {
+    print(data);
     dealsId = data["dealsid"] as int? ?? 0;
     active = data["active"] as bool? ?? false;
     description = data["description"] as String?;
@@ -35,6 +37,7 @@ class Deal {
     title = data["title"] as String? ?? "";
     titleShort = data["titleshort"] as String? ?? "";
     businesses = (data["business"] as List<dynamic>? ?? []).map((e) => e as int).toList();
+    logo = data["logo"] as String? ?? "";
 
     var site = data["site"] as Map<String, dynamic>? ?? {};
     final siteContent = site["siteContent"] as Map<String, dynamic>? ?? {};
@@ -91,7 +94,6 @@ class Deal {
       "business": site.business,
       "locationLat": site.locationLat,
       "locationLon": site.locationLon,
-      "rating": site.rating,
       "siteContent": site.siteContent.toJson(),
     };
     Map<String, dynamic> result = {
@@ -106,6 +108,7 @@ class Deal {
       "titleshort": titleShort,
       "business": businesses,
       "site": siteMap,
+      "logo": logo,
     };
     return result;
   }

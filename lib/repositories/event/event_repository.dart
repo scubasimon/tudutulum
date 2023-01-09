@@ -22,8 +22,7 @@ class EventRepositoryImpl extends EventRepository {
 
     // Filter with time
     listEventResult = listEventResult
-        .where((event) => event.dateend.millisecondsSinceEpoch > DateTime.now().millisecondsSinceEpoch
-        && event.datestart.millisecondsSinceEpoch < DateTime.now().millisecondsSinceEpoch).toList();
+        .where((event) => event.dateend.millisecondsSinceEpoch >= DateTime.now().millisecondsSinceEpoch).toList();
 
     // Filter with eventTypeId (Filter function)
     if (eventTypeFilterId != null) {
@@ -56,8 +55,10 @@ class EventRepositoryImpl extends EventRepository {
 
 
         for (var event in listEventResult) {
-          if (event.title.toString().toLowerCase().contains(keywordSearch.toLowerCase()) ||
-              event.description.toString().toLowerCase().contains(keywordSearch.toLowerCase())) {
+          final titleEqual = event.title.toString().toLowerCase().contains(keywordSearch.toLowerCase());
+          final siteTitleEqual = event.sites?.
+          where((element) => element.title.toLowerCase().contains(keywordSearch.toLowerCase())).isNotEmpty ?? false;
+          if (titleEqual || siteTitleEqual) {
             result.add(event);
           }
         }

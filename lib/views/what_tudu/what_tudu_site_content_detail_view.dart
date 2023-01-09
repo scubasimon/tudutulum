@@ -225,6 +225,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
   }
 
   Widget getExploreAllLocationView() {
+    final darkMode = PrefUtil.getValue(StrConst.isDarkMode, false) as bool;
     return Column(
       children: [
         getCover(
@@ -253,7 +254,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
           height: 0.5,
           width: MediaQuery.of(context).size.width,
           margin: const EdgeInsets.only(left: 18, right: 18),
-          color: ColorsConst.blackOpacity20,
+          color: darkMode ? Colors.white : ColorsConst.blackOpacity20,
         ),
         getIntouch(
           _whatTuduSiteContentDetailViewModel.siteContentDetail.siteContent.getIntouch,
@@ -264,7 +265,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
           height: 0.5,
           width: MediaQuery.of(context).size.width,
           margin: const EdgeInsets.only(left: 18, right: 18),
-          color: ColorsConst.blackOpacity20,
+          color: darkMode ? Colors.white : ColorsConst.blackOpacity20,
         ),
         getPartner(
             _homeViewModel.getPartnerById(_whatTuduSiteContentDetailViewModel.siteContentDetail.siteContent.partner)),
@@ -381,7 +382,9 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                         DateTime.now(),
                         "",
                         "",
-                        "",);
+                        "",
+                      "",
+                    );
                     Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -814,7 +817,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
               fit: BoxFit.contain,
               imageBuilder: (context, imageProvider) => Container(
                 decoration: BoxDecoration(
-                  image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                  image: DecorationImage(image: imageProvider, fit: BoxFit.contain),
                 ),
               ),
               placeholder: (context, url) => const CupertinoActivityIndicator(

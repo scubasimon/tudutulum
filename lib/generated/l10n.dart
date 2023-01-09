@@ -310,10 +310,10 @@ class S {
     );
   }
 
-  /// `Term and Conditions`
+  /// `Terms and Conditions`
   String get term_and_conditions {
     return Intl.message(
-      'Term and Conditions',
+      'Terms and Conditions',
       name: 'term_and_conditions',
       desc: '',
       args: [],
@@ -870,10 +870,10 @@ class S {
     );
   }
 
-  /// `You can also follow Title on:`
+  /// `You can also follow them on:`
   String get follow_title {
     return Intl.message(
-      'You can also follow Title on:',
+      'You can also follow them on:',
       name: 'follow_title',
       desc: '',
       args: [],

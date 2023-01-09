@@ -22,8 +22,8 @@ class EventsViewModel extends BaseViewModel {
   EventsViewModel._internal();
 
   final EventRepository _eventRepository = EventRepositoryImpl();
-  HomeViewModel _homeViewModel = HomeViewModel();
-  ObservableService _observableService = ObservableService();
+  final HomeViewModel _homeViewModel = HomeViewModel();
+  final ObservableService _observableService = ObservableService();
 
   late bool serviceEnabled;
   locationLib.Location location = locationLib.Location();

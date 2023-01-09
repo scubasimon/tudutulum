@@ -5,9 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:intl/intl.dart';
-import 'package:localstore/localstore.dart';
 import 'package:notification_center/notification_center.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -17,23 +15,19 @@ import 'package:tudu/viewmodels/event_content_detail_viewmodel.dart';
 import 'package:tudu/viewmodels/events_viewmodel.dart';
 import 'package:tudu/viewmodels/home_viewmodel.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
-import 'package:tudu/localization/language_constants.dart';
-import 'package:tudu/utils/colors_const.dart';
 import 'package:tudu/consts/font/font_size_const.dart';
-import 'package:tudu/consts/strings/str_language_key.dart';
 
 import 'package:tudu/consts/images/ImagePath.dart';
 
-import '../../consts/color/Colors.dart';
-import '../../consts/font/Fonts.dart';
-import '../../consts/strings/str_const.dart';
-import '../../generated/l10n.dart';
-import '../../services/location/permission_request.dart';
-import '../../services/observable/observable_serivce.dart';
-import '../common/size_provider_widget.dart';
-import '../../utils/func_utils.dart';
-import '../../utils/pref_util.dart';
-import '../common/alert.dart';
+import 'package:tudu/consts/color/Colors.dart';
+import 'package:tudu/consts/font/Fonts.dart';
+import 'package:tudu/consts/strings/str_const.dart';
+import 'package:tudu/generated/l10n.dart';
+import 'package:tudu/services/location/permission_request.dart';
+import 'package:tudu/services/observable/observable_serivce.dart';
+import 'package:tudu/utils/func_utils.dart';
+import 'package:tudu/utils/pref_util.dart';
+import 'package:tudu/views/common/alert.dart';
 import 'event_content_detail_view.dart';
 
 class EventsView extends StatefulWidget {
@@ -44,10 +38,10 @@ class EventsView extends StatefulWidget {
 }
 
 class _EventsView extends State<EventsView> with WidgetsBindingObserver {
-  ObservableService _observableService = ObservableService();
-  EventsViewModel _eventsViewModel = EventsViewModel();
-  HomeViewModel _homeViewModel = HomeViewModel();
-  EventContentDetailViewModel _eventContentDetailViewModel = EventContentDetailViewModel();
+  final ObservableService _observableService = ObservableService();
+  final EventsViewModel _eventsViewModel = EventsViewModel();
+  final HomeViewModel _homeViewModel = HomeViewModel();
+  final EventContentDetailViewModel _eventContentDetailViewModel = EventContentDetailViewModel();
 
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
@@ -130,7 +124,6 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
         setState(() {});
       }
 
-      print("_eventsViewModel.fromSite ${_eventsViewModel.fromSite}");
       if (_eventsViewModel.fromSite != null) {
         if (_homeViewModel.getSiteById(_eventsViewModel.fromSite!) != null) {
           List<Event> fromSite = _homeViewModel.getListEventBySiteId(_eventsViewModel.fromSite!);
@@ -159,6 +152,7 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
       print("listenToEvents -> new event");
       if (data != null) {
         List<Event> listEventDate = [];
+        print(data.length);
 
         for (var event in data) {
           int newHour = 23;
@@ -186,19 +180,24 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
           final daysToGenerate = endDate.difference(startDate).inDays + 1;
           var days =
               List.generate(daysToGenerate, (i) => DateTime(startDate.year, startDate.month, startDate.day + (i)));
+          final listEventDayInWeek = event.getEventDayInWeek() ?? {};
           for (var day in days) {
-            Event cloneEvent = Event.fromClone(event);
-            cloneEvent.datestart = Timestamp.fromDate(
-                DateTime(
-                  day.year,
-                  day.month,
-                  day.day,
-                  DateTime.fromMillisecondsSinceEpoch(event.dateend.millisecondsSinceEpoch).hour,
-                  DateTime.fromMillisecondsSinceEpoch(event.dateend.millisecondsSinceEpoch).minute,
-                  DateTime.fromMillisecondsSinceEpoch(event.dateend.millisecondsSinceEpoch).second,
-                )
-            );
-            listEventDate.add(cloneEvent);
+            if (listEventDayInWeek[day.weekday] == true) {
+              Event cloneEvent = Event.fromClone(event);
+              cloneEvent.datestart = Timestamp.fromDate(
+                  DateTime(
+                    day.year,
+                    day.month,
+                    day.day,
+                    DateTime.fromMillisecondsSinceEpoch(event.dateend.millisecondsSinceEpoch).hour,
+                    DateTime.fromMillisecondsSinceEpoch(event.dateend.millisecondsSinceEpoch).minute,
+                    DateTime.fromMillisecondsSinceEpoch(event.dateend.millisecondsSinceEpoch).second,
+                  )
+              );
+
+              listEventDate.add(cloneEvent);
+            }
+
           }
         }
 
@@ -352,76 +351,6 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
                           },
                         ),
                         const Spacer(),
-                        PullDownButton(
-                          itemBuilder: (context) => [
-                            PullDownMenuItem(
-                              title: S.current.date,
-                              itemTheme: const PullDownMenuItemTheme(
-                                textStyle: TextStyle(
-                                    fontFamily: FontStyles.sfProText,
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 17,
-                                    color: ColorStyle.menuLabel),
-                              ),
-                              enabled: _homeViewModel.eventOrderType != 0,
-                              onTap: () {
-                                _eventsViewModel.getDataWithFilterSortSearch(
-                                  (_homeViewModel.eventEventFilterType < _homeViewModel.listEventTypes.length)
-                                      ? _homeViewModel.listEventTypes[_homeViewModel.eventEventFilterType]
-                                      : null,
-                                  FuncUlti.getSortEventTypeByInt(0), // Search with Alphabet => "title" = 0
-                                  _searchController.text, // Search with Alphabet => "title" = 0
-                                );
-                                _homeViewModel.changeEventOrderType(0);
-                              },
-                            ),
-                            const PullDownMenuDivider(),
-                            PullDownMenuItem(
-                              title: S.current.distance,
-                              itemTheme: const PullDownMenuItemTheme(
-                                textStyle: TextStyle(
-                                    fontFamily: FontStyles.sfProText,
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 17,
-                                    color: ColorStyle.menuLabel),
-                              ),
-                              enabled: _homeViewModel.eventOrderType != 1,
-                              onTap: () {
-                                PermissionRequest.isResquestPermission = true;
-                                PermissionRequest().permissionServiceCall(
-                                  context,
-                                  () {
-                                    _eventsViewModel.sortWithLocation();
-                                    _homeViewModel.changeEventOrderType(1);
-                                  },
-                                );
-                              },
-                            ),
-                          ],
-                          position: PullDownMenuPosition.automatic,
-                          buttonBuilder: (context, showMenu) => Container(
-                            padding: const EdgeInsets.only(left: 8, right: 8),
-                            child: InkWell(
-                              onTap: showMenu,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Expanded(child: Image.asset(ImagePath.sortIcon, fit: BoxFit.contain, width: 16.0)),
-                                  Text(
-                                    S.current.sort,
-                                    style: const TextStyle(
-                                      color: ColorStyle.primary,
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w500,
-                                      fontFamily: FontStyles.raleway,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
                         const SizedBox(
                           width: 12.0,
                         ),
@@ -577,29 +506,27 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
   }
 
   Widget createExploreEventsView() {
-    return Container(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-            height: 60,
-            padding: EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 8),
-            alignment: Alignment.centerLeft,
-            child: Text(
-              S.current.explopre_events,
-              // "Explore Events",
-              style: TextStyle(
-                color: ColorStyle.getDarkLabel(),
-                fontFamily: FontStyles.mouser,
-                fontSize: FontSizeConst.font16,
-                fontWeight: FontWeight.w400,
-              ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Container(
+          height: 60,
+          padding: const EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 8),
+          alignment: Alignment.centerLeft,
+          child: Text(
+            S.current.explopre_events,
+            // "Explore Events",
+            style: TextStyle(
+              color: ColorStyle.getDarkLabel(),
+              fontFamily: FontStyles.mouser,
+              fontSize: FontSizeConst.font16,
+              fontWeight: FontWeight.w400,
             ),
           ),
-          getExploreAllLocationView(),
-        ],
-      ),
+        ),
+        getExploreAllLocationView(),
+      ],
     );
   }
 
@@ -612,7 +539,7 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
             child: CircularProgressIndicator(),
           );
         } else if (snapshot.hasError) {
-          return Center(child: Text("snapshot.hasError"));
+          return const Center(child: Text("snapshot.hasError"));
         } else {
           return ListView.builder(
               shrinkWrap: true,
@@ -621,8 +548,8 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
               itemBuilder: (BuildContext context, int index) {
                 String siteTitle = "";
                 if (snapshot.data![index].sites != null) {
-                  if (snapshot.data![index].sites! != []) {
-                    siteTitle = "${_homeViewModel.getSiteById(snapshot.data![index].sites!.first)?.title}";
+                  if (snapshot.data![index].sites!.isNotEmpty) {
+                    siteTitle = snapshot.data![index].sites!.first.title;
                   }
                 }
                 return InkWell(
@@ -631,7 +558,7 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => EventContentDetailView(),
+                            builder: (context) => const EventContentDetailView(),
                             settings: const RouteSettings(name: StrConst.eventContentDetailScene)));
                   },
                   child: Container(
@@ -667,7 +594,7 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
                           Row(
                             children: [
                               Container(
-                                margin: EdgeInsets.only(right: 16),
+                                margin: const EdgeInsets.only(right: 16),
                                 child: CachedNetworkImage(
                                   cacheManager: CacheManager(
                                     Config(
@@ -751,7 +678,7 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
                                 ),
                               ),
                               Container(
-                                  margin: EdgeInsets.only(left: 16, right: 16),
+                                  margin: const EdgeInsets.only(left: 16, right: 16),
                                   child: (snapshot.data![index].cost == "Free" || snapshot.data![index].cost == "0")
                                       ? Text(snapshot.data![index].cost,
                                           maxLines: 1,

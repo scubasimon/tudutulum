@@ -39,6 +39,14 @@ class ColorStyle {
     }
   }
 
+  static Color getTertiaryBackground() {
+    if (PrefUtil.getValue(StrConst.isDarkMode, false) as bool == false) {
+      return const Color(0xffD9D9D9);
+    } else {
+      return const Color(0xff262626);
+    }
+  }
+
   static Color getSystemBackground() {
     if (PrefUtil.getValue(StrConst.isDarkMode, false) as bool == false) {
       return Colors.white;

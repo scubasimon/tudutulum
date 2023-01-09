@@ -126,7 +126,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "filter": MessageLookupByLibrary.simpleMessage("Filter"),
         "first_name": MessageLookupByLibrary.simpleMessage("First Name"),
         "follow_title": MessageLookupByLibrary.simpleMessage(
-            "You can also follow Title on:"),
+            "You can also follow them on:"),
         "follow_us": MessageLookupByLibrary.simpleMessage(
             "•  Follow us to see our latest deals"),
         "forgot_password":
@@ -282,7 +282,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "The total amount for the subscription period will be charged to your iTunes Account. Unless you turn off auto-renewal at least 24 hours before the end of the subscription period, the subscription will renew automatically for the same price, and your iTunes Account will be charged according. You can manage the subscription and turn off automatic renewal in the Account Settings for your Apple at any time."),
         "successful": MessageLookupByLibrary.simpleMessage("Successful!"),
         "term_and_conditions":
-            MessageLookupByLibrary.simpleMessage("Term and Conditions"),
+            MessageLookupByLibrary.simpleMessage("Terms and Conditions"),
         "thanks_to_our_trusted_partner": MessageLookupByLibrary.simpleMessage(
             "With thanks to our trusted partner:"),
         "the_legal_stuff":

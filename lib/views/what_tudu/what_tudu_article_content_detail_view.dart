@@ -247,7 +247,7 @@ class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDeta
                                   ),
                                 ),
                                 imageUrl: context.tree.element?.attributes["src"] ?? "",
-                                fit: BoxFit.cover,
+                                fit: BoxFit.contain,
                                 progressIndicatorBuilder: (context, value, progress) {
                                   return Container(
                                       decoration: const BoxDecoration(),
@@ -261,7 +261,7 @@ class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDeta
                                 },
                                 imageBuilder: (context, imageProvider) => Container(
                                   decoration: BoxDecoration(
-                                    image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                                    image: DecorationImage(image: imageProvider, fit: BoxFit.contain),
                                   ),
                                 ),
                                 errorWidget: (context, url, error) => const Icon(Icons.error),
@@ -288,7 +288,7 @@ class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDeta
                       ),
                     ),
                     imageUrl: _whatTuduArticleContentDetailViewModel.articleItemDetail.image2?.url ?? "",
-                    fit: BoxFit.cover,
+                    fit: BoxFit.contain,
                     progressIndicatorBuilder: (context, value, progress) {
                       return Container(
                           decoration: const BoxDecoration(),
@@ -302,7 +302,7 @@ class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDeta
                     },
                     imageBuilder: (context, imageProvider) => Container(
                       decoration: BoxDecoration(
-                        image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                        image: DecorationImage(image: imageProvider, fit: BoxFit.contain),
                       ),
                     ),
                     errorWidget: (context, url, error) => const Icon(Icons.error),
@@ -346,7 +346,7 @@ class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDeta
                                   ),
                                 ),
                                 imageUrl: context.tree.element?.attributes["src"] ?? "",
-                                fit: BoxFit.cover,
+                                fit: BoxFit.contain,
                                 progressIndicatorBuilder: (context, value, progress) {
                                   return Container(
                                       decoration: const BoxDecoration(),
@@ -360,7 +360,7 @@ class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDeta
                                 },
                                 imageBuilder: (context, imageProvider) => Container(
                                   decoration: BoxDecoration(
-                                    image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                                    image: DecorationImage(image: imageProvider, fit: BoxFit.contain),
                                   ),
                                 ),
                                 errorWidget: (context, url, error) => const Icon(Icons.error),
@@ -382,70 +382,6 @@ class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDeta
           ),
         ),
       ),
-    );
-  }
-
-  Widget getExploreAllLocationView() {
-    return Column(
-      children: [
-        getCover(
-          "${_whatTuduArticleContentDetailViewModel.articleItemDetail.image?.url}",
-        ),
-      ],
-    );
-  }
-
-  Widget getCover(String urlImage) {
-    return Stack(
-      children: [
-        InkWell(
-          onTap: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        PhotoViewUtil(banner: [urlImage]),
-                    settings: const RouteSettings(name: StrConst.viewPhoto)));
-          },
-          child: Container(
-              alignment: Alignment.centerLeft,
-              width: MediaQuery.of(context).size.width,
-              child: CachedNetworkImage(
-                cacheManager: CacheManager(
-                  Config(
-                    "cachedImg", //featureStoreKey
-                    stalePeriod: const Duration(seconds: 15),
-                    maxNrOfCacheObjects: 1,
-                    repo: JsonCacheInfoRepository(databaseName: "cachedImg"),
-                    fileService: HttpFileService(),
-                  ),
-                ),
-                imageUrl: urlImage,
-                width: MediaQuery.of(context).size.width,
-                height: 300,
-                fit: BoxFit.cover,
-                imageBuilder: (context, imageProvider) => Container(
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: imageProvider,
-                        fit: BoxFit.cover),
-                  ),
-                ),
-                placeholder: (context, url) => const CupertinoActivityIndicator(
-                  radius: 20,
-                  color: ColorStyle.primary,
-                ),
-                errorWidget: (context, url, error) => Icon(Icons.error),
-              ),
-              // child: Image.network(
-              //   urlImage,
-              //   width: MediaQuery.of(context).size.width,
-              //   height: 300,
-              //   fit: BoxFit.cover,
-              // )
-          ),
-        ),
-      ],
     );
   }
 }

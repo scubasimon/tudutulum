@@ -1,43 +1,33 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:map_launcher/map_launcher.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:tudu/consts/color/Colors.dart';
 import 'package:tudu/consts/font/Fonts.dart';
 import 'package:tudu/consts/images/ImagePath.dart';
-import 'package:tudu/models/amenity.dart';
-import 'package:tudu/models/deal.dart';
 import 'package:tudu/models/event.dart';
-import 'package:tudu/models/partner.dart';
 import 'package:tudu/models/site.dart';
 import 'package:tudu/utils/func_utils.dart';
-import 'package:tudu/viewmodels/what_tudu_site_content_detail_viewmodel.dart';
 import 'package:tudu/views/common/alert.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
 import 'package:tudu/utils/colors_const.dart';
 import 'package:tudu/consts/font/font_size_const.dart';
 import 'package:tudu/consts/strings/str_const.dart';
 import 'package:tudu/generated/l10n.dart';
-import 'package:tudu/views/deals/deal_details_view.dart';
 
-import 'package:tudu/views/photo/photo_view.dart';
 import 'package:tudu/viewmodels/home_viewmodel.dart';
 import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
 import 'package:url_launcher/url_launcher.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 
-import '../../models/error.dart';
-import '../../services/observable/observable_serivce.dart';
-import '../../services/location/permission_request.dart';
-import '../../utils/pref_util.dart';
-import '../../viewmodels/event_content_detail_viewmodel.dart';
+import 'package:tudu/models/error.dart';
+import 'package:tudu/services/observable/observable_serivce.dart';
+import 'package:tudu/services/location/permission_request.dart';
+import 'package:tudu/utils/pref_util.dart';
+import 'package:tudu/viewmodels/event_content_detail_viewmodel.dart';
 
 class EventContentDetailView extends StatefulWidget {
   const EventContentDetailView({super.key});
@@ -174,7 +164,6 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
                         height: 26.0,
                       ),
                       onTap: () {
-                        print("booking ${_eventContentDetailViewModel.eventContentDetail.booking}");
                         FuncUlti.redirectToBrowserWithUrl("${_eventContentDetailViewModel.eventContentDetail.booking}");
                       },
                     ),
@@ -464,7 +453,7 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
     return havingContact;
   }
 
-  Widget getContact(Map<String, dynamic>? getContact, List<int>? sites) {
+  Widget getContact(Map<String, dynamic>? getContact, List<Site>? sites) {
     if (getContact != null && isHaveAnyContact(getContact)) {
       return Stack(
         children: [
@@ -550,7 +539,7 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
                           ? InkWell(
                               child: Container(
                                 padding: const EdgeInsets.only(top: 4.0, right: 5.0, bottom: 4.0),
-                                child: Image.asset(ImagePath.internetIcon, fit: BoxFit.contain, height: 36.0),
+                                child: Image.asset(ImagePath.internetIcon, fit: BoxFit.cover, height: 38.0),
                               ),
                               onTap: () {
                                 print("getIntouch[" "] ${getContact["website"]}");
@@ -605,8 +594,8 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
       );
     } else {
       if (sites != null && sites != []) {
-        var site = _homeViewModel.getSiteById(sites.first);
-        var getIntouch = site?.siteContent.getIntouch;
+        var site = sites.first;
+        var getIntouch = site.siteContent.getIntouch;
         if (getIntouch != null && isHaveAnyContact(getIntouch)) {
           return Stack(
             children: [
@@ -774,23 +763,19 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
     );
   }
 
-  Widget getSites(int siteIndex) {
-    if (_homeViewModel.getSiteById(siteIndex) != null) {
-      return Container(
-        padding: const EdgeInsets.only(top: 4.0, right: 4.0, bottom: 4.0),
-        child: Text(
-            "${_homeViewModel.getSiteById(siteIndex)!.title}",
-            style: TextStyle(
-              color: ColorStyle.getDarkLabel(),
-              fontSize: FontSizeConst.font12,
-              fontWeight: FontWeight.w600,
-              fontFamily: FontStyles.raleway,
-            )
-        ),
-      );
-    } else {
-      return Container();
-    }
+  Widget getSites(Site site) {
+    return Container(
+      padding: const EdgeInsets.only(top: 4.0, right: 4.0, bottom: 4.0),
+      child: Text(
+          site.title,
+          style: TextStyle(
+            color: ColorStyle.getDarkLabel(),
+            fontSize: FontSizeConst.font12,
+            fontWeight: FontWeight.w600,
+            fontFamily: FontStyles.raleway,
+          )
+      ),
+    );
   }
 
   void _openNavigationApp() async {

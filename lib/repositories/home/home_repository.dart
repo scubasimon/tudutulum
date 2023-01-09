@@ -160,7 +160,7 @@ class HomeRepositoryImpl extends HomeRepository {
     if (listRemoteEvents != null) {
       for (var remoteEvent in listRemoteEvents) {
         if (remoteEvent["active"]) {
-          listEvents.add(Event(
+          var event = Event(
             eventid: remoteEvent["eventid"],
             active: remoteEvent["active"],
             image: (remoteEvent["image"] != null) ? remoteEvent["image"] : null,
@@ -177,13 +177,14 @@ class HomeRepositoryImpl extends HomeRepository {
             booking: (remoteEvent["booking"] != null) ? remoteEvent["booking"] : null,
             primaryType: remoteEvent["primarytype"],
             eventTypes: (remoteEvent["eventtypes"] != null) ? FuncUlti.getListIntFromListDynamic(remoteEvent["eventtypes"]) : null,
-            listEventDayInWeek: getListEventDayInWeek(remoteEvent.data()),
+            listEventDayInWeek: getListEventDayInWeek(remoteEvent["listEventDayInWeek"]),
             repeating: (remoteEvent["repeating"] != null) ? remoteEvent["repeating"] : null,
             contacts: (remoteEvent["contacts"] != null) ? getListEventContact(remoteEvent["contacts"]) : null,
             locationLat: (remoteEvent["locationLat"] != null) ? remoteEvent["locationLat"] : null,
             locationLon: (remoteEvent["locationLon"] != null) ? remoteEvent["locationLon"] : null,
-            sites: (remoteEvent["sites"] != null) ? FuncUlti.getListIntFromListDynamic(remoteEvent["sites"]) : null,
-          ));
+            sites: (remoteEvent["sites"] != null) ? FuncUlti.getListSiteFromListDynamic(remoteEvent["sites"]) : null,
+          );
+          listEvents.add(event);
         }
       }
     }
@@ -318,7 +319,7 @@ class HomeRepositoryImpl extends HomeRepository {
             contacts: (remoteEvent["contacts"] != null) ? getListEventContact(remoteEvent["contacts"]) : null,
             locationLat: (remoteEvent["locationLat"] != null) ? remoteEvent["locationLat"] : null,
             locationLon: (remoteEvent["locationLon"] != null) ? remoteEvent["locationLon"] : null,
-            sites: (remoteEvent["sites"] != null) ? FuncUlti.getListIntFromListDynamic(remoteEvent["sites"]) : null,
+            sites: (remoteEvent["sites"] != null) ? FuncUlti.getListSiteFromListDynamic(remoteEvent["sites"]) : null,
           ));
         }
       }

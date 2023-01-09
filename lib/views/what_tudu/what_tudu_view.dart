@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:localstore/localstore.dart';
 import 'package:notification_center/notification_center.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -12,7 +11,6 @@ import 'package:rounded_background_text/rounded_background_text.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:tudu/consts/color/Colors.dart';
 import 'package:tudu/consts/font/Fonts.dart';
-import 'package:tudu/models/error.dart';
 import 'package:tudu/utils/func_utils.dart';
 import 'package:tudu/utils/pref_util.dart';
 import 'package:tudu/viewmodels/home_viewmodel.dart';
@@ -26,7 +24,6 @@ import 'package:tudu/consts/font/font_size_const.dart';
 import 'package:tudu/consts/strings/str_const.dart';
 import 'package:tudu/consts/images/ImagePath.dart';
 import 'package:tudu/generated/l10n.dart';
-import 'package:rxdart/rxdart.dart';
 
 import 'package:tudu/models/site.dart';
 import 'package:tudu/services/location/permission_request.dart';
@@ -34,11 +31,10 @@ import 'package:tudu/viewmodels/what_tudu_article_content_detail_viewmodel.dart'
 import 'package:tudu/views/common/alert.dart';
 import 'package:tudu/views/map/map_screen_view.dart';
 
-import '../../models/api_article_detail.dart';
-import '../../models/deal.dart';
-import '../../services/observable/observable_serivce.dart';
-import '../common/size_provider_widget.dart';
-import '../deals/deal_details_view.dart';
+import 'package:tudu/models/api_article_detail.dart';
+import 'package:tudu/models/deal.dart';
+import 'package:tudu/services/observable/observable_serivce.dart';
+import 'package:tudu/views/deals/deal_details_view.dart';
 
 enum DataLoadingType {
   LOADING,
@@ -55,7 +51,6 @@ class WhatTuduView extends StatefulWidget {
 
 class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
   ObservableService _observableService = ObservableService();
-  MapScreenViewModel _mapScreenViewModel = MapScreenViewModel();
   WhatTuduViewModel _whatTuduViewModel = WhatTuduViewModel();
   HomeViewModel _homeViewModel = HomeViewModel();
   WhatTuduArticleContentDetailViewModel _whatTuduArticleDetailViewModel = WhatTuduArticleContentDetailViewModel();
@@ -65,7 +60,6 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
   final TextEditingController _searchController = TextEditingController();
 
   StreamSubscription<bool>? darkModeListener;
-  // StreamSubscription<bool>? loadingListener;
   StreamSubscription<List<Items>?>? zeroDataArticleListener;
   StreamSubscription<List<Site>?>? zeroDataSiteListener;
 
@@ -617,11 +611,10 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                padding: const EdgeInsets.only(top: 8, bottom: 8, left: 16, right: 16),
+                padding: const EdgeInsets.only(top: 8, bottom: 8, left: 12, right: 16),
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  getArticleTitleText(_homeViewModel.whatTuduBussinessFilterType),
-                  // S.current.articles,
+                  S.current.articles,
                   style: TextStyle(
                       color: ColorStyle.getDarkLabel(),
                       fontSize: FontSizeConst.font16,
@@ -683,11 +676,6 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                               ),
                               errorWidget: (context, url, error) => Icon(Icons.error),
                             ),
-                            // child: Image.network(
-                            //   snapshot.data![index].banner,
-                            //   width: MediaQuery.of(context).size.width,
-                            //   fit: BoxFit.fill,
-                            // ),
                           ),
                           Positioned.fill(
                             top: 40,
@@ -700,7 +688,7 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                                   fontWeight: FontWeight.w600,
                                   color: ColorStyle.getDarkLabel(),
                                 ),
-                                backgroundColor: ColorStyle.tertiaryBackground,
+                                backgroundColor: ColorStyle.getTertiaryBackground(),
                               ),
                             ),
                           )
@@ -940,7 +928,8 @@ class _WhatTuduView extends State<WhatTuduView> with WidgetsBindingObserver {
                 DateTime.now(),
                 "",
                 "",
-                "");
+                "",
+            "");
             Navigator.push(
                 context,
                 MaterialPageRoute(
