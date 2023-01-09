@@ -618,11 +618,13 @@ class _DealsView extends State<DealsView> with WidgetsBindingObserver {
                                 fileService: HttpFileService(),
                               ),
                             ),
-                            imageUrl: snapshot.data![index].site.siteContent.logo ?? "",
-                            fit: BoxFit.cover,
+                            imageUrl: snapshot.data![index].logo.isNotEmpty
+                                ? snapshot.data![index].logo
+                                : snapshot.data![index].site.siteContent.logo ?? "",
+                            fit: BoxFit.contain,
                             imageBuilder: (context, imageProvider) => Container(
                               decoration: BoxDecoration(
-                                image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                                image: DecorationImage(image: imageProvider, fit: BoxFit.contain),
                               ),
                             ),
                             errorWidget: (context, url, error) => const Icon(Icons.error),

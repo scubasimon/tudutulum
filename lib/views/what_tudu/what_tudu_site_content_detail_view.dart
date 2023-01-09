@@ -382,7 +382,9 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                         DateTime.now(),
                         "",
                         "",
-                        "",);
+                        "",
+                      "",
+                    );
                     Navigator.push(
                         context,
                         MaterialPageRoute(

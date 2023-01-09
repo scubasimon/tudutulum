@@ -366,7 +366,7 @@ class _DealDetailView extends State<DealDetailView> {
                       fileService: HttpFileService(),
                     ),
                   ),
-                  imageUrl: deal.site.siteContent.logo ?? "",
+                  imageUrl: deal.logo.isNotEmpty ? deal.logo : deal.site.siteContent.logo ?? "",
                   fit: BoxFit.cover,
                   imageBuilder: (context, imageProvider) => Container(
                     decoration: BoxDecoration(

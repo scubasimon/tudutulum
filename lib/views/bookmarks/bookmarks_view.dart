@@ -575,7 +575,7 @@ class _BookmarksView extends State<BookmarksView> with WidgetsBindingObserver {
       return InkWell(
         onTap: () {
           if (FirebaseAuth.instance.currentUser != null) {
-            final dealData = Deal(dealId, false, "", [], Site(active: true, title: "", subTitle: "", siteId: 0, business: [], siteContent: SiteContent(), images: []), DateTime.now(), DateTime.now(), "", "", "");
+            final dealData = Deal(dealId, false, "", [], Site(active: true, title: "", subTitle: "", siteId: 0, business: [], siteContent: SiteContent(), images: []), DateTime.now(), DateTime.now(), "", "", "", "");
             Navigator.push(
                 context,
                 MaterialPageRoute(

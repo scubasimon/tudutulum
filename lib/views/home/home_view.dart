@@ -369,7 +369,7 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                       const SizedBox(width: 12,),
                       InkWell(
                         onTap: () async {
-                          await launchUrl(Uri.parse(URLConsts.facebook));
+                          await launchUrl(Uri.parse(URLConsts.facebook), mode: LaunchMode.externalApplication);
                         },
                         child: Image.asset(
                           ImagePath.facebookIcon,
@@ -531,7 +531,7 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                               ? ImagePath.tab1stActiveIcon
                               : ImagePath.tab1stDeactiveIcon,
                           alignment: Alignment.center,
-                          fit: BoxFit.contain,
+                          fit: BoxFit.cover,
                         ),
                       ),
                       Text(
@@ -570,6 +570,8 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                               : ImagePath.tab2ndDeactiveIcon,
                           alignment: Alignment.center,
                           fit: BoxFit.contain,
+                          width: 25,
+                          height: 25,
                         ),
                       ),
                       Text(
@@ -645,7 +647,8 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                               ? ImagePath.tab4thActiveIcon
                               : ImagePath.tab4thDeactiveIcon,
                           alignment: Alignment.center,
-                          fit: BoxFit.contain,
+                          fit: BoxFit.fitWidth,
+                          width: 16,
                         ),
                       ),
                       Text(
@@ -684,6 +687,8 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                               : ImagePath.tab5thDeactiveIcon,
                           alignment: Alignment.center,
                           fit: BoxFit.contain,
+                          width: 22,
+                          height: 22,
                         ),
                       ),
                       Text(
