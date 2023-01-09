@@ -10,6 +10,7 @@ import 'package:tudu/consts/color/Colors.dart';
 import 'package:tudu/consts/font/Fonts.dart';
 import 'package:tudu/consts/images/ImagePath.dart';
 import 'package:tudu/models/event.dart';
+import 'package:tudu/models/site.dart';
 import 'package:tudu/utils/func_utils.dart';
 import 'package:tudu/views/common/alert.dart';
 import 'package:tudu/views/common/exit_app_scope.dart';
@@ -452,7 +453,7 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
     return havingContact;
   }
 
-  Widget getContact(Map<String, dynamic>? getContact, List<int>? sites) {
+  Widget getContact(Map<String, dynamic>? getContact, List<Site>? sites) {
     if (getContact != null && isHaveAnyContact(getContact)) {
       return Stack(
         children: [
@@ -593,8 +594,8 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
       );
     } else {
       if (sites != null && sites != []) {
-        var site = _homeViewModel.getSiteById(sites.first);
-        var getIntouch = site?.siteContent.getIntouch;
+        var site = sites.first;
+        var getIntouch = site.siteContent.getIntouch;
         if (getIntouch != null && isHaveAnyContact(getIntouch)) {
           return Stack(
             children: [
@@ -762,23 +763,19 @@ class _EventContentDetailView extends State<EventContentDetailView> with Widgets
     );
   }
 
-  Widget getSites(int siteIndex) {
-    if (_homeViewModel.getSiteById(siteIndex) != null) {
-      return Container(
-        padding: const EdgeInsets.only(top: 4.0, right: 4.0, bottom: 4.0),
-        child: Text(
-            "${_homeViewModel.getSiteById(siteIndex)!.title}",
-            style: TextStyle(
-              color: ColorStyle.getDarkLabel(),
-              fontSize: FontSizeConst.font12,
-              fontWeight: FontWeight.w600,
-              fontFamily: FontStyles.raleway,
-            )
-        ),
-      );
-    } else {
-      return Container();
-    }
+  Widget getSites(Site site) {
+    return Container(
+      padding: const EdgeInsets.only(top: 4.0, right: 4.0, bottom: 4.0),
+      child: Text(
+          site.title,
+          style: TextStyle(
+            color: ColorStyle.getDarkLabel(),
+            fontSize: FontSizeConst.font12,
+            fontWeight: FontWeight.w600,
+            fontFamily: FontStyles.raleway,
+          )
+      ),
+    );
   }
 
   void _openNavigationApp() async {

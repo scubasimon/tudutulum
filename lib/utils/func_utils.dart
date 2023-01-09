@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:map_launcher/map_launcher.dart';
 import 'package:tudu/consts/strings/str_const.dart';
+import 'package:tudu/models/site.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class FuncUlti {
@@ -32,11 +33,26 @@ class FuncUlti {
     return result;
   }
 
+
+
+  static List<Site> getListSiteFromListDynamic(List<dynamic> input) {
+    List<Site> result = [];
+    input.forEach((element) {
+      var intValue = int.tryParse(element.toString());
+      if (intValue != null) {
+        result.add(
+        Site(title: "", active: false, images: [], siteId: intValue, subTitle: "", business: [], siteContent: SiteContent())
+      );
+      }
+    });
+    return result;
+  }
+
   static List<String> getListStringFromListDynamic(List<dynamic> input) {
     List<String> result = [];
-    input.forEach((element) {
+    for (var element in input) {
       result.add(element.toString());
-    });
+    }
     return result;
   }
 

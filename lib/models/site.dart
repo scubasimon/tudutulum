@@ -49,7 +49,6 @@ class Site {
   }
 
   Site.from(Map<String, dynamic> data) {
-    print(data);
     images = FuncUlti.getListStringFromListDynamic(data["image"]);
     active = data["active"];
     siteId = data["siteid"];

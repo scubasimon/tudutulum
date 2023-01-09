@@ -152,6 +152,7 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
       print("listenToEvents -> new event");
       if (data != null) {
         List<Event> listEventDate = [];
+        print(data.length);
 
         for (var event in data) {
           int newHour = 23;
@@ -179,19 +180,24 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
           final daysToGenerate = endDate.difference(startDate).inDays + 1;
           var days =
               List.generate(daysToGenerate, (i) => DateTime(startDate.year, startDate.month, startDate.day + (i)));
+          final listEventDayInWeek = event.getEventDayInWeek() ?? {};
           for (var day in days) {
-            Event cloneEvent = Event.fromClone(event);
-            cloneEvent.datestart = Timestamp.fromDate(
-                DateTime(
-                  day.year,
-                  day.month,
-                  day.day,
-                  DateTime.fromMillisecondsSinceEpoch(event.dateend.millisecondsSinceEpoch).hour,
-                  DateTime.fromMillisecondsSinceEpoch(event.dateend.millisecondsSinceEpoch).minute,
-                  DateTime.fromMillisecondsSinceEpoch(event.dateend.millisecondsSinceEpoch).second,
-                )
-            );
-            listEventDate.add(cloneEvent);
+            if (listEventDayInWeek[day.weekday] == true) {
+              Event cloneEvent = Event.fromClone(event);
+              cloneEvent.datestart = Timestamp.fromDate(
+                  DateTime(
+                    day.year,
+                    day.month,
+                    day.day,
+                    DateTime.fromMillisecondsSinceEpoch(event.dateend.millisecondsSinceEpoch).hour,
+                    DateTime.fromMillisecondsSinceEpoch(event.dateend.millisecondsSinceEpoch).minute,
+                    DateTime.fromMillisecondsSinceEpoch(event.dateend.millisecondsSinceEpoch).second,
+                  )
+              );
+
+              listEventDate.add(cloneEvent);
+            }
+
           }
         }
 
@@ -542,8 +548,8 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
               itemBuilder: (BuildContext context, int index) {
                 String siteTitle = "";
                 if (snapshot.data![index].sites != null) {
-                  if (snapshot.data![index].sites! != []) {
-                    siteTitle = "${_homeViewModel.getSiteById(snapshot.data![index].sites!.first)?.title}";
+                  if (snapshot.data![index].sites!.isNotEmpty) {
+                    siteTitle = snapshot.data![index].sites!.first.title;
                   }
                 }
                 return InkWell(
@@ -672,7 +678,7 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
                                 ),
                               ),
                               Container(
-                                  margin: EdgeInsets.only(left: 16, right: 16),
+                                  margin: const EdgeInsets.only(left: 16, right: 16),
                                   child: (snapshot.data![index].cost == "Free" || snapshot.data![index].cost == "0")
                                       ? Text(snapshot.data![index].cost,
                                           maxLines: 1,

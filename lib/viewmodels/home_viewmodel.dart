@@ -309,6 +309,12 @@ class HomeViewModel extends BaseViewModel {
 
   Future<void> getListEvents(bool isLoadOnInit) async {
     listEvents = await _homeRepository.getListEvents();
+    for (var event in listEvents) {
+      event.sites = listSites.where((site) {
+        final sites = event.sites ?? [];
+        return sites.where((element) => site.siteId == element.siteId).isNotEmpty;
+      }).toList();
+    }
     if (isLoadOnInit) _observableService.listEventsController.sink.add(listEvents);
     notifyListeners();
   }
