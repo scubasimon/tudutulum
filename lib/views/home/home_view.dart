@@ -532,6 +532,7 @@ class _HomeView extends State<HomeView> with WidgetsBindingObserver {
                               : ImagePath.tab1stDeactiveIcon,
                           alignment: Alignment.center,
                           fit: BoxFit.cover,
+                          width: 20,
                         ),
                       ),
                       Text(
