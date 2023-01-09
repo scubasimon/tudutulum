@@ -91,7 +91,6 @@ class Deal {
       "business": site.business,
       "locationLat": site.locationLat,
       "locationLon": site.locationLon,
-      "rating": site.rating,
       "siteContent": site.siteContent.toJson(),
     };
     Map<String, dynamic> result = {

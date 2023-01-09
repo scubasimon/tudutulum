@@ -870,10 +870,10 @@ class S {
     );
   }
 
-  /// `You can also follow Title on:`
+  /// `You can also follow them on:`
   String get follow_title {
     return Intl.message(
-      'You can also follow Title on:',
+      'You can also follow them on:',
       name: 'follow_title',
       desc: '',
       args: [],

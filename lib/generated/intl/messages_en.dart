@@ -126,7 +126,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "filter": MessageLookupByLibrary.simpleMessage("Filter"),
         "first_name": MessageLookupByLibrary.simpleMessage("First Name"),
         "follow_title": MessageLookupByLibrary.simpleMessage(
-            "You can also follow Title on:"),
+            "You can also follow them on:"),
         "follow_us": MessageLookupByLibrary.simpleMessage(
             "•  Follow us to see our latest deals"),
         "forgot_password":

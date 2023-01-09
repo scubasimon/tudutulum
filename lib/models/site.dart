@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../utils/func_utils.dart';
 
@@ -13,7 +12,6 @@ class Site {
   double? locationLat;
   double? locationLon;
   late SiteContent siteContent;
-  double? rating;
 
   Site(
       {
@@ -27,7 +25,6 @@ class Site {
         this.locationLat,
         this.locationLon,
         required this.siteContent,
-        this.rating,
       });
 
   Map<String, dynamic> toJson() {
@@ -41,7 +38,6 @@ class Site {
       "business": business,
       "locationLat": locationLat,
       "locationLon": locationLon,
-      "rating": rating,
     };
 
     var siteContentJson = siteContent.toJson();
@@ -53,6 +49,7 @@ class Site {
   }
 
   Site.from(Map<String, dynamic> data) {
+    print(data);
     images = FuncUlti.getListStringFromListDynamic(data["image"]);
     active = data["active"];
     siteId = data["siteid"];
@@ -62,7 +59,6 @@ class Site {
     business = FuncUlti.getListIntFromListDynamic(data["business"]);
     locationLat = (data["locationLat"] != null) ? data["locationLat"]: null;
     locationLon = (data["locationLon"] != null) ? data["locationLon"]: null;
-    rating = (data["rating"] != null) ? data["rating"] : null;
     siteContent = SiteContent(
     description: (data["contentDescription"] != null) ? data["contentDescription"] : null,
     moreInformation: (data["moreInformation"] != null) ? data["moreInformation"] : null,
