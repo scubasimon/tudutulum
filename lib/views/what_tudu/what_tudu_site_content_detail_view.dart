@@ -847,7 +847,6 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
     || getIntouch["email"]?.isNotEmpty == true
     || getIntouch["whatsapp"]?.isNotEmpty == true
     || getIntouch["website"]?.isNotEmpty == true) {
-      final darkMode = PrefUtil.getValue(StrConst.isDarkMode, false) as bool;
       return Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -940,11 +939,6 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                   : Container(),
             ],
           ),
-          Container(
-            height: 0.5,
-            width: MediaQuery.of(context).size.width,
-            color: darkMode ? Colors.white : ColorsConst.blackOpacity20,
-          ),
         ],
       );
     } else {
@@ -953,6 +947,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
   }
 
   Widget follow(Map<String, String> getIntouch) {
+    final darkMode = PrefUtil.getValue(StrConst.isDarkMode, false) as bool;
     if (getIntouch["instagram"]?.isNotEmpty == true
         || getIntouch["facebook"]?.isNotEmpty == true
         || getIntouch["owl"]?.isNotEmpty == true
@@ -1032,10 +1027,22 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                   : Container()
             ],
           ),
+          const SizedBox(
+            height: 8,
+          ),
+          Container(
+            height: 0.5,
+            width: MediaQuery.of(context).size.width,
+            color: darkMode ? Colors.white : ColorsConst.blackOpacity20,
+          ),
         ],
       );
     } else {
-      return Container();
+      return Container(
+        height: 0.5,
+        width: MediaQuery.of(context).size.width,
+        color: darkMode ? Colors.white : ColorsConst.blackOpacity20,
+      );
     }
   }
 
@@ -1066,7 +1073,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                 fit: BoxFit.contain,
                 imageBuilder: (context, imageProvider) => Container(
                   decoration: BoxDecoration(
-                    image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                    image: DecorationImage(image: imageProvider, fit: BoxFit.contain),
                   ),
                 ),
                 placeholder: (context, url) => const CupertinoActivityIndicator(
