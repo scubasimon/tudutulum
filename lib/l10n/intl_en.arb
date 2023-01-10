@@ -81,7 +81,7 @@
   "capacity": "Capacity",
   "events_and_experiences": "Events and Experiences",
   "get_in_touch_with": "Get in touch directly with:",
-  "follow_title": "You can also follow them on:",
+  "follow_title": "You can follow them on:",
   "thanks_to_our_trusted_partner": "With thanks to our trusted partner:",
   "your_account": "Your Account",
   "hello_name": "Hello {name}",
@@ -175,5 +175,8 @@
   "try_a_week": "7 days free trial and then…",
   "redeem_later": "Redeem Later",
   "data_deleted": "Your data has been deleted",
-  "location_always_permission_message": "To use this feature please allow Tudu app to always use location.\n Please go to 'Settings' to grant location alway access to the app"
+  "location_always_permission_message": "To use this feature please allow Tudu app to always use location.\n Please go to 'Settings' to grant location alway access to the app",
+  "report_via": "Report via {name}",
+  "report": "Report",
+  "report_description": "Please send us an Email or a message via Whatsapp"
 }

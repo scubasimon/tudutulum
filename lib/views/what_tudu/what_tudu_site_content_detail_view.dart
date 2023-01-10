@@ -795,7 +795,8 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
   }
 
   Widget getIntouch(Map<String, String>? getIntouch, String? logo, title) {
-    if (getIntouch != null && logo != null) {
+    if (getIntouch != null && logo != null && getIntouch.isNotEmpty) {
+      print(getIntouch);
       return Stack(
         children: [
           Positioned(
@@ -826,11 +827,6 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
               ),
               errorWidget: (context, url, error) => Icon(Icons.error),
             ),
-            // child: Image.network(
-            //   logo,
-            //   fit: BoxFit.contain,
-            //   height: 48.0,
-            // ),
           ),
           Container(
               alignment: Alignment.centerLeft,
@@ -918,7 +914,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                           ? InkWell(
                               child: Container(
                                 padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                                child: Image.asset(ImagePath.internetIcon, fit: BoxFit.contain, height: 42.0),
+                                child: Image.asset(ImagePath.internetIcon, fit: BoxFit.cover, height: 50.0),
                               ),
                               onTap: () {
                                 FuncUlti.redirectToBrowserWithUrl("${getIntouch["website"]}");
@@ -930,78 +926,96 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                   const SizedBox(
                     height: 8,
                   ),
-                  SizedBox(
-                    height: 20,
-                    child: Text(S.current.follow_title,
-                        style: TextStyle(
-                          color: ColorStyle.getDarkLabel(),
-                          fontSize: FontSizeConst.font12,
-                          fontWeight: FontWeight.w500,
-                          fontFamily: FontStyles.raleway,
-                        )),
-                  ),
-                  Row(
-                    children: [
-                      (getIntouch["instagram"] != null && getIntouch["instagram"] != "")
-                          ? InkWell(
-                              child: Container(
-                                padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                                child: Image.asset(ImagePath.instagramIcon, fit: BoxFit.contain, height: 42.0),
-                              ),
-                              onTap: () {
-                                UrlLauncher.launch(
-                                  getIntouch["instagram"].toString(),
-                                  universalLinksOnly: true,
-                                );
-                              },
-                            )
-                          : Container(),
-                      (getIntouch["facebook"] != null && getIntouch["facebook"] != "")
-                          ? InkWell(
-                              child: Container(
-                                padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                                child: Image.asset(ImagePath.facebookIcon, fit: BoxFit.contain, height: 42.0),
-                              ),
-                              onTap: () {
-                                UrlLauncher.launch(
-                                  getIntouch["facebook"].toString(),
-                                  universalLinksOnly: true,
-                                );
-                              },
-                            )
-                          : Container(),
-                      (getIntouch["owl"] != null && getIntouch["owl"] != "")
-                          ? InkWell(
-                              child: Container(
-                                padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                                child: Image.asset(ImagePath.owlIcon, fit: BoxFit.contain, height: 42.0),
-                              ),
-                              onTap: () {
-                                UrlLauncher.launch(
-                                  getIntouch["owl"].toString(),
-                                  universalLinksOnly: true,
-                                );
-                              },
-                            )
-                          : Container(),
-                      (getIntouch["twitter"] != null && getIntouch["twitter"] != "")
-                          ? InkWell(
-                              child: Container(
-                                padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                                child: Image.asset(ImagePath.twitterIcon, fit: BoxFit.contain, height: 42.0),
-                              ),
-                              onTap: () {
-                                UrlLauncher.launch(
-                                  getIntouch["twitter"].toString(),
-                                  universalLinksOnly: true,
-                                );
-                              },
-                            )
-                          : Container()
-                    ],
-                  ),
+                  follow(getIntouch),
                 ],
               )),
+        ],
+      );
+    } else {
+      return Container();
+    }
+  }
+
+  Widget follow(Map<String, String> getIntouch) {
+    if (getIntouch.containsKey("instagram")
+        || getIntouch.containsKey("facebook")
+        || getIntouch.containsKey("owl")
+        || getIntouch.containsKey("twitter")
+    ) {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 20,
+            child: Text(S.current.follow_title,
+                style: TextStyle(
+                  color: ColorStyle.getDarkLabel(),
+                  fontSize: FontSizeConst.font12,
+                  fontWeight: FontWeight.w500,
+                  fontFamily: FontStyles.raleway,
+                )),
+          ),
+          Row(
+            children: [
+              (getIntouch["instagram"] != null && getIntouch["instagram"] != "")
+                  ? InkWell(
+                child: Container(
+                  padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
+                  child: Image.asset(ImagePath.instagramIcon, fit: BoxFit.contain, height: 42.0),
+                ),
+                onTap: () {
+                  UrlLauncher.launch(
+                    getIntouch["instagram"].toString(),
+                    universalLinksOnly: true,
+                  );
+                },
+              )
+                  : Container(),
+              (getIntouch["facebook"] != null && getIntouch["facebook"] != "")
+                  ? InkWell(
+                child: Container(
+                  padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
+                  child: Image.asset(ImagePath.facebookIcon, fit: BoxFit.contain, height: 42.0),
+                ),
+                onTap: () {
+                  UrlLauncher.launch(
+                    getIntouch["facebook"].toString(),
+                    universalLinksOnly: true,
+                  );
+                },
+              )
+                  : Container(),
+              (getIntouch["owl"] != null && getIntouch["owl"] != "")
+                  ? InkWell(
+                child: Container(
+                  padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
+                  child: Image.asset(ImagePath.owlIcon, fit: BoxFit.contain, height: 42.0),
+                ),
+                onTap: () {
+                  UrlLauncher.launch(
+                    getIntouch["owl"].toString(),
+                    universalLinksOnly: true,
+                  );
+                },
+              )
+                  : Container(),
+              (getIntouch["twitter"] != null && getIntouch["twitter"] != "")
+                  ? InkWell(
+                child: Container(
+                  padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
+                  child: Image.asset(ImagePath.twitterIcon, fit: BoxFit.contain, height: 42.0),
+                ),
+                onTap: () {
+                  UrlLauncher.launch(
+                    getIntouch["twitter"].toString(),
+                    universalLinksOnly: true,
+                  );
+                },
+              )
+                  : Container()
+            ],
+          ),
         ],
       );
     } else {

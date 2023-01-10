@@ -26,6 +26,8 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m2(name) => "Hello ${name}";
 
+  static String m3(name) => "Report via ${name}";
+
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "about": MessageLookupByLibrary.simpleMessage("•  About Tudu Tulum"),
@@ -125,8 +127,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "fees": MessageLookupByLibrary.simpleMessage("Fees"),
         "filter": MessageLookupByLibrary.simpleMessage("Filter"),
         "first_name": MessageLookupByLibrary.simpleMessage("First Name"),
-        "follow_title": MessageLookupByLibrary.simpleMessage(
-            "You can also follow them on:"),
+        "follow_title":
+            MessageLookupByLibrary.simpleMessage("You can follow them on:"),
         "follow_us": MessageLookupByLibrary.simpleMessage(
             "•  Follow us to see our latest deals"),
         "forgot_password":
@@ -252,6 +254,10 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Repeat New Password"),
         "repeat_password_empty_error": MessageLookupByLibrary.simpleMessage(
             "Repeat password must be not empty"),
+        "report": MessageLookupByLibrary.simpleMessage("Report"),
+        "report_description": MessageLookupByLibrary.simpleMessage(
+            "Please send us an Email or a message via Whatsapp"),
+        "report_via": m3,
         "required_message": MessageLookupByLibrary.simpleMessage(
             "*Email and password are required"),
         "reset_password_message": MessageLookupByLibrary.simpleMessage(

@@ -163,32 +163,38 @@ class TwoButtonAlert {
   static Widget reportAlert(BuildContext context, String whatsapp, String email) {
     if (Platform.isAndroid) {
       var firstButtonAction = TextButton(
-        onPressed: () {
+        onPressed: () async {
           Navigator.of(context).pop();
-          print(whatsapp);
-          UrlLauncher.launch("https://wa.me/${whatsapp}?text=Tudu Information Update");
+          final url = Uri.parse("whatsapp://send?phone=$whatsapp");
+          if (await canLaunchUrl(url)) {
+            await launchUrl(url);
+          } else {
+            showDialog(
+              context: context,
+              builder: (context) =>
+              ErrorAlert.alert(context, S.current.app_not_installed("Whatsapp")));
+          }
         },
-        child: Text("Report via Whatsapp"),
+        child: Text(S.current.report_via("Whatsapp")),
       );
       var secondButtonAction = TextButton(
         onPressed: () async {
           Navigator.of(context).pop();
-          Uri params = Uri(
-            scheme: 'mailto',
-            path: email,
-            query: 'subject=Tudu Information Update', //add subject and body here
-          );
-
-          var url = params.toString();
-          if (await canLaunch(url)) {
-            await launch(url);
+          final url = Uri.parse("mailto:$email");
+          if (await canLaunchUrl(url)) {
+            await launchUrl(url);
+          } else {
+            showDialog(
+                context: context,
+                builder: (context) =>
+                    ErrorAlert.alert(context, S.current.app_not_installed("Mail")));
           }
         },
-        child: Text("Report via Email"),
+        child: Text(S.current.report_via("Email")),
       );
       return AlertDialog(
-        title: Text("Report"),
-        content: Text("Please send us an Email or a message via Whatsapp"),
+        title: Text(S.current.report),
+        content: Text(S.current.report_description),
         actions: [
           firstButtonAction,
           secondButtonAction,
@@ -196,43 +202,38 @@ class TwoButtonAlert {
       );
     } else {
       return CupertinoAlertDialog(
-        title: Text("Report"),
-        content: Text("Please send us an Email or a message via Whatsapp"),
+        title: Text(S.current.report),
+        content: Text(S.current.report_description),
         actions: [
           CupertinoDialogAction(
             isDefaultAction: true,
-            child: Text("Report via Whatsapp"),
+            child: Text(S.current.report_via("Whatsapp")),
             onPressed: () async {
               Navigator.of(context).pop();
-              print(whatsapp);
-              // UrlLauncher.launch("https://wa.me/${whatsapp}?text=Tudu Information Update");
-
-              var iosUrl = "https://wa.me/$whatsapp?text=${Uri.parse('Hi, I need some help')}";
-
-              try{
-                await launchUrl(Uri.parse(iosUrl));
-              } on Exception{
-                print('WhatsApp is not installed.');
+              final url = Uri.parse("whatsapp://send?phone=$whatsapp");
+              if (await canLaunchUrl(url)) {
+                await launchUrl(url);
+              } else {
+                showDialog(
+                    context: context,
+                    builder: (context) =>
+                        ErrorAlert.alert(context, S.current.app_not_installed("Whatsapp")));
               }
             },
           ),
           CupertinoDialogAction(
             isDefaultAction: true,
-            child: Text("Report via Email"),
+            child: Text(S.current.report_via("Email")),
             onPressed: () async {
               Navigator.of(context).pop();
-              Uri params = Uri(
-                scheme: 'mailto',
-                path: email,
-                query: 'subject=Tudu Information Update', //add subject and body here
-              );
-
-              var url = params.toString();
-
-              try{
-                await launchUrl(Uri.parse(url));
-              } on Exception{
-                print('Email is not installed.');
+              final url = Uri.parse("mailto:$email");
+              if (await canLaunchUrl(url)) {
+                await launchUrl(url);
+              } else {
+                showDialog(
+                    context: context,
+                    builder: (context) =>
+                        ErrorAlert.alert(context, S.current.app_not_installed("Mail")));
               }
             },
           )

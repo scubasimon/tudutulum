@@ -236,7 +236,7 @@ class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDeta
                         tagMatcher("img"): CustomRender.widget(
                             widget: (context, buildChildren) {
                               return CachedNetworkImage(
-                                height: 300,
+                                height: 150,
                                 cacheManager: CacheManager(
                                   Config(
                                     "cachedImg", //featureStoreKey
@@ -277,7 +277,8 @@ class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDeta
                     ),
                   ),
                   (_whatTuduArticleContentDetailViewModel.articleItemDetail.image2?.url != null) ? CachedNetworkImage(
-                    height: 300,
+                    height: 150,
+                    width: MediaQuery.of(context).size.width,
                     cacheManager: CacheManager(
                       Config(
                         "cachedImg", //featureStoreKey
@@ -288,7 +289,7 @@ class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDeta
                       ),
                     ),
                     imageUrl: _whatTuduArticleContentDetailViewModel.articleItemDetail.image2?.url ?? "",
-                    fit: BoxFit.contain,
+                    fit: BoxFit.cover,
                     progressIndicatorBuilder: (context, value, progress) {
                       return Container(
                           decoration: const BoxDecoration(),
@@ -302,7 +303,8 @@ class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDeta
                     },
                     imageBuilder: (context, imageProvider) => Container(
                       decoration: BoxDecoration(
-                        image: DecorationImage(image: imageProvider, fit: BoxFit.contain),
+                        shape: BoxShape.rectangle,
+                        image: DecorationImage(image: imageProvider, fit: BoxFit.scaleDown),
                       ),
                     ),
                     errorWidget: (context, url, error) => const Icon(Icons.error),
@@ -335,7 +337,7 @@ class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDeta
                         tagMatcher("img"): CustomRender.widget(
                             widget: (context, buildChildren) {
                               return CachedNetworkImage(
-                                height: 300,
+                                height: 150,
                                 cacheManager: CacheManager(
                                   Config(
                                     "cachedImg", //featureStoreKey

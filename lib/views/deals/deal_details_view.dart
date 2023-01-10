@@ -367,10 +367,10 @@ class _DealDetailView extends State<DealDetailView> {
                     ),
                   ),
                   imageUrl: deal.logo.isNotEmpty ? deal.logo : deal.site.siteContent.logo ?? "",
-                  fit: BoxFit.cover,
+                  fit: BoxFit.contain,
                   imageBuilder: (context, imageProvider) => Container(
                     decoration: BoxDecoration(
-                      image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                      image: DecorationImage(image: imageProvider, fit: BoxFit.contain),
                     ),
                   ),
                   placeholder: (context, url) => const CupertinoActivityIndicator(

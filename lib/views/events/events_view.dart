@@ -194,8 +194,9 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
                     DateTime.fromMillisecondsSinceEpoch(event.dateend.millisecondsSinceEpoch).second,
                   )
               );
-
-              listEventDate.add(cloneEvent);
+              if (cloneEvent.datestart.millisecondsSinceEpoch >= DateTime.now().millisecondsSinceEpoch) {
+                listEventDate.add(cloneEvent);
+              }
             }
 
           }

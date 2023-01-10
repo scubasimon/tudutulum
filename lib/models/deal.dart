@@ -42,6 +42,8 @@ class Deal {
     var site = data["site"] as Map<String, dynamic>? ?? {};
     final siteContent = site["siteContent"] as Map<String, dynamic>? ?? {};
     if (site["title"] != null) {
+      Map<String, String>? getIntouch = siteContent["getIntouch"];
+      getIntouch?.removeWhere((key, value) => value.isEmpty);
       this.site = Site(
         active: site["active"],
         images: (site["image"] as List<dynamic>? ?? []).map((e) => e as String).toList(),
@@ -60,7 +62,7 @@ class Deal {
           capacity: siteContent["capacity"],
           eventIcons: (siteContent["eventIcons"] as List<dynamic>? ?? []).map((e) => e as String).toList(),
           eventLinks: (siteContent["eventLinks"] as List<dynamic>? ?? []).map((e) => e as String).toList(),
-          getIntouch: siteContent["getIntouch"],
+          getIntouch: getIntouch?.isNotEmpty == true ? getIntouch : null,
           logo: siteContent["logo"],
           partner: siteContent["partner"]
         ),

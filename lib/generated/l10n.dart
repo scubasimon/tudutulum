@@ -870,10 +870,10 @@ class S {
     );
   }
 
-  /// `You can also follow them on:`
+  /// `You can follow them on:`
   String get follow_title {
     return Intl.message(
-      'You can also follow them on:',
+      'You can follow them on:',
       name: 'follow_title',
       desc: '',
       args: [],
@@ -1815,6 +1815,36 @@ class S {
     return Intl.message(
       'To use this feature please allow Tudu app to always use location.\n Please go to \'Settings\' to grant location alway access to the app',
       name: 'location_always_permission_message',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Report via {name}`
+  String report_via(Object name) {
+    return Intl.message(
+      'Report via $name',
+      name: 'report_via',
+      desc: '',
+      args: [name],
+    );
+  }
+
+  /// `Report`
+  String get report {
+    return Intl.message(
+      'Report',
+      name: 'report',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please send us an Email or a message via Whatsapp`
+  String get report_description {
+    return Intl.message(
+      'Please send us an Email or a message via Whatsapp',
+      name: 'report_description',
       desc: '',
       args: [],
     );
