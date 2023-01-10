@@ -261,12 +261,6 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
           _whatTuduSiteContentDetailViewModel.siteContentDetail.siteContent.logo,
           _whatTuduSiteContentDetailViewModel.siteContentDetail.title,
         ),
-        Container(
-          height: 0.5,
-          width: MediaQuery.of(context).size.width,
-          margin: const EdgeInsets.only(left: 18, right: 18),
-          color: darkMode ? Colors.white : ColorsConst.blackOpacity20,
-        ),
         getPartner(
             _homeViewModel.getPartnerById(_whatTuduSiteContentDetailViewModel.siteContentDetail.siteContent.partner)),
         getReport(),
@@ -796,7 +790,6 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
 
   Widget getIntouch(Map<String, String>? getIntouch, String? logo, title) {
     if (getIntouch != null && logo != null && getIntouch.isNotEmpty) {
-      print(getIntouch);
       return Stack(
         children: [
           Positioned(
@@ -850,10 +843,11 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
   }
 
   Widget touch(Map<String, String> getIntouch, String title) {
-    if (getIntouch.containsKey("phone")
-    || getIntouch.containsKey("email")
-    || getIntouch.containsKey("whatsapp")
-    || getIntouch.containsKey("website")) {
+    if (getIntouch["phone"]?.isNotEmpty == true
+    || getIntouch["email"]?.isNotEmpty == true
+    || getIntouch["whatsapp"]?.isNotEmpty == true
+    || getIntouch["website"]?.isNotEmpty == true) {
+      final darkMode = PrefUtil.getValue(StrConst.isDarkMode, false) as bool;
       return Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -946,6 +940,11 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                   : Container(),
             ],
           ),
+          Container(
+            height: 0.5,
+            width: MediaQuery.of(context).size.width,
+            color: darkMode ? Colors.white : ColorsConst.blackOpacity20,
+          ),
         ],
       );
     } else {
@@ -954,10 +953,10 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
   }
 
   Widget follow(Map<String, String> getIntouch) {
-    if (getIntouch.containsKey("instagram")
-        || getIntouch.containsKey("facebook")
-        || getIntouch.containsKey("owl")
-        || getIntouch.containsKey("twitter")
+    if (getIntouch["instagram"]?.isNotEmpty == true
+        || getIntouch["facebook"]?.isNotEmpty == true
+        || getIntouch["owl"]?.isNotEmpty == true
+        || getIntouch["twitter"]?.isNotEmpty == true
     ) {
       return Column(
         mainAxisAlignment: MainAxisAlignment.start,
