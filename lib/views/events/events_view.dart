@@ -158,7 +158,9 @@ class _EventsView extends State<EventsView> with WidgetsBindingObserver {
           int newHour = 23;
           int newMinute = 59;
           int newSecond = 59;
-          DateTime startDate = DateTime.now();
+          DateTime startDate = (DateTime.now().millisecondsSinceEpoch > event.datestart.millisecondsSinceEpoch)
+              ? DateTime.now()
+              : DateTime.fromMillisecondsSinceEpoch(event.datestart.millisecondsSinceEpoch);
           DateTime endDate = DateTime.fromMillisecondsSinceEpoch(event.dateend.millisecondsSinceEpoch);
           startDate = DateTime(
             startDate.year,

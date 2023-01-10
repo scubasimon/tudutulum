@@ -909,7 +909,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
               (getIntouch["whatsapp"] != null && getIntouch["whatsapp"] != "")
                   ? InkWell(
                 child: Container(
-                  padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
+                  padding: const EdgeInsets.only(top: 4.0, right: 4.0, bottom: 4.0),
                   child: Image.asset(ImagePath.whatsAppIcon, fit: BoxFit.contain, height: 42.0),
                 ),
                 onTap: () async {
@@ -929,8 +929,8 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
               (getIntouch["website"] != null && getIntouch["website"] != "")
                   ? InkWell(
                 child: Container(
-                  padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                  child: Image.asset(ImagePath.internetIcon, fit: BoxFit.cover, height: 50.0),
+                  padding: const EdgeInsets.only(top: 4.0, right: 4.0, bottom: 4.0),
+                  child: Image.asset(ImagePath.internetIcon, fit: BoxFit.cover, height: 48.0),
                 ),
                 onTap: () {
                   FuncUlti.redirectToBrowserWithUrl("${getIntouch["website"]}");
