@@ -71,7 +71,9 @@ class FuncUlti {
   static Map<String, String> getMapStringStringFromStringDynamic(Map<String, dynamic> input) {
     Map<String, String> result = {};
     for (var item in input.keys) {
-      result[item.toString()] = input[item].toString();
+      if (input[item].toString().isNotEmpty) {
+        result[item.toString()] = input[item].toString();
+      }
     }
     return result;
   }
