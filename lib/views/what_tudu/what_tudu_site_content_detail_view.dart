@@ -825,7 +825,7 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                 radius: 20,
                 color: ColorStyle.primary,
               ),
-              errorWidget: (context, url, error) => Icon(Icons.error),
+              errorWidget: (context, url, error) => const Icon(Icons.error),
             ),
           ),
           Container(
@@ -835,100 +835,117 @@ class _WhatTuduSiteContentDetailView extends State<WhatTuduSiteContentDetailView
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(
-                    height: 20,
-                    child: Text(S.current.get_in_touch_with,
-                        style: TextStyle(
-                          color: ColorStyle.getDarkLabel(),
-                          fontSize: FontSizeConst.font12,
-                          fontWeight: FontWeight.w500,
-                          fontFamily: FontStyles.raleway,
-                        )),
-                  ),
-                  SizedBox(
-                    height: 20,
-                    child: Text(
-                      title.toString(),
-                      style: TextStyle(
-                        fontFamily: FontStyles.mouser,
-                        fontSize: FontSizeConst.font12,
-                        fontWeight: FontWeight.w400,
-                        color: ColorStyle.getDarkLabel(),
-                      ),
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      (getIntouch["phone"] != null && getIntouch["phone"] != "")
-                          ? InkWell(
-                              child: Container(
-                                padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                                child: Image.asset(ImagePath.phoneIcon, fit: BoxFit.contain, height: 42.0),
-                              ),
-                              onTap: () {
-                                UrlLauncher.launch("tel://${getIntouch["phone"].toString()}");
-                              },
-                            )
-                          : Container(),
-                      (getIntouch["email"] != null && getIntouch["email"] != "")
-                          ? InkWell(
-                              child: Container(
-                                padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                                child: Image.asset(ImagePath.emailIcon, fit: BoxFit.contain, height: 42.0),
-                              ),
-                              onTap: () async {
-                                // UrlLauncher.launch("mailto:${getIntouch["email"].toString()}");
-                                final url = Uri.parse("mailto:${getIntouch["email"]}");
-                                if (await canLaunchUrl(url)) {
-                                  await launchUrl(url);
-                                } else {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) =>
-                                          ErrorAlert.alert(context, S.current.app_not_installed("Mail")));
-                                }
-                              },
-                            )
-                          : Container(),
-                      (getIntouch["whatsapp"] != null && getIntouch["whatsapp"] != "")
-                          ? InkWell(
-                              child: Container(
-                                padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                                child: Image.asset(ImagePath.whatsAppIcon, fit: BoxFit.contain, height: 42.0),
-                              ),
-                              onTap: () async {
-                                // UrlLauncher.launch("https://wa.me/${getIntouch["whatsapp"].toString()}?text=Hello");
-                                final url = Uri.parse("whatsapp://send?phone=${getIntouch["whatsapp"]}");
-                                if (await canLaunchUrl(url)) {
-                                  await launchUrl(url);
-                                } else {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) =>
-                                          ErrorAlert.alert(context, S.current.app_not_installed("Whatsapp")));
-                                }
-                              },
-                            )
-                          : Container(),
-                      (getIntouch["website"] != null && getIntouch["website"] != "")
-                          ? InkWell(
-                              child: Container(
-                                padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
-                                child: Image.asset(ImagePath.internetIcon, fit: BoxFit.cover, height: 50.0),
-                              ),
-                              onTap: () {
-                                FuncUlti.redirectToBrowserWithUrl("${getIntouch["website"]}");
-                              },
-                            )
-                          : Container(),
-                    ],
-                  ),
+                  touch(getIntouch, title.toString()),
                   const SizedBox(
                     height: 8,
                   ),
                   follow(getIntouch),
                 ],
               )),
+        ],
+      );
+    } else {
+      return Container();
+    }
+  }
+
+  Widget touch(Map<String, String> getIntouch, String title) {
+    if (getIntouch.containsKey("phone")
+    || getIntouch.containsKey("email")
+    || getIntouch.containsKey("whatsapp")
+    || getIntouch.containsKey("website")) {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 20,
+            child: Text(S.current.get_in_touch_with,
+                style: TextStyle(
+                  color: ColorStyle.getDarkLabel(),
+                  fontSize: FontSizeConst.font12,
+                  fontWeight: FontWeight.w500,
+                  fontFamily: FontStyles.raleway,
+                )),
+          ),
+          SizedBox(
+            height: 20,
+            child: Text(
+              title,
+              style: TextStyle(
+                fontFamily: FontStyles.mouser,
+                fontSize: FontSizeConst.font12,
+                fontWeight: FontWeight.w400,
+                color: ColorStyle.getDarkLabel(),
+              ),
+            ),
+          ),
+          Row(
+            children: [
+              (getIntouch["phone"] != null && getIntouch["phone"] != "")
+                  ? InkWell(
+                child: Container(
+                  padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
+                  child: Image.asset(ImagePath.phoneIcon, fit: BoxFit.contain, height: 42.0),
+                ),
+                onTap: () {
+                  UrlLauncher.launch("tel://${getIntouch["phone"].toString()}");
+                },
+              )
+                  : Container(),
+              (getIntouch["email"] != null && getIntouch["email"] != "")
+                  ? InkWell(
+                child: Container(
+                  padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
+                  child: Image.asset(ImagePath.emailIcon, fit: BoxFit.contain, height: 42.0),
+                ),
+                onTap: () async {
+                  // UrlLauncher.launch("mailto:${getIntouch["email"].toString()}");
+                  final url = Uri.parse("mailto:${getIntouch["email"]}");
+                  if (await canLaunchUrl(url)) {
+                    await launchUrl(url);
+                  } else {
+                    showDialog(
+                        context: context,
+                        builder: (context) =>
+                            ErrorAlert.alert(context, S.current.app_not_installed("Mail")));
+                  }
+                },
+              )
+                  : Container(),
+              (getIntouch["whatsapp"] != null && getIntouch["whatsapp"] != "")
+                  ? InkWell(
+                child: Container(
+                  padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
+                  child: Image.asset(ImagePath.whatsAppIcon, fit: BoxFit.contain, height: 42.0),
+                ),
+                onTap: () async {
+                  // UrlLauncher.launch("https://wa.me/${getIntouch["whatsapp"].toString()}?text=Hello");
+                  final url = Uri.parse("whatsapp://send?phone=${getIntouch["whatsapp"]}");
+                  if (await canLaunchUrl(url)) {
+                    await launchUrl(url);
+                  } else {
+                    showDialog(
+                        context: context,
+                        builder: (context) =>
+                            ErrorAlert.alert(context, S.current.app_not_installed("Whatsapp")));
+                  }
+                },
+              )
+                  : Container(),
+              (getIntouch["website"] != null && getIntouch["website"] != "")
+                  ? InkWell(
+                child: Container(
+                  padding: const EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0),
+                  child: Image.asset(ImagePath.internetIcon, fit: BoxFit.cover, height: 50.0),
+                ),
+                onTap: () {
+                  FuncUlti.redirectToBrowserWithUrl("${getIntouch["website"]}");
+                },
+              )
+                  : Container(),
+            ],
+          ),
         ],
       );
     } else {
