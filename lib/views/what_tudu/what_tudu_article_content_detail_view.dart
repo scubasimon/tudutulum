@@ -236,7 +236,7 @@ class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDeta
                         tagMatcher("img"): CustomRender.widget(
                             widget: (context, buildChildren) {
                               return CachedNetworkImage(
-                                height: 150,
+                                height: 300,
                                 cacheManager: CacheManager(
                                   Config(
                                     "cachedImg", //featureStoreKey
@@ -247,7 +247,7 @@ class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDeta
                                   ),
                                 ),
                                 imageUrl: context.tree.element?.attributes["src"] ?? "",
-                                fit: BoxFit.contain,
+                                fit: BoxFit.cover,
                                 progressIndicatorBuilder: (context, value, progress) {
                                   return Container(
                                       decoration: const BoxDecoration(),
@@ -261,7 +261,7 @@ class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDeta
                                 },
                                 imageBuilder: (context, imageProvider) => Container(
                                   decoration: BoxDecoration(
-                                    image: DecorationImage(image: imageProvider, fit: BoxFit.contain),
+                                    image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
                                   ),
                                 ),
                                 errorWidget: (context, url, error) => const Icon(Icons.error),
@@ -277,8 +277,7 @@ class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDeta
                     ),
                   ),
                   (_whatTuduArticleContentDetailViewModel.articleItemDetail.image2?.url != null) ? CachedNetworkImage(
-                    height: 150,
-                    width: MediaQuery.of(context).size.width,
+                    height: 300,
                     cacheManager: CacheManager(
                       Config(
                         "cachedImg", //featureStoreKey
@@ -304,7 +303,7 @@ class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDeta
                     imageBuilder: (context, imageProvider) => Container(
                       decoration: BoxDecoration(
                         shape: BoxShape.rectangle,
-                        image: DecorationImage(image: imageProvider, fit: BoxFit.scaleDown),
+                        image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
                       ),
                     ),
                     errorWidget: (context, url, error) => const Icon(Icons.error),
@@ -337,7 +336,7 @@ class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDeta
                         tagMatcher("img"): CustomRender.widget(
                             widget: (context, buildChildren) {
                               return CachedNetworkImage(
-                                height: 150,
+                                height: 300,
                                 cacheManager: CacheManager(
                                   Config(
                                     "cachedImg", //featureStoreKey
@@ -348,7 +347,7 @@ class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDeta
                                   ),
                                 ),
                                 imageUrl: context.tree.element?.attributes["src"] ?? "",
-                                fit: BoxFit.contain,
+                                fit: BoxFit.cover,
                                 progressIndicatorBuilder: (context, value, progress) {
                                   return Container(
                                       decoration: const BoxDecoration(),
@@ -362,7 +361,7 @@ class _WhatTuduArticleContentDetailView extends State<WhatTuduArticleContentDeta
                                 },
                                 imageBuilder: (context, imageProvider) => Container(
                                   decoration: BoxDecoration(
-                                    image: DecorationImage(image: imageProvider, fit: BoxFit.contain),
+                                    image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
                                   ),
                                 ),
                                 errorWidget: (context, url, error) => const Icon(Icons.error),

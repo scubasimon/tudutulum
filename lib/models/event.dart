@@ -68,7 +68,7 @@ class Event {
       "contacts": contacts,
       "locationLat": locationLat,
       "locationLon": locationLon,
-      "sites": sites?.map((e) => e.toJson()),
+      "sites": sites?.map((e) => e.toJson()).toList(),
     };
 
     return result;
