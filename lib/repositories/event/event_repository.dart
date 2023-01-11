@@ -22,7 +22,7 @@ class EventRepositoryImpl extends EventRepository {
 
     // Filter with time
     listEventResult = listEventResult
-        .where((event) => event.datestart.millisecondsSinceEpoch <= DateTime.now().millisecondsSinceEpoch &&
+        .where((event) => //event.datestart.millisecondsSinceEpoch <= DateTime.now().millisecondsSinceEpoch &&
     event.dateend.millisecondsSinceEpoch >= DateTime.now().millisecondsSinceEpoch).toList();
 
     // Filter with eventTypeId (Filter function)
